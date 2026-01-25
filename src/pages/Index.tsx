@@ -1,5 +1,7 @@
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
+import { CategoryGrid } from "@/components/CategoryGrid";
+import { FeaturedProducts } from "@/components/FeaturedProducts";
 import UserTypeSection from "@/components/UserTypeSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import CTASection from "@/components/CTASection";
@@ -10,6 +12,8 @@ const Index = () => {
     <main className="min-h-screen bg-background">
       <Header />
       <HeroSection />
+      <CategoryGrid />
+      <FeaturedProducts />
       <UserTypeSection />
       <FeaturesSection />
       <CTASection />
