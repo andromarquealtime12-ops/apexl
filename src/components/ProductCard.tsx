@@ -2,16 +2,30 @@ import { Product, CURRENCY_SYMBOLS } from "@/types/database";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart } from "lucide-react";
+import { ShoppingCart, Heart, Check } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addItem, items } = useCart();
+  const [added, setAdded] = useState(false);
   const currencySymbol = CURRENCY_SYMBOLS[product.currency];
   const mainImage = product.images?.[0] || "/placeholder.svg";
+  
+  const isInCart = items.some((item) => item.product.id === product.id);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(product);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-all">
@@ -34,6 +48,7 @@ export function ProductCard({ product }: ProductCardProps) {
             variant="ghost"
             size="icon"
             className="absolute top-2 right-2 bg-background/80 hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={(e) => e.stopPropagation()}
           >
             <Heart className="h-4 w-4" />
           </Button>
@@ -59,9 +74,25 @@ export function ProductCard({ product }: ProductCardProps) {
           className="w-full" 
           size="sm"
           disabled={product.stock_quantity === 0}
+          variant={added || isInCart ? "secondary" : "default"}
+          onClick={handleAddToCart}
         >
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          Ajouter au panier
+          {added ? (
+            <>
+              <Check className="h-4 w-4 mr-2" />
+              Ajouté !
+            </>
+          ) : isInCart ? (
+            <>
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Dans le panier
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Ajouter au panier
+            </>
+          )}
         </Button>
       </CardFooter>
     </Card>
