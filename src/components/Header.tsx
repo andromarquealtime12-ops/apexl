@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-  ShoppingBag, User, Menu, ShoppingCart, Wallet, 
+  ShoppingBag, User, Menu, Wallet, 
   LogOut, ChevronDown, Settings, Package, Search 
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
+import { CartSheet } from "@/components/cart/CartSheet";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -84,12 +85,7 @@ const Header = () => {
 
           <div className="flex items-center gap-2">
             {/* Cart */}
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                0
-              </Badge>
-            </Button>
+            <CartSheet />
 
             {loading ? (
               <div className="w-20 h-9 bg-muted animate-pulse rounded-md" />
