@@ -313,8 +313,10 @@ export type Database = {
           payment_method:
             | Database["public"]["Enums"]["payment_method_type"]
             | null
+          proof_image_url: string | null
           reference: string | null
           status: string | null
+          transaction_reference: string | null
           type: string
           wallet_id: string
         }
@@ -327,8 +329,10 @@ export type Database = {
           payment_method?:
             | Database["public"]["Enums"]["payment_method_type"]
             | null
+          proof_image_url?: string | null
           reference?: string | null
           status?: string | null
+          transaction_reference?: string | null
           type: string
           wallet_id: string
         }
@@ -341,8 +345,10 @@ export type Database = {
           payment_method?:
             | Database["public"]["Enums"]["payment_method_type"]
             | null
+          proof_image_url?: string | null
           reference?: string | null
           status?: string | null
+          transaction_reference?: string | null
           type?: string
           wallet_id?: string
         }
