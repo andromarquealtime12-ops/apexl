@@ -10,6 +10,7 @@ import {
   Wallet, TrendingUp, Settings 
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
+import TransactionHistoryTable from "@/components/admin/TransactionHistoryTable";
 import { useAdminPendingDeposits } from "@/hooks/useAdminWallet";
 
 const Admin = () => {
@@ -157,11 +158,11 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="wallets">
+          <TabsContent value="wallets" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  Demandes de dépôt
+                  Demandes de dépôt en attente
                   {pendingDeposits && pendingDeposits.length > 0 && (
                     <Badge variant="destructive">{pendingDeposits.length}</Badge>
                   )}
@@ -170,6 +171,16 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <PendingDepositsTable />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Historique des transactions</CardTitle>
+                <CardDescription>Toutes les transactions validées ou rejetées</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TransactionHistoryTable />
               </CardContent>
             </Card>
           </TabsContent>
