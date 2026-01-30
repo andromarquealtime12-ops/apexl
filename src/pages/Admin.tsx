@@ -9,9 +9,12 @@ import {
   ShieldCheck, Users, Package, ShoppingCart, 
   Wallet, TrendingUp, Settings 
 } from "lucide-react";
+import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
+import { useAdminPendingDeposits } from "@/hooks/useAdminWallet";
 
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
+  const { data: pendingDeposits } = useAdminPendingDeposits();
 
   if (loading) {
     return (
@@ -157,13 +160,16 @@ const Admin = () => {
           <TabsContent value="wallets">
             <Card>
               <CardHeader>
-                <CardTitle>Gestion des portefeuilles</CardTitle>
-                <CardDescription>Approuvez les dépôts et retraits</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  Demandes de dépôt
+                  {pendingDeposits && pendingDeposits.length > 0 && (
+                    <Badge variant="destructive">{pendingDeposits.length}</Badge>
+                  )}
+                </CardTitle>
+                <CardDescription>Validez les demandes de recharge de portefeuille</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground text-center py-8">
-                  Aucune transaction en attente
-                </p>
+                <PendingDepositsTable />
               </CardContent>
             </Card>
           </TabsContent>
