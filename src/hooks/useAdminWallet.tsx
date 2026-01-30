@@ -19,46 +19,78 @@ export interface PendingDeposit {
   user_name?: string;
 }
 
+export interface TransactionHistory extends PendingDeposit {
+  processed_at?: string;
+}
+
+async function fetchTransactionsWithUsers(
+  statusFilter: string | string[],
+  typeFilter?: string
+) {
+  const query = supabase
+    .from("wallet_transactions")
+    .select(`
+      *,
+      wallets!inner(user_id)
+    `)
+    .order("created_at", { ascending: false });
+
+  if (Array.isArray(statusFilter)) {
+    query.in("status", statusFilter);
+  } else {
+    query.eq("status", statusFilter);
+  }
+
+  if (typeFilter) {
+    query.eq("type", typeFilter);
+  }
+
+  const { data: transactions, error } = await query;
+
+  if (error) throw error;
+
+  // Get user profiles for each transaction
+  const userIds = [...new Set(transactions?.map((t: any) => t.wallets.user_id) || [])];
+  
+  let profiles: any[] = [];
+  if (userIds.length > 0) {
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("user_id, full_name")
+      .in("user_id", userIds);
+    profiles = profileData || [];
+  }
+
+  // Map transactions with user info
+  return (transactions || []).map((tx: any) => {
+    const profile = profiles.find(p => p.user_id === tx.wallets.user_id);
+    return {
+      ...tx,
+      user_name: profile?.full_name || "Utilisateur inconnu",
+      user_id: tx.wallets.user_id
+    };
+  });
+}
+
 export function useAdminPendingDeposits() {
   const { isAdmin } = useAuth();
 
   return useQuery({
     queryKey: ["admin-pending-deposits"],
     queryFn: async () => {
-      // Get all pending deposits with wallet info
-      const { data: transactions, error } = await supabase
-        .from("wallet_transactions")
-        .select(`
-          *,
-          wallets!inner(user_id)
-        `)
-        .eq("type", "deposit")
-        .eq("status", "pending")
-        .order("created_at", { ascending: false });
+      return fetchTransactionsWithUsers("pending", "deposit") as Promise<PendingDeposit[]>;
+    },
+    enabled: isAdmin,
+  });
+}
 
-      if (error) throw error;
+export function useAdminTransactionHistory() {
+  const { isAdmin } = useAuth();
 
-      // Get user profiles for each transaction
-      const userIds = [...new Set(transactions?.map((t: any) => t.wallets.user_id) || [])];
-      
-      let profiles: any[] = [];
-      if (userIds.length > 0) {
-        const { data: profileData } = await supabase
-          .from("profiles")
-          .select("user_id, full_name")
-          .in("user_id", userIds);
-        profiles = profileData || [];
-      }
-
-      // Map transactions with user info
-      return (transactions || []).map((tx: any) => {
-        const profile = profiles.find(p => p.user_id === tx.wallets.user_id);
-        return {
-          ...tx,
-          user_name: profile?.full_name || "Utilisateur inconnu",
-          user_id: tx.wallets.user_id
-        };
-      }) as PendingDeposit[];
+  return useQuery({
+    queryKey: ["admin-transaction-history"],
+    queryFn: async () => {
+      return fetchTransactionsWithUsers(["completed", "failed"]) as Promise<TransactionHistory[]>;
     },
     enabled: isAdmin,
   });
