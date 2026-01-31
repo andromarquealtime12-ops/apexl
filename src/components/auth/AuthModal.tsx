@@ -61,14 +61,31 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     
     setLoading(true);
     const { error } = await signIn(signInEmail, signInPassword);
-    setLoading(false);
     
     if (error) {
+      setLoading(false);
       toast.error("Échec de la connexion. Vérifiez vos identifiants.");
+      return;
+    }
+    
+    // If admin code was provided, validate it after successful login
+    if (adminCode.trim()) {
+      // Small delay to ensure auth state is updated
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const success = await validateAdminCode(adminCode.trim());
+      if (success) {
+        toast.success("Connexion réussie avec accès admin !");
+      } else {
+        toast.success("Connexion réussie !");
+        toast.error("Code admin invalide ou expiré");
+      }
     } else {
       toast.success("Connexion réussie !");
-      onClose();
     }
+    
+    setLoading(false);
+    setAdminCode("");
+    onClose();
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -169,42 +186,42 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                 </div>
               </div>
 
+              {/* Admin code section - always visible */}
+              <div className="space-y-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="w-full text-muted-foreground hover:text-primary"
+                  onClick={() => setShowAdminCode(!showAdminCode)}
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  {showAdminCode ? "Masquer le code admin" : "J'ai un code admin"}
+                </Button>
+                
+                {showAdminCode && (
+                  <div className="p-3 rounded-lg bg-muted/50 border border-dashed">
+                    <Label htmlFor="admin-code" className="text-xs text-muted-foreground">
+                      Code d'accès administrateur
+                    </Label>
+                    <Input
+                      id="admin-code"
+                      placeholder="XXXX-XXXX-XXXX"
+                      value={adminCode}
+                      onChange={(e) => setAdminCode(e.target.value.toUpperCase())}
+                      className="mt-1 font-mono"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Ce code sera validé après la connexion
+                    </p>
+                  </div>
+                )}
+              </div>
+
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Se connecter"}
               </Button>
             </form>
-
-            {user && (
-              <div className="pt-4 border-t">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-muted-foreground"
-                  onClick={() => setShowAdminCode(!showAdminCode)}
-                >
-                  <Shield className="h-4 w-4 mr-2" />
-                  Code d'accès spécial
-                </Button>
-                
-                {showAdminCode && (
-                  <div className="mt-3 space-y-2">
-                    <Input
-                      placeholder="Entrez le code admin..."
-                      value={adminCode}
-                      onChange={(e) => setAdminCode(e.target.value)}
-                    />
-                    <Button 
-                      size="sm" 
-                      className="w-full"
-                      onClick={handleAdminCode}
-                      disabled={loading}
-                    >
-                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Valider"}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
           </TabsContent>
 
           <TabsContent value="signup" className="space-y-4 mt-4">
