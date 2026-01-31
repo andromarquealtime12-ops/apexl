@@ -12,10 +12,20 @@ import {
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import TransactionHistoryTable from "@/components/admin/TransactionHistoryTable";
 import { useAdminPendingDeposits } from "@/hooks/useAdminWallet";
+import { useAdminStats } from "@/hooks/useAdminStats";
 
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const { data: pendingDeposits } = useAdminPendingDeposits();
+  const { data: stats, isLoading: statsLoading } = useAdminStats();
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("es-DO", {
+      style: "decimal",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   if (loading) {
     return (
@@ -55,7 +65,11 @@ const Admin = () => {
               <CardDescription>Utilisateurs</CardDescription>
               <CardTitle className="text-3xl flex items-center gap-2">
                 <Users className="h-6 w-6 text-primary" />
-                0
+                {statsLoading ? (
+                  <Skeleton className="h-8 w-12" />
+                ) : (
+                  stats?.usersCount ?? 0
+                )}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -65,7 +79,11 @@ const Admin = () => {
               <CardDescription>Produits</CardDescription>
               <CardTitle className="text-3xl flex items-center gap-2">
                 <Package className="h-6 w-6 text-primary" />
-                0
+                {statsLoading ? (
+                  <Skeleton className="h-8 w-12" />
+                ) : (
+                  stats?.productsCount ?? 0
+                )}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -75,7 +93,11 @@ const Admin = () => {
               <CardDescription>Commandes</CardDescription>
               <CardTitle className="text-3xl flex items-center gap-2">
                 <ShoppingCart className="h-6 w-6 text-primary" />
-                0
+                {statsLoading ? (
+                  <Skeleton className="h-8 w-12" />
+                ) : (
+                  stats?.ordersCount ?? 0
+                )}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -85,7 +107,11 @@ const Admin = () => {
               <CardDescription>Transactions</CardDescription>
               <CardTitle className="text-3xl flex items-center gap-2">
                 <TrendingUp className="h-6 w-6 text-primary" />
-                RD$ 0
+                {statsLoading ? (
+                  <Skeleton className="h-8 w-20" />
+                ) : (
+                  `RD$ ${formatCurrency(stats?.totalTransactions ?? 0)}`
+                )}
               </CardTitle>
             </CardHeader>
           </Card>
