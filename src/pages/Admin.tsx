@@ -11,9 +11,9 @@ import {
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import TransactionHistoryTable from "@/components/admin/TransactionHistoryTable";
+import AdminCodesManager from "@/components/admin/AdminCodesManager";
 import { useAdminPendingDeposits } from "@/hooks/useAdminWallet";
 import { useAdminStats } from "@/hooks/useAdminStats";
-
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const { data: pendingDeposits } = useAdminPendingDeposits();
@@ -218,9 +218,7 @@ const Admin = () => {
                 <CardDescription>Configurez les options globales</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground text-center py-8">
-                  Les paramètres seront disponibles bientôt
-                </p>
+                <AdminCodesManager />
               </CardContent>
             </Card>
           </TabsContent>
