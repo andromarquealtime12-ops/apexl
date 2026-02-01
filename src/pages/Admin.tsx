@@ -7,12 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
   ShieldCheck, Users, Package, ShoppingCart, 
-  Wallet, TrendingUp, Settings 
+  Wallet, TrendingUp, Settings, UserCog
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import TransactionHistoryTable from "@/components/admin/TransactionHistoryTable";
 import AdminCodesManager from "@/components/admin/AdminCodesManager";
 import AdminUsersManager from "@/components/admin/AdminUsersManager";
+import RoleAssignmentManager from "@/components/admin/RoleAssignmentManager";
 import { useAdminPendingDeposits } from "@/hooks/useAdminWallet";
 import { useAdminStats } from "@/hooks/useAdminStats";
 const Admin = () => {
@@ -143,10 +144,23 @@ const Admin = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="users">
+          <TabsContent value="users" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Gestion des administrateurs</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <UserCog className="h-5 w-5" />
+                  Gestion des rôles
+                </CardTitle>
+                <CardDescription>Assignez des rôles vendeur ou livreur aux utilisateurs</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <RoleAssignmentManager />
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Administrateurs</CardTitle>
                 <CardDescription>Gérez les utilisateurs ayant des droits administrateur</CardDescription>
               </CardHeader>
               <CardContent>

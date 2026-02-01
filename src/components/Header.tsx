@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   ShoppingBag, User, Menu, Wallet, 
-  LogOut, ChevronDown, Settings, Package, Search 
+  LogOut, ChevronDown, Settings, Package, Search,
+  Store, Truck
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -27,7 +28,7 @@ import {
 } from "@/components/ui/sheet";
 
 const Header = () => {
-  const { user, isAdmin, signOut, loading } = useAuth();
+  const { user, isAdmin, isSeller, isDriver, signOut, loading } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"signin" | "signup">("signin");
 
@@ -75,10 +76,10 @@ const Header = () => {
             <Link to="/products" className="text-sm font-medium hover:text-primary transition-smooth">
               Produits
             </Link>
-            <Link to="/become-seller" className="text-sm font-medium hover:text-primary transition-smooth">
+            <Link to="/seller" className="text-sm font-medium hover:text-primary transition-smooth">
               Vendre
             </Link>
-            <Link to="/become-driver" className="text-sm font-medium hover:text-primary transition-smooth">
+            <Link to="/driver" className="text-sm font-medium hover:text-primary transition-smooth">
               Livrer
             </Link>
           </nav>
@@ -102,6 +103,8 @@ const Header = () => {
                   <DropdownMenuLabel>
                     {user.email}
                     {isAdmin && <Badge className="ml-2 text-xs">Admin</Badge>}
+                    {isSeller && <Badge variant="secondary" className="ml-2 text-xs">Vendeur</Badge>}
+                    {isDriver && <Badge variant="outline" className="ml-2 text-xs">Livreur</Badge>}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
@@ -116,6 +119,22 @@ const Header = () => {
                       Mes commandes
                     </Link>
                   </DropdownMenuItem>
+                  {isSeller && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/seller" className="cursor-pointer text-primary">
+                        <Store className="mr-2 h-4 w-4" />
+                        Dashboard vendeur
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {isDriver && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/driver" className="cursor-pointer text-primary">
+                        <Truck className="mr-2 h-4 w-4" />
+                        Dashboard livreur
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild>
                     <Link to="/settings" className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
@@ -170,8 +189,8 @@ const Header = () => {
                   </div>
                   <Link to="/" className="text-lg font-medium py-2 border-b">Accueil</Link>
                   <Link to="/products" className="text-lg font-medium py-2 border-b">Produits</Link>
-                  <Link to="/become-seller" className="text-lg font-medium py-2 border-b">Vendre</Link>
-                  <Link to="/become-driver" className="text-lg font-medium py-2 border-b">Livrer</Link>
+                  <Link to="/seller" className="text-lg font-medium py-2 border-b">Vendre</Link>
+                  <Link to="/driver" className="text-lg font-medium py-2 border-b">Livrer</Link>
                   {!user && (
                     <div className="flex flex-col gap-2 pt-4">
                       <Button onClick={openSignIn}>Connexion</Button>

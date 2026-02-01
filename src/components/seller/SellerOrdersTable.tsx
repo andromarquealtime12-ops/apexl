@@ -1,0 +1,115 @@
+import { useSellerOrders } from "@/hooks/useSellerStats";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Package, Clock, CheckCircle, Truck, XCircle } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
+
+const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
+  pending: { label: "En attente", variant: "secondary", icon: Clock },
+  confirmed: { label: "Confirmée", variant: "default", icon: CheckCircle },
+  ready_for_pickup: { label: "Prête", variant: "outline", icon: Package },
+  in_transit: { label: "En livraison", variant: "default", icon: Truck },
+  delivered: { label: "Livrée", variant: "secondary", icon: CheckCircle },
+  cancelled: { label: "Annulée", variant: "destructive", icon: XCircle },
+};
+
+export default function SellerOrdersTable() {
+  const { data: orders, isLoading } = useSellerOrders();
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("es-DO", {
+      style: "currency",
+      currency: "DOP",
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+    );
+  }
+
+  if (!orders || orders.length === 0) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
+        <p>Aucune commande pour le moment</p>
+        <p className="text-sm">Vos commandes apparaîtront ici</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border rounded-lg overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Commande</TableHead>
+            <TableHead>Produits</TableHead>
+            <TableHead>Total</TableHead>
+            <TableHead>Statut</TableHead>
+            <TableHead>Date</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {orders.map((order) => {
+            const status = statusConfig[order.status || "pending"];
+            const StatusIcon = status.icon;
+            const orderTotal = order.items.reduce((sum: number, item: any) => sum + Number(item.total_price), 0);
+
+            return (
+              <TableRow key={order.id}>
+                <TableCell className="font-mono text-sm">
+                  #{order.id.slice(0, 8)}
+                </TableCell>
+                <TableCell>
+                  <div className="space-y-1">
+                    {order.items.slice(0, 2).map((item: any, idx: number) => (
+                      <p key={idx} className="text-sm">
+                        {item.quantity}x {item.products?.name || "Produit"}
+                      </p>
+                    ))}
+                    {order.items.length > 2 && (
+                      <p className="text-xs text-muted-foreground">
+                        +{order.items.length - 2} autre(s)
+                      </p>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium">
+                  {formatCurrency(orderTotal)}
+                </TableCell>
+                <TableCell>
+                  <Badge variant={status.variant} className="gap-1">
+                    <StatusIcon className="h-3 w-3" />
+                    {status.label}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  {formatDistanceToNow(new Date(order.created_at), { 
+                    addSuffix: true, 
+                    locale: fr 
+                  })}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
