@@ -12,6 +12,7 @@ import {
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import TransactionHistoryTable from "@/components/admin/TransactionHistoryTable";
 import AdminCodesManager from "@/components/admin/AdminCodesManager";
+import AdminUsersManager from "@/components/admin/AdminUsersManager";
 import { useAdminPendingDeposits } from "@/hooks/useAdminWallet";
 import { useAdminStats } from "@/hooks/useAdminStats";
 const Admin = () => {
@@ -145,13 +146,11 @@ const Admin = () => {
           <TabsContent value="users">
             <Card>
               <CardHeader>
-                <CardTitle>Gestion des utilisateurs</CardTitle>
-                <CardDescription>Gérez les utilisateurs, rôles et permissions</CardDescription>
+                <CardTitle>Gestion des administrateurs</CardTitle>
+                <CardDescription>Gérez les utilisateurs ayant des droits administrateur</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground text-center py-8">
-                  Aucun utilisateur inscrit pour le moment
-                </p>
+                <AdminUsersManager />
               </CardContent>
             </Card>
           </TabsContent>
