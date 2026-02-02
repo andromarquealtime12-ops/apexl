@@ -7,19 +7,24 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
   ShieldCheck, Users, Package, ShoppingCart, 
-  Wallet, TrendingUp, Settings, UserCog
+  Wallet, TrendingUp, Settings, UserCog, ClipboardList
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import TransactionHistoryTable from "@/components/admin/TransactionHistoryTable";
 import AdminCodesManager from "@/components/admin/AdminCodesManager";
 import AdminUsersManager from "@/components/admin/AdminUsersManager";
 import RoleAssignmentManager from "@/components/admin/RoleAssignmentManager";
+import { ApplicationsManager } from "@/components/admin/ApplicationsManager";
 import { useAdminPendingDeposits } from "@/hooks/useAdminWallet";
 import { useAdminStats } from "@/hooks/useAdminStats";
+import { usePendingSellerApplications, usePendingDriverApplications } from "@/hooks/useApplications";
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const { data: pendingDeposits } = useAdminPendingDeposits();
   const { data: stats, isLoading: statsLoading } = useAdminStats();
+  const { data: pendingSellerApps } = usePendingSellerApplications();
+  const { data: pendingDriverApps } = usePendingDriverApplications();
+  const pendingApplicationsCount = (pendingSellerApps?.length || 0) + (pendingDriverApps?.length || 0);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-DO", {
@@ -122,9 +127,14 @@ const Admin = () => {
         {/* Admin Tabs */}
         <Tabs defaultValue="users" className="space-y-6">
           <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full">
-            <TabsTrigger value="users">
+            <TabsTrigger value="users" className="relative">
               <Users className="h-4 w-4 mr-2" />
               Utilisateurs
+              {pendingApplicationsCount > 0 && (
+                <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {pendingApplicationsCount}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="products">
               <Package className="h-4 w-4 mr-2" />
@@ -145,6 +155,9 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="users" className="space-y-6">
+            {/* Applications Manager */}
+            <ApplicationsManager />
+            
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

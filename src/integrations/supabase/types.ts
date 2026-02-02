@@ -88,6 +88,63 @@ export type Database = {
           },
         ]
       }
+      driver_applications: {
+        Row: {
+          availability: string | null
+          city: string
+          created_at: string
+          driver_license_number: string
+          id: string
+          license_plate: string
+          phone: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+          vehicle_brand: string
+          vehicle_model: string | null
+          vehicle_type: string
+          vehicle_year: string | null
+        }
+        Insert: {
+          availability?: string | null
+          city: string
+          created_at?: string
+          driver_license_number: string
+          id?: string
+          license_plate: string
+          phone: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          vehicle_brand: string
+          vehicle_model?: string | null
+          vehicle_type: string
+          vehicle_year?: string | null
+        }
+        Update: {
+          availability?: string | null
+          city?: string
+          created_at?: string
+          driver_license_number?: string
+          id?: string
+          license_plate?: string
+          phone?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          vehicle_brand?: string
+          vehicle_model?: string | null
+          vehicle_type?: string
+          vehicle_year?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -285,6 +342,54 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_applications: {
+        Row: {
+          business_type: string | null
+          created_at: string
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          shop_address: string
+          shop_city: string
+          shop_description: string | null
+          shop_name: string
+          shop_phone: string
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_type?: string | null
+          created_at?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          shop_address: string
+          shop_city: string
+          shop_description?: string | null
+          shop_name: string
+          shop_phone: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_type?: string | null
+          created_at?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          shop_address?: string
+          shop_city?: string
+          shop_description?: string | null
+          shop_name?: string
+          shop_phone?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -400,6 +505,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_driver_application: {
+        Args: { application_id: string }
+        Returns: boolean
+      }
+      approve_seller_application: {
+        Args: { application_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

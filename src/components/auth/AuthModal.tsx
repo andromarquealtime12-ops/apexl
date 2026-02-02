@@ -12,8 +12,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff, Shield } from "lucide-react";
+import { Loader2, Eye, EyeOff, Shield, Store, Truck } from "lucide-react";
 import { z } from "zod";
+import { SellerApplicationForm } from "./SellerApplicationForm";
+import { DriverApplicationForm } from "./DriverApplicationForm";
+import { EmailVerification } from "./EmailVerification";
 
 const signUpSchema = z.object({
   fullName: z.string().min(2, "Le nom doit avoir au moins 2 caractères").max(100),
@@ -38,6 +41,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
   const [showPassword, setShowPassword] = useState(false);
   const [showAdminCode, setShowAdminCode] = useState(false);
   const [adminCode, setAdminCode] = useState("");
+  
+  // Application forms
+  const [showSellerForm, setShowSellerForm] = useState(false);
+  const [showDriverForm, setShowDriverForm] = useState(false);
+  
+  // Email verification
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState("");
   
   // Form states
   const [signInEmail, setSignInEmail] = useState("");
@@ -109,7 +120,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     if (error) {
       toast.error("Échec de l'inscription. Essayez avec un autre email.");
     } else {
-      toast.success("Compte créé avec succès !");
+      toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
+      toast.info("Un lien de confirmation a été envoyé à votre adresse email.");
       onClose();
     }
   };
@@ -276,10 +288,72 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
               <Button type="submit" variant="hero" className="w-full" disabled={loading}>
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Créer mon compte"}
               </Button>
+              
+              {/* Seller/Driver Application Buttons */}
+              <div className="pt-4 border-t">
+                <p className="text-sm text-muted-foreground text-center mb-3">
+                  Vous souhaitez vendre ou livrer ?
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (!user) {
+                        toast.error("Créez d'abord un compte pour postuler");
+                        return;
+                      }
+                      setShowSellerForm(true);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <Store className="h-4 w-4" />
+                    Vendeur
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (!user) {
+                        toast.error("Créez d'abord un compte pour postuler");
+                        return;
+                      }
+                      setShowDriverForm(true);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <Truck className="h-4 w-4" />
+                    Livreur
+                  </Button>
+                </div>
+              </div>
             </form>
           </TabsContent>
         </Tabs>
       </DialogContent>
+      
+      {/* Seller Application Form */}
+      <SellerApplicationForm 
+        isOpen={showSellerForm} 
+        onClose={() => setShowSellerForm(false)} 
+      />
+      
+      {/* Driver Application Form */}
+      <DriverApplicationForm 
+        isOpen={showDriverForm} 
+        onClose={() => setShowDriverForm(false)} 
+      />
+      
+      {/* Email Verification */}
+      <EmailVerification
+        isOpen={showEmailVerification}
+        onClose={() => setShowEmailVerification(false)}
+        email={verificationEmail}
+        onVerified={() => {
+          toast.success("Email vérifié !");
+          onClose();
+        }}
+      />
     </Dialog>
   );
 }
