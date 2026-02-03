@@ -88,6 +88,50 @@ export type Database = {
           },
         ]
       }
+      delivery_verification: {
+        Row: {
+          created_at: string
+          delivery_code: string | null
+          delivery_verified_at: string | null
+          id: string
+          order_id: string
+          pickup_code: string
+          pickup_verified_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_code?: string | null
+          delivery_verified_at?: string | null
+          id?: string
+          order_id: string
+          pickup_code: string
+          pickup_verified_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          delivery_code?: string | null
+          delivery_verified_at?: string | null
+          id?: string
+          order_id?: string
+          pickup_code?: string
+          pickup_verified_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_verification_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       driver_applications: {
         Row: {
           availability: string | null
@@ -207,6 +251,7 @@ export type Database = {
           payment_method:
             | Database["public"]["Enums"]["payment_method_type"]
             | null
+          payment_status: string | null
           status: string | null
           total_amount: number
           updated_at: string
@@ -224,6 +269,7 @@ export type Database = {
           payment_method?:
             | Database["public"]["Enums"]["payment_method_type"]
             | null
+          payment_status?: string | null
           status?: string | null
           total_amount: number
           updated_at?: string
@@ -241,6 +287,7 @@ export type Database = {
           payment_method?:
             | Database["public"]["Enums"]["payment_method_type"]
             | null
+          payment_status?: string | null
           status?: string | null
           total_amount?: number
           updated_at?: string
@@ -310,11 +357,15 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          email_verified: boolean | null
           full_name: string
           id: string
           phone: string | null
+          phone_verified: boolean | null
           updated_at: string
           user_id: string
+          verification_code: string | null
+          verification_code_expires_at: string | null
         }
         Insert: {
           address?: string | null
@@ -322,11 +373,15 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          email_verified?: boolean | null
           full_name: string
           id?: string
           phone?: string | null
+          phone_verified?: boolean | null
           updated_at?: string
           user_id: string
+          verification_code?: string | null
+          verification_code_expires_at?: string | null
         }
         Update: {
           address?: string | null
@@ -334,11 +389,15 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          email_verified?: boolean | null
           full_name?: string
           id?: string
           phone?: string | null
+          phone_verified?: boolean | null
           updated_at?: string
           user_id?: string
+          verification_code?: string | null
+          verification_code_expires_at?: string | null
         }
         Relationships: []
       }
@@ -513,6 +572,11 @@ export type Database = {
         Args: { application_id: string }
         Returns: boolean
       }
+      create_delivery_verification: {
+        Args: { p_order_id: string }
+        Returns: Json
+      }
+      generate_pin_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -523,6 +587,14 @@ export type Database = {
       validate_admin_code: {
         Args: { code_input: string; user_id_input: string }
         Returns: boolean
+      }
+      verify_delivery_code: {
+        Args: { p_code: string; p_order_id: string }
+        Returns: Json
+      }
+      verify_pickup_code: {
+        Args: { p_code: string; p_order_id: string }
+        Returns: Json
       }
     }
     Enums: {
