@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { OrderReadyButton } from "./OrderReadyButton";
 import { Package, Clock, CheckCircle, Truck, XCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -16,7 +17,10 @@ import { fr } from "date-fns/locale";
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
   pending: { label: "En attente", variant: "secondary", icon: Clock },
   confirmed: { label: "Confirmée", variant: "default", icon: CheckCircle },
+  preparing: { label: "En préparation", variant: "outline", icon: Package },
+  ready: { label: "Prête", variant: "outline", icon: Package },
   ready_for_pickup: { label: "Prête", variant: "outline", icon: Package },
+  picked_up: { label: "Récupérée", variant: "default", icon: Truck },
   in_transit: { label: "En livraison", variant: "default", icon: Truck },
   delivered: { label: "Livrée", variant: "secondary", icon: CheckCircle },
   cancelled: { label: "Annulée", variant: "destructive", icon: XCircle },
@@ -63,6 +67,7 @@ export default function SellerOrdersTable() {
             <TableHead>Total</TableHead>
             <TableHead>Statut</TableHead>
             <TableHead>Date</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -104,6 +109,9 @@ export default function SellerOrdersTable() {
                     addSuffix: true, 
                     locale: fr 
                   })}
+                </TableCell>
+                <TableCell className="text-right">
+                  <OrderReadyButton orderId={order.id} currentStatus={order.status || "pending"} />
                 </TableCell>
               </TableRow>
             );
