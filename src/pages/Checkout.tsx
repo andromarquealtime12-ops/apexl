@@ -6,11 +6,13 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/hooks/useWallet";
 import { useCheckout } from "@/hooks/useCheckout";
+import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -18,9 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
-import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle } from "lucide-react";
+import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, CreditCard, Mail } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const CITIES = [
   { value: "Santo Domingo", label: "Santo Domingo", country: "DO" },
@@ -33,9 +38,11 @@ const CITIES = [
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const { items, getSubtotal, getDeliveryFee, getTotal } = useCart();
   const { data: wallet, isLoading: walletLoading } = useWallet();
+  const { data: profile } = useProfile();
   const checkout = useCheckout();
 
   const [deliveryAddress, setDeliveryAddress] = useState("");
@@ -43,6 +50,10 @@ const Checkout = () => {
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [showStripePayment, setShowStripePayment] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState(0);
+
+  const isEmailVerified = profile?.email_verified ?? false;
 
   const subtotal = getSubtotal();
   const deliveryFee = getDeliveryFee(deliveryCity);
@@ -259,7 +270,20 @@ const Checkout = () => {
                     Paiement
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-4">
+                  {/* Email verification warning */}
+                  {!isEmailVerified && (
+                    <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
+                      <Mail className="h-4 w-4 text-amber-600" />
+                      <AlertDescription className="text-amber-800 dark:text-amber-200">
+                        Veuillez vérifier votre email avant de passer commande.
+                        <Button variant="link" className="h-auto p-0 pl-1 text-amber-600" onClick={() => navigate("/profile")}>
+                          Vérifier maintenant
+                        </Button>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
                   <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
                     <div className="flex items-center gap-3">
                       <div className="bg-primary/10 p-2 rounded-full">
@@ -275,21 +299,53 @@ const Checkout = () => {
                     {hasEnoughBalance ? (
                       <CheckCircle className="h-5 w-5 text-success" />
                     ) : (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate("/wallet")}
-                      >
-                        Recharger
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate("/wallet")}
+                        >
+                          Recharger
+                        </Button>
+                      </div>
                     )}
                   </div>
+
                   {!hasEnoughBalance && (
-                    <p className="text-destructive text-sm mt-2 flex items-center gap-1">
-                      <AlertCircle className="h-4 w-4" />
-                      Solde insuffisant. Veuillez recharger votre portefeuille.
-                    </p>
+                    <div className="space-y-3">
+                      <p className="text-destructive text-sm flex items-center gap-1">
+                        <AlertCircle className="h-4 w-4" />
+                        Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants)
+                      </p>
+
+                      {/* Demo Stripe payment option */}
+                      <div className="border rounded-lg p-4 bg-muted/20">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="bg-primary/10 p-2 rounded-full">
+                            <CreditCard className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">Payer par carte (Démo)</p>
+                            <p className="text-xs text-muted-foreground">
+                              Ajoutez le montant manquant à votre portefeuille
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full gap-2"
+                          onClick={() => {
+                            setTopUpAmount(total - currentBalance);
+                            setShowStripePayment(true);
+                          }}
+                        >
+                          <CreditCard className="h-4 w-4" />
+                          Ajouter {CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} par carte
+                        </Button>
+                      </div>
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -343,7 +399,7 @@ const Checkout = () => {
                     variant="hero"
                     className="w-full"
                     size="lg"
-                    disabled={!hasEnoughBalance || checkout.isPending || !deliveryAddress || !deliveryCity}
+                    disabled={!isEmailVerified || !hasEnoughBalance || checkout.isPending || !deliveryAddress || !deliveryCity}
                   >
                     {checkout.isPending ? "Traitement..." : "Confirmer la commande"}
                   </Button>
@@ -354,6 +410,32 @@ const Checkout = () => {
         </form>
       </main>
       <Footer />
+
+      {/* Demo Stripe Payment Modal */}
+      <DemoStripePayment
+        isOpen={showStripePayment}
+        onClose={() => setShowStripePayment(false)}
+        amount={topUpAmount}
+        currency={currency}
+        onSuccess={async () => {
+          // Simulate adding money to wallet (demo mode)
+          if (wallet) {
+            const { error } = await supabase
+              .from("wallets")
+              .update({ [balanceField]: currentBalance + topUpAmount })
+              .eq("id", wallet.id);
+
+            if (!error) {
+              queryClient.invalidateQueries({ queryKey: ["wallet"] });
+              toast({
+                title: "Portefeuille rechargé !",
+                description: `${CURRENCY_SYMBOLS[currency]} ${topUpAmount.toLocaleString()} ajoutés à votre solde`,
+              });
+            }
+          }
+          setShowStripePayment(false);
+        }}
+      />
     </div>
   );
 };
