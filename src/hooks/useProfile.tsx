@@ -15,6 +15,8 @@ interface Profile {
   phone_verified: boolean;
   verification_code: string | null;
   verification_code_expires_at: string | null;
+  latitude: number | null;
+  longitude: number | null;
   created_at: string;
   updated_at: string;
 }
