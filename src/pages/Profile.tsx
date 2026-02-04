@@ -6,9 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { User, Store, Truck, CheckCircle, Clock, XCircle } from "lucide-react";
+import { User, Store, Truck, CheckCircle, Clock, XCircle, Shield } from "lucide-react";
 import { SellerApplicationForm } from "@/components/auth/SellerApplicationForm";
 import { DriverApplicationForm } from "@/components/auth/DriverApplicationForm";
+import { EmailVerificationCard } from "@/components/profile/EmailVerificationCard";
+import { LocationCard } from "@/components/profile/LocationCard";
 import { useMySellerApplication, useMyDriverApplication } from "@/hooks/useApplications";
 
 const STATUS_CONFIG = {
@@ -18,7 +20,7 @@ const STATUS_CONFIG = {
 };
 
 const Profile = () => {
-  const { user, loading, isSeller, isDriver } = useAuth();
+  const { user, loading, isSeller, isDriver, isAdmin } = useAuth();
   const [showSellerForm, setShowSellerForm] = useState(false);
   const [showDriverForm, setShowDriverForm] = useState(false);
   
@@ -53,6 +55,30 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Email Verification & Location */}
+        <div className="grid gap-6 md:grid-cols-2 mb-6">
+          <EmailVerificationCard />
+          <LocationCard />
+        </div>
+
+        {/* Roles Badge */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Mes rôles</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <Badge>Acheteur</Badge>
+            {isSeller && <Badge variant="secondary">Vendeur</Badge>}
+            {isDriver && <Badge variant="secondary">Livreur</Badge>}
+            {isAdmin && (
+              <Badge className="bg-primary">
+                <Shield className="h-3 w-3 mr-1" />
+                Admin
+              </Badge>
+            )}
+          </CardContent>
+        </Card>
+
         <div className="grid gap-6 md:grid-cols-2">
           {/* Seller Application Card */}
           <Card>
@@ -69,11 +95,11 @@ const Profile = () => {
               {loadingSeller ? (
                 <Skeleton className="h-20 w-full" />
               ) : isSeller ? (
-                <div className="flex items-center gap-2 p-4 rounded-lg bg-green-50 border border-green-200">
+                <div className="flex items-center gap-2 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                   <CheckCircle className="h-5 w-5 text-green-500" />
                   <div>
-                    <p className="font-medium text-green-700">Vous êtes vendeur !</p>
-                    <p className="text-sm text-green-600">Accédez à votre dashboard vendeur</p>
+                    <p className="font-medium text-green-700 dark:text-green-400">Vous êtes vendeur !</p>
+                    <p className="text-sm text-green-600 dark:text-green-500">Accédez à votre dashboard vendeur</p>
                   </div>
                 </div>
               ) : sellerApplication ? (
@@ -128,11 +154,11 @@ const Profile = () => {
               {loadingDriver ? (
                 <Skeleton className="h-20 w-full" />
               ) : isDriver ? (
-                <div className="flex items-center gap-2 p-4 rounded-lg bg-green-50 border border-green-200">
+                <div className="flex items-center gap-2 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                   <CheckCircle className="h-5 w-5 text-green-500" />
                   <div>
-                    <p className="font-medium text-green-700">Vous êtes livreur !</p>
-                    <p className="text-sm text-green-600">Accédez à votre dashboard livreur</p>
+                    <p className="font-medium text-green-700 dark:text-green-400">Vous êtes livreur !</p>
+                    <p className="text-sm text-green-600 dark:text-green-500">Accédez à votre dashboard livreur</p>
                   </div>
                 </div>
               ) : driverApplication ? (
@@ -172,18 +198,6 @@ const Profile = () => {
             </CardContent>
           </Card>
         </div>
-
-        {/* Roles Badge */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Mes rôles</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            <Badge>Acheteur</Badge>
-            {isSeller && <Badge variant="secondary">Vendeur</Badge>}
-            {isDriver && <Badge variant="secondary">Livreur</Badge>}
-          </CardContent>
-        </Card>
       </div>
 
       <SellerApplicationForm 

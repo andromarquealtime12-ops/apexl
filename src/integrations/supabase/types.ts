@@ -139,7 +139,11 @@ export type Database = {
           created_at: string
           driver_license_number: string
           id: string
+          is_online: boolean | null
+          last_location_update: string | null
+          latitude: number | null
           license_plate: string
+          longitude: number | null
           phone: string
           reviewed_at: string | null
           reviewed_by: string | null
@@ -157,7 +161,11 @@ export type Database = {
           created_at?: string
           driver_license_number: string
           id?: string
+          is_online?: boolean | null
+          last_location_update?: string | null
+          latitude?: number | null
           license_plate: string
+          longitude?: number | null
           phone: string
           reviewed_at?: string | null
           reviewed_by?: string | null
@@ -175,7 +183,11 @@ export type Database = {
           created_at?: string
           driver_license_number?: string
           id?: string
+          is_online?: boolean | null
+          last_location_update?: string | null
+          latitude?: number | null
           license_plate?: string
+          longitude?: number | null
           phone?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
@@ -186,6 +198,33 @@ export type Database = {
           vehicle_model?: string | null
           vehicle_type?: string
           vehicle_year?: string | null
+        }
+        Relationships: []
+      }
+      driver_locations: {
+        Row: {
+          driver_id: string
+          id: string
+          is_online: boolean | null
+          latitude: number
+          longitude: number
+          updated_at: string
+        }
+        Insert: {
+          driver_id: string
+          id?: string
+          is_online?: boolean | null
+          latitude: number
+          longitude: number
+          updated_at?: string
+        }
+        Update: {
+          driver_id?: string
+          id?: string
+          is_online?: boolean | null
+          latitude?: number
+          longitude?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -240,6 +279,8 @@ export type Database = {
       orders: {
         Row: {
           buyer_id: string | null
+          buyer_latitude: number | null
+          buyer_longitude: number | null
           created_at: string
           currency: string | null
           delivery_address: string | null
@@ -258,6 +299,8 @@ export type Database = {
         }
         Insert: {
           buyer_id?: string | null
+          buyer_latitude?: number | null
+          buyer_longitude?: number | null
           created_at?: string
           currency?: string | null
           delivery_address?: string | null
@@ -276,6 +319,8 @@ export type Database = {
         }
         Update: {
           buyer_id?: string | null
+          buyer_latitude?: number | null
+          buyer_longitude?: number | null
           created_at?: string
           currency?: string | null
           delivery_address?: string | null
@@ -360,6 +405,8 @@ export type Database = {
           email_verified: boolean | null
           full_name: string
           id: string
+          latitude: number | null
+          longitude: number | null
           phone: string | null
           phone_verified: boolean | null
           updated_at: string
@@ -376,6 +423,8 @@ export type Database = {
           email_verified?: boolean | null
           full_name: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           phone?: string | null
           phone_verified?: boolean | null
           updated_at?: string
@@ -392,6 +441,8 @@ export type Database = {
           email_verified?: boolean | null
           full_name?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           phone?: string | null
           phone_verified?: boolean | null
           updated_at?: string
@@ -406,6 +457,8 @@ export type Database = {
           business_type: string | null
           created_at: string
           id: string
+          latitude: number | null
+          longitude: number | null
           reviewed_at: string | null
           reviewed_by: string | null
           shop_address: string
@@ -421,6 +474,8 @@ export type Database = {
           business_type?: string | null
           created_at?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           shop_address: string
@@ -436,6 +491,8 @@ export type Database = {
           business_type?: string | null
           created_at?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           shop_address?: string
@@ -572,11 +629,25 @@ export type Database = {
         Args: { application_id: string }
         Returns: boolean
       }
+      calculate_distance: {
+        Args: { lat1: number; lat2: number; lon1: number; lon2: number }
+        Returns: number
+      }
       create_delivery_verification: {
         Args: { p_order_id: string }
         Returns: Json
       }
       generate_pin_code: { Args: never; Returns: string }
+      get_nearby_drivers: {
+        Args: { p_latitude: number; p_longitude: number; p_radius_km?: number }
+        Returns: {
+          distance_km: number
+          driver_id: string
+          latitude: number
+          longitude: number
+          updated_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

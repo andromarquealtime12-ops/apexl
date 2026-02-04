@@ -5,10 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Truck, Package, MapPin, Clock, DollarSign } from "lucide-react";
+import { Truck, Package, MapPin, DollarSign, Navigation } from "lucide-react";
 import DriverStatsCards from "@/components/driver/DriverStatsCards";
 import AvailableDeliveriesTable from "@/components/driver/AvailableDeliveriesTable";
 import MyDeliveriesTable from "@/components/driver/MyDeliveriesTable";
+import { DriverLocationTracker } from "@/components/driver/DriverLocationTracker";
 import { useDriverStats, useAvailableDeliveries } from "@/hooks/useDriverStats";
 
 const DriverDashboard = () => {
@@ -72,9 +73,14 @@ const DriverDashboard = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="mb-8">
-          <DriverStatsCards stats={stats} isLoading={statsLoading} />
+        {/* Location Tracker + Stats Cards */}
+        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-1">
+            <DriverLocationTracker />
+          </div>
+          <div className="lg:col-span-2">
+            <DriverStatsCards stats={stats} isLoading={statsLoading} />
+          </div>
         </div>
 
         {/* Main Tabs */}

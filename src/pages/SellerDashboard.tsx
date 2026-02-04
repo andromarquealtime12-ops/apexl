@@ -5,10 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Store, Package, ShoppingCart, TrendingUp, BarChart3 } from "lucide-react";
+import { Store, Package, ShoppingCart, TrendingUp, BarChart3, Truck } from "lucide-react";
 import SellerStatsCards from "@/components/seller/SellerStatsCards";
 import ProductsManager from "@/components/seller/ProductsManager";
 import SellerOrdersTable from "@/components/seller/SellerOrdersTable";
+import { NearbyDriversCard } from "@/components/seller/NearbyDriversCard";
 import { useSellerStats } from "@/hooks/useSellerStats";
 
 const SellerDashboard = () => {
@@ -78,7 +79,7 @@ const SellerDashboard = () => {
 
         {/* Main Tabs */}
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid grid-cols-3 w-full max-w-md">
+          <TabsList className="grid grid-cols-4 w-full max-w-lg">
             <TabsTrigger value="products" className="gap-2">
               <Package className="h-4 w-4" />
               <span className="hidden sm:inline">Produits</span>
@@ -87,9 +88,13 @@ const SellerDashboard = () => {
               <ShoppingCart className="h-4 w-4" />
               <span className="hidden sm:inline">Commandes</span>
             </TabsTrigger>
+            <TabsTrigger value="drivers" className="gap-2">
+              <Truck className="h-4 w-4" />
+              <span className="hidden sm:inline">Livreurs</span>
+            </TabsTrigger>
             <TabsTrigger value="analytics" className="gap-2">
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
+              <span className="hidden sm:inline">Stats</span>
             </TabsTrigger>
           </TabsList>
 
@@ -125,6 +130,45 @@ const SellerDashboard = () => {
                 <SellerOrdersTable />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="drivers">
+            <div className="grid md:grid-cols-2 gap-6">
+              <NearbyDriversCard />
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Truck className="h-5 w-5" />
+                    Comment ça marche
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">1</div>
+                      <div>
+                        <p className="font-medium">Marquez la commande prête</p>
+                        <p className="text-sm text-muted-foreground">Un code PIN sera généré automatiquement</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">2</div>
+                      <div>
+                        <p className="font-medium">Choisissez un livreur</p>
+                        <p className="text-sm text-muted-foreground">Sélectionnez parmi les livreurs à proximité</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">3</div>
+                      <div>
+                        <p className="font-medium">Donnez le code au livreur</p>
+                        <p className="text-sm text-muted-foreground">Il confirmera le retrait avec ce code</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="analytics">
