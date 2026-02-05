@@ -621,6 +621,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_deposit: {
+        Args: { admin_id_input: string; transaction_id_input: string }
+        Returns: Json
+      }
       approve_driver_application: {
         Args: { application_id: string }
         Returns: boolean
@@ -635,6 +639,10 @@ export type Database = {
       }
       create_delivery_verification: {
         Args: { p_order_id: string }
+        Returns: Json
+      }
+      demo_wallet_topup: {
+        Args: { p_amount: number; p_currency: string }
         Returns: Json
       }
       generate_pin_code: { Args: never; Returns: string }
@@ -654,6 +662,27 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      process_checkout: {
+        Args: {
+          p_buyer_id: string
+          p_currency: string
+          p_delivery_address: string
+          p_delivery_city: string
+          p_delivery_fee: number
+          p_delivery_notes: string
+          p_order_items: Json
+          p_total_amount: number
+        }
+        Returns: Json
+      }
+      reject_deposit: {
+        Args: {
+          admin_id_input: string
+          reason_input?: string
+          transaction_id_input: string
+        }
+        Returns: Json
       }
       validate_admin_code: {
         Args: { code_input: string; user_id_input: string }
