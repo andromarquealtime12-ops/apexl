@@ -44,6 +44,42 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_audit_logs: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          new_value: Json | null
+          old_value: Json | null
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          new_value?: Json | null
+          old_value?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          new_value?: Json | null
+          old_value?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -228,6 +264,81 @@ export type Database = {
         }
         Relationships: []
       }
+      identity_verifications: {
+        Row: {
+          admin_comment: string | null
+          created_at: string | null
+          id: string
+          id_document_back: string
+          id_document_front: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          selfie_photo: string
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_comment?: string | null
+          created_at?: string | null
+          id?: string
+          id_document_back: string
+          id_document_front: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          selfie_photo: string
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_comment?: string | null
+          created_at?: string | null
+          id?: string
+          id_document_back?: string
+          id_document_front?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          selfie_photo?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -339,6 +450,33 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_settings: {
+        Row: {
+          description: string | null
+          id: string
+          key: string
+          updated_at: string | null
+          updated_by: string | null
+          value: string
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value: string
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category_id: string | null
@@ -397,60 +535,239 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: string | null
           address: string | null
+          admin_notes: string | null
           avatar_url: string | null
+          backup_email: string | null
+          backup_phone: string | null
           city: string | null
           country: string | null
           created_at: string
           email_verified: boolean | null
           full_name: string
           id: string
+          id_document_back: string | null
+          id_document_front: string | null
+          identity_status: string | null
+          last_login_at: string | null
+          last_login_device: string | null
+          last_login_ip: string | null
           latitude: number | null
           longitude: number | null
           phone: string | null
           phone_verified: boolean | null
+          referral_code: string | null
+          referred_by: string | null
+          selfie_photo: string | null
+          suspension_reason: string | null
+          suspension_until: string | null
+          total_earned: number | null
+          total_spent: number | null
+          trust_score: number | null
+          two_factor_enabled: boolean | null
+          two_factor_secret: string | null
           updated_at: string
           user_id: string
           verification_code: string | null
           verification_code_expires_at: string | null
         }
         Insert: {
+          account_status?: string | null
           address?: string | null
+          admin_notes?: string | null
           avatar_url?: string | null
+          backup_email?: string | null
+          backup_phone?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
           email_verified?: boolean | null
           full_name: string
           id?: string
+          id_document_back?: string | null
+          id_document_front?: string | null
+          identity_status?: string | null
+          last_login_at?: string | null
+          last_login_device?: string | null
+          last_login_ip?: string | null
           latitude?: number | null
           longitude?: number | null
           phone?: string | null
           phone_verified?: boolean | null
+          referral_code?: string | null
+          referred_by?: string | null
+          selfie_photo?: string | null
+          suspension_reason?: string | null
+          suspension_until?: string | null
+          total_earned?: number | null
+          total_spent?: number | null
+          trust_score?: number | null
+          two_factor_enabled?: boolean | null
+          two_factor_secret?: string | null
           updated_at?: string
           user_id: string
           verification_code?: string | null
           verification_code_expires_at?: string | null
         }
         Update: {
+          account_status?: string | null
           address?: string | null
+          admin_notes?: string | null
           avatar_url?: string | null
+          backup_email?: string | null
+          backup_phone?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
           email_verified?: boolean | null
           full_name?: string
           id?: string
+          id_document_back?: string | null
+          id_document_front?: string | null
+          identity_status?: string | null
+          last_login_at?: string | null
+          last_login_device?: string | null
+          last_login_ip?: string | null
           latitude?: number | null
           longitude?: number | null
           phone?: string | null
           phone_verified?: boolean | null
+          referral_code?: string | null
+          referred_by?: string | null
+          selfie_photo?: string | null
+          suspension_reason?: string | null
+          suspension_until?: string | null
+          total_earned?: number | null
+          total_spent?: number | null
+          trust_score?: number | null
+          two_factor_enabled?: boolean | null
+          two_factor_secret?: string | null
           updated_at?: string
           user_id?: string
           verification_code?: string | null
           verification_code_expires_at?: string | null
         }
         Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string | null
+          id: string
+          orders_count: number | null
+          referred_id: string
+          referrer_id: string
+          reward_amount: number | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          orders_count?: number | null
+          referred_id: string
+          referrer_id: string
+          reward_amount?: number | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          orders_count?: number | null
+          referred_id?: string
+          referrer_id?: string
+          reward_amount?: number | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          created_at: string | null
+          description: string
+          id: string
+          reported_order_id: string | null
+          reported_product_id: string | null
+          reported_user_id: string | null
+          reporter_id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          category: string
+          created_at?: string | null
+          description: string
+          id?: string
+          reported_order_id?: string | null
+          reported_product_id?: string | null
+          reported_user_id?: string | null
+          reporter_id: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          reported_order_id?: string | null
+          reported_product_id?: string | null
+          reported_user_id?: string | null
+          reporter_id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          id: string
+          is_visible: boolean | null
+          order_id: string | null
+          rating: number
+          review_type: string | null
+          reviewed_user_id: string
+          reviewer_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          order_id?: string | null
+          rating: number
+          review_type?: string | null
+          reviewed_user_id: string
+          reviewer_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          order_id?: string | null
+          rating?: number
+          review_type?: string | null
+          reviewed_user_id?: string
+          reviewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seller_applications: {
         Row: {
@@ -502,6 +819,77 @@ export type Database = {
           shop_phone?: string
           status?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_admin_reply: boolean | null
+          message: string
+          sender_id: string
+          ticket_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_admin_reply?: boolean | null
+          message: string
+          sender_id: string
+          ticket_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_admin_reply?: boolean | null
+          message?: string
+          sender_id?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          category: string | null
+          created_at: string | null
+          id: string
+          priority: string | null
+          status: string | null
+          subject: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          priority?: string | null
+          status?: string | null
+          subject: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          priority?: string | null
+          status?: string | null
+          subject?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -621,6 +1009,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_user: { Args: { p_user_id: string }; Returns: Json }
       approve_deposit: {
         Args: { admin_id_input: string; transaction_id_input: string }
         Returns: Json
@@ -628,6 +1017,10 @@ export type Database = {
       approve_driver_application: {
         Args: { application_id: string }
         Returns: boolean
+      }
+      approve_identity_verification: {
+        Args: { p_comment?: string; p_verification_id: string }
+        Returns: Json
       }
       approve_seller_application: {
         Args: { application_id: string }
@@ -646,6 +1039,7 @@ export type Database = {
         Returns: Json
       }
       generate_pin_code: { Args: never; Returns: string }
+      generate_referral_code: { Args: never; Returns: string }
       get_nearby_drivers: {
         Args: { p_latitude: number; p_longitude: number; p_radius_km?: number }
         Returns: {
@@ -682,6 +1076,14 @@ export type Database = {
           reason_input?: string
           transaction_id_input: string
         }
+        Returns: Json
+      }
+      reject_identity_verification: {
+        Args: { p_reason: string; p_verification_id: string }
+        Returns: Json
+      }
+      suspend_user: {
+        Args: { p_duration_days?: number; p_reason: string; p_user_id: string }
         Returns: Json
       }
       validate_admin_code: {
