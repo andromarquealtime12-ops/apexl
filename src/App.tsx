@@ -16,6 +16,7 @@ import DriverDashboard from "./pages/DriverDashboard";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import SupportChatWidget from "./components/support/SupportChatWidget";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <SupportChatWidget />
           </BrowserRouter>
         </TooltipProvider>
       </CartProvider>

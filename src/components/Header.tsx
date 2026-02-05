@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { CartSheet } from "@/components/cart/CartSheet";
 import { Input } from "@/components/ui/input";
+import NotificationsDropdown from "@/components/notifications/NotificationsDropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -85,6 +86,9 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* Notifications */}
+            {user && <NotificationsDropdown />}
+
             {/* Cart */}
             <CartSheet />
 

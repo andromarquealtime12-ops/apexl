@@ -7,32 +7,37 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
   ShieldCheck, Users, Package, ShoppingCart, 
-  Wallet, TrendingUp, Settings, UserCog, ClipboardList
+  Wallet, Settings, UserCog, Shield, 
+  MessageSquare, Flag, History, Sliders
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import TransactionHistoryTable from "@/components/admin/TransactionHistoryTable";
 import AdminCodesManager from "@/components/admin/AdminCodesManager";
-import AdminUsersManager from "@/components/admin/AdminUsersManager";
-import RoleAssignmentManager from "@/components/admin/RoleAssignmentManager";
 import { ApplicationsManager } from "@/components/admin/ApplicationsManager";
 import { useAdminPendingDeposits } from "@/hooks/useAdminWallet";
-import { useAdminStats } from "@/hooks/useAdminStats";
 import { usePendingSellerApplications, usePendingDriverApplications } from "@/hooks/useApplications";
+import AdvancedStatsCards from "@/components/admin/AdvancedStatsCards";
+import UsersManagementTable from "@/components/admin/UsersManagementTable";
+import IdentityVerificationsManager from "@/components/admin/IdentityVerificationsManager";
+import SupportTicketsManager from "@/components/admin/SupportTicketsManager";
+import ReportsManager from "@/components/admin/ReportsManager";
+import AuditLogsViewer from "@/components/admin/AuditLogsViewer";
+import PlatformSettingsManager from "@/components/admin/PlatformSettingsManager";
+import { usePendingIdentityVerifications, useSupportTickets, useReports } from "@/hooks/useAdminAdvanced";
+
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const { data: pendingDeposits } = useAdminPendingDeposits();
-  const { data: stats, isLoading: statsLoading } = useAdminStats();
   const { data: pendingSellerApps } = usePendingSellerApplications();
   const { data: pendingDriverApps } = usePendingDriverApplications();
-  const pendingApplicationsCount = (pendingSellerApps?.length || 0) + (pendingDriverApps?.length || 0);
+  const { data: pendingVerifications } = usePendingIdentityVerifications();
+  const { data: openTickets } = useSupportTickets("open");
+  const { data: pendingReports } = useReports("pending");
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-DO", {
-      style: "decimal",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+  const pendingApplicationsCount = (pendingSellerApps?.length || 0) + (pendingDriverApps?.length || 0);
+  const pendingVerificationsCount = pendingVerifications?.length || 0;
+  const openTicketsCount = openTickets?.length || 0;
+  const pendingReportsCount = pendingReports?.length || 0;
 
   if (loading) {
     return (
@@ -58,99 +63,68 @@ const Admin = () => {
           <ShieldCheck className="h-8 w-8 text-primary" />
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
-              Panel Admin
+              SuperAdmin Dashboard
               <Badge className="text-xs">Accès restreint</Badge>
             </h1>
-            <p className="text-muted-foreground">Gérez votre marketplace</p>
+            <p className="text-muted-foreground">Gestion avancée de Ayiti Marché RD</p>
           </div>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Utilisateurs</CardDescription>
-              <CardTitle className="text-3xl flex items-center gap-2">
-                <Users className="h-6 w-6 text-primary" />
-                {statsLoading ? (
-                  <Skeleton className="h-8 w-12" />
-                ) : (
-                  stats?.usersCount ?? 0
-                )}
-              </CardTitle>
-            </CardHeader>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Produits</CardDescription>
-              <CardTitle className="text-3xl flex items-center gap-2">
-                <Package className="h-6 w-6 text-primary" />
-                {statsLoading ? (
-                  <Skeleton className="h-8 w-12" />
-                ) : (
-                  stats?.productsCount ?? 0
-                )}
-              </CardTitle>
-            </CardHeader>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Commandes</CardDescription>
-              <CardTitle className="text-3xl flex items-center gap-2">
-                <ShoppingCart className="h-6 w-6 text-primary" />
-                {statsLoading ? (
-                  <Skeleton className="h-8 w-12" />
-                ) : (
-                  stats?.ordersCount ?? 0
-                )}
-              </CardTitle>
-            </CardHeader>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Transactions</CardDescription>
-              <CardTitle className="text-3xl flex items-center gap-2">
-                <TrendingUp className="h-6 w-6 text-primary" />
-                {statsLoading ? (
-                  <Skeleton className="h-8 w-20" />
-                ) : (
-                  `RD$ ${formatCurrency(stats?.totalTransactions ?? 0)}`
-                )}
-              </CardTitle>
-            </CardHeader>
-          </Card>
+        {/* Advanced Stats Overview */}
+        <div className="mb-8">
+          <AdvancedStatsCards />
         </div>
 
         {/* Admin Tabs */}
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full">
+          <TabsList className="grid grid-cols-3 md:grid-cols-7 w-full">
             <TabsTrigger value="users" className="relative">
               <Users className="h-4 w-4 mr-2" />
-              Utilisateurs
+              <span className="hidden sm:inline">Utilisateurs</span>
               {pendingApplicationsCount > 0 && (
                 <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
                   {pendingApplicationsCount}
                 </Badge>
               )}
             </TabsTrigger>
+            <TabsTrigger value="identity" className="relative">
+              <Shield className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Identité</span>
+              {pendingVerificationsCount > 0 && (
+                <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {pendingVerificationsCount}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="support" className="relative">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Support</span>
+              {openTicketsCount > 0 && (
+                <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {openTicketsCount}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="relative">
+              <Flag className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Signalements</span>
+              {pendingReportsCount > 0 && (
+                <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {pendingReportsCount}
+                </Badge>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="products">
               <Package className="h-4 w-4 mr-2" />
-              Produits
-            </TabsTrigger>
-            <TabsTrigger value="orders">
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Commandes
+              <span className="hidden sm:inline">Produits</span>
             </TabsTrigger>
             <TabsTrigger value="wallets">
               <Wallet className="h-4 w-4 mr-2" />
-              Portefeuilles
+              <span className="hidden sm:inline">Finance</span>
             </TabsTrigger>
             <TabsTrigger value="settings">
               <Settings className="h-4 w-4 mr-2" />
-              Paramètres
+              <span className="hidden sm:inline">Config</span>
             </TabsTrigger>
           </TabsList>
 
@@ -162,24 +136,26 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserCog className="h-5 w-5" />
-                  Gestion des rôles
+                  Gestion des utilisateurs
                 </CardTitle>
-                <CardDescription>Assignez des rôles vendeur ou livreur aux utilisateurs</CardDescription>
+                <CardDescription>Visualisez, suspendez et gérez tous les utilisateurs</CardDescription>
               </CardHeader>
               <CardContent>
-                <RoleAssignmentManager />
+                <UsersManagementTable />
               </CardContent>
             </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Administrateurs</CardTitle>
-                <CardDescription>Gérez les utilisateurs ayant des droits administrateur</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AdminUsersManager />
-              </CardContent>
-            </Card>
+          </TabsContent>
+
+          <TabsContent value="identity" className="space-y-6">
+            <IdentityVerificationsManager />
+          </TabsContent>
+
+          <TabsContent value="support" className="space-y-6">
+            <SupportTicketsManager />
+          </TabsContent>
+
+          <TabsContent value="reports" className="space-y-6">
+            <ReportsManager />
           </TabsContent>
 
           <TabsContent value="products">
@@ -190,21 +166,7 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-center py-8">
-                  Aucun produit ajouté pour le moment
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="orders">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion des commandes</CardTitle>
-                <CardDescription>Suivez et gérez toutes les commandes</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-center py-8">
-                  Aucune commande pour le moment
+                  Module de gestion des produits en cours de développement
                 </p>
               </CardContent>
             </Card>
@@ -237,16 +199,12 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="settings">
-            <Card>
-              <CardHeader>
-                <CardTitle>Paramètres du système</CardTitle>
-                <CardDescription>Configurez les options globales</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AdminCodesManager />
-              </CardContent>
-            </Card>
+          <TabsContent value="settings" className="space-y-6">
+            <PlatformSettingsManager />
+            
+            <AdminCodesManager />
+            
+            <AuditLogsViewer />
           </TabsContent>
         </Tabs>
       </div>

@@ -11,6 +11,8 @@ import { SellerApplicationForm } from "@/components/auth/SellerApplicationForm";
 import { DriverApplicationForm } from "@/components/auth/DriverApplicationForm";
 import { EmailVerificationCard } from "@/components/profile/EmailVerificationCard";
 import { LocationCard } from "@/components/profile/LocationCard";
+import IdentityVerificationForm from "@/components/identity/IdentityVerificationForm";
+import ReferralCard from "@/components/referral/ReferralCard";
 import { useMySellerApplication, useMyDriverApplication } from "@/hooks/useApplications";
 
 const STATUS_CONFIG = {
@@ -80,6 +82,14 @@ const Profile = () => {
         </Card>
 
         <div className="grid gap-6 md:grid-cols-2">
+          {/* Identity Verification */}
+          <IdentityVerificationForm />
+          
+          {/* Referral Program */}
+          <ReferralCard />
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 mt-6">
           {/* Seller Application Card */}
           <Card>
             <CardHeader>
