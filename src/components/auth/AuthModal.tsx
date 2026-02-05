@@ -16,7 +16,6 @@ import { Loader2, Eye, EyeOff, Shield, Store, Truck } from "lucide-react";
 import { z } from "zod";
 import { SellerApplicationForm } from "./SellerApplicationForm";
 import { DriverApplicationForm } from "./DriverApplicationForm";
-import { EmailVerification } from "./EmailVerification";
 
 const signUpSchema = z.object({
   fullName: z.string().min(2, "Le nom doit avoir au moins 2 caractères").max(100),
@@ -45,10 +44,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
   // Application forms
   const [showSellerForm, setShowSellerForm] = useState(false);
   const [showDriverForm, setShowDriverForm] = useState(false);
-  
-  // Email verification
-  const [showEmailVerification, setShowEmailVerification] = useState(false);
-  const [verificationEmail, setVerificationEmail] = useState("");
   
   // Form states
   const [signInEmail, setSignInEmail] = useState("");
@@ -120,8 +115,10 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     if (error) {
       toast.error("Échec de l'inscription. Essayez avec un autre email.");
     } else {
-      toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
-      toast.info("Un lien de confirmation a été envoyé à votre adresse email.");
+      toast.success("Compte créé !");
+      toast.info("Mode démo : vérifiez votre email directement dans Profil (un code s'affiche à l'écran).", {
+        duration: 8000,
+      });
       onClose();
     }
   };
@@ -344,16 +341,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
         onClose={() => setShowDriverForm(false)} 
       />
       
-      {/* Email Verification */}
-      <EmailVerification
-        isOpen={showEmailVerification}
-        onClose={() => setShowEmailVerification(false)}
-        email={verificationEmail}
-        onVerified={() => {
-          toast.success("Email vérifié !");
-          onClose();
-        }}
-      />
     </Dialog>
   );
 }

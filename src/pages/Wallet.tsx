@@ -5,6 +5,9 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet, useWalletTransactions, useDepositToWallet, PAYMENT_INSTRUCTIONS } from "@/hooks/useWallet";
 import { PAYMENT_METHODS, CURRENCY_SYMBOLS, PaymentMethodType, Currency } from "@/types/database";
+import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +53,7 @@ const MANUAL_PAYMENT_METHODS: PaymentMethodType[] = [
 
 const Wallet = () => {
   const { user, loading: authLoading } = useAuth();
+  const queryClient = useQueryClient();
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: transactions, isLoading: transactionsLoading } = useWalletTransactions();
   const depositMutation = useDepositToWallet();
@@ -64,6 +68,9 @@ const Wallet = () => {
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [proofPreview, setProofPreview] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const [cardDemoOpen, setCardDemoOpen] = useState(false);
+  const [cardDemoAmount, setCardDemoAmount] = useState(0);
 
   if (authLoading) {
     return (
@@ -250,6 +257,38 @@ const Wallet = () => {
                       </Select>
                     </div>
                   </div>
+
+                  {/* Card (demo) top-up */}
+                  <Card className="border-dashed">
+                    <CardContent className="pt-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium flex items-center gap-2">
+                            <CreditCard className="h-4 w-4" />
+                            Carte bancaire (démo)
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Recharge instantanée (carte test 4242 4242 4242 4242)
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            const amount = parseFloat(depositAmount);
+                            if (isNaN(amount) || amount <= 0) {
+                              toast.error("Veuillez entrer un montant valide");
+                              return;
+                            }
+                            setCardDemoAmount(amount);
+                            setCardDemoOpen(true);
+                          }}
+                        >
+                          Payer
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
 
                   <div className="space-y-2">
                     <Label>Méthode de paiement</Label>
@@ -478,6 +517,29 @@ const Wallet = () => {
           </CardContent>
         </Card>
       </div>
+
+      <DemoStripePayment
+        isOpen={cardDemoOpen}
+        onClose={() => setCardDemoOpen(false)}
+        amount={cardDemoAmount}
+        currency={depositCurrency}
+        onSuccess={async () => {
+          const { error } = await supabase.rpc("demo_wallet_topup" as any, {
+            p_amount: cardDemoAmount,
+            p_currency: depositCurrency,
+          });
+
+          if (error) {
+            toast.error("Erreur lors du paiement démo");
+            return;
+          }
+
+          await queryClient.invalidateQueries({ queryKey: ["wallet"] });
+          await queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+          setDepositOpen(false);
+          resetDepositForm();
+        }}
+      />
 
       <Footer />
     </main>
