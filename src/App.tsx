@@ -14,6 +14,7 @@ import Admin from "./pages/Admin";
 import SellerDashboard from "./pages/SellerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/seller" element={<SellerDashboard />} />
               <Route path="/driver" element={<DriverDashboard />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

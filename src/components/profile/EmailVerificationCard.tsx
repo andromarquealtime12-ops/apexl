@@ -20,6 +20,7 @@ export function EmailVerificationCard() {
   const verifyCode = useVerifyEmailCode();
   const [otp, setOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
+  const [lastSentCode, setLastSentCode] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -37,7 +38,8 @@ export function EmailVerificationCard() {
   const isVerified = profile?.email_verified;
 
   const handleSendCode = async () => {
-    await sendCode.mutateAsync();
+    const data = await sendCode.mutateAsync();
+    setLastSentCode(data.code);
     setShowOtpInput(true);
   };
 
@@ -80,6 +82,11 @@ export function EmailVerificationCard() {
               <p className="text-sm text-blue-700 dark:text-blue-400">
                 Un code à 6 chiffres a été envoyé à <strong>{user?.email}</strong>
               </p>
+              {lastSentCode && (
+                <p className="text-xs text-blue-700/90 dark:text-blue-300 mt-2">
+                  Mode démo : votre code est <strong className="font-mono">{lastSentCode}</strong>
+                </p>
+              )}
             </div>
 
             <div className="flex justify-center">
