@@ -24,7 +24,7 @@ import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
 import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, CreditCard, Mail } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const CITIES = [
@@ -418,20 +418,25 @@ const Checkout = () => {
         amount={topUpAmount}
         currency={currency}
         onSuccess={async () => {
-          // Simulate adding money to wallet (demo mode)
-          if (wallet) {
-            const { error } = await supabase
-              .from("wallets")
-              .update({ [balanceField]: currentBalance + topUpAmount })
-              .eq("id", wallet.id);
+           // Use secure server-side RPC function for demo wallet top-up
+           const { data, error } = await supabase.rpc("demo_wallet_topup" as any, {
+             p_amount: topUpAmount,
+             p_currency: currency,
+           });
 
-            if (!error) {
-              queryClient.invalidateQueries({ queryKey: ["wallet"] });
-              toast({
-                title: "Portefeuille rechargé !",
-                description: `${CURRENCY_SYMBOLS[currency]} ${topUpAmount.toLocaleString()} ajoutés à votre solde`,
-              });
-            }
+           if (error) {
+             toast({
+               title: "Erreur",
+               description: error.message || "Impossible de recharger le portefeuille",
+               variant: "destructive",
+             });
+           } else {
+             queryClient.invalidateQueries({ queryKey: ["wallet"] });
+             queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+             toast({
+               title: "Portefeuille rechargé !",
+               description: `${CURRENCY_SYMBOLS[currency]} ${topUpAmount.toLocaleString()} ajoutés à votre solde`,
+             });
           }
           setShowStripePayment(false);
         }}
