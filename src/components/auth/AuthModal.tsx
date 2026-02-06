@@ -12,10 +12,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff, Shield, Store, Truck } from "lucide-react";
+import { Loader2, Eye, EyeOff, Store, Truck, KeyRound } from "lucide-react";
 import { z } from "zod";
 import { SellerApplicationForm } from "./SellerApplicationForm";
 import { DriverApplicationForm } from "./DriverApplicationForm";
+import { ForgotPasswordModal } from "./ForgotPasswordModal";
 
 const signUpSchema = z.object({
   fullName: z.string().min(2, "Le nom doit avoir au moins 2 caractères").max(100),
@@ -35,11 +36,10 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalProps) {
-  const { signIn, signUp, validateAdminCode, user } = useAuth();
+  const { signIn, signUp, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showAdminCode, setShowAdminCode] = useState(false);
-  const [adminCode, setAdminCode] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   
   // Application forms
   const [showSellerForm, setShowSellerForm] = useState(false);
@@ -74,23 +74,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
       return;
     }
     
-    // If admin code was provided, validate it after successful login
-    if (adminCode.trim()) {
-      // Small delay to ensure auth state is updated
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const success = await validateAdminCode(adminCode.trim());
-      if (success) {
-        toast.success("Connexion réussie avec accès admin !");
-      } else {
-        toast.success("Connexion réussie !");
-        toast.error("Code admin invalide ou expiré");
-      }
-    } else {
-      toast.success("Connexion réussie !");
-    }
-    
+    toast.success("Connexion réussie !");
     setLoading(false);
-    setAdminCode("");
     onClose();
   };
 
@@ -123,224 +108,191 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     }
   };
 
-  const handleAdminCode = async () => {
-    if (!adminCode.trim()) {
-      toast.error("Entrez un code admin");
-      return;
-    }
-    
-    setLoading(true);
-    const success = await validateAdminCode(adminCode.trim());
-    setLoading(false);
-    
-    if (success) {
-      toast.success("Accès admin activé !");
-      setAdminCode("");
-      setShowAdminCode(false);
-    } else {
-      toast.error("Code invalide ou expiré");
-    }
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl text-center">Ayiti Market</DialogTitle>
-          <DialogDescription className="text-center">
-            Connectez-vous pour accéder à votre compte
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-center">Ayiti Market</DialogTitle>
+            <DialogDescription className="text-center">
+              Connectez-vous pour accéder à votre compte
+            </DialogDescription>
+          </DialogHeader>
 
-        <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Connexion</TabsTrigger>
-            <TabsTrigger value="signup">Inscription</TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue={defaultTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="signin">Connexion</TabsTrigger>
+              <TabsTrigger value="signup">Inscription</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="signin" className="space-y-4 mt-4">
-            <form onSubmit={handleSignIn} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="signin-email">Email</Label>
-                <Input
-                  id="signin-email"
-                  type="email"
-                  placeholder="votre@email.com"
-                  value={signInEmail}
-                  onChange={(e) => setSignInEmail(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="signin-password">Mot de passe</Label>
-                <div className="relative">
+            <TabsContent value="signin" className="space-y-4 mt-4">
+              <form onSubmit={handleSignIn} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signin-email">Email</Label>
                   <Input
-                    id="signin-password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={signInPassword}
-                    onChange={(e) => setSignInPassword(e.target.value)}
+                    id="signin-email"
+                    type="email"
+                    placeholder="votre@email.com"
+                    value={signInEmail}
+                    onChange={(e) => setSignInEmail(e.target.value)}
                     required
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-0 h-full"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
                 </div>
-              </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="signin-password">Mot de passe</Label>
+                  <div className="relative">
+                    <Input
+                      id="signin-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={signInPassword}
+                      onChange={(e) => setSignInPassword(e.target.value)}
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
 
-              {/* Admin code section - always visible */}
-              <div className="space-y-2">
+                {/* Forgot Password Link */}
                 <Button
                   type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="w-full text-muted-foreground hover:text-primary"
-                  onClick={() => setShowAdminCode(!showAdminCode)}
+                  variant="link"
+                  className="w-full text-sm text-muted-foreground hover:text-primary p-0 h-auto"
+                  onClick={() => setShowForgotPassword(true)}
                 >
-                  <Shield className="h-4 w-4 mr-2" />
-                  {showAdminCode ? "Masquer le code admin" : "J'ai un code admin"}
+                  <KeyRound className="h-3 w-3 mr-1" />
+                  Mot de passe oublié ?
                 </Button>
-                
-                {showAdminCode && (
-                  <div className="p-3 rounded-lg bg-muted/50 border border-dashed">
-                    <Label htmlFor="admin-code" className="text-xs text-muted-foreground">
-                      Code d'accès administrateur
-                    </Label>
-                    <Input
-                      id="admin-code"
-                      placeholder="XXXX-XXXX-XXXX"
-                      value={adminCode}
-                      onChange={(e) => setAdminCode(e.target.value.toUpperCase())}
-                      className="mt-1 font-mono"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Ce code sera validé après la connexion
-                    </p>
-                  </div>
-                )}
-              </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Se connecter"}
-              </Button>
-            </form>
-          </TabsContent>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Se connecter"}
+                </Button>
+              </form>
+            </TabsContent>
 
-          <TabsContent value="signup" className="space-y-4 mt-4">
-            <form onSubmit={handleSignUp} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="signup-name">Nom complet</Label>
-                <Input
-                  id="signup-name"
-                  type="text"
-                  placeholder="Jean Pierre"
-                  value={signUpName}
-                  onChange={(e) => setSignUpName(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="signup-email">Email</Label>
-                <Input
-                  id="signup-email"
-                  type="email"
-                  placeholder="votre@email.com"
-                  value={signUpEmail}
-                  onChange={(e) => setSignUpEmail(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="signup-password">Mot de passe</Label>
-                <div className="relative">
+            <TabsContent value="signup" className="space-y-4 mt-4">
+              <form onSubmit={handleSignUp} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signup-name">Nom complet</Label>
                   <Input
-                    id="signup-password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={signUpPassword}
-                    onChange={(e) => setSignUpPassword(e.target.value)}
+                    id="signup-name"
+                    type="text"
+                    placeholder="Jean Pierre"
+                    value={signUpName}
+                    onChange={(e) => setSignUpName(e.target.value)}
                     required
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-0 h-full"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
                 </div>
-              </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="signup-email">Email</Label>
+                  <Input
+                    id="signup-email"
+                    type="email"
+                    placeholder="votre@email.com"
+                    value={signUpEmail}
+                    onChange={(e) => setSignUpEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="signup-password">Mot de passe</Label>
+                  <div className="relative">
+                    <Input
+                      id="signup-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={signUpPassword}
+                      onChange={(e) => setSignUpPassword(e.target.value)}
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
 
-              <Button type="submit" variant="hero" className="w-full" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Créer mon compte"}
-              </Button>
-              
-              {/* Seller/Driver Application Buttons */}
-              <div className="pt-4 border-t">
-                <p className="text-sm text-muted-foreground text-center mb-3">
-                  Vous souhaitez vendre ou livrer ?
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      if (!user) {
-                        toast.error("Créez d'abord un compte pour postuler");
-                        return;
-                      }
-                      setShowSellerForm(true);
-                    }}
-                    className="flex items-center gap-2"
-                  >
-                    <Store className="h-4 w-4" />
-                    Vendeur
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      if (!user) {
-                        toast.error("Créez d'abord un compte pour postuler");
-                        return;
-                      }
-                      setShowDriverForm(true);
-                    }}
-                    className="flex items-center gap-2"
-                  >
-                    <Truck className="h-4 w-4" />
-                    Livreur
-                  </Button>
+                <Button type="submit" variant="hero" className="w-full" disabled={loading}>
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Créer mon compte"}
+                </Button>
+                
+                {/* Seller/Driver Application Buttons */}
+                <div className="pt-4 border-t">
+                  <p className="text-sm text-muted-foreground text-center mb-3">
+                    Vous souhaitez vendre ou livrer ?
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        if (!user) {
+                          toast.error("Créez d'abord un compte pour postuler");
+                          return;
+                        }
+                        setShowSellerForm(true);
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Store className="h-4 w-4" />
+                      Vendeur
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        if (!user) {
+                          toast.error("Créez d'abord un compte pour postuler");
+                          return;
+                        }
+                        setShowDriverForm(true);
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Truck className="h-4 w-4" />
+                      Livreur
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </form>
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
+              </form>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+        
+        {/* Seller Application Form */}
+        <SellerApplicationForm 
+          isOpen={showSellerForm} 
+          onClose={() => setShowSellerForm(false)} 
+        />
+        
+        {/* Driver Application Form */}
+        <DriverApplicationForm 
+          isOpen={showDriverForm} 
+          onClose={() => setShowDriverForm(false)} 
+        />
+      </Dialog>
       
-      {/* Seller Application Form */}
-      <SellerApplicationForm 
-        isOpen={showSellerForm} 
-        onClose={() => setShowSellerForm(false)} 
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
       />
-      
-      {/* Driver Application Form */}
-      <DriverApplicationForm 
-        isOpen={showDriverForm} 
-        onClose={() => setShowDriverForm(false)} 
-      />
-      
-    </Dialog>
+    </>
   );
 }

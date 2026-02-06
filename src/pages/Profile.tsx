@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Header from "@/components/Header";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { LocationCard } from "@/components/profile/LocationCard";
 import IdentityVerificationForm from "@/components/identity/IdentityVerificationForm";
 import ReferralCard from "@/components/referral/ReferralCard";
 import { useMySellerApplication, useMyDriverApplication } from "@/hooks/useApplications";
+import { toast } from "sonner";
 
 const STATUS_CONFIG = {
   pending: { icon: Clock, color: "text-yellow-500", label: "En attente" },
@@ -25,9 +26,29 @@ const Profile = () => {
   const { user, loading, isSeller, isDriver, isAdmin } = useAuth();
   const [showSellerForm, setShowSellerForm] = useState(false);
   const [showDriverForm, setShowDriverForm] = useState(false);
+  const [versionClicks, setVersionClicks] = useState(0);
+  const navigate = useNavigate();
   
   const { data: sellerApplication, isLoading: loadingSeller } = useMySellerApplication();
   const { data: driverApplication, isLoading: loadingDriver } = useMyDriverApplication();
+
+  // Secret admin access - 7 clicks on version
+  const handleVersionClick = () => {
+    const newCount = versionClicks + 1;
+    setVersionClicks(newCount);
+    
+    if (newCount >= 7) {
+      if (isAdmin) {
+        toast.success("🔓 Accès admin déverrouillé !");
+        navigate("/admin");
+      } else {
+        toast.error("Vous n'avez pas les droits administrateur");
+      }
+      setVersionClicks(0);
+    } else if (newCount >= 3) {
+      toast.info(`${7 - newCount} clics restants...`, { duration: 1000 });
+    }
+  };
 
   if (loading) {
     return (
@@ -49,12 +70,22 @@ const Profile = () => {
       <Header />
 
       <div className="container px-4 py-8 max-w-4xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <User className="h-8 w-8 text-primary" />
-          <div>
-            <h1 className="text-2xl font-bold">Mon Profil</h1>
-            <p className="text-muted-foreground">{user.email}</p>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <User className="h-8 w-8 text-primary" />
+            <div>
+              <h1 className="text-2xl font-bold">Mon Profil</h1>
+              <p className="text-muted-foreground">{user.email}</p>
+            </div>
           </div>
+          
+          {/* Version badge - Secret admin access */}
+          <button
+            onClick={handleVersionClick}
+            className="text-xs text-muted-foreground hover:text-muted-foreground/80 transition-colors cursor-default select-none"
+          >
+            Version 1.0
+          </button>
         </div>
 
         {/* Email Verification & Location */}

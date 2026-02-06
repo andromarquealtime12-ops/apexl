@@ -151,17 +151,6 @@ const Header = () => {
                       Paramètres
                     </Link>
                   </DropdownMenuItem>
-                  {isAdmin && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link to="/admin" className="cursor-pointer text-primary">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Panel Admin
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()} className="text-destructive cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
