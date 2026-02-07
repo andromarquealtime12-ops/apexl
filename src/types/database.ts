@@ -8,7 +8,11 @@ export type PaymentMethodType =
   | "banreservas" 
   | "bhd" 
   | "bank_transfer_do" 
-  | "bank_transfer_ht";
+  | "bank_transfer_ht"
+  | "paypal"
+  | "wise"
+  | "popular"
+  | "bank_other";
 
 export type OrderStatus = 
   | "pending" 
@@ -128,8 +132,12 @@ export const PAYMENT_METHODS: { value: PaymentMethodType; label: string; icon: s
   { value: "moncash", label: "Moncash", icon: "smartphone", country: "HT" },
   { value: "banreservas", label: "Banreservas", icon: "building", country: "DO" },
   { value: "bhd", label: "BHD León", icon: "building", country: "DO" },
+  { value: "popular", label: "Banco Popular", icon: "building", country: "DO" },
   { value: "bank_transfer_do", label: "Transfert Bancaire (RD)", icon: "landmark", country: "DO" },
   { value: "bank_transfer_ht", label: "Transfert Bancaire (HT)", icon: "landmark", country: "HT" },
+  { value: "paypal", label: "PayPal", icon: "globe", country: "both" },
+  { value: "wise", label: "Wise", icon: "globe", country: "both" },
+  { value: "bank_other", label: "Autre banque", icon: "landmark", country: "both" },
 ];
 
 export const CURRENCY_SYMBOLS: Record<Currency, string> = {
