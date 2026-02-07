@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { 
   ShieldCheck, Users, Package, ShoppingCart, 
   Wallet, Settings, UserCog, Shield, 
-  MessageSquare, Flag, History, Sliders
+  MessageSquare, Flag, History, Sliders, Bot
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import TransactionHistoryTable from "@/components/admin/TransactionHistoryTable";
@@ -23,6 +23,7 @@ import SupportTicketsManager from "@/components/admin/SupportTicketsManager";
 import ReportsManager from "@/components/admin/ReportsManager";
 import AuditLogsViewer from "@/components/admin/AuditLogsViewer";
 import PlatformSettingsManager from "@/components/admin/PlatformSettingsManager";
+import AdminRobotPanel from "@/components/admin/AdminRobotPanel";
 import { usePendingIdentityVerifications, useSupportTickets, useReports } from "@/hooks/useAdminAdvanced";
 
 const Admin = () => {
@@ -76,8 +77,12 @@ const Admin = () => {
         </div>
 
         {/* Admin Tabs */}
-        <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid grid-cols-3 md:grid-cols-7 w-full">
+        <Tabs defaultValue="robot" className="space-y-6">
+          <TabsList className="grid grid-cols-4 md:grid-cols-8 w-full">
+            <TabsTrigger value="robot" className="relative">
+              <Bot className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Robot</span>
+            </TabsTrigger>
             <TabsTrigger value="users" className="relative">
               <Users className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Utilisateurs</span>
@@ -127,6 +132,10 @@ const Admin = () => {
               <span className="hidden sm:inline">Config</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="robot" className="space-y-6">
+            <AdminRobotPanel />
+          </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
             {/* Applications Manager */}

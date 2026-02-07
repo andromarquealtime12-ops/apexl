@@ -80,6 +80,63 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_robot_logs: {
+        Row: {
+          action_type: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          status: string | null
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          status?: string | null
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          status?: string | null
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: []
+      }
+      admin_robot_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_enabled: boolean | null
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -1082,6 +1139,23 @@ export type Database = {
         Args: { p_reason: string; p_verification_id: string }
         Returns: Json
       }
+      robot_auto_approve_deposit: {
+        Args: { p_transaction_id: string }
+        Returns: Json
+      }
+      robot_auto_approve_driver: {
+        Args: { p_application_id: string }
+        Returns: Json
+      }
+      robot_auto_approve_seller: {
+        Args: { p_application_id: string }
+        Returns: Json
+      }
+      robot_auto_verify_identity: {
+        Args: { p_verification_id: string }
+        Returns: Json
+      }
+      run_admin_robot: { Args: never; Returns: Json }
       suspend_user: {
         Args: { p_duration_days?: number; p_reason: string; p_user_id: string }
         Returns: Json
@@ -1110,6 +1184,10 @@ export type Database = {
         | "bhd"
         | "bank_transfer_do"
         | "bank_transfer_ht"
+        | "paypal"
+        | "wise"
+        | "popular"
+        | "bank_other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1247,6 +1325,10 @@ export const Constants = {
         "bhd",
         "bank_transfer_do",
         "bank_transfer_ht",
+        "paypal",
+        "wise",
+        "popular",
+        "bank_other",
       ],
     },
   },

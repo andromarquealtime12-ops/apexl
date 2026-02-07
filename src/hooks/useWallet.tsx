@@ -145,7 +145,12 @@ export const PAYMENT_INSTRUCTIONS: Record<string, {
   bhd: {
     accountNumber: "À définir",
     accountName: "Ayiti Market",
-    instructions: "Effectuez un virement sur ce compte, puis entrez le numéro de transaction et téléchargez la preuve."
+    instructions: "Effectuez un virement sur ce compte BHD León, puis entrez le numéro de transaction et téléchargez la preuve."
+  },
+  popular: {
+    accountNumber: "À définir",
+    accountName: "Ayiti Market",
+    instructions: "Effectuez un virement sur ce compte Banco Popular, puis entrez le numéro de transaction et téléchargez la preuve."
   },
   bank_transfer_do: {
     accountNumber: "À définir",
@@ -156,5 +161,20 @@ export const PAYMENT_INSTRUCTIONS: Record<string, {
     accountNumber: "À définir",
     accountName: "Ayiti Market",
     instructions: "Effectuez un virement bancaire, puis entrez le numéro de transaction et téléchargez la preuve."
+  },
+  paypal: {
+    accountNumber: "payments@ayitimarket.com",
+    accountName: "Ayiti Market",
+    instructions: "Envoyez le paiement à notre compte PayPal, puis entrez l'ID de transaction et téléchargez la capture d'écran de confirmation."
+  },
+  wise: {
+    accountNumber: "À définir",
+    accountName: "Ayiti Market",
+    instructions: "Effectuez un transfert via Wise, puis entrez la référence de transaction et téléchargez la preuve."
+  },
+  bank_other: {
+    accountNumber: "Contactez-nous",
+    accountName: "Ayiti Market",
+    instructions: "Pour les autres banques, contactez notre support pour obtenir les coordonnées bancaires, puis soumettez votre preuve de paiement."
   }
 };
