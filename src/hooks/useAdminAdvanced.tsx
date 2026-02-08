@@ -2,24 +2,33 @@
  import { supabase } from "@/integrations/supabase/client";
  import { useAuth } from "@/contexts/AuthContext";
  
- export interface AdvancedUserProfile {
-   id: string;
-   user_id: string;
-   full_name: string;
-   phone: string | null;
-   city: string | null;
-   identity_status: string;
-   account_status: string;
-   trust_score: number;
-   total_spent: number;
-   total_earned: number;
-   email_verified: boolean;
-   created_at: string;
-   suspension_reason: string | null;
-   suspension_until: string | null;
-   admin_notes: string | null;
-   roles: string[];
- }
+export interface AdvancedUserProfile {
+  id: string;
+  user_id: string;
+  full_name: string;
+  phone: string | null;
+  city: string | null;
+  identity_status: string;
+  account_status: string;
+  trust_score: number;
+  total_spent: number;
+  total_earned: number;
+  email_verified: boolean;
+  created_at: string;
+  suspension_reason: string | null;
+  suspension_until: string | null;
+  admin_notes: string | null;
+  roles: string[];
+  report_count: number;
+  lost_packages_count: number;
+  id_document_front: string | null;
+  id_document_back: string | null;
+  selfie_photo: string | null;
+  wallet_frozen?: boolean;
+  wallet_balance_dop?: number;
+  wallet_balance_htg?: number;
+  wallet_balance_usd?: number;
+}
  
  export function useAdminAdvancedStats() {
    const { isAdmin } = useAuth();
@@ -98,53 +107,73 @@
    });
  }
  
- export function useAdminUsers(filters?: { role?: string; status?: string; search?: string }) {
-   const { isAdmin } = useAuth();
- 
-   return useQuery({
-     queryKey: ["admin-users-list", filters],
-     queryFn: async (): Promise<AdvancedUserProfile[]> => {
-       let query = supabase
-         .from("profiles")
-         .select("*")
-         .order("created_at", { ascending: false });
- 
-       if (filters?.status && filters.status !== "all") {
-         query = query.eq("account_status", filters.status);
-       }
- 
-       if (filters?.search) {
-         query = query.or(`full_name.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`);
-       }
- 
-       const { data: profiles, error } = await query;
-       if (error) throw error;
- 
-       const { data: rolesData } = await supabase
-         .from("user_roles")
-         .select("user_id, role");
- 
-       const userRolesMap = new Map<string, string[]>();
-       rolesData?.forEach(r => {
-         const existing = userRolesMap.get(r.user_id) || [];
-         existing.push(r.role);
-         userRolesMap.set(r.user_id, existing);
-       });
- 
-       let result = (profiles || []).map(p => ({
-         ...p,
-         roles: userRolesMap.get(p.user_id) || ["buyer"]
-       }));
- 
-       if (filters?.role && filters.role !== "all") {
-         result = result.filter(u => u.roles.includes(filters.role!));
-       }
- 
-       return result;
-     },
-     enabled: isAdmin
-   });
- }
+export function useAdminUsers(filters?: { role?: string; status?: string; search?: string }) {
+  const { isAdmin } = useAuth();
+
+  return useQuery({
+    queryKey: ["admin-users-list", filters],
+    queryFn: async (): Promise<AdvancedUserProfile[]> => {
+      let query = supabase
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (filters?.status && filters.status !== "all") {
+        query = query.eq("account_status", filters.status);
+      }
+
+      if (filters?.search) {
+        query = query.or(`full_name.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`);
+      }
+
+      const { data: profiles, error } = await query;
+      if (error) throw error;
+
+      // Get roles
+      const { data: rolesData } = await supabase
+        .from("user_roles")
+        .select("user_id, role");
+
+      const userRolesMap = new Map<string, string[]>();
+      rolesData?.forEach(r => {
+        const existing = userRolesMap.get(r.user_id) || [];
+        existing.push(r.role);
+        userRolesMap.set(r.user_id, existing);
+      });
+
+      // Get wallets for frozen status and balances
+      const { data: walletsData } = await supabase
+        .from("wallets")
+        .select("user_id, is_frozen, balance_dop, balance_htg, balance_usd");
+
+      const walletsMap = new Map<string, { frozen: boolean; dop: number; htg: number; usd: number }>();
+      walletsData?.forEach(w => {
+        walletsMap.set(w.user_id, {
+          frozen: w.is_frozen || false,
+          dop: w.balance_dop || 0,
+          htg: w.balance_htg || 0,
+          usd: w.balance_usd || 0
+        });
+      });
+
+      let result = (profiles || []).map(p => ({
+        ...p,
+        roles: userRolesMap.get(p.user_id) || ["buyer"],
+        wallet_frozen: walletsMap.get(p.user_id)?.frozen || false,
+        wallet_balance_dop: walletsMap.get(p.user_id)?.dop || 0,
+        wallet_balance_htg: walletsMap.get(p.user_id)?.htg || 0,
+        wallet_balance_usd: walletsMap.get(p.user_id)?.usd || 0
+      }));
+
+      if (filters?.role && filters.role !== "all") {
+        result = result.filter(u => u.roles.includes(filters.role!));
+      }
+
+      return result;
+    },
+    enabled: isAdmin
+  });
+}
  
  export function useSuspendUser() {
    const queryClient = useQueryClient();
@@ -350,7 +379,77 @@
        if (error) throw error;
      },
      onSuccess: () => {
-       queryClient.invalidateQueries({ queryKey: ["platform-settings"] });
-     }
-   });
- }
+      queryClient.invalidateQueries({ queryKey: ["platform-settings"] });
+    }
+  });
+}
+
+export function useFreezeWallet() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ userId, reason }: { userId: string; reason: string }) => {
+      const { data, error } = await supabase.rpc("freeze_wallet" as any, {
+        p_user_id: userId,
+        p_reason: reason
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users-list"] });
+    }
+  });
+}
+
+export function useUnfreezeWallet() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const { data, error } = await supabase.rpc("unfreeze_wallet" as any, {
+        p_user_id: userId
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users-list"] });
+    }
+  });
+}
+
+export function useAllIdentityVerifications() {
+  const { isAdmin } = useAuth();
+
+  return useQuery({
+    queryKey: ["all-identity-verifications"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("identity_verifications")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin
+  });
+}
+
+export function useAllTransactions() {
+  const { isAdmin } = useAuth();
+
+  return useQuery({
+    queryKey: ["all-transactions"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("wallet_transactions")
+        .select("*, wallets(user_id, profiles:user_id(full_name))")
+        .order("created_at", { ascending: false })
+        .limit(500);
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin
+  });
+}
