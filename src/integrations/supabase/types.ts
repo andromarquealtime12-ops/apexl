@@ -612,10 +612,12 @@ export type Database = {
           last_login_ip: string | null
           latitude: number | null
           longitude: number | null
+          lost_packages_count: number | null
           phone: string | null
           phone_verified: boolean | null
           referral_code: string | null
           referred_by: string | null
+          report_count: number | null
           selfie_photo: string | null
           suspension_reason: string | null
           suspension_until: string | null
@@ -650,10 +652,12 @@ export type Database = {
           last_login_ip?: string | null
           latitude?: number | null
           longitude?: number | null
+          lost_packages_count?: number | null
           phone?: string | null
           phone_verified?: boolean | null
           referral_code?: string | null
           referred_by?: string | null
+          report_count?: number | null
           selfie_photo?: string | null
           suspension_reason?: string | null
           suspension_until?: string | null
@@ -688,10 +692,12 @@ export type Database = {
           last_login_ip?: string | null
           latitude?: number | null
           longitude?: number | null
+          lost_packages_count?: number | null
           phone?: string | null
           phone_verified?: boolean | null
           referral_code?: string | null
           referred_by?: string | null
+          report_count?: number | null
           selfie_photo?: string | null
           suspension_reason?: string | null
           suspension_until?: string | null
@@ -1034,8 +1040,12 @@ export type Database = {
           balance_htg: number | null
           balance_usd: number | null
           created_at: string
+          frozen_at: string | null
+          frozen_by: string | null
+          frozen_reason: string | null
           id: string
           is_active: boolean | null
+          is_frozen: boolean | null
           updated_at: string
           user_id: string
         }
@@ -1044,8 +1054,12 @@ export type Database = {
           balance_htg?: number | null
           balance_usd?: number | null
           created_at?: string
+          frozen_at?: string | null
+          frozen_by?: string | null
+          frozen_reason?: string | null
           id?: string
           is_active?: boolean | null
+          is_frozen?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -1054,8 +1068,12 @@ export type Database = {
           balance_htg?: number | null
           balance_usd?: number | null
           created_at?: string
+          frozen_at?: string | null
+          frozen_by?: string | null
+          frozen_reason?: string | null
           id?: string
           is_active?: boolean | null
+          is_frozen?: boolean | null
           updated_at?: string
           user_id?: string
         }
@@ -1093,6 +1111,10 @@ export type Database = {
       }
       demo_wallet_topup: {
         Args: { p_amount: number; p_currency: string }
+        Returns: Json
+      }
+      freeze_wallet: {
+        Args: { p_reason: string; p_user_id: string }
         Returns: Json
       }
       generate_pin_code: { Args: never; Returns: string }
@@ -1151,6 +1173,8 @@ export type Database = {
         Args: { p_application_id: string }
         Returns: Json
       }
+      robot_auto_suspend_lost_packages: { Args: never; Returns: Json }
+      robot_auto_suspend_reported: { Args: never; Returns: Json }
       robot_auto_verify_identity: {
         Args: { p_verification_id: string }
         Returns: Json
@@ -1160,6 +1184,7 @@ export type Database = {
         Args: { p_duration_days?: number; p_reason: string; p_user_id: string }
         Returns: Json
       }
+      unfreeze_wallet: { Args: { p_user_id: string }; Returns: Json }
       validate_admin_code: {
         Args: { code_input: string; user_id_input: string }
         Returns: boolean

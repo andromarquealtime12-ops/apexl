@@ -97,6 +97,8 @@ export function useRunAdminRobot() {
         identities_processed: number;
         sellers_processed: number;
         drivers_processed: number;
+        suspensions_reports: number;
+        suspensions_lost_packages: number;
         total: number;
       };
     },
@@ -106,6 +108,7 @@ export function useRunAdminRobot() {
       queryClient.invalidateQueries({ queryKey: ["admin-pending-verifications"] });
       queryClient.invalidateQueries({ queryKey: ["pending-seller-applications"] });
       queryClient.invalidateQueries({ queryKey: ["pending-driver-applications"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-users-list"] });
     },
   });
 }

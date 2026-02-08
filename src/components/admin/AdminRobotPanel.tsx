@@ -53,6 +53,16 @@ const SETTING_LABELS: Record<string, { label: string; icon: any; description: st
     label: "Suspension automatique",
     icon: AlertTriangle,
     description: "Suspend les comptes avec score de confiance très bas"
+  },
+  auto_suspend_reported: {
+    label: "Suspension signalements",
+    icon: AlertTriangle,
+    description: "Suspend automatiquement après plusieurs signalements"
+  },
+  auto_suspend_lost_packages: {
+    label: "Suspension colis perdus",
+    icon: AlertTriangle,
+    description: "Suspend automatiquement après plusieurs colis perdus"
   }
 };
 
@@ -61,7 +71,8 @@ const ACTION_LABELS: Record<string, string> = {
   identity_verified: "Identité vérifiée",
   seller_approved: "Vendeur approuvé",
   driver_approved: "Livreur approuvé",
-  user_suspended: "Utilisateur suspendu"
+  user_suspended: "Utilisateur suspendu",
+  wallet_frozen: "Portefeuille gelé"
 };
 
 export default function AdminRobotPanel() {
@@ -93,7 +104,7 @@ export default function AdminRobotPanel() {
       const result = await runRobot.mutateAsync();
       toast({
         title: "Robot exécuté ✓",
-        description: `${result.total} tâches traitées: ${result.deposits_processed} dépôts, ${result.identities_processed} identités, ${result.sellers_processed} vendeurs, ${result.drivers_processed} livreurs`,
+        description: `${result.total} tâches traitées: ${result.deposits_processed} dépôts, ${result.identities_processed} identités, ${result.sellers_processed} vendeurs, ${result.drivers_processed} livreurs, ${result.suspensions_reports || 0} suspensions signalements, ${result.suspensions_lost_packages || 0} suspensions colis`,
       });
     } catch (error: any) {
       toast({
