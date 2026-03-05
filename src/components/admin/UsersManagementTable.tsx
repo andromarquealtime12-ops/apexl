@@ -21,11 +21,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Eye, Pause, Play, Shield, Search, StickyNote, Star, 
-  Snowflake, Ban, AlertTriangle, CreditCard, Image, User
+  Snowflake, Ban, AlertTriangle, CreditCard, Image, User,
+  Trash2, Mail, Phone as PhoneIcon, History, Send, DollarSign
 } from "lucide-react";
 import { 
   useAdminUsers, useSuspendUser, useActivateUser, useUpdateAdminNotes, 
-  AdvancedUserProfile, useFreezeWallet, useUnfreezeWallet 
+  AdvancedUserProfile, useFreezeWallet, useUnfreezeWallet, useDeleteUser,
+  useUserTransactions
 } from "@/hooks/useAdminAdvanced";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -43,6 +45,8 @@ export default function UsersManagementTable() {
   const [freezeDialog, setFreezeDialog] = useState<{ open: boolean; user: AdvancedUserProfile | null }>({ open: false, user: null });
   const [freezeReason, setFreezeReason] = useState("");
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; user: AdvancedUserProfile | null }>({ open: false, user: null });
+  const [txUser, setTxUser] = useState<AdvancedUserProfile | null>(null);
 
   const { data: users, isLoading } = useAdminUsers(filters);
   const suspendUser = useSuspendUser();
@@ -50,6 +54,8 @@ export default function UsersManagementTable() {
   const updateNotes = useUpdateAdminNotes();
   const freezeWallet = useFreezeWallet();
   const unfreezeWallet = useUnfreezeWallet();
+  const deleteUser = useDeleteUser();
+  const { data: userTxs } = useUserTransactions(txUser?.user_id || null);
   const { toast } = useToast();
 
   const handleSuspend = async () => {
@@ -106,6 +112,17 @@ export default function UsersManagementTable() {
       setFreezeReason("");
     } catch (error) {
       toast({ title: "Erreur", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deleteDialog.user) return;
+    try {
+      await deleteUser.mutateAsync(deleteDialog.user.user_id);
+      toast({ title: "Compte supprimé" });
+      setDeleteDialog({ open: false, user: null });
+    } catch (error) {
+      toast({ title: "Erreur", description: "Impossible de supprimer le compte", variant: "destructive" });
     }
   };
 
@@ -256,6 +273,14 @@ export default function UsersManagementTable() {
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
                     {/* View Full Profile */}
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => { setTxUser(user); }}
+                      title="Historique transactions"
+                    >
+                      <History className="h-4 w-4" />
+                    </Button>
                     <Dialog open={profileDialogOpen && selectedUser?.id === user.id} onOpenChange={setProfileDialogOpen}>
                       <DialogTrigger asChild>
                         <Button variant="ghost" size="icon" onClick={() => setSelectedUser(user)}>
@@ -270,10 +295,11 @@ export default function UsersManagementTable() {
                           </DialogTitle>
                         </DialogHeader>
                         <Tabs defaultValue="info" className="w-full">
-                          <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="info">Informations</TabsTrigger>
+                          <TabsList className="grid w-full grid-cols-4">
+                            <TabsTrigger value="info">Infos</TabsTrigger>
                             <TabsTrigger value="identity">Identité</TabsTrigger>
                             <TabsTrigger value="wallet">Finances</TabsTrigger>
+                            <TabsTrigger value="transactions">Historique</TabsTrigger>
                           </TabsList>
                           
                           <TabsContent value="info" className="space-y-4">
@@ -522,6 +548,46 @@ export default function UsersManagementTable() {
                               </Card>
                             )}
                           </TabsContent>
+
+                          <TabsContent value="transactions" className="space-y-4">
+                            <Card>
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm flex items-center gap-2">
+                                  <History className="h-4 w-4" />
+                                  Dernières transactions
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                  Cliquez sur l'icône historique dans la table pour charger les transactions.
+                                </p>
+                                {txUser?.user_id === user.user_id && userTxs && userTxs.length > 0 ? (
+                                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                                    {userTxs.map((tx: any) => (
+                                      <div key={tx.id} className="flex items-center justify-between p-2 rounded border text-sm">
+                                        <div>
+                                          <span className="font-medium capitalize">{tx.type}</span>
+                                          <span className="text-xs text-muted-foreground ml-2">
+                                            {format(new Date(tx.created_at), "dd/MM/yy HH:mm", { locale: fr })}
+                                          </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <span className={tx.type === "deposit" ? "text-green-600" : "text-red-600"}>
+                                            {tx.type === "deposit" ? "+" : "-"}{tx.currency} {Number(tx.amount).toLocaleString()}
+                                          </span>
+                                          <Badge variant={tx.status === "completed" ? "default" : tx.status === "pending" ? "secondary" : "destructive"}>
+                                            {tx.status}
+                                          </Badge>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p className="text-center text-muted-foreground py-4">Aucune transaction</p>
+                                )}
+                              </CardContent>
+                            </Card>
+                          </TabsContent>
                         </Tabs>
                       </DialogContent>
                     </Dialog>
@@ -579,6 +645,25 @@ export default function UsersManagementTable() {
                       title="Notes admin"
                     >
                       <StickyNote className="h-4 w-4" />
+                    </Button>
+
+                    {/* Contact */}
+                    {user.phone && (
+                      <Button variant="ghost" size="icon" asChild title="Appeler">
+                        <a href={`tel:${user.phone}`}>
+                          <PhoneIcon className="h-4 w-4 text-green-500" />
+                        </a>
+                      </Button>
+                    )}
+
+                    {/* Delete */}
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => setDeleteDialog({ open: true, user })}
+                      title="Supprimer le compte"
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
                 </TableCell>
@@ -690,6 +775,68 @@ export default function UsersManagementTable() {
               Sauvegarder
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete User Dialog */}
+      <Dialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ open, user: open ? deleteDialog.user : null })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-5 w-5" />
+              Supprimer le compte de {deleteDialog.user?.full_name}
+            </DialogTitle>
+            <DialogDescription>
+              Cette action est irréversible. Toutes les données de l'utilisateur seront supprimées définitivement.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialog({ open: false, user: null })}>
+              Annuler
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteUser} disabled={deleteUser.isPending}>
+              {deleteUser.isPending ? "Suppression..." : "Supprimer définitivement"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Transaction History Dialog */}
+      <Dialog open={!!txUser} onOpenChange={(open) => !open && setTxUser(null)}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Transactions de {txUser?.full_name}
+            </DialogTitle>
+          </DialogHeader>
+          {userTxs && userTxs.length > 0 ? (
+            <div className="space-y-2">
+              {userTxs.map((tx: any) => (
+                <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg border text-sm">
+                  <div>
+                    <span className="font-medium capitalize">{tx.type}</span>
+                    <p className="text-xs text-muted-foreground">
+                      {format(new Date(tx.created_at), "dd MMM yyyy HH:mm", { locale: fr })}
+                    </p>
+                    {tx.description && <p className="text-xs text-muted-foreground">{tx.description}</p>}
+                  </div>
+                  <div className="text-right">
+                    <span className={`font-bold ${tx.type === "deposit" ? "text-green-600" : "text-red-600"}`}>
+                      {tx.type === "deposit" ? "+" : "-"}{tx.currency} {Number(tx.amount).toLocaleString()}
+                    </span>
+                    <div>
+                      <Badge variant={tx.status === "completed" ? "default" : tx.status === "pending" ? "secondary" : "destructive"} className="text-xs">
+                        {tx.status}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-muted-foreground py-8">Aucune transaction</p>
+          )}
         </DialogContent>
       </Dialog>
     </div>

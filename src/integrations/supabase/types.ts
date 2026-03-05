@@ -1101,6 +1101,7 @@ export type Database = {
         Args: { application_id: string }
         Returns: boolean
       }
+      approve_withdrawal: { Args: { p_transaction_id: string }; Returns: Json }
       calculate_distance: {
         Args: { lat1: number; lat2: number; lon1: number; lon2: number }
         Returns: number
@@ -1109,6 +1110,7 @@ export type Database = {
         Args: { p_order_id: string }
         Returns: Json
       }
+      delete_user_account: { Args: { p_user_id: string }; Returns: Json }
       demo_wallet_topup: {
         Args: { p_amount: number; p_currency: string }
         Returns: Json
@@ -1161,6 +1163,19 @@ export type Database = {
         Args: { p_reason: string; p_verification_id: string }
         Returns: Json
       }
+      reject_withdrawal: {
+        Args: { p_reason?: string; p_transaction_id: string }
+        Returns: Json
+      }
+      request_withdrawal: {
+        Args: {
+          p_account_details: string
+          p_amount: number
+          p_currency: string
+          p_payment_method: Database["public"]["Enums"]["payment_method_type"]
+        }
+        Returns: Json
+      }
       robot_auto_approve_deposit: {
         Args: { p_transaction_id: string }
         Returns: Json
@@ -1171,6 +1186,10 @@ export type Database = {
       }
       robot_auto_approve_seller: {
         Args: { p_application_id: string }
+        Returns: Json
+      }
+      robot_auto_approve_withdrawal: {
+        Args: { p_transaction_id: string }
         Returns: Json
       }
       robot_auto_suspend_lost_packages: { Args: never; Returns: Json }

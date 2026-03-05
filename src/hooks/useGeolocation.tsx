@@ -194,13 +194,13 @@ export function useNearbyDrivers(position: GeolocationPosition | null, radiusKm:
           .select("user_id, full_name, phone")
           .in("user_id", driverIds);
 
-        return data.map((driver: any) => ({
+        return driversWithDistance.map((driver) => ({
           ...driver,
           profile: profiles?.find((p) => p.user_id === driver.driver_id),
         })) as NearbyDriver[];
       }
 
-      return data as NearbyDriver[];
+      return [] as NearbyDriver[];
     },
     enabled: !!position,
     refetchInterval: 30000, // Refresh every 30 seconds

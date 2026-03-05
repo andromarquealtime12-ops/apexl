@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
-import { useWallet, useWalletTransactions, useDepositToWallet, PAYMENT_INSTRUCTIONS } from "@/hooks/useWallet";
+import { useWallet, useWalletTransactions, useDepositToWallet, useRequestWithdrawal, PAYMENT_INSTRUCTIONS } from "@/hooks/useWallet";
 import { PAYMENT_METHODS, CURRENCY_SYMBOLS, PaymentMethodType, Currency } from "@/types/database";
 import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,7 +33,7 @@ import {
 import { 
   Wallet as WalletIcon, Plus, ArrowUpRight, ArrowDownLeft, 
   CreditCard, Smartphone, Building, Landmark, Clock, Upload, 
-  Info, Copy, Check, Image as ImageIcon
+  Info, Copy, Check, Image as ImageIcon, Minus, Send
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -57,9 +57,11 @@ const Wallet = () => {
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: transactions, isLoading: transactionsLoading } = useWalletTransactions();
   const depositMutation = useDepositToWallet();
+  const withdrawalMutation = useRequestWithdrawal();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [depositOpen, setDepositOpen] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [depositStep, setDepositStep] = useState<"method" | "transfer" | "proof">("method");
   const [depositAmount, setDepositAmount] = useState("");
   const [depositCurrency, setDepositCurrency] = useState<Currency>("DOP");
@@ -71,6 +73,12 @@ const Wallet = () => {
 
   const [cardDemoOpen, setCardDemoOpen] = useState(false);
   const [cardDemoAmount, setCardDemoAmount] = useState(0);
+
+  // Withdrawal state
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [withdrawCurrency, setWithdrawCurrency] = useState<Currency>("DOP");
+  const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType>("banreservas");
+  const [withdrawAccount, setWithdrawAccount] = useState("");
 
   if (authLoading) {
     return (
@@ -152,6 +160,32 @@ const Wallet = () => {
     }
   };
 
+  const handleWithdraw = async () => {
+    const amount = parseFloat(withdrawAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast.error("Montant invalide");
+      return;
+    }
+    if (!withdrawAccount.trim()) {
+      toast.error("Veuillez entrer les détails du compte");
+      return;
+    }
+    try {
+      await withdrawalMutation.mutateAsync({
+        amount,
+        currency: withdrawCurrency,
+        paymentMethod: withdrawMethod,
+        accountDetails: withdrawAccount.trim(),
+      });
+      toast.success("Demande de retrait soumise ! Elle sera traitée sous 24-48h.");
+      setWithdrawOpen(false);
+      setWithdrawAmount("");
+      setWithdrawAccount("");
+    } catch (error: any) {
+      toast.error(error.message || "Erreur lors du retrait");
+    }
+  };
+
   const filteredPaymentMethods = PAYMENT_METHODS.filter(
     m => m.country === "both" || m.country === (depositCurrency === "HTG" ? "HT" : "DO")
   ).filter(m => MANUAL_PAYMENT_METHODS.includes(m.value));
@@ -210,6 +244,93 @@ const Wallet = () => {
 
         {/* Actions */}
         <div className="flex gap-4 mb-8">
+          {/* Withdraw Dialog */}
+          <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
+            <DialogTrigger asChild>
+              <Button size="lg" variant="outline" className="flex-1">
+                <Minus className="h-5 w-5 mr-2" />
+                Retirer
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Retirer des fonds</DialogTitle>
+                <DialogDescription>
+                  Demandez un retrait vers votre compte bancaire ou mobile money
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Montant</Label>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      value={withdrawAmount}
+                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Devise</Label>
+                    <Select value={withdrawCurrency} onValueChange={(v) => setWithdrawCurrency(v as Currency)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="DOP">RD$ (Peso)</SelectItem>
+                        <SelectItem value="HTG">G (Gourde)</SelectItem>
+                        <SelectItem value="USD">$ (Dollar)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Méthode de retrait</Label>
+                  <Select value={withdrawMethod} onValueChange={(v) => setWithdrawMethod(v as PaymentMethodType)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {PAYMENT_METHODS.filter(m => !m.value.startsWith("card_")).map(m => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Détails du compte (numéro de compte / téléphone)</Label>
+                  <Input
+                    placeholder="Ex: 809-555-1234 ou numéro de compte"
+                    value={withdrawAccount}
+                    onChange={(e) => setWithdrawAccount(e.target.value)}
+                  />
+                </div>
+
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    Le montant sera déduit immédiatement et le virement traité sous 24-48h. 
+                    Si la demande est refusée, le montant sera remboursé.
+                  </AlertDescription>
+                </Alert>
+
+                <Button
+                  className="w-full"
+                  onClick={handleWithdraw}
+                  disabled={withdrawalMutation.isPending || !withdrawAmount || !withdrawAccount}
+                >
+                  {withdrawalMutation.isPending ? (
+                    <span>Envoi...</span>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Demander le retrait
+                    </>
+                  )}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Deposit Dialog */}
           <Dialog open={depositOpen} onOpenChange={(open) => {
             setDepositOpen(open);
             if (!open) resetDepositForm();
