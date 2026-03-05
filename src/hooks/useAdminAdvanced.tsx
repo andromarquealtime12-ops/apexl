@@ -28,6 +28,9 @@ export interface AdvancedUserProfile {
   wallet_balance_dop?: number;
   wallet_balance_htg?: number;
   wallet_balance_usd?: number;
+  email?: string;
+  last_login_at?: string | null;
+  referral_code?: string | null;
 }
  
  export function useAdminAdvancedStats() {
@@ -444,12 +447,93 @@ export function useAllTransactions() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("wallet_transactions")
-        .select("*, wallets(user_id, profiles:user_id(full_name))")
+        .select("*, wallets(user_id)")
         .order("created_at", { ascending: false })
         .limit(500);
       if (error) throw error;
       return data;
     },
     enabled: isAdmin
+  });
+}
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const { data, error } = await supabase.rpc("delete_user_account" as any, {
+        p_user_id: userId
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users-list"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-advanced-stats"] });
+    }
+  });
+}
+
+export function useUserTransactions(userId: string | null) {
+  const { isAdmin } = useAuth();
+
+  return useQuery({
+    queryKey: ["user-transactions", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      const { data: wallet } = await supabase
+        .from("wallets")
+        .select("id")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (!wallet) return [];
+      const { data, error } = await supabase
+        .from("wallet_transactions")
+        .select("*")
+        .eq("wallet_id", wallet.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin && !!userId
+  });
+}
+
+export function useApproveWithdrawal() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (transactionId: string) => {
+      const { data, error } = await supabase.rpc("approve_withdrawal" as any, {
+        p_transaction_id: transactionId
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-deposits"] });
+      queryClient.invalidateQueries({ queryKey: ["all-transactions"] });
+    }
+  });
+}
+
+export function useRejectWithdrawal() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ transactionId, reason }: { transactionId: string; reason: string }) => {
+      const { data, error } = await supabase.rpc("reject_withdrawal" as any, {
+        p_transaction_id: transactionId,
+        p_reason: reason
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-deposits"] });
+      queryClient.invalidateQueries({ queryKey: ["all-transactions"] });
+    }
   });
 }

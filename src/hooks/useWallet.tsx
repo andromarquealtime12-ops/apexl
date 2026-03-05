@@ -121,6 +121,36 @@ export function useDepositToWallet() {
   });
 }
 
+interface WithdrawalParams {
+  amount: number;
+  currency: Currency;
+  paymentMethod: PaymentMethodType;
+  accountDetails: string;
+}
+
+export function useRequestWithdrawal() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ amount, currency, paymentMethod, accountDetails }: WithdrawalParams) => {
+      const { data, error } = await supabase.rpc("request_withdrawal" as any, {
+        p_amount: amount,
+        p_currency: currency,
+        p_payment_method: paymentMethod,
+        p_account_details: accountDetails,
+      });
+      if (error) throw error;
+      const result = data as any;
+      if (!result.success) throw new Error(result.error);
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+    },
+  });
+}
+
 // Payment instructions for each method
 export const PAYMENT_INSTRUCTIONS: Record<string, { 
   accountNumber: string; 
