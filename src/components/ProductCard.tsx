@@ -16,7 +16,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [added, setAdded] = useState(false);
   const currencySymbol = CURRENCY_SYMBOLS[product.currency];
   const mainImage = product.images?.[0] || "/placeholder.svg";
-  
+
   const isInCart = items.some((item) => item.product.id === product.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -34,22 +34,22 @@ export function ProductCard({ product }: ProductCardProps) {
           <img
             src={mainImage}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          {product.is_featured && (
-            <Badge className="absolute top-2 left-2 bg-primary">Vedette</Badge>
-          )}
-          {product.stock_quantity === 0 && (
-            <Badge variant="destructive" className="absolute top-2 right-2">
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-none shadow-sm" />
+          
+          {product.is_featured &&
+          <Badge className="absolute top-2 left-2 bg-primary">Vedette</Badge>
+          }
+          {product.stock_quantity === 0 &&
+          <Badge variant="destructive" className="absolute top-2 right-2">
               Épuisé
             </Badge>
-          )}
+          }
           <Button
             variant="ghost"
             size="icon"
             className="absolute top-2 right-2 bg-background/80 hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={(e) => e.stopPropagation()}
-          >
+            onClick={(e) => e.stopPropagation()}>
+            
             <Heart className="h-4 w-4" />
           </Button>
         </div>
@@ -61,40 +61,40 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
         </Link>
-        {product.category && (
-          <p className="text-xs text-muted-foreground mt-1">{product.category.name}</p>
-        )}
+        {product.category &&
+        <p className="text-xs text-muted-foreground mt-1">{product.category.name}</p>
+        }
         <p className="text-lg font-bold text-primary mt-2">
           {currencySymbol} {product.price.toLocaleString()}
         </p>
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Button 
-          className="w-full" 
+        <Button
+          className="w-full"
           size="sm"
           disabled={product.stock_quantity === 0}
           variant={added || isInCart ? "secondary" : "default"}
-          onClick={handleAddToCart}
-        >
-          {added ? (
-            <>
+          onClick={handleAddToCart}>
+          
+          {added ?
+          <>
               <Check className="h-4 w-4 mr-2" />
               Ajouté !
-            </>
-          ) : isInCart ? (
-            <>
+            </> :
+          isInCart ?
+          <>
               <ShoppingCart className="h-4 w-4 mr-2" />
               Dans le panier
-            </>
-          ) : (
-            <>
+            </> :
+
+          <>
               <ShoppingCart className="h-4 w-4 mr-2" />
               Ajouter au panier
             </>
-          )}
+          }
         </Button>
       </CardFooter>
-    </Card>
-  );
+    </Card>);
+
 }

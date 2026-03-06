@@ -7,10 +7,10 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center bg-gradient-hero overflow-hidden">
       {/* Background Image */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      />
+        style={{ backgroundImage: `url(${heroImage})` }} />
+      
       
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-secondary/90" />
@@ -27,9 +27,9 @@ const HeroSection = () => {
 
           {/* Main Heading */}
           <div className="space-y-4">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground leading-tight">
-              Ayiti Market
-            </h1>
+            
+
+            
             <p className="text-xl md:text-2xl text-primary-foreground/90 font-medium">
               Konekte Vendè, Kliyan ak Livrè yo nan yon sèl platfòm
             </p>
@@ -72,8 +72,8 @@ const HeroSection = () => {
 
       {/* Decorative Elements */}
       <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent" />
-    </section>
-  );
+    </section>);
+
 };
 
 export default HeroSection;
