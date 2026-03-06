@@ -4,31 +4,30 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
-  MapPin, 
-  Loader2, 
-  Users, 
-  Navigation, 
-  Phone,
-  RefreshCw,
-  Truck
+  MapPin, Loader2, Users, Navigation, Phone,
+  RefreshCw, Truck, AlertTriangle, CheckCircle
 } from "lucide-react";
 import { 
   useCurrentPosition, 
   useNearbyDrivers,
   useDriverLocationsRealtime
 } from "@/hooks/useGeolocation";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface NearbyDriversCardProps {
   onSelectDriver?: (driverId: string) => void;
   selectedDriverId?: string;
+  orderId?: string;
 }
 
-export function NearbyDriversCard({ onSelectDriver, selectedDriverId }: NearbyDriversCardProps) {
+export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }: NearbyDriversCardProps) {
   const { position, error, loading: posLoading, getCurrentPosition } = useCurrentPosition();
-  const { data: drivers, isLoading, refetch } = useNearbyDrivers(position, 15);
+  const { data: drivers, isLoading, error: queryError, refetch } = useNearbyDrivers(position, 15);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [assigning, setAssigning] = useState<string | null>(null);
 
   // Get position on mount
   useEffect(() => {
@@ -48,12 +47,57 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId }: NearbyDr
     toast.success("Liste actualisée");
   };
 
-  const handleSelectDriver = (driverId: string) => {
+  const handleSelectDriver = async (driverId: string) => {
     if (onSelectDriver) {
       onSelectDriver(driverId);
       toast.success("Livreur sélectionné");
+      return;
     }
+
+    // If orderId provided, assign driver to order directly
+    if (orderId) {
+      setAssigning(driverId);
+      try {
+        const { error } = await supabase
+          .from("orders")
+          .update({ driver_id: driverId, status: "ready_for_pickup", updated_at: new Date().toISOString() })
+          .eq("id", orderId);
+        
+        if (error) throw error;
+        toast.success("Livreur assigné à la commande !");
+      } catch (err) {
+        toast.error("Erreur lors de l'assignation du livreur");
+      } finally {
+        setAssigning(null);
+      }
+      return;
+    }
+
+    toast.info("Sélectionnez une commande d'abord pour assigner un livreur");
   };
+
+  if (error && !position) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Truck className="h-5 w-5" />
+            Livreurs à proximité
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-6">
+            <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-3" />
+            <p className="text-muted-foreground mb-2">{error}</p>
+            <Button onClick={getCurrentPosition} disabled={posLoading}>
+              {posLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <MapPin className="h-4 w-4 mr-2" />}
+              Réessayer
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!position && !posLoading) {
     return (
@@ -74,7 +118,6 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId }: NearbyDr
               {posLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Activer la position
             </Button>
-            {error && <p className="text-sm text-destructive mt-2">{error}</p>}
           </div>
         </CardContent>
       </Card>
@@ -106,6 +149,13 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId }: NearbyDr
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {queryError && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>Erreur lors de la recherche. Veuillez réessayer.</AlertDescription>
+          </Alert>
+        )}
+
         {isLoading || posLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -146,12 +196,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId }: NearbyDr
                 </div>
                 <div className="flex items-center gap-2">
                   {driver.profile?.phone && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      asChild
-                    >
+                    <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
                       <a href={`tel:${driver.profile.phone}`}>
                         <Phone className="h-4 w-4" />
                       </a>
@@ -160,9 +205,16 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId }: NearbyDr
                   <Button
                     variant={selectedDriverId === driver.driver_id ? "default" : "outline"}
                     size="sm"
+                    disabled={assigning === driver.driver_id}
                     onClick={() => handleSelectDriver(driver.driver_id)}
                   >
-                    {selectedDriverId === driver.driver_id ? "Sélectionné" : "Choisir"}
+                    {assigning === driver.driver_id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : selectedDriverId === driver.driver_id ? (
+                      <><CheckCircle className="h-3 w-3 mr-1" /> Sélectionné</>
+                    ) : (
+                      "Choisir"
+                    )}
                   </Button>
                 </div>
               </div>
