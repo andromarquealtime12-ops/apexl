@@ -296,9 +296,24 @@ const Wallet = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Détails du compte (numéro de compte / téléphone)</Label>
+                  <Label>
+                    {withdrawMethod === "paypal" ? "Adresse email PayPal" :
+                     withdrawMethod === "wise" ? "Email ou numéro Wise" :
+                     withdrawMethod === "moncash" ? "Numéro Moncash" :
+                     withdrawMethod === "orange_money" ? "Numéro Orange Money" :
+                     withdrawMethod === "banreservas" ? "Numéro de compte Banreservas" :
+                     withdrawMethod === "bhd" ? "Numéro de compte BHD León" :
+                     withdrawMethod === "popular" ? "Numéro de compte Banco Popular" :
+                     "Numéro de compte / coordonnées bancaires"}
+                  </Label>
                   <Input
-                    placeholder="Ex: 809-555-1234 ou numéro de compte"
+                    placeholder={
+                      withdrawMethod === "paypal" ? "votre@email.com" :
+                      withdrawMethod === "wise" ? "votre@email.com ou numéro" :
+                      withdrawMethod === "moncash" || withdrawMethod === "orange_money" ? "+509 XXXX XXXX" :
+                      withdrawMethod === "banreservas" || withdrawMethod === "bhd" || withdrawMethod === "popular" ? "Numéro de compte" :
+                      "Entrez vos coordonnées bancaires"
+                    }
                     value={withdrawAccount}
                     onChange={(e) => setWithdrawAccount(e.target.value)}
                   />
