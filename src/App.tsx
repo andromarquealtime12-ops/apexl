@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import SupportChatWidget from "./components/support/SupportChatWidget";
+import AIAssistantWidget from "./components/ai/AIAssistantWidget";
 
 const queryClient = new QueryClient();
 
