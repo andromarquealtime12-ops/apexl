@@ -33,7 +33,7 @@ import {
 import { 
   Wallet as WalletIcon, Plus, ArrowUpRight, ArrowDownLeft, 
   CreditCard, Smartphone, Building, Landmark, Clock, Upload, 
-  Info, Copy, Check, Image as ImageIcon, Minus, Send
+  Info, Copy, Check, Image as ImageIcon, Minus, Send, Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
