@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ayiti Market - Marketplace Haïtienne en République Dominicaine</title>
     <meta name="description" content="La première plateforme marketplace pour la communauté haïtienne en RD. Connectez vendeurs, acheteurs et livreurs avec paiements sécurisés et livraison rapide." />
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Ayiti Marché" />
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
     <meta name="author" content="Ayiti Market" />
     <meta name="keywords" content="marketplace haïti, république dominicaine, livraison, vendeurs haïtiens, e-commerce RD" />
 
@@ -25,5 +33,12 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>
