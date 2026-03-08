@@ -11,6 +11,7 @@ import {
   useDriverLocation,
   useSetDriverOnlineStatus 
 } from "@/hooks/useGeolocation";
+import OpenStreetMap from "@/components/map/OpenStreetMap";
 
 export function DriverLocationTracker() {
   const { position, error, isWatching, startWatching, stopWatching } = useWatchPosition();
@@ -94,33 +95,43 @@ export function DriverLocationTracker() {
           />
         </div>
 
+        {/* OpenStreetMap */}
         {isOnline && position && (
-          <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-            <div className="flex items-start gap-3">
-              <MapPin className="h-5 w-5 text-green-500 mt-0.5" />
-              <div className="flex-1">
-                <p className="font-medium text-green-700 dark:text-green-400">Position active</p>
-                <p className="text-xs text-green-600 dark:text-green-500 font-mono">
-                  {position.latitude.toFixed(6)}, {position.longitude.toFixed(6)}
-                </p>
-                {position.accuracy && (
-                  <p className="text-xs text-green-600 dark:text-green-500 flex items-center gap-1 mt-1">
-                    <Gauge className="h-3 w-3" />
-                    Précision: ±{Math.round(position.accuracy)}m
-                    {position.speed != null && position.speed > 0 && (
-                      <span className="ml-2">• Vitesse: {Math.round(position.speed * 3.6)} km/h</span>
-                    )}
+          <>
+            <OpenStreetMap
+              center={{ lat: position.latitude, lng: position.longitude }}
+              zoom={15}
+              showUserLocation
+              userPosition={{ lat: position.latitude, lng: position.longitude }}
+              className="h-[250px] w-full rounded-lg border"
+            />
+            <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+              <div className="flex items-start gap-3">
+                <MapPin className="h-5 w-5 text-green-500 mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-medium text-green-700 dark:text-green-400">Position active</p>
+                  <p className="text-xs text-green-600 dark:text-green-500 font-mono">
+                    {position.latitude.toFixed(6)}, {position.longitude.toFixed(6)}
                   </p>
+                  {position.accuracy && (
+                    <p className="text-xs text-green-600 dark:text-green-500 flex items-center gap-1 mt-1">
+                      <Gauge className="h-3 w-3" />
+                      Précision: ±{Math.round(position.accuracy)}m
+                      {position.speed != null && position.speed > 0 && (
+                        <span className="ml-2">• Vitesse: {Math.round(position.speed * 3.6)} km/h</span>
+                      )}
+                    </p>
+                  )}
+                </div>
+                {isWatching && (
+                  <Badge variant="outline" className="text-green-600 border-green-600 animate-pulse">
+                    <Radio className="h-3 w-3 mr-1" />
+                    Live
+                  </Badge>
                 )}
               </div>
-              {isWatching && (
-                <Badge variant="outline" className="text-green-600 border-green-600 animate-pulse">
-                  <Radio className="h-3 w-3 mr-1" />
-                  Live
-                </Badge>
-              )}
             </div>
-          </div>
+          </>
         )}
 
         {error && (
