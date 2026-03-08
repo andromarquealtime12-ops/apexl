@@ -615,39 +615,61 @@ const Wallet = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {transactions?.map((tx) => (
-                  <div key={tx.id} className="flex items-center justify-between p-4 border rounded-lg">
+                {transactions?.map((tx) => {
+                  const isPending = tx.status === "pending";
+                  return (
+                  <div 
+                    key={tx.id} 
+                    className={`flex items-center justify-between p-4 border rounded-lg transition-all ${
+                      isPending ? "animate-pulse border-yellow-300 bg-yellow-50/50 dark:bg-yellow-900/10" : ""
+                    }`}
+                  >
                     <div className="flex items-center gap-4">
                       <div className={`p-2 rounded-full ${
-                        tx.type === "deposit" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
+                        isPending 
+                          ? "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30"
+                          : tx.type === "deposit" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
                       }`}>
-                        {tx.type === "deposit" ? (
+                        {isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : tx.type === "deposit" ? (
                           <ArrowDownLeft className="h-4 w-4" />
                         ) : (
                           <ArrowUpRight className="h-4 w-4" />
                         )}
                       </div>
                       <div>
-                        <p className="font-medium capitalize">{tx.type}</p>
+                        <p className="font-medium capitalize flex items-center gap-2">
+                          {tx.type === "deposit" ? "Dépôt" : tx.type === "withdrawal" ? "Retrait" : tx.type}
+                          {isPending && (
+                            <Badge variant="outline" className="text-yellow-600 border-yellow-400 text-xs animate-bounce">
+                              En cours...
+                            </Badge>
+                          )}
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           {format(new Date(tx.created_at), "d MMM yyyy, HH:mm", { locale: fr })}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className={`font-bold ${tx.type === "deposit" ? "text-green-600" : "text-red-600"}`}>
+                      <p className={`font-bold ${
+                        isPending ? "text-yellow-600" :
+                        tx.type === "deposit" ? "text-green-600" : "text-red-600"
+                      }`}>
                         {tx.type === "deposit" ? "+" : "-"}{CURRENCY_SYMBOLS[tx.currency as Currency]} {tx.amount.toLocaleString()}
                       </p>
                       <Badge variant={
                         tx.status === "completed" ? "default" : 
                         tx.status === "pending" ? "secondary" : "destructive"
                       }>
-                        {tx.status === "completed" ? "Complété" : 
-                         tx.status === "pending" ? "En attente" : "Échoué"}
+                        {tx.status === "completed" ? "✓ Complété" : 
+                         tx.status === "pending" ? "⏳ En attente" : "✗ Échoué"}
                       </Badge>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
