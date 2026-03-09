@@ -18,10 +18,18 @@ interface MapMarker {
   popup?: string;
 }
 
+interface RouteLine {
+  from: { lat: number; lng: number };
+  to: { lat: number; lng: number };
+  color?: string;
+  dashed?: boolean;
+}
+
 interface OpenStreetMapProps {
   center?: { lat: number; lng: number };
   zoom?: number;
   markers?: MapMarker[];
+  routes?: RouteLine[];
   className?: string;
   onMapClick?: (lat: number, lng: number) => void;
   showUserLocation?: boolean;
@@ -49,6 +57,7 @@ export default function OpenStreetMap({
   center,
   zoom = 13,
   markers = [],
+  routes = [],
   className = 'h-[300px] w-full rounded-lg',
   onMapClick,
   showUserLocation = false,
@@ -58,7 +67,7 @@ export default function OpenStreetMap({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
 
-  const defaultCenter = center || userPosition || { lat: 18.4861, lng: -69.9312 }; // Santo Domingo
+  const defaultCenter = center || userPosition || { lat: 18.4861, lng: -69.9312 };
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -86,7 +95,7 @@ export default function OpenStreetMap({
     };
   }, []);
 
-  // Update markers
+  // Update markers and routes
   useEffect(() => {
     if (!markersLayerRef.current) return;
     markersLayerRef.current.clearLayers();
@@ -104,6 +113,21 @@ export default function OpenStreetMap({
         .addTo(markersLayerRef.current);
     }
 
+    // Draw route lines
+    routes.forEach((route) => {
+      const polyline = L.polyline(
+        [[route.from.lat, route.from.lng], [route.to.lat, route.to.lng]],
+        {
+          color: route.color || '#2563eb',
+          weight: 4,
+          opacity: 0.7,
+          dashArray: route.dashed ? '10, 10' : undefined,
+        }
+      );
+      polyline.addTo(markersLayerRef.current!);
+    });
+
+    // Draw markers
     markers.forEach((m) => {
       const icon = m.color ? createColoredIcon(MARKER_COLORS[m.color] || MARKER_COLORS.blue) : undefined;
       const marker = icon
@@ -121,10 +145,14 @@ export default function OpenStreetMap({
     if (showUserLocation && userPosition) {
       allPoints.push([userPosition.lat, userPosition.lng]);
     }
+    routes.forEach((r) => {
+      allPoints.push([r.from.lat, r.from.lng]);
+      allPoints.push([r.to.lat, r.to.lng]);
+    });
     if (allPoints.length > 1 && mapInstanceRef.current) {
-      mapInstanceRef.current.fitBounds(allPoints, { padding: [30, 30] });
+      mapInstanceRef.current.fitBounds(allPoints, { padding: [40, 40] });
     }
-  }, [markers, userPosition, showUserLocation]);
+  }, [markers, routes, userPosition, showUserLocation]);
 
   // Recenter when center changes
   useEffect(() => {
