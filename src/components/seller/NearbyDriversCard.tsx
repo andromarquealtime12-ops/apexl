@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { 
-  MapPin, Loader2, Users, Navigation, Phone,
+  MapPin, Loader2, Users, Navigation, Phone, Clock,
   RefreshCw, Truck, AlertTriangle, CheckCircle, Star, Package, Shield, Map
 } from "lucide-react";
 import { 
@@ -19,6 +19,7 @@ import {
 import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { estimateDeliveryTime } from "@/utils/deliveryEstimation";
 
 interface DriverProfile {
   driver_id: string;
@@ -287,6 +288,13 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Navigation className="h-3 w-3" />
                       <span>{driver.distance_km.toFixed(1)} km</span>
+                      <span>•</span>
+                      <Clock className="h-3 w-3" />
+                      <span>~{estimateDeliveryTime(
+                        driver.latitude, driver.longitude,
+                        position!.latitude, position!.longitude,
+                        driver.vehicle?.vehicle_type
+                      ).label}</span>
                       {driver.stats && driver.stats.completedDeliveries > 0 && (
                         <>
                           <span>•</span>

@@ -9,13 +9,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
   MapPin, Phone, Truck, Package, CheckCircle, Clock,
-  Key, ChefHat, Navigation, ArrowLeft, Radio
+  Key, ChefHat, Navigation, ArrowLeft, Radio, Timer
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { CURRENCY_SYMBOLS } from "@/types/database";
 import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { useDriverLocationsRealtime } from "@/hooks/useGeolocation";
+import { estimateDeliveryTime } from "@/utils/deliveryEstimation";
 import { Link } from "react-router-dom";
 
 const TRACKING_STEPS = [
@@ -44,6 +45,7 @@ interface LiveOrderTrackingProps {
 export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
   const { user } = useAuth();
   const [driverPosition, setDriverPosition] = useState<{ lat: number; lng: number } | null>(null);
+  const [driverTrail, setDriverTrail] = useState<{ lat: number; lng: number }[]>([]);
 
   // Fetch order
   const { data: order, refetch: refetchOrder } = useQuery({
@@ -122,7 +124,16 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
   useDriverLocationsRealtime(
     useCallback((payload: any) => {
       if (payload.new?.driver_id === order?.driver_id) {
-        setDriverPosition({ lat: payload.new.latitude, lng: payload.new.longitude });
+        const newPos = { lat: payload.new.latitude, lng: payload.new.longitude };
+        setDriverPosition(newPos);
+        // Add to trail (keep last 50 points)
+        setDriverTrail(prev => {
+          const last = prev[prev.length - 1];
+          if (last && Math.abs(last.lat - newPos.lat) < 0.00005 && Math.abs(last.lng - newPos.lng) < 0.00005) {
+            return prev; // Skip if hasn't moved much
+          }
+          return [...prev.slice(-49), newPos];
+        });
         refetchDriverLoc();
       }
       refetchOrder();
@@ -131,9 +142,23 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
 
   useEffect(() => {
     if (driverLoc) {
-      setDriverPosition({ lat: driverLoc.latitude, lng: driverLoc.longitude });
+      const newPos = { lat: driverLoc.latitude, lng: driverLoc.longitude };
+      setDriverPosition(newPos);
+      setDriverTrail(prev => {
+        if (prev.length === 0) return [newPos];
+        return prev;
+      });
     }
   }, [driverLoc]);
+
+  // Reset trail when order changes status significantly
+  useEffect(() => {
+    if (order?.status === "picked_up" || order?.status === "in_transit") {
+      // Keep trail for active delivery
+    } else {
+      setDriverTrail([]);
+    }
+  }, [order?.status]);
 
   if (!order) return null;
 
@@ -142,13 +167,52 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
   const isActive = ["confirmed", "preparing", "ready", "ready_for_pickup", "picked_up", "in_transit"].includes(order.status || "");
   const showDeliveryCode = verification?.delivery_code && ["picked_up", "in_transit"].includes(order.status || "");
 
+  // ETA calculation
+  const eta = driverPosition && order.buyer_latitude && order.buyer_longitude
+    ? estimateDeliveryTime(
+        driverPosition.lat,
+        driverPosition.lng,
+        order.buyer_latitude,
+        order.buyer_longitude,
+        driverProfile?.vehicle_type
+      )
+    : null;
+
   // Map markers
   const mapMarkers = [];
   if (order.buyer_latitude && order.buyer_longitude) {
     mapMarkers.push({ lat: order.buyer_latitude, lng: order.buyer_longitude, color: "green" as const, popup: "📍 Livraison ici" });
   }
   if (driverPosition) {
-    mapMarkers.push({ lat: driverPosition.lat, lng: driverPosition.lng, color: "blue" as const, popup: "🛵 Livreur" });
+    mapMarkers.push({
+      lat: driverPosition.lat,
+      lng: driverPosition.lng,
+      color: "blue" as const,
+      popup: `🛵 Livreur${eta ? ` — ${eta.label} (${eta.distanceKm} km)` : ""}`,
+    });
+  }
+
+  // Route lines: trail + direct line to destination
+  const mapRoutes = [];
+  
+  // Driver trail (path already traveled)
+  for (let i = 1; i < driverTrail.length; i++) {
+    mapRoutes.push({
+      from: driverTrail[i - 1],
+      to: driverTrail[i],
+      color: '#2563eb',
+      dashed: false,
+    });
+  }
+  
+  // Dashed line from driver to destination
+  if (driverPosition && order.buyer_latitude && order.buyer_longitude) {
+    mapRoutes.push({
+      from: driverPosition,
+      to: { lat: order.buyer_latitude, lng: order.buyer_longitude },
+      color: '#16a34a',
+      dashed: true,
+    });
   }
 
   const mapCenter = driverPosition
@@ -164,6 +228,29 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
         <ArrowLeft className="h-4 w-4" /> Retour aux commandes
       </Link>
 
+      {/* ETA Banner */}
+      {isActive && eta && (
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Timer className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Temps estimé d'arrivée</p>
+                  <p className="text-2xl font-bold text-primary">{eta.label}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Distance</p>
+                <p className="text-lg font-semibold">{eta.distanceKm} km</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Live Map */}
       {isActive && mapCenter && (
         <Card className="overflow-hidden border-0 shadow-lg">
@@ -172,16 +259,36 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
               center={mapCenter}
               zoom={14}
               markers={mapMarkers}
-              className="h-[300px] w-full"
+              routes={mapRoutes}
+              className="h-[350px] w-full"
               showUserLocation={!!order.buyer_latitude}
               userPosition={order.buyer_latitude ? { lat: order.buyer_latitude, lng: order.buyer_longitude! } : null}
             />
-            {driverPosition && (
-              <div className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg flex items-center gap-2">
-                <Radio className="h-3 w-3 text-green-500 animate-pulse" />
-                <span className="text-xs font-medium">En direct</span>
+            <div className="absolute top-3 left-3 flex gap-2">
+              {driverPosition && (
+                <div className="bg-background/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg flex items-center gap-2">
+                  <Radio className="h-3 w-3 text-green-500 animate-pulse" />
+                  <span className="text-xs font-medium">En direct</span>
+                </div>
+              )}
+              {driverTrail.length > 1 && (
+                <div className="bg-background/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg flex items-center gap-2">
+                  <Navigation className="h-3 w-3 text-primary" />
+                  <span className="text-xs font-medium">{driverTrail.length} pts</span>
+                </div>
+              )}
+            </div>
+            {/* Legend */}
+            <div className="absolute bottom-3 right-3 bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg text-xs space-y-1">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-0.5 bg-[#2563eb]" />
+                <span>Trajet parcouru</span>
               </div>
-            )}
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-0.5 border-t-2 border-dashed border-[#16a34a]" />
+                <span>Reste à parcourir</span>
+              </div>
+            </div>
           </div>
         </Card>
       )}
@@ -208,12 +315,10 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
 
               return (
                 <div key={step.key} className="flex items-start gap-4 relative">
-                  {/* Vertical line */}
                   {i < TRACKING_STEPS.length - 1 && (
                     <div className={`absolute left-[15px] top-[32px] w-0.5 h-[calc(100%-8px)] ${isCompleted ? "bg-primary" : "bg-muted"}`} />
                   )}
                   
-                  {/* Circle */}
                   <div className={`relative z-10 flex items-center justify-center w-8 h-8 rounded-full border-2 shrink-0 transition-all ${
                     isCurrent ? "border-primary bg-primary text-primary-foreground scale-110 shadow-lg" :
                     isCompleted ? "border-primary bg-primary text-primary-foreground" :
@@ -222,11 +327,16 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
                     <StepIcon className="h-4 w-4" />
                   </div>
 
-                  {/* Label */}
                   <div className={`pb-6 ${isCurrent ? "" : "opacity-60"}`}>
                     <p className={`font-medium text-sm ${isCurrent ? "text-primary" : ""}`}>{step.label}</p>
                     <p className="text-xs text-muted-foreground">{step.description}</p>
-                    {isCurrent && (
+                    {isCurrent && eta && i >= 3 && (
+                      <p className="text-xs text-primary mt-1 flex items-center gap-1">
+                        <Timer className="h-3 w-3" />
+                        ~{eta.label} restantes
+                      </p>
+                    )}
+                    {isCurrent && !eta && (
                       <p className="text-xs text-primary mt-1 animate-pulse">En cours...</p>
                     )}
                   </div>
@@ -269,6 +379,12 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
                     <Truck className="h-3 w-3" />
                     {driverProfile.vehicle_brand} {driverProfile.vehicle_model || ""} • {driverProfile.license_plate}
+                  </p>
+                )}
+                {eta && (
+                  <p className="text-xs text-primary flex items-center gap-1 mt-1">
+                    <Timer className="h-3 w-3" />
+                    Arrivée dans ~{eta.label} ({eta.distanceKm} km)
                   </p>
                 )}
               </div>
