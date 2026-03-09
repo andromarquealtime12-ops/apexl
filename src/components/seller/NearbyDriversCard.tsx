@@ -59,6 +59,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<DriverProfile | null>(null);
   const [enriching, setEnriching] = useState(false);
+  const [showMap, setShowMap] = useState(true);
 
   useEffect(() => {
     getCurrentPosition();
