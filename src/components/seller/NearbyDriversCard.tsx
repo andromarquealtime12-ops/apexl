@@ -288,6 +288,13 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Navigation className="h-3 w-3" />
                       <span>{driver.distance_km.toFixed(1)} km</span>
+                      <span>•</span>
+                      <Clock className="h-3 w-3" />
+                      <span>~{estimateDeliveryTime(
+                        driver.latitude, driver.longitude,
+                        position!.latitude, position!.longitude,
+                        driver.vehicle?.vehicle_type
+                      ).label}</span>
                       {driver.stats && driver.stats.completedDeliveries > 0 && (
                         <>
                           <span>•</span>
