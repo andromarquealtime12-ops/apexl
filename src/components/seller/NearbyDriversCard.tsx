@@ -217,6 +217,41 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Map toggle */}
+          <div className="flex items-center justify-between mb-3">
+            <Button
+              variant={showMap ? "default" : "outline"}
+              size="sm"
+              className="gap-2"
+              onClick={() => setShowMap(!showMap)}
+            >
+              <Map className="h-4 w-4" />
+              {showMap ? "Masquer la carte" : "Voir sur la carte"}
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              {drivers.length} livreur{drivers.length !== 1 ? "s" : ""} en ligne
+            </span>
+          </div>
+
+          {/* OpenStreetMap with drivers */}
+          {showMap && position && (
+            <div className="mb-4">
+              <OpenStreetMap
+                center={{ lat: position.latitude, lng: position.longitude }}
+                zoom={13}
+                showUserLocation
+                userPosition={{ lat: position.latitude, lng: position.longitude }}
+                markers={drivers.map((d) => ({
+                  lat: d.latitude,
+                  lng: d.longitude,
+                  color: selectedDriverId === d.driver_id ? "green" as const : "orange" as const,
+                  popup: `🛵 ${d.profile?.full_name || "Livreur"} — ${d.distance_km.toFixed(1)} km${d.stats ? ` • ${d.stats.completedDeliveries} livrées` : ""}`,
+                }))}
+                className="h-[280px] w-full rounded-lg border"
+              />
+            </div>
+          )}
+
           {queryError && (
             <Alert variant="destructive" className="mb-4">
               <AlertTriangle className="h-4 w-4" />
