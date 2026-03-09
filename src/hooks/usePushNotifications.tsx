@@ -42,9 +42,8 @@ export function usePushNotifications() {
             icon: "/icons/icon-192x192.png",
             badge: "/icons/icon-96x96.png",
             tag: "ayiti-marche",
-            renotify: true,
             ...options,
-          });
+          } as any);
         });
       } else {
         new Notification(title, {
