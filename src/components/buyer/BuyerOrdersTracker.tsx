@@ -4,8 +4,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Package, Truck, MapPin, Key, CheckCircle, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Link } from "react-router-dom";
 import { fr } from "date-fns/locale";
 import { CURRENCY_SYMBOLS } from "@/types/database";
 
