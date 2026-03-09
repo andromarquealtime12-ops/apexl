@@ -18,6 +18,7 @@ const DriverDashboard = () => {
   const { user, isDriver, loading } = useAuth();
   const { data: stats, isLoading: statsLoading } = useDriverStats();
   const { data: availableDeliveries } = useAvailableDeliveries();
+  useDriverOrderNotifications();
 
   if (loading) {
     return (
