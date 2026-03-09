@@ -10,6 +10,8 @@ import DriverStatsCards from "@/components/driver/DriverStatsCards";
 import AvailableDeliveriesTable from "@/components/driver/AvailableDeliveriesTable";
 import MyDeliveriesTable from "@/components/driver/MyDeliveriesTable";
 import { DriverLocationTracker } from "@/components/driver/DriverLocationTracker";
+import { PushNotificationBanner } from "@/components/notifications/PushNotificationBanner";
+import { useDriverOrderNotifications } from "@/hooks/usePushNotifications";
 import { useDriverStats, useAvailableDeliveries } from "@/hooks/useDriverStats";
 
 const DriverDashboard = () => {
