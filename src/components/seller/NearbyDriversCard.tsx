@@ -19,6 +19,7 @@ import {
 import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { estimateDeliveryTime } from "@/utils/deliveryEstimation";
 
 interface DriverProfile {
   driver_id: string;
