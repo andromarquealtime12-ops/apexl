@@ -9,13 +9,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Separator } from "@/components/ui/separator";
 import { 
   MapPin, Loader2, Users, Navigation, Phone,
-  RefreshCw, Truck, AlertTriangle, CheckCircle, Star, Package, Shield
+  RefreshCw, Truck, AlertTriangle, CheckCircle, Star, Package, Shield, Map
 } from "lucide-react";
 import { 
   useCurrentPosition, 
   useNearbyDrivers,
   useDriverLocationsRealtime
 } from "@/hooks/useGeolocation";
+import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
