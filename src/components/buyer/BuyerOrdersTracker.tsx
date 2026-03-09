@@ -4,8 +4,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Package, Truck, MapPin, Key, CheckCircle, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Link } from "react-router-dom";
 import { fr } from "date-fns/locale";
 import { CURRENCY_SYMBOLS } from "@/types/database";
 
@@ -188,12 +190,17 @@ export default function BuyerOrdersTracker() {
                 </div>
               </div>
 
-              {/* Total */}
+              {/* Total + Track button */}
               <div className="flex justify-between items-center pt-2 border-t text-sm">
-                <span className="text-muted-foreground">Total</span>
-                <span className="font-semibold">
-                  {currencySymbol} {order.total_amount.toLocaleString()}
-                </span>
+                <span className="text-muted-foreground">Total: <strong>{currencySymbol} {order.total_amount.toLocaleString()}</strong></span>
+                {["confirmed", "preparing", "ready", "ready_for_pickup", "picked_up", "in_transit"].includes(order.status || "") && (
+                  <Button size="sm" className="gap-1.5" asChild>
+                    <Link to={`/track/${order.id}`}>
+                      <Navigation className="h-3.5 w-3.5" />
+                      Suivre en direct
+                    </Link>
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
