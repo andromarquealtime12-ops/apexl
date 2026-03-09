@@ -10,12 +10,15 @@ import DriverStatsCards from "@/components/driver/DriverStatsCards";
 import AvailableDeliveriesTable from "@/components/driver/AvailableDeliveriesTable";
 import MyDeliveriesTable from "@/components/driver/MyDeliveriesTable";
 import { DriverLocationTracker } from "@/components/driver/DriverLocationTracker";
+import { PushNotificationBanner } from "@/components/notifications/PushNotificationBanner";
+import { useDriverOrderNotifications } from "@/hooks/usePushNotifications";
 import { useDriverStats, useAvailableDeliveries } from "@/hooks/useDriverStats";
 
 const DriverDashboard = () => {
   const { user, isDriver, loading } = useAuth();
   const { data: stats, isLoading: statsLoading } = useDriverStats();
   const { data: availableDeliveries } = useAvailableDeliveries();
+  useDriverOrderNotifications();
 
   if (loading) {
     return (
@@ -62,6 +65,7 @@ const DriverDashboard = () => {
       <Header />
 
       <div className="container px-4 py-8">
+        <PushNotificationBanner />
         <div className="flex items-center gap-3 mb-6">
           <Truck className="h-8 w-8 text-primary" />
           <div>
