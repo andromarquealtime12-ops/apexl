@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Phone, Navigation, Key } from "lucide-react";
+import { MapPin, Package, Phone, Navigation, Key, ExternalLink } from "lucide-react";
 import { DeliveryCodeVerification } from "./DeliveryCodeVerification";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; action?: "pickup" | "delivery"; actionLabel?: string }> = {
@@ -41,6 +41,16 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
     variant: "destructive"
   },
 };
+
+function getNavigationUrl(lat?: number | null, lng?: number | null, address?: string | null) {
+  if (lat && lng) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+  }
+  if (address) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+  }
+  return null;
+}
 
 export default function MyDeliveriesTable() {
   const [verificationModal, setVerificationModal] = useState<{
@@ -95,6 +105,11 @@ export default function MyDeliveriesTable() {
             <div className="grid gap-4">
               {activeDeliveries.map((delivery) => {
                 const status = statusConfig[delivery.status || "ready_for_pickup"];
+                const navUrl = getNavigationUrl(
+                  delivery.buyer_latitude,
+                  delivery.buyer_longitude,
+                  delivery.delivery_address
+                );
                 
                 return (
                   <Card key={delivery.id} className="border-primary/20 bg-primary/5">
@@ -123,16 +138,22 @@ export default function MyDeliveriesTable() {
                           </p>
                         )}
 
-                        <div className="flex items-center justify-between pt-2 border-t">
+                        <div className="flex items-center justify-between pt-2 border-t flex-wrap gap-2">
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm" className="gap-1">
-                              <Navigation className="h-3 w-3" />
-                              Itinéraire
-                            </Button>
-                            <Button variant="outline" size="sm" className="gap-1">
-                              <Phone className="h-3 w-3" />
-                              Appeler
-                            </Button>
+                            {navUrl ? (
+                              <Button variant="outline" size="sm" className="gap-1" asChild>
+                                <a href={navUrl} target="_blank" rel="noopener noreferrer">
+                                  <Navigation className="h-3 w-3" />
+                                  Itinéraire
+                                  <ExternalLink className="h-3 w-3" />
+                                </a>
+                              </Button>
+                            ) : (
+                              <Button variant="outline" size="sm" className="gap-1" disabled>
+                                <Navigation className="h-3 w-3" />
+                                Itinéraire
+                              </Button>
+                            )}
                           </div>
                           
                           {status.action && (
@@ -175,7 +196,7 @@ export default function MyDeliveriesTable() {
                           <span className="text-sm">{delivery.delivery_city}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm font-medium text-success">
+                          <span className="text-sm font-medium text-green-600">
                             +{formatCurrency(delivery.delivery_fee || 0)}
                           </span>
                           <Badge variant={status.variant} className="text-xs">

@@ -49,8 +49,9 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
       const result = await createVerification.mutateAsync(orderId);
       setPickupCode(result.pickup_code);
       setShowCode(true);
-      
-      toast.success("Commande marquée comme prête !");
+
+      // Notify all drivers via notifications table (realtime will trigger push)
+      toast.success("Commande marquée comme prête ! Les livreurs seront notifiés.");
     } catch (error) {
       toast.error("Erreur lors de la mise à jour");
     }
