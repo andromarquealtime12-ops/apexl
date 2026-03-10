@@ -142,7 +142,17 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
           .update({ driver_id: driverId, status: "ready_for_pickup", updated_at: new Date().toISOString() })
           .eq("id", orderId);
         if (error) throw error;
-        toast.success("Livreur assigné à la commande !");
+
+        // Send in-app notification to the driver
+        await supabase.from("notifications").insert({
+          user_id: driverId,
+          title: "🛵 Nouvelle livraison assignée !",
+          message: `La commande #${orderId.slice(0, 8)} vous a été assignée. Rendez-vous chez le vendeur pour récupérer le colis.`,
+          type: "info",
+          action_url: "/driver",
+        });
+
+        toast.success("Livreur assigné et notifié !");
       } catch {
         toast.error("Erreur lors de l'assignation du livreur");
       } finally {
