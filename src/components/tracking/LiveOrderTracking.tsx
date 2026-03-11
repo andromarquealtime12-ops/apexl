@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
   MapPin, Phone, Truck, Package, CheckCircle, Clock,
-  Key, ChefHat, Navigation, ArrowLeft, Radio, Timer
+  Key, ChefHat, Navigation, ArrowLeft, Radio, Timer, MessageCircle
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -18,6 +18,7 @@ import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { useDriverLocationsRealtime } from "@/hooks/useGeolocation";
 import { estimateDeliveryTime } from "@/utils/deliveryEstimation";
 import { Link } from "react-router-dom";
+import OrderChat from "@/components/chat/OrderChat";
 
 const TRACKING_STEPS = [
   { key: "confirmed", label: "Confirmée", icon: CheckCircle, description: "Commande acceptée" },
