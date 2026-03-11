@@ -11,6 +11,7 @@ import {
   MessageSquare, Flag, History, Sliders
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
+import PendingWithdrawalsTable from "@/components/admin/PendingWithdrawalsTable";
 import TransactionHistoryTable from "@/components/admin/TransactionHistoryTable";
 import AdminCodesManager from "@/components/admin/AdminCodesManager";
 import { ApplicationsManager } from "@/components/admin/ApplicationsManager";
@@ -187,6 +188,18 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <PendingDepositsTable />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  Demandes de retrait en attente
+                </CardTitle>
+                <CardDescription>Approuvez ou rejetez les demandes de retrait</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PendingWithdrawalsTable />
               </CardContent>
             </Card>
 

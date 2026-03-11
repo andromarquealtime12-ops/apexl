@@ -149,11 +149,26 @@ export function useProofImageUrl(proofPath: string | null) {
     queryFn: async () => {
       if (!proofPath) return null;
 
+      // If it's already a full URL (e.g. from public bucket or external), use directly
+      if (proofPath.startsWith("http://") || proofPath.startsWith("https://")) {
+        return proofPath;
+      }
+
+      // Strip bucket prefix if accidentally included
+      const cleanPath = proofPath.replace(/^transaction-proofs\//, "");
+
       const { data } = await supabase.storage
         .from("transaction-proofs")
-        .createSignedUrl(proofPath, 3600); // 1 hour expiry
+        .createSignedUrl(cleanPath, 3600);
 
-      return data?.signedUrl || null;
+      if (data?.signedUrl) return data.signedUrl;
+
+      // Fallback: try public URL
+      const { data: publicData } = supabase.storage
+        .from("transaction-proofs")
+        .getPublicUrl(cleanPath);
+
+      return publicData?.publicUrl || null;
     },
     enabled: !!proofPath,
   });

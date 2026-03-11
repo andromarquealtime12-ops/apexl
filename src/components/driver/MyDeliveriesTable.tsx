@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Phone, Navigation, Key, ExternalLink } from "lucide-react";
+import { MapPin, Package, Phone, Navigation, Key, ExternalLink, MessageCircle } from "lucide-react";
 import { DeliveryCodeVerification } from "./DeliveryCodeVerification";
+import OrderChat from "@/components/chat/OrderChat";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; action?: "pickup" | "delivery"; actionLabel?: string }> = {
   ready: { 
@@ -167,6 +168,14 @@ export default function MyDeliveriesTable() {
                             </Button>
                           )}
                         </div>
+                        {/* Chat with buyer */}
+                        {delivery.buyer_id && delivery.status !== "delivered" && (
+                          <OrderChat
+                            orderId={delivery.id}
+                            otherUserName="Acheteur"
+                            compact
+                          />
+                        )}
                       </div>
                     </CardContent>
                   </Card>
