@@ -137,24 +137,17 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
     if (orderId) {
       setAssigning(driverId);
       try {
-        const { error } = await supabase
-          .from("orders")
-          .update({ driver_id: driverId, status: "ready_for_pickup", updated_at: new Date().toISOString() })
-          .eq("id", orderId);
-        if (error) throw error;
-
-        // Send in-app notification to the driver
-        await supabase.from("notifications").insert({
-          user_id: driverId,
-          title: "🛵 Nouvelle livraison assignée !",
-          message: `La commande #${orderId.slice(0, 8)} vous a été assignée. Rendez-vous chez le vendeur pour récupérer le colis.`,
-          type: "info",
-          action_url: "/driver",
+        const { data, error } = await supabase.rpc("assign_driver_to_order" as any, {
+          p_order_id: orderId,
+          p_driver_id: driverId,
         });
+        if (error) throw error;
+        const result = data as any;
+        if (!result?.success) throw new Error(result?.error || "Erreur inconnue");
 
         toast.success("Livreur assigné et notifié !");
-      } catch {
-        toast.error("Erreur lors de l'assignation du livreur");
+      } catch (err: any) {
+        toast.error(err.message || "Erreur lors de l'assignation du livreur");
       } finally {
         setAssigning(null);
       }
