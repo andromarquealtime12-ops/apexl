@@ -396,6 +396,38 @@ export type Database = {
         }
         Relationships: []
       }
+      order_chat_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          order_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          order_id: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          order_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_chat_messages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -1102,6 +1134,10 @@ export type Database = {
         Returns: boolean
       }
       approve_withdrawal: { Args: { p_transaction_id: string }; Returns: Json }
+      assign_driver_to_order: {
+        Args: { p_driver_id: string; p_order_id: string }
+        Returns: Json
+      }
       calculate_distance: {
         Args: { lat1: number; lat2: number; lon1: number; lon2: number }
         Returns: number
