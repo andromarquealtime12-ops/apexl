@@ -193,6 +193,18 @@ const Admin = () => {
 
             <Card>
               <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  Demandes de retrait en attente
+                </CardTitle>
+                <CardDescription>Approuvez ou rejetez les demandes de retrait</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PendingWithdrawalsTable />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle>Historique des transactions</CardTitle>
                 <CardDescription>Toutes les transactions validées ou rejetées</CardDescription>
               </CardHeader>

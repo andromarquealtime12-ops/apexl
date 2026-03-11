@@ -168,6 +168,14 @@ export default function MyDeliveriesTable() {
                             </Button>
                           )}
                         </div>
+                        {/* Chat with buyer */}
+                        {delivery.buyer_id && delivery.status !== "delivered" && (
+                          <OrderChat
+                            orderId={delivery.id}
+                            otherUserName="Acheteur"
+                            compact
+                          />
+                        )}
                       </div>
                     </CardContent>
                   </Card>

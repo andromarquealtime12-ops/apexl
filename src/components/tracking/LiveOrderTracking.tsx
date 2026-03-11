@@ -401,6 +401,14 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
         </Card>
       )}
 
+      {/* Chat with Driver */}
+      {order.driver_id && order.status !== "delivered" && (
+        <OrderChat
+          orderId={orderId}
+          otherUserName={driverProfile?.full_name || "Livreur"}
+        />
+      )}
+
       {/* Order Summary */}
       <Card>
         <CardContent className="pt-6 space-y-3">
