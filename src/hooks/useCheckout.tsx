@@ -56,6 +56,11 @@ export function useCheckout() {
          throw new Error(result.error || "Checkout failed");
        }
 
+       // Notify sellers about new order
+       if (result.order_id) {
+         notifyNewOrder(result.order_id);
+       }
+
        return { id: result.order_id };
     },
     onSuccess: () => {
