@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
  import { useCart } from "@/contexts/CartContext";
 import { PaymentMethodType, Currency } from "@/types/database";
+import { notifyNewOrder } from "@/hooks/useOrderNotifications";
 
 interface CheckoutParams {
   deliveryAddress: string;
@@ -53,6 +54,11 @@ export function useCheckout() {
        
        if (!result.success) {
          throw new Error(result.error || "Checkout failed");
+       }
+
+       // Notify sellers about new order
+       if (result.order_id) {
+         notifyNewOrder(result.order_id);
        }
 
        return { id: result.order_id };

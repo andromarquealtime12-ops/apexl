@@ -129,6 +129,12 @@ const Header = () => {
                       Mes commandes
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/search-order" className="cursor-pointer">
+                      <Search className="mr-2 h-4 w-4" />
+                      Rechercher commande
+                    </Link>
+                  </DropdownMenuItem>
                   {isSeller && (
                     <DropdownMenuItem asChild>
                       <Link to="/seller" className="cursor-pointer text-primary">

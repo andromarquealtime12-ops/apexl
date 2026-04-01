@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { notifyOrderStatusChange } from "@/hooks/useOrderNotifications";
 import {
   Dialog,
   DialogContent,
@@ -50,7 +51,17 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
       setPickupCode(result.pickup_code);
       setShowCode(true);
 
-      // Notify all drivers via notifications table (realtime will trigger push)
+      // Get order to notify buyer
+      const { data: order } = await supabase
+        .from("orders")
+        .select("buyer_id")
+        .eq("id", orderId)
+        .single();
+
+      if (order?.buyer_id) {
+        notifyOrderStatusChange(orderId, order.buyer_id, "ready");
+      }
+
       toast.success("Commande marquée comme prête ! Les livreurs seront notifiés.");
     } catch (error) {
       toast.error("Erreur lors de la mise à jour");
