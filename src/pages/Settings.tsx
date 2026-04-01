@@ -18,6 +18,7 @@ export default function Settings() {
   const { user, loading } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
+  const { permission, isSupported, requestPermission } = usePushNotifications();
 
   const initial = useMemo(
     () => ({
