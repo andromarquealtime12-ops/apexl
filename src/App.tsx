@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import TrackOrder from "./pages/TrackOrder";
+import OrderSearch from "./pages/OrderSearch";
 import SupportChatWidget from "./components/support/SupportChatWidget";
 import AIAssistantWidget from "./components/ai/AIAssistantWidget";
 
