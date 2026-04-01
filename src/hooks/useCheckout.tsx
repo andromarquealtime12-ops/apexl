@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
  import { useCart } from "@/contexts/CartContext";
 import { PaymentMethodType, Currency } from "@/types/database";
+import { notifyNewOrder } from "@/hooks/useOrderNotifications";
 
 interface CheckoutParams {
   deliveryAddress: string;
