@@ -149,6 +149,47 @@ export default function Settings() {
             )}
           </CardContent>
         </Card>
+
+        {/* Notifications */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bell className="h-5 w-5" />
+              Notifications Push
+            </CardTitle>
+            <CardDescription>
+              Recevez des alertes sur vos commandes et livraisons
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {!isSupported ? (
+              <p className="text-sm text-muted-foreground">
+                Les notifications ne sont pas supportées sur ce navigateur.
+              </p>
+            ) : permission === "granted" ? (
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                <div>
+                  <p className="font-medium text-green-800 dark:text-green-200">Notifications activées</p>
+                  <p className="text-xs text-green-600 dark:text-green-400">Vous recevrez des alertes pour les commandes et livraisons</p>
+                </div>
+              </div>
+            ) : permission === "denied" ? (
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                <BellOff className="h-5 w-5 text-red-600" />
+                <div>
+                  <p className="font-medium text-red-800 dark:text-red-200">Notifications bloquées</p>
+                  <p className="text-xs text-red-600 dark:text-red-400">Activez-les dans les paramètres de votre navigateur</p>
+                </div>
+              </div>
+            ) : (
+              <Button onClick={requestPermission} className="w-full gap-2">
+                <Bell className="h-4 w-4" />
+                Activer les notifications
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       </div>
       <Footer />
     </main>
