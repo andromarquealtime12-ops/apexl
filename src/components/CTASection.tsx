@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Download, Smartphone } from "lucide-react";
+import InstallAppModal from "./InstallAppModal";
 
 const CTASection = () => {
+  const [showInstall, setShowInstall] = useState(false);
+
   return (
     <section className="py-20 bg-gradient-hero">
       <div className="container mx-auto px-4 text-center">
@@ -17,12 +21,12 @@ const CTASection = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-4 h-auto">
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-4 h-auto" onClick={() => setShowInstall(true)}>
               <Download className="h-5 w-5 mr-2" />
               Télécharger l'app
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
-            <Button size="lg" variant="accent" className="text-lg px-8 py-4 h-auto">
+            <Button size="lg" variant="accent" className="text-lg px-8 py-4 h-auto" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               <Smartphone className="h-5 w-5 mr-2" />
               Version web
             </Button>
@@ -47,6 +51,8 @@ const CTASection = () => {
           </div>
         </div>
       </div>
+
+      <InstallAppModal open={showInstall} onOpenChange={setShowInstall} />
     </section>
   );
 };
