@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
+import { PayPalPayment } from "@/components/checkout/PayPalPayment";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
 import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, CreditCard, Mail } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -38,6 +39,7 @@ const CITIES = [
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { items, getSubtotal, getDeliveryFee, getTotal } = useCart();
@@ -51,7 +53,44 @@ const Checkout = () => {
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [showStripePayment, setShowStripePayment] = useState(false);
+  const [showPayPalPayment, setShowPayPalPayment] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState(0);
+
+  // Handle PayPal return
+  useEffect(() => {
+    const paypalStatus = searchParams.get("paypal");
+    const paypalOrderId = sessionStorage.getItem("paypal_order_id");
+    const paypalCurrency = sessionStorage.getItem("paypal_currency") as Currency;
+    
+    if (paypalStatus === "success" && paypalOrderId && user) {
+      // Capture the PayPal payment
+      supabase.functions.invoke("paypal-payment", {
+        body: {
+          action: "capture_order",
+          order_id: paypalOrderId,
+          currency: paypalCurrency || "DOP",
+          user_id: user.id,
+        },
+      }).then(({ data, error }) => {
+        if (data?.success) {
+          toast({ title: "Paiement PayPal réussi !", description: "Votre portefeuille a été rechargé" });
+          queryClient.invalidateQueries({ queryKey: ["wallet"] });
+          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+        } else {
+          toast({ title: "Erreur PayPal", description: error?.message || "Erreur lors de la capture", variant: "destructive" });
+        }
+        sessionStorage.removeItem("paypal_order_id");
+        sessionStorage.removeItem("paypal_amount");
+        sessionStorage.removeItem("paypal_currency");
+        // Clean URL
+        navigate("/checkout", { replace: true });
+      });
+    } else if (paypalStatus === "cancel") {
+      toast({ title: "Paiement annulé", description: "Le paiement PayPal a été annulé" });
+      sessionStorage.removeItem("paypal_order_id");
+      navigate("/checkout", { replace: true });
+    }
+  }, [searchParams, user]);
 
   const isEmailVerified = profile?.email_verified ?? false;
 
@@ -319,30 +358,29 @@ const Checkout = () => {
                         Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants)
                       </p>
 
-                      {/* Demo Stripe payment option */}
+                      {/* PayPal real payment option */}
                       <div className="border rounded-lg p-4 bg-muted/20">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="bg-primary/10 p-2 rounded-full">
                             <CreditCard className="h-5 w-5 text-primary" />
                           </div>
                           <div>
-                            <p className="font-medium">Payer par carte (Démo)</p>
+                            <p className="font-medium">Payer par carte / PayPal</p>
                             <p className="text-xs text-muted-foreground">
-                              Ajoutez le montant manquant à votre portefeuille
+                              Paiement sécurisé via PayPal (carte ou compte)
                             </p>
                           </div>
                         </div>
                         <Button
                           type="button"
-                          variant="outline"
-                          className="w-full gap-2"
+                          className="w-full gap-2 bg-[#0070ba] hover:bg-[#005ea6] text-white"
                           onClick={() => {
                             setTopUpAmount(total - currentBalance);
-                            setShowStripePayment(true);
+                            setShowPayPalPayment(true);
                           }}
                         >
                           <CreditCard className="h-4 w-4" />
-                          Ajouter {CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} par carte
+                          Payer {CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} avec PayPal
                         </Button>
                       </div>
                     </div>
@@ -439,6 +477,19 @@ const Checkout = () => {
              });
           }
           setShowStripePayment(false);
+        }}
+      />
+
+      {/* PayPal Payment Modal */}
+      <PayPalPayment
+        isOpen={showPayPalPayment}
+        onClose={() => setShowPayPalPayment(false)}
+        amount={topUpAmount}
+        currency={currency}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["wallet"] });
+          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+          setShowPayPalPayment(false);
         }}
       />
     </div>

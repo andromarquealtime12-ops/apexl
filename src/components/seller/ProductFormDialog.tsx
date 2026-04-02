@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCreateProduct, useUpdateProduct } from "@/hooks/useSellerProducts";
 import { useCategories } from "@/hooks/useCategories";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Loader2 } from "lucide-react";
+import { Loader2, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 
 interface ProductFormDialogProps {
@@ -31,9 +33,12 @@ interface ProductFormDialogProps {
 }
 
 export default function ProductFormDialog({ open, onOpenChange, product }: ProductFormDialogProps) {
+  const { user } = useAuth();
   const { data: categories } = useCategories();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -184,12 +189,54 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
             </Select>
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="is_active">Produit actif</Label>
-            <Switch
-              id="is_active"
-              checked={formData.is_active}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
+          <div className="space-y-2">
+            <Label>Images du produit</Label>
+            <div className="flex flex-wrap gap-2">
+              {formData.images.map((url, i) => (
+                <div key={i} className="relative w-20 h-20 rounded-md overflow-hidden border">
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    className="absolute top-0 right-0 bg-destructive text-destructive-foreground rounded-bl p-0.5"
+                    onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, idx) => idx !== i) }))}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="w-20 h-20 border-2 border-dashed rounded-md flex items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+              >
+                {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <ImagePlus className="h-5 w-5" />}
+              </button>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={async (e) => {
+                const files = e.target.files;
+                if (!files || !user) return;
+                setUploading(true);
+                const newUrls: string[] = [];
+                for (const file of Array.from(files)) {
+                  const ext = file.name.split(".").pop();
+                  const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+                  const { error } = await supabase.storage.from("product-images").upload(path, file);
+                  if (!error) {
+                    const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(path);
+                    newUrls.push(urlData.publicUrl);
+                  }
+                }
+                setFormData(prev => ({ ...prev, images: [...prev.images, ...newUrls] }));
+                setUploading(false);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }}
             />
           </div>
 
