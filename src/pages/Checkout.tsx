@@ -479,6 +479,19 @@ const Checkout = () => {
           setShowStripePayment(false);
         }}
       />
+
+      {/* PayPal Payment Modal */}
+      <PayPalPayment
+        isOpen={showPayPalPayment}
+        onClose={() => setShowPayPalPayment(false)}
+        amount={topUpAmount}
+        currency={currency}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["wallet"] });
+          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+          setShowPayPalPayment(false);
+        }}
+      />
     </div>
   );
 };
