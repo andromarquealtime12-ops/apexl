@@ -33,9 +33,12 @@ interface ProductFormDialogProps {
 }
 
 export default function ProductFormDialog({ open, onOpenChange, product }: ProductFormDialogProps) {
+  const { user } = useAuth();
   const { data: categories } = useCategories();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
