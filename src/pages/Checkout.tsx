@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
+import { PayPalPayment } from "@/components/checkout/PayPalPayment";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
 import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, CreditCard, Mail } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
