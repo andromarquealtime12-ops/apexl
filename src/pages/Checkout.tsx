@@ -358,30 +358,29 @@ const Checkout = () => {
                         Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants)
                       </p>
 
-                      {/* Demo Stripe payment option */}
+                      {/* PayPal real payment option */}
                       <div className="border rounded-lg p-4 bg-muted/20">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="bg-primary/10 p-2 rounded-full">
                             <CreditCard className="h-5 w-5 text-primary" />
                           </div>
                           <div>
-                            <p className="font-medium">Payer par carte (Démo)</p>
+                            <p className="font-medium">Payer par carte / PayPal</p>
                             <p className="text-xs text-muted-foreground">
-                              Ajoutez le montant manquant à votre portefeuille
+                              Paiement sécurisé via PayPal (carte ou compte)
                             </p>
                           </div>
                         </div>
                         <Button
                           type="button"
-                          variant="outline"
-                          className="w-full gap-2"
+                          className="w-full gap-2 bg-[#0070ba] hover:bg-[#005ea6] text-white"
                           onClick={() => {
                             setTopUpAmount(total - currentBalance);
-                            setShowStripePayment(true);
+                            setShowPayPalPayment(true);
                           }}
                         >
                           <CreditCard className="h-4 w-4" />
-                          Ajouter {CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} par carte
+                          Payer {CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} avec PayPal
                         </Button>
                       </div>
                     </div>
