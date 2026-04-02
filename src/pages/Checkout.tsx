@@ -39,6 +39,7 @@ const CITIES = [
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { items, getSubtotal, getDeliveryFee, getTotal } = useCart();
@@ -52,7 +53,44 @@ const Checkout = () => {
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [showStripePayment, setShowStripePayment] = useState(false);
+  const [showPayPalPayment, setShowPayPalPayment] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState(0);
+
+  // Handle PayPal return
+  useEffect(() => {
+    const paypalStatus = searchParams.get("paypal");
+    const paypalOrderId = sessionStorage.getItem("paypal_order_id");
+    const paypalCurrency = sessionStorage.getItem("paypal_currency") as Currency;
+    
+    if (paypalStatus === "success" && paypalOrderId && user) {
+      // Capture the PayPal payment
+      supabase.functions.invoke("paypal-payment", {
+        body: {
+          action: "capture_order",
+          order_id: paypalOrderId,
+          currency: paypalCurrency || "DOP",
+          user_id: user.id,
+        },
+      }).then(({ data, error }) => {
+        if (data?.success) {
+          toast({ title: "Paiement PayPal réussi !", description: "Votre portefeuille a été rechargé" });
+          queryClient.invalidateQueries({ queryKey: ["wallet"] });
+          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+        } else {
+          toast({ title: "Erreur PayPal", description: error?.message || "Erreur lors de la capture", variant: "destructive" });
+        }
+        sessionStorage.removeItem("paypal_order_id");
+        sessionStorage.removeItem("paypal_amount");
+        sessionStorage.removeItem("paypal_currency");
+        // Clean URL
+        navigate("/checkout", { replace: true });
+      });
+    } else if (paypalStatus === "cancel") {
+      toast({ title: "Paiement annulé", description: "Le paiement PayPal a été annulé" });
+      sessionStorage.removeItem("paypal_order_id");
+      navigate("/checkout", { replace: true });
+    }
+  }, [searchParams, user]);
 
   const isEmailVerified = profile?.email_verified ?? false;
 
