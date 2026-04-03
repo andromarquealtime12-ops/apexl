@@ -18,8 +18,10 @@ serve(async (req) => {
       throw new Error("PayPal credentials not configured");
     }
 
-    const { action, order_id, amount, currency, user_id } = await req.json();
-    const PAYPAL_API = "https://api-m.paypal.com"; // Live mode
+    const { action, order_id, amount, currency, user_id, return_url } = await req.json();
+    
+    // Use sandbox for testing, switch to live when ready
+    const PAYPAL_API = "https://api-m.sandbox.paypal.com";
 
     // Get PayPal access token
     const tokenRes = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
@@ -33,19 +35,19 @@ serve(async (req) => {
     const tokenData = await tokenRes.json();
     if (!tokenRes.ok) {
       console.error("PayPal token error:", tokenData);
-      throw new Error("Failed to get PayPal access token");
+      throw new Error(`PayPal auth failed: ${tokenData.error_description || tokenData.error || 'Unknown error'}`);
     }
     const accessToken = tokenData.access_token;
 
     if (action === "create_order") {
       // Map currency - PayPal uses standard ISO codes
-      const paypalCurrency = currency === "DOP" ? "USD" : currency === "HTG" ? "USD" : currency;
-      // Convert amount to USD if needed (approximate rates)
       let usdAmount = amount;
       if (currency === "DOP") usdAmount = (amount / 58).toFixed(2);
       else if (currency === "HTG") usdAmount = (amount / 132).toFixed(2);
-      else usdAmount = amount.toFixed(2);
+      else usdAmount = parseFloat(amount).toFixed(2);
 
+      const baseUrl = return_url || "https://marketayiti.lovable.app";
+      
       const orderRes = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
         method: "POST",
         headers: {
@@ -67,8 +69,8 @@ serve(async (req) => {
             brand_name: "Ayiti Marché RD",
             landing_page: "NO_PREFERENCE",
             user_action: "PAY_NOW",
-            return_url: "https://marketayiti.lovable.app/checkout?paypal=success",
-            cancel_url: "https://marketayiti.lovable.app/checkout?paypal=cancel",
+            return_url: `${baseUrl}/wallet?paypal=success`,
+            cancel_url: `${baseUrl}/wallet?paypal=cancel`,
           },
         }),
       });
@@ -98,7 +100,6 @@ serve(async (req) => {
       }
 
       if (captureData.status === "COMPLETED") {
-        // Credit the user's wallet
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
         const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
         const supabase = createClient(supabaseUrl, supabaseKey);
@@ -107,14 +108,12 @@ serve(async (req) => {
           captureData.purchase_units[0].payments.captures[0].amount.value
         );
         
-        // Convert USD back to local currency for wallet credit
         let localAmount = capturedAmount;
-        if (currency === "DOP") localAmount = capturedAmount * 58;
-        else if (currency === "HTG") localAmount = capturedAmount * 132;
+        if (currency === "DOP") localAmount = Math.round(capturedAmount * 58);
+        else if (currency === "HTG") localAmount = Math.round(capturedAmount * 132);
 
         const balanceField = currency === "DOP" ? "balance_dop" : currency === "HTG" ? "balance_htg" : "balance_usd";
 
-        // Get wallet
         const { data: wallet } = await supabase
           .from("wallets")
           .select("id, " + balanceField)
@@ -128,7 +127,6 @@ serve(async (req) => {
             .update({ [balanceField]: currentBalance + localAmount, updated_at: new Date().toISOString() })
             .eq("id", wallet.id);
 
-          // Create transaction record
           await supabase.from("wallet_transactions").insert({
             wallet_id: wallet.id,
             type: "deposit",
