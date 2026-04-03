@@ -1,11 +1,12 @@
-import { useState, useRef } from "react";
-import { Navigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { Navigate, useSearchParams, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet, useWalletTransactions, useDepositToWallet, useRequestWithdrawal, PAYMENT_INSTRUCTIONS } from "@/hooks/useWallet";
 import { PAYMENT_METHODS, CURRENCY_SYMBOLS, PaymentMethodType, Currency } from "@/types/database";
 import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
+import { PayPalPayment } from "@/components/checkout/PayPalPayment";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
