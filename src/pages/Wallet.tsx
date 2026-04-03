@@ -772,6 +772,20 @@ const Wallet = () => {
         }}
       />
 
+      <PayPalPayment
+        isOpen={showPayPal}
+        onClose={() => setShowPayPal(false)}
+        amount={paypalAmount}
+        currency={paypalCurrency}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["wallet"] });
+          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+          setDepositOpen(false);
+          resetDepositForm();
+          setShowPayPal(false);
+        }}
+      />
+
       <Footer />
     </main>
   );
