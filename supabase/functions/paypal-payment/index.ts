@@ -21,7 +21,7 @@ serve(async (req) => {
     const { action, order_id, amount, currency, user_id, return_url } = await req.json();
     
     // Use sandbox for testing, switch to live when ready
-    const PAYPAL_API = "https://api-m.sandbox.paypal.com";
+    const PAYPAL_API = "https://api-m.paypal.com";
 
     // Get PayPal access token
     const tokenRes = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
