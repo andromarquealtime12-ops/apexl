@@ -197,6 +197,7 @@ const Header = () => {
                   </div>
                   <Link to="/" className="text-lg font-medium py-2 border-b">Accueil</Link>
                   <Link to="/products" className="text-lg font-medium py-2 border-b">Produits</Link>
+                  <Link to="/shops" className="text-lg font-medium py-2 border-b">Boutiques</Link>
                   <Link to="/seller" className="text-lg font-medium py-2 border-b">Vendre</Link>
                   <Link to="/driver" className="text-lg font-medium py-2 border-b">Livrer</Link>
                   {!user && (
