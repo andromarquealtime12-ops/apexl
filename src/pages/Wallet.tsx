@@ -435,6 +435,38 @@ const Wallet = () => {
                     </div>
                   </div>
 
+                  {/* PayPal real payment */}
+                  <Card className="border-primary/30 bg-primary/5">
+                    <CardContent className="pt-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium flex items-center gap-2">
+                            💳 Carte bancaire / PayPal
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Paiement sécurisé via PayPal (carte ou compte)
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          className="bg-[#0070ba] hover:bg-[#005ea6] text-white"
+                          onClick={() => {
+                            const amount = parseFloat(depositAmount);
+                            if (isNaN(amount) || amount <= 0) {
+                              toast.error("Veuillez entrer un montant valide");
+                              return;
+                            }
+                            setPaypalAmount(amount);
+                            setPaypalCurrency(depositCurrency);
+                            setShowPayPal(true);
+                          }}
+                        >
+                          Payer
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
                   {/* Card (demo) top-up */}
                   <Card className="border-dashed">
                     <CardContent className="pt-4">
