@@ -77,6 +77,9 @@ const Header = () => {
             <Link to="/products" className="text-sm font-medium hover:text-primary transition-smooth">
               Produits
             </Link>
+            <Link to="/shops" className="text-sm font-medium hover:text-primary transition-smooth">
+              Boutiques
+            </Link>
             <Link to="/seller" className="text-sm font-medium hover:text-primary transition-smooth">
               Vendre
             </Link>
