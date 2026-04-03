@@ -55,6 +55,8 @@ const MANUAL_PAYMENT_METHODS: PaymentMethodType[] = [
 const Wallet = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: transactions, isLoading: transactionsLoading } = useWalletTransactions();
   const depositMutation = useDepositToWallet();
@@ -75,11 +77,49 @@ const Wallet = () => {
   const [cardDemoOpen, setCardDemoOpen] = useState(false);
   const [cardDemoAmount, setCardDemoAmount] = useState(0);
 
+  const [showPayPal, setShowPayPal] = useState(false);
+  const [paypalAmount, setPaypalAmount] = useState(0);
+  const [paypalCurrency, setPaypalCurrency] = useState<Currency>("DOP");
+
   // Withdrawal state
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawCurrency, setWithdrawCurrency] = useState<Currency>("DOP");
   const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType>("banreservas");
   const [withdrawAccount, setWithdrawAccount] = useState("");
+
+  // Handle PayPal return
+  useEffect(() => {
+    const paypalStatus = searchParams.get("paypal");
+    const paypalOrderId = sessionStorage.getItem("paypal_order_id");
+    const paypalCurr = sessionStorage.getItem("paypal_currency") as Currency;
+    
+    if (paypalStatus === "success" && paypalOrderId && user) {
+      supabase.functions.invoke("paypal-payment", {
+        body: {
+          action: "capture_order",
+          order_id: paypalOrderId,
+          currency: paypalCurr || "DOP",
+          user_id: user.id,
+        },
+      }).then(({ data, error }) => {
+        if (data?.success) {
+          toast.success("Paiement PayPal réussi ! Votre portefeuille a été rechargé.");
+          queryClient.invalidateQueries({ queryKey: ["wallet"] });
+          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+        } else {
+          toast.error(error?.message || "Erreur lors de la capture PayPal");
+        }
+        sessionStorage.removeItem("paypal_order_id");
+        sessionStorage.removeItem("paypal_amount");
+        sessionStorage.removeItem("paypal_currency");
+        navigate("/wallet", { replace: true });
+      });
+    } else if (paypalStatus === "cancel") {
+      toast.error("Paiement PayPal annulé");
+      sessionStorage.removeItem("paypal_order_id");
+      navigate("/wallet", { replace: true });
+    }
+  }, [searchParams, user]);
 
   if (authLoading) {
     return (
