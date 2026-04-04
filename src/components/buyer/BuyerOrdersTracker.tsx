@@ -158,6 +158,7 @@ export default function BuyerOrdersTracker() {
   }
 
   return (
+    <>
     <div className="space-y-4">
       {orders.map((order) => {
         const status = statusConfig[order.status || "pending"];
