@@ -14,6 +14,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Package, Key, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import { NearbyDriversCard } from "./NearbyDriversCard";
 
 interface OrderReadyButtonProps {
   orderId: string;
@@ -45,15 +46,11 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
 
   const handleMarkReady = async () => {
     try {
-      // Update order status
       await updateOrderStatus.mutateAsync();
-      
-      // Create verification codes
       const result = await createVerification.mutateAsync(orderId);
       setPickupCode(result.pickup_code);
       setShowCode(true);
 
-      // Get order to notify buyer
       const { data: order } = await supabase
         .from("orders")
         .select("buyer_id")
@@ -70,21 +67,65 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     }
   };
 
-  // If verification already exists, show the code
+  // PIN code dialog - always rendered
+  const pinDialog = (
+    <Dialog open={showCode} onOpenChange={setShowCode}>
+      <DialogContent className="sm:max-w-[350px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            Commande prête !
+          </DialogTitle>
+          <DialogDescription>
+            Donnez ce code PIN au livreur lorsqu'il viendra récupérer la commande
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="py-6">
+          <div className="text-center">
+            <Badge variant="outline" className="text-xs mb-4">
+              Commande #{orderId.slice(0, 8)}
+            </Badge>
+            
+            <div className="bg-primary/10 rounded-xl p-6 mb-4">
+              <p className="text-sm text-muted-foreground mb-2">Code de récupération</p>
+              <p className="text-5xl font-mono font-bold tracking-[0.3em] text-primary">
+                {pickupCode}
+              </p>
+            </div>
+
+            <p className="text-sm text-muted-foreground">
+              <strong>Important :</strong> Ne donnez ce code qu'au livreur autorisé. 
+              Il doit l'entrer dans son application pour confirmer la récupération.
+            </p>
+          </div>
+        </div>
+
+        <Button onClick={() => setShowCode(false)} className="w-full">
+          Compris
+        </Button>
+      </DialogContent>
+    </Dialog>
+  );
+
+  // If verification already exists, show the "view code" button + dialog
   if (verification && verification.pickup_code) {
     return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => {
-          setPickupCode(verification.pickup_code);
-          setShowCode(true);
-        }}
-        className="gap-1"
-      >
-        <Key className="h-3 w-3" />
-        Voir code PIN
-      </Button>
+      <>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setPickupCode(verification.pickup_code);
+            setShowCode(true);
+          }}
+          className="gap-1"
+        >
+          <Key className="h-3 w-3" />
+          Voir code PIN
+        </Button>
+        {pinDialog}
+      </>
     );
   }
 
@@ -108,44 +149,7 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
         )}
         Marquer prête
       </Button>
-
-      <Dialog open={showCode} onOpenChange={setShowCode}>
-        <DialogContent className="sm:max-w-[350px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-              Commande prête !
-            </DialogTitle>
-            <DialogDescription>
-              Donnez ce code PIN au livreur lorsqu'il viendra récupérer la commande
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="py-6">
-            <div className="text-center">
-              <Badge variant="outline" className="text-xs mb-4">
-                Commande #{orderId.slice(0, 8)}
-              </Badge>
-              
-              <div className="bg-primary/10 rounded-xl p-6 mb-4">
-                <p className="text-sm text-muted-foreground mb-2">Code de récupération</p>
-                <p className="text-5xl font-mono font-bold tracking-[0.3em] text-primary">
-                  {pickupCode}
-                </p>
-              </div>
-
-              <p className="text-sm text-muted-foreground">
-                <strong>Important :</strong> Ne donnez ce code qu'au livreur autorisé. 
-                Il doit l'entrer dans son application pour confirmer la récupération.
-              </p>
-            </div>
-          </div>
-
-          <Button onClick={() => setShowCode(false)} className="w-full">
-            Compris
-          </Button>
-        </DialogContent>
-      </Dialog>
+      {pinDialog}
     </>
   );
 }
