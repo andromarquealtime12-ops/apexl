@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
- import { useCart } from "@/contexts/CartContext";
-import { PaymentMethodType, Currency } from "@/types/database";
+import { useCart } from "@/contexts/CartContext";
+import { Currency } from "@/types/database";
 import { notifyNewOrder } from "@/hooks/useOrderNotifications";
 
 interface CheckoutParams {
@@ -10,24 +10,25 @@ interface CheckoutParams {
   deliveryCity: string;
   deliveryNotes?: string;
   currency: Currency;
+  buyerLatitude?: number | null;
+  buyerLongitude?: number | null;
+  deliveryFee: number;
 }
 
 export function useCheckout() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const { items, getSubtotal, getDeliveryFee, clearCart } = useCart();
+  const { items, clearCart } = useCart();
 
   return useMutation({
-    mutationFn: async ({ deliveryAddress, deliveryCity, deliveryNotes, currency }: CheckoutParams) => {
+    mutationFn: async ({ deliveryAddress, deliveryCity, deliveryNotes, currency, buyerLatitude, buyerLongitude, deliveryFee }: CheckoutParams) => {
       if (!user) throw new Error("Utilisateur non connecté");
       if (items.length === 0) throw new Error("Le panier est vide");
 
-      const subtotal = getSubtotal();
-      const deliveryFee = getDeliveryFee(deliveryCity);
+      const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
       const totalAmount = subtotal + deliveryFee;
 
-       // Prepare order items for the RPC call
-       const orderItems = items.map((item) => ({
+      const orderItems = items.map((item) => ({
         product_id: item.product.id,
         seller_id: item.product.seller_id,
         quantity: item.quantity,
@@ -35,33 +36,38 @@ export function useCheckout() {
         total_price: item.product.price * item.quantity,
       }));
 
-       // Use the secure server-side RPC function to process checkout
-       // This prevents race conditions and ensures atomic operations
-       const { data, error } = await supabase.rpc("process_checkout" as any, {
-         p_buyer_id: user.id,
-         p_total_amount: totalAmount,
-         p_delivery_fee: deliveryFee,
-         p_currency: currency,
-         p_delivery_address: deliveryAddress,
-         p_delivery_city: deliveryCity,
-         p_delivery_notes: deliveryNotes || "",
-         p_order_items: orderItems,
-       });
+      const { data, error } = await supabase.rpc("process_checkout" as any, {
+        p_buyer_id: user.id,
+        p_total_amount: totalAmount,
+        p_delivery_fee: deliveryFee,
+        p_currency: currency,
+        p_delivery_address: deliveryAddress,
+        p_delivery_city: deliveryCity,
+        p_delivery_notes: deliveryNotes || "",
+        p_order_items: orderItems,
+      });
 
-       if (error) throw error;
+      if (error) throw error;
 
-       const result = data as { success: boolean; order_id?: string; error?: string };
-       
-       if (!result.success) {
-         throw new Error(result.error || "Checkout failed");
-       }
+      const result = data as { success: boolean; order_id?: string; error?: string };
+      if (!result.success) throw new Error(result.error || "Checkout failed");
 
-       // Notify sellers about new order
-       if (result.order_id) {
-         notifyNewOrder(result.order_id);
-       }
+      // Save buyer GPS coordinates on the order
+      if (result.order_id && (buyerLatitude || buyerLongitude)) {
+        await supabase
+          .from("orders")
+          .update({
+            buyer_latitude: buyerLatitude,
+            buyer_longitude: buyerLongitude,
+          })
+          .eq("id", result.order_id);
+      }
 
-       return { id: result.order_id };
+      if (result.order_id) {
+        notifyNewOrder(result.order_id);
+      }
+
+      return { id: result.order_id };
     },
     onSuccess: () => {
       clearCart();
