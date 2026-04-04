@@ -24,6 +24,7 @@ export default function Settings() {
     () => ({
       full_name: profile?.full_name ?? "",
       phone: profile?.phone ?? "",
+      whatsapp: (profile as any)?.whatsapp ?? "",
       country: profile?.country ?? "",
       city: profile?.city ?? "",
       address: profile?.address ?? "",
