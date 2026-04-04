@@ -22,6 +22,8 @@ import NotFound from "./pages/NotFound";
 import TrackOrder from "./pages/TrackOrder";
 import OrderSearch from "./pages/OrderSearch";
 import ResetPassword from "./pages/ResetPassword";
+import Restaurants from "./pages/Restaurants";
+import RestaurantDetail from "./pages/RestaurantDetail";
 import SupportChatWidget from "./components/support/SupportChatWidget";
 import AIAssistantWidget from "./components/ai/AIAssistantWidget";
 
