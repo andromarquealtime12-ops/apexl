@@ -101,6 +101,7 @@ export default function BuyerOrdersTracker() {
           order_id,
           quantity,
           unit_price,
+          seller_id,
           products(name, images)
         `)
         .in("order_id", orderIds);
