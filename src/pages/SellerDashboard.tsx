@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Store, Package, ShoppingCart, TrendingUp, BarChart3 } from "lucide-react";
+import { Store, Package, ShoppingCart, TrendingUp, BarChart3, UtensilsCrossed } from "lucide-react";
+import RestaurantManager from "@/components/seller/RestaurantManager";
 import SellerReturnManager from "@/components/returns/SellerReturnManager";
 import SellerStatsCards from "@/components/seller/SellerStatsCards";
 import ProductsManager from "@/components/seller/ProductsManager";
@@ -76,10 +77,14 @@ const SellerDashboard = () => {
         </div>
 
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid grid-cols-3 w-full max-w-lg">
+          <TabsList className="grid grid-cols-4 w-full max-w-xl">
             <TabsTrigger value="products" className="gap-2">
               <Package className="h-4 w-4" />
               <span className="hidden sm:inline">Produits</span>
+            </TabsTrigger>
+            <TabsTrigger value="restaurant" className="gap-2">
+              <UtensilsCrossed className="h-4 w-4" />
+              <span className="hidden sm:inline">Restaurant</span>
             </TabsTrigger>
             <TabsTrigger value="orders" className="gap-2">
               <ShoppingCart className="h-4 w-4" />
@@ -104,6 +109,10 @@ const SellerDashboard = () => {
                 <ProductsManager />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="restaurant">
+            <RestaurantManager />
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-6">

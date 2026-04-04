@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   ShoppingBag, User, Menu, Wallet, 
   LogOut, ChevronDown, Settings, Package, Search,
-  Store, Truck
+  Store, Truck, UtensilsCrossed
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -79,6 +79,9 @@ const Header = () => {
             </Link>
             <Link to="/shops" className="text-sm font-medium hover:text-primary transition-smooth">
               Boutiques
+            </Link>
+            <Link to="/restaurants" className="text-sm font-medium hover:text-primary transition-smooth">
+              Restaurants
             </Link>
             <Link to="/seller" className="text-sm font-medium hover:text-primary transition-smooth">
               Vendre
@@ -198,6 +201,9 @@ const Header = () => {
                   <Link to="/" className="text-lg font-medium py-2 border-b">Accueil</Link>
                   <Link to="/products" className="text-lg font-medium py-2 border-b">Produits</Link>
                   <Link to="/shops" className="text-lg font-medium py-2 border-b">Boutiques</Link>
+                  <Link to="/restaurants" className="text-lg font-medium py-2 border-b flex items-center gap-2">
+                    <UtensilsCrossed className="h-4 w-4" /> Restaurants
+                  </Link>
                   <Link to="/seller" className="text-lg font-medium py-2 border-b">Vendre</Link>
                   <Link to="/driver" className="text-lg font-medium py-2 border-b">Livrer</Link>
                   {!user && (
