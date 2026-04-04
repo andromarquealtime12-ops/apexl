@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Store, Package, ShoppingCart, TrendingUp, BarChart3 } from "lucide-react";
+import SellerReturnManager from "@/components/returns/SellerReturnManager";
 import SellerStatsCards from "@/components/seller/SellerStatsCards";
 import ProductsManager from "@/components/seller/ProductsManager";
 import SellerOrdersTable from "@/components/seller/SellerOrdersTable";
