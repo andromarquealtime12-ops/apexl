@@ -132,7 +132,8 @@ const DriverDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="my-deliveries">
+          <TabsContent value="my-deliveries" className="space-y-6">
+            <DriverReturnsList />
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

@@ -106,7 +106,8 @@ const SellerDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="orders">
+          <TabsContent value="orders" className="space-y-6">
+            <SellerReturnManager />
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
