@@ -1042,6 +1042,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_auth_secrets: {
+        Row: {
+          created_at: string | null
+          id: string
+          two_factor_secret: string | null
+          updated_at: string | null
+          user_id: string
+          verification_code: string | null
+          verification_code_expires_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          two_factor_secret?: string | null
+          updated_at?: string | null
+          user_id: string
+          verification_code?: string | null
+          verification_code_expires_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          two_factor_secret?: string | null
+          updated_at?: string | null
+          user_id?: string
+          verification_code?: string | null
+          verification_code_expires_at?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -1166,7 +1196,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          full_name: string | null
+          referral_code: string | null
+          trust_score: number | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          referral_code?: string | null
+          trust_score?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          referral_code?: string | null
+          trust_score?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       activate_user: { Args: { p_user_id: string }; Returns: Json }
