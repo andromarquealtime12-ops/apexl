@@ -67,7 +67,9 @@ export function useCheckout() {
       clearCart();
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["buyer-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["seller-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["seller-stats"] });
     },
   });
 }
