@@ -1,28 +1,21 @@
-import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import Header from "@/components/Header";
-import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Store, Package, ShoppingCart, TrendingUp, BarChart3, Truck } from "lucide-react";
+import { Store, Package, ShoppingCart, TrendingUp, BarChart3 } from "lucide-react";
 import SellerStatsCards from "@/components/seller/SellerStatsCards";
 import ProductsManager from "@/components/seller/ProductsManager";
 import SellerOrdersTable from "@/components/seller/SellerOrdersTable";
-import { NearbyDriversCard } from "@/components/seller/NearbyDriversCard";
-import { useSellerStats, useSellerOrders } from "@/hooks/useSellerStats";
+import { useSellerStats } from "@/hooks/useSellerStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 
 const SellerDashboard = () => {
   useRealtimeOrders();
   const { user, isSeller, loading } = useAuth();
   const { data: stats, isLoading: statsLoading } = useSellerStats();
-  const { data: orders } = useSellerOrders();
-  const [selectedOrderId, setSelectedOrderId] = useState<string>("");
-  const [selectedDriverId, setSelectedDriverId] = useState<string>("");
 
   if (loading) {
     return (
@@ -35,9 +28,7 @@ const SellerDashboard = () => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
+  if (!user) return <Navigate to="/" replace />;
 
   if (!isSeller) {
     return (
@@ -63,11 +54,6 @@ const SellerDashboard = () => {
     );
   }
 
-  // Orders ready for driver assignment
-  const readyOrders = orders?.filter(o => 
-    ["confirmed", "ready", "ready_for_pickup"].includes(o.status || "") && !o.driver_id
-  ) || [];
-
   return (
     <main className="min-h-screen bg-background">
       <Header />
@@ -89,7 +75,7 @@ const SellerDashboard = () => {
         </div>
 
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid grid-cols-4 w-full max-w-lg">
+          <TabsList className="grid grid-cols-3 w-full max-w-lg">
             <TabsTrigger value="products" className="gap-2">
               <Package className="h-4 w-4" />
               <span className="hidden sm:inline">Produits</span>
@@ -97,10 +83,6 @@ const SellerDashboard = () => {
             <TabsTrigger value="orders" className="gap-2">
               <ShoppingCart className="h-4 w-4" />
               <span className="hidden sm:inline">Commandes</span>
-            </TabsTrigger>
-            <TabsTrigger value="drivers" className="gap-2">
-              <Truck className="h-4 w-4" />
-              <span className="hidden sm:inline">Livreurs</span>
             </TabsTrigger>
             <TabsTrigger value="analytics" className="gap-2">
               <BarChart3 className="h-4 w-4" />
@@ -130,83 +112,14 @@ const SellerDashboard = () => {
                   <ShoppingCart className="h-5 w-5" />
                   Mes commandes
                 </CardTitle>
-                <CardDescription>Suivez les commandes de vos produits</CardDescription>
+                <CardDescription>
+                  Marquez vos commandes comme prêtes — les livreurs à proximité seront notifiés automatiquement
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <SellerOrdersTable />
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="drivers">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                {readyOrders.length > 0 && (
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm">Assigner un livreur à une commande</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <Label>Commande à assigner</Label>
-                        <Select value={selectedOrderId} onValueChange={setSelectedOrderId}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionnez une commande..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {readyOrders.map(order => (
-                              <SelectItem key={order.id} value={order.id}>
-                                #{order.id.slice(0, 8)} - {order.items?.length || 0} produit(s)
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                <NearbyDriversCard
-                  orderId={selectedOrderId || undefined}
-                  selectedDriverId={selectedDriverId}
-                  onSelectDriver={(id) => setSelectedDriverId(id)}
-                />
-              </div>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Truck className="h-5 w-5" />
-                    Comment ça marche
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">1</div>
-                      <div>
-                        <p className="font-medium">Marquez la commande prête</p>
-                        <p className="text-sm text-muted-foreground">Un code PIN sera généré automatiquement</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">2</div>
-                      <div>
-                        <p className="font-medium">Sélectionnez une commande puis un livreur</p>
-                        <p className="text-sm text-muted-foreground">Choisissez parmi les livreurs à proximité</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">3</div>
-                      <div>
-                        <p className="font-medium">Donnez le code au livreur</p>
-                        <p className="text-sm text-muted-foreground">Il confirmera le retrait avec ce code</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </TabsContent>
 
           <TabsContent value="analytics">

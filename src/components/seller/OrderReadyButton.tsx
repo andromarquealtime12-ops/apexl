@@ -14,7 +14,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Package, Key, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
-import { NearbyDriversCard } from "./NearbyDriversCard";
 
 interface OrderReadyButtonProps {
   orderId: string;
@@ -44,6 +43,39 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     },
   });
 
+  // Notify all nearby online drivers
+  const notifyNearbyDrivers = async () => {
+    try {
+      // Get all online driver locations
+      const { data: onlineDrivers } = await supabase
+        .from("driver_locations")
+        .select("driver_id")
+        .eq("is_online", true);
+
+      if (!onlineDrivers || onlineDrivers.length === 0) return;
+
+      // Get order info for notification
+      const { data: order } = await supabase
+        .from("orders")
+        .select("delivery_city, delivery_address")
+        .eq("id", orderId)
+        .single();
+
+      // Insert notifications for all online drivers
+      const notifications = onlineDrivers.map(d => ({
+        user_id: d.driver_id,
+        title: "📦 Nouvelle commande disponible !",
+        message: `Une commande est prête à être récupérée${order?.delivery_city ? ` vers ${order.delivery_city}` : ""}. Acceptez-la vite !`,
+        type: "info" as const,
+        action_url: "/driver",
+      }));
+
+      await supabase.from("notifications").insert(notifications);
+    } catch (err) {
+      console.error("Error notifying drivers:", err);
+    }
+  };
+
   const handleMarkReady = async () => {
     try {
       await updateOrderStatus.mutateAsync();
@@ -61,7 +93,10 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
         notifyOrderStatusChange(orderId, order.buyer_id, "ready");
       }
 
-      toast.success("Commande marquée comme prête ! Les livreurs seront notifiés.");
+      // Notify ALL nearby drivers automatically
+      await notifyNearbyDrivers();
+
+      toast.success("Commande prête ! Tous les livreurs à proximité ont été notifiés.");
     } catch (error) {
       toast.error("Erreur lors de la mise à jour");
     }

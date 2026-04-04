@@ -21,6 +21,7 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import TrackOrder from "./pages/TrackOrder";
 import OrderSearch from "./pages/OrderSearch";
+import ResetPassword from "./pages/ResetPassword";
 import SupportChatWidget from "./components/support/SupportChatWidget";
 import AIAssistantWidget from "./components/ai/AIAssistantWidget";
 
@@ -50,6 +51,7 @@ const App = () => (
               <Route path="/settings" element={<Settings />} />
               <Route path="/track/:orderId" element={<TrackOrder />} />
               <Route path="/search-order" element={<OrderSearch />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
