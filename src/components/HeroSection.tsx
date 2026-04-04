@@ -1,19 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Truck, Store, ArrowRight, Star } from "lucide-react";
+import { ShoppingCart, ArrowRight, Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-marketplace.jpg";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center bg-gradient-hero overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image - more visible */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
         style={{ backgroundImage: `url(${heroImage})` }} />
       
-      
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-secondary/90" />
+      {/* Gradient Overlay - lighter */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/70 via-primary/60 to-secondary/70" />
 
       <div className="relative z-10 container mx-auto px-4 text-center">
         <div className="max-w-4xl mx-auto space-y-8">
@@ -27,28 +29,24 @@ const HeroSection = () => {
 
           {/* Main Heading */}
           <div className="space-y-4">
-            
-
-            
+            <h1 className="text-3xl md:text-5xl font-bold text-primary-foreground">
+              La meilleure plateforme pour acheter en ligne
+            </h1>
             <p className="text-xl md:text-2xl text-primary-foreground/90 font-medium">
-              Konekte Vendè, Kliyan ak Livrè yo nan yon sèl platfòm
+              Pi bon platfòm pou achte sou entènèt
             </p>
             <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
-              La plateforme qui connecte la communauté haïtienne en République dominicaine. 
-              Achetez, vendez et livrez en toute simplicité avec des paiements sécurisés.
+              Découvrez des milliers de produits de la communauté haïtienne en République dominicaine. 
+              Achetez en toute simplicité avec des paiements sécurisés et une livraison rapide.
             </p>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-4 h-auto">
+          {/* CTA Button - only "Commencer à acheter" */}
+          <div className="flex justify-center">
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-4 h-auto" onClick={() => navigate("/products")}>
               <ShoppingCart className="h-5 w-5 mr-2" />
               Commencer à acheter
               <ArrowRight className="h-5 w-5 ml-2" />
-            </Button>
-            <Button size="lg" variant="accent" className="text-lg px-8 py-4 h-auto">
-              <Store className="h-5 w-5 mr-2" />
-              Devenir vendeur
             </Button>
           </div>
 
