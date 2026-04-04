@@ -41,11 +41,9 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   
-  // Application forms
   const [showSellerForm, setShowSellerForm] = useState(false);
   const [showDriverForm, setShowDriverForm] = useState(false);
   
-  // Form states
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
   const [signUpName, setSignUpName] = useState("");
@@ -100,10 +98,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     if (error) {
       toast.error("Échec de l'inscription. Essayez avec un autre email.");
     } else {
-      toast.success("Compte créé !");
-      toast.info("Mode démo : vérifiez votre email directement dans Profil (un code s'affiche à l'écran).", {
-        duration: 8000,
-      });
+      toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
       onClose();
     }
   };
@@ -162,7 +157,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                   </div>
                 </div>
 
-                {/* Forgot Password Link */}
                 <Button
                   type="button"
                   variant="link"
@@ -232,7 +226,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Créer mon compte"}
                 </Button>
                 
-                {/* Seller/Driver Application Buttons */}
                 <div className="pt-4 border-t">
                   <p className="text-sm text-muted-foreground text-center mb-3">
                     Vous souhaitez vendre ou livrer ?
@@ -275,20 +268,17 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
           </Tabs>
         </DialogContent>
         
-        {/* Seller Application Form */}
         <SellerApplicationForm 
           isOpen={showSellerForm} 
           onClose={() => setShowSellerForm(false)} 
         />
         
-        {/* Driver Application Form */}
         <DriverApplicationForm 
           isOpen={showDriverForm} 
           onClose={() => setShowDriverForm(false)} 
         />
       </Dialog>
       
-      {/* Forgot Password Modal */}
       <ForgotPasswordModal
         isOpen={showForgotPassword}
         onClose={() => setShowForgotPassword(false)}

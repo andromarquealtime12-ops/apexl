@@ -19,19 +19,11 @@ interface ForgotPasswordModalProps {
 }
 
 export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProps) {
-  const [step, setStep] = useState<"email" | "code" | "newPassword" | "success">("email");
+  const [step, setStep] = useState<"email" | "success">("email");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [displayedCode, setDisplayedCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const generateCode = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-  };
-
-  const handleSendCode = async (e: React.FormEvent) => {
+  const handleSendResetLink = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email.trim()) {
@@ -40,80 +32,25 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
     }
     
     setLoading(true);
-    
-    // Vérifier si l'utilisateur existe
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("user_id")
-      .limit(1);
-    
-    // En mode démo, on génère et affiche le code directement
-    const generatedCode = generateCode();
-    setDisplayedCode(generatedCode);
-    
-    // Sauvegarder le code dans le profil (si l'utilisateur existe)
-    await supabase
-      .from("profiles")
-      .update({
-        verification_code: generatedCode,
-        verification_code_expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString()
-      })
-      .eq("user_id", (await supabase.auth.getUser()).data.user?.id || "");
-    
-    setLoading(false);
-    setStep("code");
-    toast.success("Code de récupération généré !");
-  };
-
-  const handleVerifyCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (code !== displayedCode) {
-      toast.error("Code incorrect");
-      return;
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/settings`,
+      });
+      
+      if (error) throw error;
+      
+      setStep("success");
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      toast.error("Erreur lors de l'envoi. Vérifiez votre email.");
+    } finally {
+      setLoading(false);
     }
-    
-    setStep("newPassword");
-    toast.success("Code vérifié !");
-  };
-
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (newPassword.length < 6) {
-      toast.error("Le mot de passe doit avoir au moins 6 caractères");
-      return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
-      return;
-    }
-    
-    setLoading(true);
-    
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword
-    });
-    
-    setLoading(false);
-    
-    if (error) {
-      toast.error("Erreur lors de la réinitialisation. Reconnectez-vous d'abord.");
-      return;
-    }
-    
-    setStep("success");
-    toast.success("Mot de passe modifié avec succès !");
   };
 
   const handleClose = () => {
     setStep("email");
     setEmail("");
-    setCode("");
-    setDisplayedCode("");
-    setNewPassword("");
-    setConfirmPassword("");
     onClose();
   };
 
@@ -126,15 +63,13 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
             Récupération de compte
           </DialogTitle>
           <DialogDescription className="text-center">
-            {step === "email" && "Entrez votre email pour recevoir un code"}
-            {step === "code" && "Entrez le code de vérification"}
-            {step === "newPassword" && "Créez un nouveau mot de passe"}
-            {step === "success" && "Votre mot de passe a été réinitialisé"}
+            {step === "email" && "Entrez votre email pour recevoir un lien de réinitialisation"}
+            {step === "success" && "Un email de réinitialisation a été envoyé"}
           </DialogDescription>
         </DialogHeader>
 
         {step === "email" && (
-          <form onSubmit={handleSendCode} className="space-y-4 mt-4">
+          <form onSubmit={handleSendResetLink} className="space-y-4 mt-4">
             <div className="space-y-2">
               <Label htmlFor="recovery-email">Adresse email</Label>
               <div className="relative">
@@ -152,84 +87,7 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
             </div>
             
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Envoyer le code"}
-            </Button>
-          </form>
-        )}
-
-        {step === "code" && (
-          <form onSubmit={handleVerifyCode} className="space-y-4 mt-4">
-            {/* Affichage du code en mode démo */}
-            <div className="p-4 rounded-lg bg-primary/10 border border-primary/20 text-center">
-              <p className="text-xs text-muted-foreground mb-1">
-                📧 Mode démo - Votre code de récupération :
-              </p>
-              <p className="text-3xl font-mono font-bold text-primary tracking-widest">
-                {displayedCode}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Copiez ce code ci-dessous
-              </p>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="recovery-code">Code de vérification</Label>
-              <Input
-                id="recovery-code"
-                type="text"
-                placeholder="123456"
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                className="text-center font-mono text-xl tracking-widest"
-                maxLength={6}
-                required
-              />
-            </div>
-            
-            <Button type="submit" className="w-full">
-              Vérifier le code
-            </Button>
-            
-            <Button 
-              type="button" 
-              variant="ghost" 
-              className="w-full"
-              onClick={() => setStep("email")}
-            >
-              Retour
-            </Button>
-          </form>
-        )}
-
-        {step === "newPassword" && (
-          <form onSubmit={handleResetPassword} className="space-y-4 mt-4">
-            <div className="space-y-2">
-              <Label htmlFor="new-password">Nouveau mot de passe</Label>
-              <Input
-                id="new-password"
-                type="password"
-                placeholder="••••••••"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                minLength={6}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-            
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Réinitialiser"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Envoyer le lien"}
             </Button>
           </form>
         )}
@@ -240,9 +98,13 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
               <CheckCircle className="h-8 w-8 text-green-500" />
             </div>
             <div>
-              <p className="font-medium">Mot de passe réinitialisé !</p>
+              <p className="font-medium">Email envoyé !</p>
               <p className="text-sm text-muted-foreground">
-                Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.
+                Vérifiez votre boîte de réception à <strong>{email}</strong>. 
+                Cliquez sur le lien pour réinitialiser votre mot de passe.
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Si vous ne voyez pas l'email, vérifiez vos spams.
               </p>
             </div>
             <Button onClick={handleClose} className="w-full">

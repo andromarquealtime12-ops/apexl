@@ -20,7 +20,6 @@ export function EmailVerificationCard() {
   const verifyCode = useVerifyEmailCode();
   const [otp, setOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
-  const [lastSentCode, setLastSentCode] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -35,11 +34,11 @@ export function EmailVerificationCard() {
     );
   }
 
-  const isVerified = profile?.email_verified;
+  // Check both profile flag and Supabase Auth confirmation
+  const isVerified = profile?.email_verified || !!user?.email_confirmed_at;
 
   const handleSendCode = async () => {
-    const data = await sendCode.mutateAsync();
-    setLastSentCode(data.code);
+    await sendCode.mutateAsync();
     setShowOtpInput(true);
   };
 
@@ -80,13 +79,9 @@ export function EmailVerificationCard() {
           <div className="space-y-4">
             <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
               <p className="text-sm text-blue-700 dark:text-blue-400">
-                Un code à 6 chiffres a été envoyé à <strong>{user?.email}</strong>
+                Un email de vérification a été envoyé à <strong>{user?.email}</strong>.
+                Entrez le code OTP reçu ou cliquez sur le lien dans l'email.
               </p>
-              {lastSentCode && (
-                <p className="text-xs text-blue-700/90 dark:text-blue-300 mt-2">
-                  Mode démo : votre code est <strong className="font-mono">{lastSentCode}</strong>
-                </p>
-              )}
             </div>
 
             <div className="flex justify-center">
@@ -136,7 +131,7 @@ export function EmailVerificationCard() {
               onClick={handleSendCode}
               disabled={sendCode.isPending}
             >
-              Renvoyer le code
+              Renvoyer l'email
             </Button>
           </div>
         ) : (
@@ -161,7 +156,7 @@ export function EmailVerificationCard() {
               ) : (
                 <Mail className="h-4 w-4 mr-2" />
               )}
-              Envoyer le code de vérification
+              Envoyer l'email de vérification
             </Button>
           </div>
         )}
