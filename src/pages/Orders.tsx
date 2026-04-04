@@ -6,8 +6,10 @@ import BuyerOrdersTracker from "@/components/buyer/BuyerOrdersTracker";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingBag, Package } from "lucide-react";
+import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 
 const Orders = () => {
+  useRealtimeOrders();
   const { user, loading } = useAuth();
 
   if (loading) {

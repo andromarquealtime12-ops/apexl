@@ -13,8 +13,10 @@ import { DriverLocationTracker } from "@/components/driver/DriverLocationTracker
 import { PushNotificationBanner } from "@/components/notifications/PushNotificationBanner";
 import { useDriverOrderNotifications } from "@/hooks/usePushNotifications";
 import { useDriverStats, useAvailableDeliveries } from "@/hooks/useDriverStats";
+import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 
 const DriverDashboard = () => {
+  useRealtimeOrders();
   const { user, isDriver, loading } = useAuth();
   const { data: stats, isLoading: statsLoading } = useDriverStats();
   const { data: availableDeliveries } = useAvailableDeliveries();
