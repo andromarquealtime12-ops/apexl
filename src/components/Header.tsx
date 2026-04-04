@@ -80,6 +80,9 @@ const Header = () => {
             <Link to="/shops" className="text-sm font-medium hover:text-primary transition-smooth">
               Boutiques
             </Link>
+            <Link to="/restaurants" className="text-sm font-medium hover:text-primary transition-smooth">
+              Restaurants
+            </Link>
             <Link to="/seller" className="text-sm font-medium hover:text-primary transition-smooth">
               Vendre
             </Link>
