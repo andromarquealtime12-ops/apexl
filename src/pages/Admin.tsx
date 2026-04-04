@@ -177,6 +177,7 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="wallets" className="space-y-6">
+            <RefundRequestsManager />
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
