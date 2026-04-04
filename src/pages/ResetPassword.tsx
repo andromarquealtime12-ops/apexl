@@ -70,6 +70,28 @@ const ResetPassword = () => {
     toast.success("Mot de passe modifié avec succès !");
   };
 
+  if (error && !isReady) {
+    return (
+      <main className="min-h-screen bg-background">
+        <Header />
+        <div className="container px-4 py-16 max-w-md mx-auto">
+          <Card>
+            <CardContent className="pt-6 text-center space-y-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10">
+                <AlertCircle className="h-8 w-8 text-destructive" />
+              </div>
+              <h2 className="text-xl font-bold">Lien expiré</h2>
+              <p className="text-muted-foreground">{error}</p>
+              <Button onClick={() => navigate("/")} className="w-full">
+                Retour à l'accueil
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    );
+  }
+
   if (success) {
     return (
       <main className="min-h-screen bg-background">
@@ -77,8 +99,8 @@ const ResetPassword = () => {
         <div className="container px-4 py-16 max-w-md mx-auto">
           <Card>
             <CardContent className="pt-6 text-center space-y-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30">
-                <CheckCircle className="h-8 w-8 text-green-500" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
+                <CheckCircle className="h-8 w-8 text-primary" />
               </div>
               <h2 className="text-xl font-bold">Mot de passe modifié !</h2>
               <p className="text-muted-foreground">
