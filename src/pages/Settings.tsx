@@ -112,6 +112,17 @@ export default function Settings() {
                   </div>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp">Numéro WhatsApp</Label>
+                  <Input
+                    id="whatsapp"
+                    value={form.whatsapp}
+                    onChange={(e) => setForm((p) => ({ ...p, whatsapp: e.target.value }))}
+                    placeholder="+509 00 00 0000"
+                  />
+                  <p className="text-xs text-muted-foreground">Ce numéro sera utilisé pour que les vendeurs, acheteurs et livreurs puissent vous contacter.</p>
+                </div>
+
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="country">Pays</Label>

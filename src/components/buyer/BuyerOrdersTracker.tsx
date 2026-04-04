@@ -205,17 +205,22 @@ export default function BuyerOrdersTracker() {
                 </div>
               </div>
 
-              {/* Total + Track button */}
-              <div className="flex justify-between items-center pt-2 border-t text-sm">
+              {/* Total + Track + Contact buttons */}
+              <div className="flex flex-wrap justify-between items-center pt-2 border-t text-sm gap-2">
                 <span className="text-muted-foreground">Total: <strong>{currencySymbol} {order.total_amount.toLocaleString()}</strong></span>
-                {["confirmed", "preparing", "ready", "ready_for_pickup", "picked_up", "in_transit"].includes(order.status || "") && (
-                  <Button size="sm" className="gap-1.5" asChild>
-                    <Link to={`/track/${order.id}`}>
-                      <Navigation className="h-3.5 w-3.5" />
-                      Suivre en direct
-                    </Link>
-                  </Button>
-                )}
+                <div className="flex gap-2 flex-wrap">
+                  {(order as any).driver_id && ["picked_up", "in_transit"].includes(order.status || "") && (
+                    <WhatsAppContact userId={(order as any).driver_id} label="Livreur" message={`Bonjour, concernant ma commande #${order.id.slice(0, 8)}`} />
+                  )}
+                  {["confirmed", "preparing", "ready", "ready_for_pickup", "picked_up", "in_transit"].includes(order.status || "") && (
+                    <Button size="sm" className="gap-1.5" asChild>
+                      <Link to={`/track/${order.id}`}>
+                        <Navigation className="h-3.5 w-3.5" />
+                        Suivre
+                      </Link>
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
