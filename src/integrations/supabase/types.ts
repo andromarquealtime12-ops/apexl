@@ -1042,6 +1042,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_auth_secrets: {
+        Row: {
+          created_at: string | null
+          id: string
+          two_factor_secret: string | null
+          updated_at: string | null
+          user_id: string
+          verification_code: string | null
+          verification_code_expires_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          two_factor_secret?: string | null
+          updated_at?: string | null
+          user_id: string
+          verification_code?: string | null
+          verification_code_expires_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          two_factor_secret?: string | null
+          updated_at?: string | null
+          user_id?: string
+          verification_code?: string | null
+          verification_code_expires_at?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
