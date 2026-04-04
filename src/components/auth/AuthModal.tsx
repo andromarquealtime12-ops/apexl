@@ -68,7 +68,16 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     
     if (error) {
       setLoading(false);
-      toast.error("Échec de la connexion. Vérifiez vos identifiants.");
+      const msg = error.message?.toLowerCase() || "";
+      if (msg.includes("invalid login credentials")) {
+        toast.error("Email ou mot de passe incorrect. Vérifiez vos identifiants.");
+      } else if (msg.includes("email not confirmed")) {
+        toast.error("Votre email n'est pas encore vérifié. Vérifiez votre boîte de réception.");
+      } else if (msg.includes("too many requests")) {
+        toast.error("Trop de tentatives. Réessayez dans quelques minutes.");
+      } else {
+        toast.error("Échec de la connexion : " + (error.message || "Erreur inconnue"));
+      }
       return;
     }
     
