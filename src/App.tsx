@@ -54,6 +54,8 @@ const App = () => (
               <Route path="/track/:orderId" element={<TrackOrder />} />
               <Route path="/search-order" element={<OrderSearch />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/restaurants" element={<Restaurants />} />
+              <Route path="/restaurant/:restaurantId" element={<RestaurantDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
