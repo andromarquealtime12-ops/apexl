@@ -1,16 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare, RotateCcw } from "lucide-react";
+import { formatDistanceToNow, differenceInDays } from "date-fns";
 import { WhatsAppContact } from "@/components/contact/WhatsAppContact";
 import { Link } from "react-router-dom";
 import { fr } from "date-fns/locale";
 import { CURRENCY_SYMBOLS } from "@/types/database";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any; description: string }> = {
   pending: { label: "En attente", variant: "secondary", icon: Clock, description: "Votre commande est en cours de traitement" },
@@ -22,6 +25,7 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
   in_transit: { label: "En route", variant: "default", icon: Truck, description: "Votre commande est en cours de livraison" },
   delivered: { label: "Livrée", variant: "secondary", icon: CheckCircle, description: "Commande livrée avec succès !" },
   cancelled: { label: "Annulée", variant: "destructive", icon: Package, description: "Cette commande a été annulée" },
+  refunded: { label: "Remboursée", variant: "outline", icon: RotateCcw, description: "Cette commande a été remboursée" },
 };
 
 interface OrderWithItems {
@@ -46,6 +50,27 @@ interface OrderWithItems {
 
 export default function BuyerOrdersTracker() {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [refundOrderId, setRefundOrderId] = useState<string | null>(null);
+  const [refundReason, setRefundReason] = useState("");
+
+  const refundMutation = useMutation({
+    mutationFn: async ({ orderId, reason }: { orderId: string; reason: string }) => {
+      const { data, error } = await supabase.rpc("request_refund", { p_order_id: orderId, p_reason: reason });
+      if (error) throw error;
+      const result = data as any;
+      if (!result.success) throw new Error(result.error);
+      return result;
+    },
+    onSuccess: () => {
+      toast({ title: "Demande envoyée", description: "Votre demande de remboursement a été soumise." });
+      setRefundOrderId(null);
+      setRefundReason("");
+      queryClient.invalidateQueries({ queryKey: ["buyer-orders"] });
+    },
+    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+  });
 
   const { data: orders, isLoading } = useQuery({
     queryKey: ["buyer-orders", user?.id],
@@ -220,8 +245,36 @@ export default function BuyerOrdersTracker() {
                       </Link>
                     </Button>
                   )}
+                  {/* Refund button for delivered orders within 15 days */}
+                  {order.status === "delivered" && differenceInDays(new Date(), new Date(order.created_at)) <= 15 && (
+                    <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setRefundOrderId(order.id)}>
+                      <RotateCcw className="h-3.5 w-3.5" />
+                      Remboursement
+                    </Button>
+                  )}
                 </div>
               </div>
+
+              {/* Refund form */}
+              {refundOrderId === order.id && (
+                <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                  <Textarea
+                    placeholder="Raison du remboursement..."
+                    value={refundReason}
+                    onChange={(e) => setRefundReason(e.target.value)}
+                    rows={2}
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" disabled={!refundReason.trim() || refundMutation.isPending}
+                      onClick={() => refundMutation.mutate({ orderId: order.id, reason: refundReason })}>
+                      {refundMutation.isPending ? "Envoi..." : "Envoyer"}
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => { setRefundOrderId(null); setRefundReason(""); }}>
+                      Annuler
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         );

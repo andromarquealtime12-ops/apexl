@@ -781,6 +781,53 @@ export type Database = {
         }
         Relationships: []
       }
+      refund_requests: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          created_at: string
+          id: string
+          order_id: string
+          reason: string
+          requester_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          created_at?: string
+          id?: string
+          order_id: string
+          reason: string
+          requester_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          order_id?: string
+          reason?: string
+          requester_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refund_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reports: {
         Row: {
           admin_notes: string | null
@@ -1148,6 +1195,7 @@ export type Database = {
         Args: { lat1: number; lat2: number; lon1: number; lon2: number }
         Returns: number
       }
+      cleanup_old_data: { Args: never; Returns: Json }
       create_delivery_verification: {
         Args: { p_order_id: string }
         Returns: Json
@@ -1197,6 +1245,10 @@ export type Database = {
         }
         Returns: Json
       }
+      process_refund: {
+        Args: { p_approved: boolean; p_notes?: string; p_refund_id: string }
+        Returns: Json
+      }
       reject_deposit: {
         Args: {
           admin_id_input: string
@@ -1211,6 +1263,10 @@ export type Database = {
       }
       reject_withdrawal: {
         Args: { p_reason?: string; p_transaction_id: string }
+        Returns: Json
+      }
+      request_refund: {
+        Args: { p_order_id: string; p_reason: string }
         Returns: Json
       }
       request_withdrawal: {
