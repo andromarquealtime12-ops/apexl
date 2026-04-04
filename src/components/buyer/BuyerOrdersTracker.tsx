@@ -50,6 +50,27 @@ interface OrderWithItems {
 
 export default function BuyerOrdersTracker() {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [refundOrderId, setRefundOrderId] = useState<string | null>(null);
+  const [refundReason, setRefundReason] = useState("");
+
+  const refundMutation = useMutation({
+    mutationFn: async ({ orderId, reason }: { orderId: string; reason: string }) => {
+      const { data, error } = await supabase.rpc("request_refund", { p_order_id: orderId, p_reason: reason });
+      if (error) throw error;
+      const result = data as any;
+      if (!result.success) throw new Error(result.error);
+      return result;
+    },
+    onSuccess: () => {
+      toast({ title: "Demande envoyée", description: "Votre demande de remboursement a été soumise." });
+      setRefundOrderId(null);
+      setRefundReason("");
+      queryClient.invalidateQueries({ queryKey: ["buyer-orders"] });
+    },
+    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+  });
 
   const { data: orders, isLoading } = useQuery({
     queryKey: ["buyer-orders", user?.id],
