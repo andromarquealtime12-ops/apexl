@@ -479,21 +479,23 @@ const Checkout = () => {
 
         {showStripePayment && (
           <DemoStripePayment
+            isOpen={showStripePayment}
+            onClose={() => setShowStripePayment(false)}
             amount={topUpAmount}
             currency={currency}
             onSuccess={() => {
               setShowStripePayment(false);
               queryClient.invalidateQueries({ queryKey: ["wallet"] });
             }}
-            onCancel={() => setShowStripePayment(false)}
           />
         )}
 
         {showPayPalPayment && (
           <PayPalPayment
+            isOpen={showPayPalPayment}
+            onClose={() => setShowPayPalPayment(false)}
             amount={topUpAmount}
             currency={currency}
-            onCancel={() => setShowPayPalPayment(false)}
           />
         )}
       </main>
