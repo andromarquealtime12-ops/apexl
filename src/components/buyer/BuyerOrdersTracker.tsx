@@ -295,5 +295,15 @@ export default function BuyerOrdersTracker() {
         );
       })}
     </div>
+    {ratingOrder && (
+        <OrderRatingDialog
+          open={!!ratingOrder}
+          onClose={() => setRatingOrder(null)}
+          orderId={ratingOrder.orderId}
+          reviewedUserId={ratingOrder.userId}
+          reviewType={ratingOrder.type}
+        />
+      )}
+    </>
   );
 }
