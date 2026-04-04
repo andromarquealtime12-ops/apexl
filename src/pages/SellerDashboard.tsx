@@ -111,6 +111,10 @@ const SellerDashboard = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="restaurant">
+            <RestaurantManager />
+          </TabsContent>
+
           <TabsContent value="orders" className="space-y-6">
             <SellerReturnManager />
             <Card>
