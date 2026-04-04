@@ -38,6 +38,8 @@ export function useAcceptDelivery() {
       queryClient.invalidateQueries({ queryKey: ["driver-deliveries"] });
       queryClient.invalidateQueries({ queryKey: ["available-deliveries"] });
       queryClient.invalidateQueries({ queryKey: ["driver-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["buyer-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["seller-orders"] });
     },
   });
 }
