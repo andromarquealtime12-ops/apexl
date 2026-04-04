@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   ShoppingBag, User, Menu, Wallet, 
   LogOut, ChevronDown, Settings, Package, Search,
-  Store, Truck
+  Store, Truck, UtensilsCrossed
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
