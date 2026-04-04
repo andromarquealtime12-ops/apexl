@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, KeyRound, CheckCircle } from "lucide-react";
+import { Loader2, KeyRound, CheckCircle, AlertCircle } from "lucide-react";
 import Header from "@/components/Header";
 
 const ResetPassword = () => {
