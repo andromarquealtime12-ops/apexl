@@ -25,6 +25,7 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
   in_transit: { label: "En route", variant: "default", icon: Truck, description: "Votre commande est en cours de livraison" },
   delivered: { label: "Livrée", variant: "secondary", icon: CheckCircle, description: "Commande livrée avec succès !" },
   cancelled: { label: "Annulée", variant: "destructive", icon: Package, description: "Cette commande a été annulée" },
+  refunded: { label: "Remboursée", variant: "outline", icon: RotateCcw, description: "Cette commande a été remboursée" },
 };
 
 interface OrderWithItems {
