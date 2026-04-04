@@ -2,6 +2,19 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
+// Explicitly exclude sensitive fields: two_factor_secret, verification_code
+const PROFILE_SAFE_COLUMNS = `
+  id, user_id, full_name, phone, avatar_url, country, address, city,
+  email_verified, phone_verified, verification_code_expires_at,
+  latitude, longitude, created_at, updated_at,
+  identity_status, account_status, trust_score, referral_code,
+  total_spent, total_earned, report_count, lost_packages_count,
+  referred_by, two_factor_enabled, last_login_at,
+  backup_email, backup_phone, suspension_reason, suspension_until,
+  admin_notes, id_document_front, id_document_back, selfie_photo,
+  last_login_ip, last_login_device, phone_verified
+`;
+
 interface Profile {
   id: string;
   user_id: string;
@@ -13,8 +26,6 @@ interface Profile {
   city: string | null;
   email_verified: boolean;
   phone_verified: boolean;
-  verification_code: string | null;
-  verification_code_expires_at: string | null;
   latitude: number | null;
   longitude: number | null;
   created_at: string;
@@ -31,7 +42,7 @@ export function useProfile() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select(PROFILE_SAFE_COLUMNS)
         .eq("user_id", user.id)
         .maybeSingle();
 
