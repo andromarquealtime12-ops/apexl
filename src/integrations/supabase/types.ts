@@ -189,7 +189,7 @@ export type Database = {
           delivery_verified_at: string | null
           id: string
           order_id: string
-          pickup_code: string
+          pickup_code: string | null
           pickup_verified_at: string | null
           status: string
           updated_at: string
@@ -201,7 +201,7 @@ export type Database = {
           delivery_verified_at?: string | null
           id?: string
           order_id: string
-          pickup_code: string
+          pickup_code?: string | null
           pickup_verified_at?: string | null
           status?: string
           updated_at?: string
@@ -213,7 +213,7 @@ export type Database = {
           delivery_verified_at?: string | null
           id?: string
           order_id?: string
-          pickup_code?: string
+          pickup_code?: string | null
           pickup_verified_at?: string | null
           status?: string
           updated_at?: string
