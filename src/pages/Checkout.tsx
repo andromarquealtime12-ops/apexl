@@ -496,6 +496,10 @@ const Checkout = () => {
             onClose={() => setShowPayPalPayment(false)}
             amount={topUpAmount}
             currency={currency}
+            onSuccess={() => {
+              setShowPayPalPayment(false);
+              queryClient.invalidateQueries({ queryKey: ["wallet"] });
+            }}
           />
         )}
       </main>
