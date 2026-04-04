@@ -56,10 +56,11 @@ export default function Settings() {
       await updateProfile.mutateAsync({
         full_name: form.full_name.trim() || profile?.full_name,
         phone: form.phone.trim() || null,
+        whatsapp: form.whatsapp.trim() || null,
         country: form.country.trim() || null,
         city: form.city.trim() || null,
         address: form.address.trim() || null,
-      });
+      } as any);
       toast.success("Paramètres enregistrés");
     } catch (e: any) {
       toast.error(e?.message || "Erreur lors de l'enregistrement");
