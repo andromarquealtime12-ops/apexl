@@ -134,12 +134,29 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
               <strong>Important :</strong> Ne donnez ce code qu'au livreur autorisé. 
               Il doit l'entrer dans son application pour confirmer la récupération.
             </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              ⏳ Ce code expire dans 24h
+            </p>
           </div>
         </div>
 
-        <Button onClick={() => setShowCode(false)} className="w-full">
-          Compris
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setShowCode(false)} className="flex-1">
+            Compris
+          </Button>
+          <Button
+            variant="outline"
+            onClick={async () => {
+              const result = await regenerateCode.mutateAsync(orderId);
+              if (result.pickup_code) setPickupCode(result.pickup_code);
+            }}
+            disabled={regenerateCode.isPending}
+            className="gap-1"
+          >
+            {regenerateCode.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+            Régénérer
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
