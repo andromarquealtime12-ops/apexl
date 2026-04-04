@@ -1249,6 +1249,7 @@ export type Database = {
         Args: { p_approved: boolean; p_notes?: string; p_refund_id: string }
         Returns: Json
       }
+      regenerate_pickup_code: { Args: { p_order_id: string }; Returns: Json }
       reject_deposit: {
         Args: {
           admin_id_input: string
