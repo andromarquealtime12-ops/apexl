@@ -5,8 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare, RotateCcw } from "lucide-react";
+import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare, RotateCcw, Star } from "lucide-react";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
+import ReturnRequestButton from "@/components/returns/ReturnRequestButton";
+import OrderRatingDialog from "@/components/reviews/OrderRatingDialog";
+import UserRatingBadge from "@/components/reviews/UserRatingBadge";
 import { WhatsAppContact } from "@/components/contact/WhatsAppContact";
 import { Link } from "react-router-dom";
 import { fr } from "date-fns/locale";
@@ -31,6 +34,7 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
 interface OrderWithItems {
   id: string;
   status: string;
+  updated_at: string;
   total_amount: number;
   delivery_fee: number;
   currency: string;
@@ -54,6 +58,7 @@ export default function BuyerOrdersTracker() {
   const queryClient = useQueryClient();
   const [refundOrderId, setRefundOrderId] = useState<string | null>(null);
   const [refundReason, setRefundReason] = useState("");
+  const [ratingOrder, setRatingOrder] = useState<{ orderId: string; userId: string; type: "buyer_to_seller" | "buyer_to_driver" } | null>(null);
 
   const refundMutation = useMutation({
     mutationFn: async ({ orderId, reason }: { orderId: string; reason: string }) => {
@@ -96,6 +101,7 @@ export default function BuyerOrdersTracker() {
           order_id,
           quantity,
           unit_price,
+          seller_id,
           products(name, images)
         `)
         .in("order_id", orderIds);
@@ -154,6 +160,7 @@ export default function BuyerOrdersTracker() {
   }
 
   return (
+    <>
     <div className="space-y-4">
       {orders.map((order) => {
         const status = statusConfig[order.status || "pending"];
@@ -245,6 +252,17 @@ export default function BuyerOrdersTracker() {
                       </Link>
                     </Button>
                   )}
+                  {/* Return button (2h window) */}
+                  <ReturnRequestButton orderId={order.id} orderStatus={order.status} deliveredAt={order.updated_at || order.created_at} />
+                  {/* Rating buttons for delivered orders */}
+                  {order.status === "delivered" && order.items?.[0] && (
+                    <Button size="sm" variant="ghost" className="gap-1" onClick={() => {
+                      const sellerId = (order.items[0] as any)?.seller_id;
+                      if (sellerId) setRatingOrder({ orderId: order.id, userId: sellerId, type: "buyer_to_seller" });
+                    }}>
+                      <Star className="h-3.5 w-3.5" /> Noter
+                    </Button>
+                  )}
                   {/* Refund button for delivered orders within 15 days */}
                   {order.status === "delivered" && differenceInDays(new Date(), new Date(order.created_at)) <= 15 && (
                     <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setRefundOrderId(order.id)}>
@@ -280,5 +298,15 @@ export default function BuyerOrdersTracker() {
         );
       })}
     </div>
+    {ratingOrder && (
+        <OrderRatingDialog
+          open={!!ratingOrder}
+          onClose={() => setRatingOrder(null)}
+          orderId={ratingOrder.orderId}
+          reviewedUserId={ratingOrder.userId}
+          reviewType={ratingOrder.type}
+        />
+      )}
+    </>
   );
 }

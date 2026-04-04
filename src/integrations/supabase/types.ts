@@ -479,6 +479,77 @@ export type Database = {
           },
         ]
       }
+      order_returns: {
+        Row: {
+          admin_notes: string | null
+          buyer_id: string
+          created_at: string
+          fault_type: string | null
+          id: string
+          order_id: string
+          reason: string
+          refund_amount: number | null
+          return_delivery_code: string | null
+          return_delivery_fee: number | null
+          return_driver_id: string | null
+          return_pickup_code: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          seller_confirmed: boolean | null
+          seller_notes: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          buyer_id: string
+          created_at?: string
+          fault_type?: string | null
+          id?: string
+          order_id: string
+          reason: string
+          refund_amount?: number | null
+          return_delivery_code?: string | null
+          return_delivery_fee?: number | null
+          return_driver_id?: string | null
+          return_pickup_code?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seller_confirmed?: boolean | null
+          seller_notes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          buyer_id?: string
+          created_at?: string
+          fault_type?: string | null
+          id?: string
+          order_id?: string
+          reason?: string
+          refund_amount?: number | null
+          return_delivery_code?: string | null
+          return_delivery_fee?: number | null
+          return_driver_id?: string | null
+          return_pickup_code?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seller_confirmed?: boolean | null
+          seller_notes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_returns_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           buyer_id: string | null
@@ -873,6 +944,41 @@ export type Database = {
         }
         Relationships: []
       }
+      return_messages: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          message: string | null
+          return_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          message?: string | null
+          return_id: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          message?: string | null
+          return_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "return_messages_return_id_fkey"
+            columns: ["return_id"]
+            isOneToOne: false
+            referencedRelation: "order_returns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           comment: string | null
@@ -1244,6 +1350,10 @@ export type Database = {
         Args: { p_comment?: string; p_verification_id: string }
         Returns: Json
       }
+      approve_return: {
+        Args: { p_fault_type?: string; p_return_id: string }
+        Returns: Json
+      }
       approve_seller_application: {
         Args: { application_id: string }
         Returns: boolean
@@ -1258,6 +1368,15 @@ export type Database = {
         Returns: number
       }
       cleanup_old_data: { Args: never; Returns: Json }
+      confirm_return_received: {
+        Args: {
+          p_action?: string
+          p_confirmed: boolean
+          p_notes?: string
+          p_return_id: string
+        }
+        Returns: Json
+      }
       create_delivery_verification: {
         Args: { p_order_id: string }
         Returns: Json
@@ -1268,6 +1387,7 @@ export type Database = {
         Returns: Json
       }
       driver_accept_order: { Args: { p_order_id: string }; Returns: Json }
+      driver_accept_return: { Args: { p_return_id: string }; Returns: Json }
       freeze_wallet: {
         Args: { p_reason: string; p_user_id: string }
         Returns: Json
@@ -1332,6 +1452,10 @@ export type Database = {
         Args: { p_order_id: string; p_reason: string }
         Returns: Json
       }
+      request_return: {
+        Args: { p_order_id: string; p_reason: string }
+        Returns: Json
+      }
       request_withdrawal: {
         Args: {
           p_account_details: string
@@ -1379,6 +1503,14 @@ export type Database = {
       }
       verify_pickup_code: {
         Args: { p_code: string; p_order_id: string }
+        Returns: Json
+      }
+      verify_return_delivery: {
+        Args: { p_code: string; p_return_id: string }
+        Returns: Json
+      }
+      verify_return_pickup: {
+        Args: { p_code: string; p_return_id: string }
         Returns: Json
       }
     }

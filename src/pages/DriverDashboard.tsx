@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Truck, Package, MapPin, DollarSign, Navigation } from "lucide-react";
+import DriverReturnsList from "@/components/returns/DriverReturnsList";
 import DriverStatsCards from "@/components/driver/DriverStatsCards";
 import AvailableDeliveriesTable from "@/components/driver/AvailableDeliveriesTable";
 import MyDeliveriesTable from "@/components/driver/MyDeliveriesTable";
@@ -131,7 +132,8 @@ const DriverDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="my-deliveries">
+          <TabsContent value="my-deliveries" className="space-y-6">
+            <DriverReturnsList />
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

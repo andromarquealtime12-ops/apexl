@@ -25,6 +25,7 @@ import ReportsManager from "@/components/admin/ReportsManager";
 import AuditLogsViewer from "@/components/admin/AuditLogsViewer";
 import PlatformSettingsManager from "@/components/admin/PlatformSettingsManager";
 import RefundRequestsManager from "@/components/admin/RefundRequestsManager";
+import ReturnsManager from "@/components/admin/ReturnsManager";
 
 import { usePendingIdentityVerifications, useSupportTickets, useReports } from "@/hooks/useAdminAdvanced";
 
@@ -177,6 +178,7 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="wallets" className="space-y-6">
+            <ReturnsManager />
             <RefundRequestsManager />
             <Card>
               <CardHeader>
