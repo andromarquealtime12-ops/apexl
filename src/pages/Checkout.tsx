@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -23,10 +23,11 @@ import {
 import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
 import { PayPalPayment } from "@/components/checkout/PayPalPayment";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
-import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, CreditCard, Mail } from "lucide-react";
+import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, CreditCard, Mail, Loader2, Navigation } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { calculateDistance } from "@/hooks/useGeolocation";
 
 const CITIES = [
   { value: "Santo Domingo", label: "Santo Domingo", country: "DO" },
@@ -55,6 +56,52 @@ const Checkout = () => {
   const [showStripePayment, setShowStripePayment] = useState(false);
   const [showPayPalPayment, setShowPayPalPayment] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState(0);
+  
+  // Buyer GPS
+  const [buyerLat, setBuyerLat] = useState<number | null>(null);
+  const [buyerLng, setBuyerLng] = useState<number | null>(null);
+  const [gettingLocation, setGettingLocation] = useState(false);
+  const [distanceKm, setDistanceKm] = useState<number | undefined>(undefined);
+
+  // Get current position
+  const handleGetLocation = useCallback(() => {
+    if (!navigator.geolocation) return;
+    setGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setBuyerLat(pos.coords.latitude);
+        setBuyerLng(pos.coords.longitude);
+        setGettingLocation(false);
+        toast({ title: "Position obtenue ✓", description: "Votre position a été enregistrée" });
+      },
+      () => {
+        setGettingLocation(false);
+        toast({ title: "Erreur", description: "Impossible d'obtenir votre position", variant: "destructive" });
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, []);
+
+  // Calculate distance when buyer location + seller location available
+  useEffect(() => {
+    if (!buyerLat || !buyerLng || items.length === 0) return;
+    
+    const fetchSellerLocation = async () => {
+      const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
+      const { data } = await supabase
+        .from("seller_applications")
+        .select("latitude, longitude")
+        .in("user_id", sellerIds)
+        .eq("status", "approved")
+        .not("latitude", "is", null);
+      
+      if (data && data.length > 0 && data[0].latitude && data[0].longitude) {
+        const dist = calculateDistance(buyerLat, buyerLng, data[0].latitude, data[0].longitude);
+        setDistanceKm(dist);
+      }
+    };
+    fetchSellerLocation();
+  }, [buyerLat, buyerLng, items]);
 
   // Handle PayPal return
   useEffect(() => {
@@ -63,7 +110,6 @@ const Checkout = () => {
     const paypalCurrency = sessionStorage.getItem("paypal_currency") as Currency;
     
     if (paypalStatus === "success" && paypalOrderId && user) {
-      // Capture the PayPal payment
       supabase.functions.invoke("paypal-payment", {
         body: {
           action: "capture_order",
@@ -82,7 +128,6 @@ const Checkout = () => {
         sessionStorage.removeItem("paypal_order_id");
         sessionStorage.removeItem("paypal_amount");
         sessionStorage.removeItem("paypal_currency");
-        // Clean URL
         navigate("/checkout", { replace: true });
       });
     } else if (paypalStatus === "cancel") {
@@ -95,8 +140,8 @@ const Checkout = () => {
   const isEmailVerified = profile?.email_verified ?? false;
 
   const subtotal = getSubtotal();
-  const deliveryFee = getDeliveryFee(deliveryCity);
-  const total = getTotal(deliveryCity);
+  const deliveryFee = getDeliveryFee(distanceKm);
+  const total = subtotal + deliveryFee;
 
   const balanceField = currency === "DOP" ? "balance_dop" : currency === "HTG" ? "balance_htg" : "balance_usd";
   const currentBalance = wallet ? (wallet[balanceField] || 0) : 0;
@@ -106,29 +151,17 @@ const Checkout = () => {
     e.preventDefault();
     
     if (!user) {
-      toast({
-        title: "Erreur",
-        description: "Vous devez être connecté pour passer une commande",
-        variant: "destructive",
-      });
+      toast({ title: "Erreur", description: "Vous devez être connecté pour passer une commande", variant: "destructive" });
       return;
     }
 
     if (!deliveryAddress || !deliveryCity) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez renseigner l'adresse de livraison",
-        variant: "destructive",
-      });
+      toast({ title: "Erreur", description: "Veuillez renseigner l'adresse de livraison", variant: "destructive" });
       return;
     }
 
     if (!hasEnoughBalance) {
-      toast({
-        title: "Solde insuffisant",
-        description: "Rechargez votre portefeuille pour continuer",
-        variant: "destructive",
-      });
+      toast({ title: "Solde insuffisant", description: "Rechargez votre portefeuille pour continuer", variant: "destructive" });
       return;
     }
 
@@ -138,19 +171,15 @@ const Checkout = () => {
         deliveryCity,
         deliveryNotes,
         currency,
+        buyerLatitude: buyerLat,
+        buyerLongitude: buyerLng,
+        deliveryFee,
       });
       
       setOrderSuccess(true);
-      toast({
-        title: "Commande confirmée !",
-        description: "Votre commande a été passée avec succès",
-      });
+      toast({ title: "Commande confirmée !", description: "Votre commande a été passée avec succès" });
     } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: error.message || "Une erreur est survenue",
-        variant: "destructive",
-      });
+      toast({ title: "Erreur", description: error.message || "Une erreur est survenue", variant: "destructive" });
     }
   };
 
@@ -163,9 +192,7 @@ const Checkout = () => {
             <CardContent className="pt-6 text-center">
               <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-2">Connexion requise</h2>
-              <p className="text-muted-foreground mb-4">
-                Vous devez être connecté pour passer une commande
-              </p>
+              <p className="text-muted-foreground mb-4">Vous devez être connecté pour passer une commande</p>
               <Button onClick={() => navigate("/")}>Retour à l'accueil</Button>
             </CardContent>
           </Card>
@@ -184,9 +211,7 @@ const Checkout = () => {
             <CardContent className="pt-6 text-center">
               <ShoppingBag className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-2">Panier vide</h2>
-              <p className="text-muted-foreground mb-4">
-                Ajoutez des produits à votre panier pour continuer
-              </p>
+              <p className="text-muted-foreground mb-4">Ajoutez des produits à votre panier pour continuer</p>
               <Button onClick={() => navigate("/products")}>Voir les produits</Button>
             </CardContent>
           </Card>
@@ -203,20 +228,16 @@ const Checkout = () => {
         <main className="flex-1 container py-8">
           <Card className="max-w-md mx-auto">
             <CardContent className="pt-6 text-center">
-              <div className="bg-success/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="h-8 w-8 text-success" />
+              <div className="bg-green-100 dark:bg-green-900/30 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
               <h2 className="text-xl font-semibold mb-2">Commande confirmée !</h2>
               <p className="text-muted-foreground mb-4">
                 Votre commande a été passée avec succès. Vous recevrez une notification lorsqu'elle sera en cours de livraison.
               </p>
               <div className="flex gap-3 justify-center">
-                <Button variant="outline" onClick={() => navigate("/")}>
-                  Retour à l'accueil
-                </Button>
-                <Button onClick={() => navigate("/orders")}>
-                  Voir mes commandes
-                </Button>
+                <Button variant="outline" onClick={() => navigate("/")}>Retour à l'accueil</Button>
+                <Button onClick={() => navigate("/orders")}>Voir mes commandes</Button>
               </div>
             </CardContent>
           </Card>
@@ -237,7 +258,6 @@ const Checkout = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="grid lg:grid-cols-3 gap-6">
-            {/* Colonne gauche - Formulaire */}
             <div className="lg:col-span-2 space-y-6">
               {/* Adresse de livraison */}
               <Card>
@@ -248,6 +268,29 @@ const Checkout = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* GPS Location button */}
+                  <div className="p-3 border rounded-lg bg-muted/30">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-sm">📍 Position GPS</p>
+                        {buyerLat && buyerLng ? (
+                          <p className="text-xs text-green-600">Position enregistrée ✓</p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">Utilisez votre position pour un calcul précis des frais</p>
+                        )}
+                      </div>
+                      <Button type="button" variant="outline" size="sm" onClick={handleGetLocation} disabled={gettingLocation}>
+                        {gettingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+                        <span className="ml-1">{buyerLat ? "Actualiser" : "Ma position"}</span>
+                      </Button>
+                    </div>
+                    {distanceKm !== undefined && (
+                      <p className="text-xs text-primary mt-2">
+                        📏 Distance estimée: {distanceKm.toFixed(1)} km → Frais: RD$ {deliveryFee.toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="city">Ville</Label>
@@ -267,9 +310,7 @@ const Checkout = () => {
                     <div className="space-y-2">
                       <Label htmlFor="currency">Devise</Label>
                       <Select value={currency} onValueChange={(v) => setCurrency(v as Currency)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="DOP">Peso Dominicain (RD$)</SelectItem>
                           <SelectItem value="HTG">Gourde Haïtienne (G)</SelectItem>
@@ -301,7 +342,7 @@ const Checkout = () => {
                 </CardContent>
               </Card>
 
-              {/* Méthode de paiement */}
+              {/* Paiement */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
@@ -310,7 +351,6 @@ const Checkout = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Email verification warning */}
                   {!isEmailVerified && (
                     <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
                       <Mail className="h-4 w-4 text-amber-600" />
@@ -336,18 +376,11 @@ const Checkout = () => {
                       </div>
                     </div>
                     {hasEnoughBalance ? (
-                      <CheckCircle className="h-5 w-5 text-success" />
+                      <CheckCircle className="h-5 w-5 text-green-600" />
                     ) : (
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => navigate("/wallet")}
-                        >
-                          Recharger
-                        </Button>
-                      </div>
+                      <Button type="button" variant="outline" size="sm" onClick={() => navigate("/wallet")}>
+                        Recharger
+                      </Button>
                     )}
                   </div>
 
@@ -357,8 +390,6 @@ const Checkout = () => {
                         <AlertCircle className="h-4 w-4" />
                         Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants)
                       </p>
-
-                      {/* PayPal real payment option */}
                       <div className="border rounded-lg p-4 bg-muted/20">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="bg-primary/10 p-2 rounded-full">
@@ -366,9 +397,7 @@ const Checkout = () => {
                           </div>
                           <div>
                             <p className="font-medium">Payer par carte / PayPal</p>
-                            <p className="text-xs text-muted-foreground">
-                              Paiement sécurisé via PayPal (carte ou compte)
-                            </p>
+                            <p className="text-xs text-muted-foreground">Paiement sécurisé via PayPal</p>
                           </div>
                         </div>
                         <Button
@@ -389,14 +418,13 @@ const Checkout = () => {
               </Card>
             </div>
 
-            {/* Colonne droite - Résumé */}
+            {/* Résumé */}
             <div>
               <Card className="sticky top-20">
                 <CardHeader>
                   <CardTitle className="text-lg">Résumé de la commande</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Liste des produits */}
                   <div className="space-y-3 max-h-60 overflow-y-auto">
                     {items.map((item) => (
                       <div key={item.product.id} className="flex gap-3">
@@ -420,78 +448,62 @@ const Checkout = () => {
                       <span className="text-muted-foreground">Sous-total</span>
                       <span>{CURRENCY_SYMBOLS[currency]} {subtotal.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between">
                       <span className="text-muted-foreground flex items-center gap-1">
-                        <Truck className="h-4 w-4" /> Livraison
+                        <Truck className="h-3 w-3" />
+                        Livraison {distanceKm !== undefined ? `(${distanceKm.toFixed(1)} km)` : ""}
                       </span>
                       <span>{CURRENCY_SYMBOLS[currency]} {deliveryFee.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between font-semibold text-base pt-2 border-t">
-                      <span>Total</span>
-                      <span className="text-primary">{CURRENCY_SYMBOLS[currency]} {total.toLocaleString()}</span>
+                    <div className="border-t pt-2">
+                      <div className="flex justify-between font-bold text-lg">
+                        <span>Total</span>
+                        <span>{CURRENCY_SYMBOLS[currency]} {total.toLocaleString()}</span>
+                      </div>
                     </div>
                   </div>
 
-                  <Button
-                    type="submit"
-                    variant="hero"
-                    className="w-full"
-                    size="lg"
-                    disabled={!isEmailVerified || !hasEnoughBalance || checkout.isPending || !deliveryAddress || !deliveryCity}
-                  >
-                    {checkout.isPending ? "Traitement..." : "Confirmer la commande"}
+                  <Button type="submit" className="w-full" size="lg" disabled={checkout.isPending || !hasEnoughBalance}>
+                    {checkout.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                    )}
+                    Confirmer la commande
                   </Button>
                 </CardContent>
               </Card>
             </div>
           </div>
         </form>
+
+        {showStripePayment && (
+          <DemoStripePayment
+            isOpen={showStripePayment}
+            onClose={() => setShowStripePayment(false)}
+            amount={topUpAmount}
+            currency={currency}
+            onSuccess={() => {
+              setShowStripePayment(false);
+              queryClient.invalidateQueries({ queryKey: ["wallet"] });
+            }}
+          />
+        )}
+
+        {showPayPalPayment && (
+          <PayPalPayment
+            isOpen={showPayPalPayment}
+            onClose={() => setShowPayPalPayment(false)}
+            amount={topUpAmount}
+            currency={currency}
+            onSuccess={() => {
+              setShowPayPalPayment(false);
+              queryClient.invalidateQueries({ queryKey: ["wallet"] });
+            }}
+          />
+        )}
       </main>
       <Footer />
-
-      {/* Demo Stripe Payment Modal */}
-      <DemoStripePayment
-        isOpen={showStripePayment}
-        onClose={() => setShowStripePayment(false)}
-        amount={topUpAmount}
-        currency={currency}
-        onSuccess={async () => {
-           // Use secure server-side RPC function for demo wallet top-up
-           const { data, error } = await supabase.rpc("demo_wallet_topup" as any, {
-             p_amount: topUpAmount,
-             p_currency: currency,
-           });
-
-           if (error) {
-             toast({
-               title: "Erreur",
-               description: error.message || "Impossible de recharger le portefeuille",
-               variant: "destructive",
-             });
-           } else {
-             queryClient.invalidateQueries({ queryKey: ["wallet"] });
-             queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-             toast({
-               title: "Portefeuille rechargé !",
-               description: `${CURRENCY_SYMBOLS[currency]} ${topUpAmount.toLocaleString()} ajoutés à votre solde`,
-             });
-          }
-          setShowStripePayment(false);
-        }}
-      />
-
-      {/* PayPal Payment Modal */}
-      <PayPalPayment
-        isOpen={showPayPalPayment}
-        onClose={() => setShowPayPalPayment(false)}
-        amount={topUpAmount}
-        currency={currency}
-        onSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ["wallet"] });
-          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-          setShowPayPalPayment(false);
-        }}
-      />
     </div>
   );
 };

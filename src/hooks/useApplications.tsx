@@ -80,6 +80,8 @@ export function useSubmitSellerApplication() {
       shop_city: string;
       shop_phone: string;
       business_type?: string;
+      latitude?: number | null;
+      longitude?: number | null;
     }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");

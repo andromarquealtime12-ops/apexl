@@ -1,25 +1,18 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { useSubmitSellerApplication, useMySellerApplication } from "@/hooks/useApplications";
-import { Loader2, Store, CheckCircle, Clock } from "lucide-react";
+import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 interface SellerApplicationFormProps {
   isOpen: boolean;
@@ -39,9 +32,38 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
     business_type: "",
   });
 
+  const [shopLat, setShopLat] = useState<number | null>(null);
+  const [shopLng, setShopLng] = useState<number | null>(null);
+  const [gettingLocation, setGettingLocation] = useState(false);
+
+  const handleGetLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      toast.error("Géolocalisation non supportée");
+      return;
+    }
+    setGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setShopLat(pos.coords.latitude);
+        setShopLng(pos.coords.longitude);
+        setGettingLocation(false);
+        toast.success("Position de la boutique enregistrée ✓");
+      },
+      () => {
+        setGettingLocation(false);
+        toast.error("Impossible d'obtenir la position");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await submitApplication.mutateAsync(formData);
+    await submitApplication.mutateAsync({
+      ...formData,
+      latitude: shopLat,
+      longitude: shopLng,
+    });
     onClose();
   };
 
@@ -61,7 +83,6 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
     );
   }
 
-  // Show existing application status
   if (existingApplication) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -72,7 +93,6 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
               Statut de votre demande
             </DialogTitle>
           </DialogHeader>
-          
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">{existingApplication.shop_name}</CardTitle>
@@ -93,9 +113,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
                   </>
                 )}
                 {existingApplication.status === "rejected" && (
-                  <>
-                    <span className="text-red-600 font-medium">Demande rejetée</span>
-                  </>
+                  <span className="text-red-600 font-medium">Demande rejetée</span>
                 )}
               </div>
             </CardContent>
@@ -121,24 +139,13 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="shop_name">Nom de la boutique *</Label>
-            <Input
-              id="shop_name"
-              placeholder="Ma Super Boutique"
-              value={formData.shop_name}
-              onChange={(e) => handleChange("shop_name", e.target.value)}
-              required
-            />
+            <Input id="shop_name" placeholder="Ma Super Boutique" value={formData.shop_name} onChange={(e) => handleChange("shop_name", e.target.value)} required />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="business_type">Type de commerce</Label>
-            <Select
-              value={formData.business_type}
-              onValueChange={(value) => handleChange("business_type", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionnez le type" />
-              </SelectTrigger>
+            <Select value={formData.business_type} onValueChange={(value) => handleChange("business_type", value)}>
+              <SelectTrigger><SelectValue placeholder="Sélectionnez le type" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="food">Alimentation</SelectItem>
                 <SelectItem value="electronics">Électronique</SelectItem>
@@ -153,37 +160,39 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
 
           <div className="space-y-2">
             <Label htmlFor="shop_description">Description</Label>
-            <Textarea
-              id="shop_description"
-              placeholder="Décrivez votre boutique..."
-              value={formData.shop_description}
-              onChange={(e) => handleChange("shop_description", e.target.value)}
-              rows={3}
-            />
+            <Textarea id="shop_description" placeholder="Décrivez votre boutique..." value={formData.shop_description} onChange={(e) => handleChange("shop_description", e.target.value)} rows={3} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="shop_address">Adresse *</Label>
-            <Input
-              id="shop_address"
-              placeholder="123 Rue du Commerce"
-              value={formData.shop_address}
-              onChange={(e) => handleChange("shop_address", e.target.value)}
-              required
-            />
+            <Input id="shop_address" placeholder="123 Rue du Commerce" value={formData.shop_address} onChange={(e) => handleChange("shop_address", e.target.value)} required />
+          </div>
+
+          {/* GPS Location */}
+          <div className="p-3 border rounded-lg bg-muted/30 space-y-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-sm flex items-center gap-1">
+                  <MapPin className="h-4 w-4" /> Localisation de la boutique
+                </p>
+                {shopLat && shopLng ? (
+                  <p className="text-xs text-green-600">Position enregistrée ✓</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Permet aux livreurs de vous trouver</p>
+                )}
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={handleGetLocation} disabled={gettingLocation}>
+                {gettingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+                <span className="ml-1">{shopLat ? "Actualiser" : "Ma position"}</span>
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="shop_city">Ville *</Label>
-              <Select
-                value={formData.shop_city}
-                onValueChange={(value) => handleChange("shop_city", value)}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Ville" />
-                </SelectTrigger>
+              <Select value={formData.shop_city} onValueChange={(value) => handleChange("shop_city", value)} required>
+                <SelectTrigger><SelectValue placeholder="Ville" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Port-au-Prince">Port-au-Prince</SelectItem>
                   <SelectItem value="Cap-Haïtien">Cap-Haïtien</SelectItem>
@@ -195,28 +204,14 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
                 </SelectContent>
               </Select>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="shop_phone">Téléphone *</Label>
-              <Input
-                id="shop_phone"
-                type="tel"
-                placeholder="+509 00 00 0000"
-                value={formData.shop_phone}
-                onChange={(e) => handleChange("shop_phone", e.target.value)}
-                required
-              />
+              <Input id="shop_phone" type="tel" placeholder="+509 00 00 0000" value={formData.shop_phone} onChange={(e) => handleChange("shop_phone", e.target.value)} required />
             </div>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={submitApplication.isPending}
-          >
-            {submitApplication.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : null}
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending}>
+            {submitApplication.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             Soumettre ma demande
           </Button>
         </form>

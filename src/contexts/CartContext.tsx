@@ -14,120 +14,73 @@ interface CartContextType {
   clearCart: () => void;
   getItemCount: () => number;
   getSubtotal: () => number;
-  getDeliveryFee: (city?: string) => number;
-  getTotal: (city?: string) => number;
+  getDeliveryFee: (distanceKm?: number) => number;
+  getTotal: (distanceKm?: number) => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = "ayiti-market-cart";
 
-// Frais de livraison par ville (en DOP)
-const DELIVERY_FEES: Record<string, number> = {
-  "Santo Domingo": 150,
-  "Santiago": 200,
-  "La Romana": 250,
-  "Port-au-Prince": 300,
-  "Cap-Haïtien": 350,
-  "Pétion-Ville": 280,
-  "default": 200,
-};
+// Price per km in DOP
+const DELIVERY_BASE_FEE = 50; // base fee
+const DELIVERY_PER_KM = 25; // per km
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  // Charger le panier depuis localStorage au démarrage
   useEffect(() => {
     const storedCart = localStorage.getItem(CART_STORAGE_KEY);
     if (storedCart) {
       try {
-        const parsed = JSON.parse(storedCart);
-        setItems(parsed);
-      } catch (error) {
-        console.error("Erreur lors du chargement du panier:", error);
-      }
+        setItems(JSON.parse(storedCart));
+      } catch {}
     }
   }, []);
 
-  // Sauvegarder le panier dans localStorage à chaque modification
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
   const addItem = (product: Product, quantity: number = 1) => {
     setItems((currentItems) => {
-      const existingItem = currentItems.find(
-        (item) => item.product.id === product.id
-      );
-
+      const existingItem = currentItems.find((item) => item.product.id === product.id);
       if (existingItem) {
         return currentItems.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
+          item.product.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
         );
       }
-
       return [...currentItems, { product, quantity }];
     });
   };
 
   const removeItem = (productId: string) => {
-    setItems((currentItems) =>
-      currentItems.filter((item) => item.product.id !== productId)
-    );
+    setItems((currentItems) => currentItems.filter((item) => item.product.id !== productId));
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeItem(productId);
-      return;
-    }
-
+    if (quantity <= 0) { removeItem(productId); return; }
     setItems((currentItems) =>
-      currentItems.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
-      )
+      currentItems.map((item) => item.product.id === productId ? { ...item, quantity } : item)
     );
   };
 
-  const clearCart = () => {
-    setItems([]);
+  const clearCart = () => setItems([]);
+
+  const getItemCount = () => items.reduce((total, item) => total + item.quantity, 0);
+
+  const getSubtotal = () => items.reduce((total, item) => total + item.product.price * item.quantity, 0);
+
+  const getDeliveryFee = (distanceKm?: number) => {
+    if (!distanceKm || distanceKm <= 0) return DELIVERY_BASE_FEE + DELIVERY_PER_KM * 5; // default ~5km
+    return Math.round(DELIVERY_BASE_FEE + DELIVERY_PER_KM * distanceKm);
   };
 
-  const getItemCount = () => {
-    return items.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const getSubtotal = () => {
-    return items.reduce(
-      (total, item) => total + item.product.price * item.quantity,
-      0
-    );
-  };
-
-  const getDeliveryFee = (city?: string) => {
-    if (!city) return DELIVERY_FEES["default"];
-    return DELIVERY_FEES[city] || DELIVERY_FEES["default"];
-  };
-
-  const getTotal = (city?: string) => {
-    return getSubtotal() + getDeliveryFee(city);
-  };
+  const getTotal = (distanceKm?: number) => getSubtotal() + getDeliveryFee(distanceKm);
 
   return (
     <CartContext.Provider
-      value={{
-        items,
-        addItem,
-        removeItem,
-        updateQuantity,
-        clearCart,
-        getItemCount,
-        getSubtotal,
-        getDeliveryFee,
-        getTotal,
-      }}
+      value={{ items, addItem, removeItem, updateQuantity, clearCart, getItemCount, getSubtotal, getDeliveryFee, getTotal }}
     >
       {children}
     </CartContext.Provider>
@@ -136,8 +89,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 export function useCart() {
   const context = useContext(CartContext);
-  if (context === undefined) {
-    throw new Error("useCart must be used within a CartProvider");
-  }
+  if (context === undefined) throw new Error("useCart must be used within a CartProvider");
   return context;
 }
