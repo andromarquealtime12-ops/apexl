@@ -1160,6 +1160,8 @@ export type Database = {
       }
       generate_pin_code: { Args: never; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
+      get_buyer_order_ids: { Args: never; Returns: string[] }
+      get_driver_order_ids: { Args: never; Returns: string[] }
       get_nearby_drivers: {
         Args: { p_latitude: number; p_longitude: number; p_radius_km?: number }
         Returns: {
@@ -1170,6 +1172,7 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_seller_order_ids: { Args: never; Returns: string[] }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
