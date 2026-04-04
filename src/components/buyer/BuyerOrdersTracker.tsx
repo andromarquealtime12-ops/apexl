@@ -1,16 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare, RotateCcw } from "lucide-react";
+import { formatDistanceToNow, differenceInDays } from "date-fns";
 import { WhatsAppContact } from "@/components/contact/WhatsAppContact";
 import { Link } from "react-router-dom";
 import { fr } from "date-fns/locale";
 import { CURRENCY_SYMBOLS } from "@/types/database";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any; description: string }> = {
   pending: { label: "En attente", variant: "secondary", icon: Clock, description: "Votre commande est en cours de traitement" },
