@@ -51,23 +51,37 @@ export default function BuyerOrdersTracker() {
     queryFn: async () => {
       if (!user) return [];
 
-      const { data, error } = await supabase
+      const { data: orderData, error: ordersError } = await supabase
         .from("orders")
-        .select(`
-          *,
-          items:order_items(
-            id,
-            quantity,
-            unit_price,
-            products(name, images)
-          )
-        `)
+        .select("*")
         .eq("buyer_id", user.id)
         .order("created_at", { ascending: false })
         .limit(20);
 
-      if (error) throw error;
-      return data as OrderWithItems[];
+      if (ordersError) throw ordersError;
+      if (!orderData?.length) return [];
+
+      const orderIds = orderData.map((order) => order.id);
+
+      const { data: orderItems, error: itemsError } = await supabase
+        .from("order_items")
+        .select(`
+          id,
+          order_id,
+          quantity,
+          unit_price,
+          products(name, images)
+        `)
+        .in("order_id", orderIds);
+
+      if (itemsError) throw itemsError;
+
+      return orderData.map((order) => ({
+        ...order,
+        items: (orderItems || [])
+          .filter((item) => item.order_id === order.id)
+          .map(({ order_id, ...item }) => item),
+      })) as OrderWithItems[];
     },
     enabled: !!user,
   });
