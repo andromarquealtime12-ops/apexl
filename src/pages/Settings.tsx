@@ -24,6 +24,7 @@ export default function Settings() {
     () => ({
       full_name: profile?.full_name ?? "",
       phone: profile?.phone ?? "",
+      whatsapp: (profile as any)?.whatsapp ?? "",
       country: profile?.country ?? "",
       city: profile?.city ?? "",
       address: profile?.address ?? "",
@@ -55,10 +56,11 @@ export default function Settings() {
       await updateProfile.mutateAsync({
         full_name: form.full_name.trim() || profile?.full_name,
         phone: form.phone.trim() || null,
+        whatsapp: form.whatsapp.trim() || null,
         country: form.country.trim() || null,
         city: form.city.trim() || null,
         address: form.address.trim() || null,
-      });
+      } as any);
       toast.success("Paramètres enregistrés");
     } catch (e: any) {
       toast.error(e?.message || "Erreur lors de l'enregistrement");
@@ -108,6 +110,17 @@ export default function Settings() {
                       placeholder="+509 ..."
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp">Numéro WhatsApp</Label>
+                  <Input
+                    id="whatsapp"
+                    value={form.whatsapp}
+                    onChange={(e) => setForm((p) => ({ ...p, whatsapp: e.target.value }))}
+                    placeholder="+509 00 00 0000"
+                  />
+                  <p className="text-xs text-muted-foreground">Ce numéro sera utilisé pour que les vendeurs, acheteurs et livreurs puissent vous contacter.</p>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">

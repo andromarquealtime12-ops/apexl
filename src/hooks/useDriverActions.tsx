@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { notifyDriverAssigned, notifyOrderStatusChange, notifyDeliveryComplete } from "@/hooks/useOrderNotifications";
+import { notifyOrderStatusChange, notifyDeliveryComplete } from "@/hooks/useOrderNotifications";
 
 export function useAcceptDelivery() {
   const { user } = useAuth();
@@ -11,28 +11,15 @@ export function useAcceptDelivery() {
     mutationFn: async (orderId: string) => {
       if (!user) throw new Error("Not authenticated");
 
-      // Get the order to find buyer_id
-      const { data: order } = await supabase
-        .from("orders")
-        .select("buyer_id")
-        .eq("id", orderId)
-        .single();
-
-      const { error } = await supabase
-        .from("orders")
-        .update({ 
-          driver_id: user.id,
-          status: "ready_for_pickup"
-        })
-        .eq("id", orderId)
-        .is("driver_id", null);
+      const { data, error } = await supabase.rpc("driver_accept_order" as any, {
+        p_order_id: orderId,
+      });
 
       if (error) throw error;
+      const result = data as any;
+      if (!result?.success) throw new Error(result?.error || "Erreur inconnue");
 
-      // Send notifications
-      if (order?.buyer_id) {
-        notifyDriverAssigned(orderId, user.id, order.buyer_id);
-      }
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["driver-deliveries"] });

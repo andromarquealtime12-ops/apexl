@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Phone, Navigation, Key, ExternalLink, MessageCircle } from "lucide-react";
+import { MapPin, Package, Navigation, Key, ExternalLink, MessageSquare } from "lucide-react";
 import { DeliveryCodeVerification } from "./DeliveryCodeVerification";
 import OrderChat from "@/components/chat/OrderChat";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; action?: "pickup" | "delivery"; actionLabel?: string }> = {
   ready: { 
@@ -53,6 +55,36 @@ function getNavigationUrl(lat?: number | null, lng?: number | null, address?: st
   return null;
 }
 
+function WhatsAppButton({ userId, label }: { userId: string; label: string }) {
+  const { data: profile } = useQuery({
+    queryKey: ["contact-whatsapp", userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("whatsapp, phone, full_name")
+        .eq("user_id", userId)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+  });
+
+  const whatsappNumber = profile?.whatsapp || profile?.phone;
+  if (!whatsappNumber) return null;
+
+  const cleanNumber = whatsappNumber.replace(/[^0-9+]/g, "").replace(/^\+/, "");
+  const url = `https://wa.me/${cleanNumber}`;
+
+  return (
+    <Button variant="outline" size="sm" className="gap-1" asChild>
+      <a href={url} target="_blank" rel="noopener noreferrer">
+        <MessageSquare className="h-3 w-3" />
+        {label}
+      </a>
+    </Button>
+  );
+}
+
 export default function MyDeliveriesTable() {
   const [verificationModal, setVerificationModal] = useState<{
     isOpen: boolean;
@@ -60,6 +92,43 @@ export default function MyDeliveriesTable() {
     type: "pickup" | "delivery";
   }>({ isOpen: false, orderId: "", type: "pickup" });
   const { data: deliveries, isLoading } = useDriverDeliveries();
+
+  // Fetch seller locations for navigation to seller (not buyer) before pickup
+  const { data: sellerLocations } = useQuery({
+    queryKey: ["seller-locations-for-deliveries", deliveries?.map(d => d.id)],
+    queryFn: async () => {
+      if (!deliveries?.length) return {};
+      const orderIds = deliveries.filter(d => !["delivered", "cancelled"].includes(d.status || "")).map(d => d.id);
+      if (orderIds.length === 0) return {};
+
+      const { data: items } = await supabase
+        .from("order_items")
+        .select("order_id, seller_id")
+        .in("order_id", orderIds);
+
+      if (!items?.length) return {};
+
+      const sellerIds = [...new Set(items.map(i => i.seller_id).filter(Boolean))];
+      const { data: sellers } = await supabase
+        .from("seller_applications")
+        .select("user_id, latitude, longitude, shop_address, shop_city, shop_name")
+        .in("user_id", sellerIds as string[])
+        .eq("status", "approved");
+
+      // Map order_id -> seller info
+      const result: Record<string, any> = {};
+      items.forEach(item => {
+        if (item.seller_id) {
+          const seller = sellers?.find(s => s.user_id === item.seller_id);
+          if (seller) {
+            result[item.order_id] = seller;
+          }
+        }
+      });
+      return result;
+    },
+    enabled: !!deliveries?.length,
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-DO", {
@@ -95,6 +164,11 @@ export default function MyDeliveriesTable() {
     );
   }
 
+  // Determine if pickup is done (status picked_up or later)
+  const isPickupDone = (status: string | null) => {
+    return ["picked_up", "in_transit", "delivering", "delivered"].includes(status || "");
+  };
+
   return (
     <>
       <div className="space-y-6">
@@ -106,11 +180,16 @@ export default function MyDeliveriesTable() {
             <div className="grid gap-4">
               {activeDeliveries.map((delivery) => {
                 const status = statusConfig[delivery.status || "ready_for_pickup"];
-                const navUrl = getNavigationUrl(
-                  delivery.buyer_latitude,
-                  delivery.buyer_longitude,
-                  delivery.delivery_address
-                );
+                const pickupDone = isPickupDone(delivery.status);
+                const seller = sellerLocations?.[delivery.id];
+                
+                // Before pickup: navigate to seller. After pickup: navigate to buyer.
+                const navUrl = pickupDone
+                  ? getNavigationUrl(delivery.buyer_latitude, delivery.buyer_longitude, delivery.delivery_address)
+                  : getNavigationUrl(seller?.latitude, seller?.longitude, seller?.shop_address ? `${seller.shop_address}, ${seller.shop_city}` : null);
+
+                // Get seller_id from sellerLocations for WhatsApp
+                const sellerUserId = seller?.user_id;
                 
                 return (
                   <Card key={delivery.id} className="border-primary/20 bg-primary/5">
@@ -123,29 +202,49 @@ export default function MyDeliveriesTable() {
                           <Badge variant={status.variant}>{status.label}</Badge>
                         </div>
                         
-                        <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-primary mt-0.5" />
-                          <div>
-                            <p className="font-medium">{delivery.delivery_city || "Ville"}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {delivery.delivery_address || "Adresse à confirmer"}
-                            </p>
+                        {/* Before pickup: show seller location. After: show buyer destination */}
+                        {!pickupDone && seller ? (
+                          <div className="flex items-start gap-2">
+                            <MapPin className="h-4 w-4 text-orange-500 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-orange-600">📦 Récupérer chez: {seller.shop_name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {seller.shop_address}, {seller.shop_city}
+                              </p>
+                            </div>
                           </div>
-                        </div>
+                        ) : pickupDone ? (
+                          <div className="flex items-start gap-2">
+                            <MapPin className="h-4 w-4 text-primary mt-0.5" />
+                            <div>
+                              <p className="font-medium">🏠 Livrer à: {delivery.delivery_city || "Ville"}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {delivery.delivery_address || "Adresse à confirmer"}
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-start gap-2">
+                            <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                            <div>
+                              <p className="font-medium">En attente de récupération</p>
+                            </div>
+                          </div>
+                        )}
 
-                        {delivery.delivery_notes && (
+                        {delivery.delivery_notes && pickupDone && (
                           <p className="text-sm bg-muted/50 p-2 rounded italic">
                             "{delivery.delivery_notes}"
                           </p>
                         )}
 
                         <div className="flex items-center justify-between pt-2 border-t flex-wrap gap-2">
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 flex-wrap">
                             {navUrl ? (
                               <Button variant="outline" size="sm" className="gap-1" asChild>
                                 <a href={navUrl} target="_blank" rel="noopener noreferrer">
                                   <Navigation className="h-3 w-3" />
-                                  Itinéraire
+                                  {pickupDone ? "Itinéraire acheteur" : "Itinéraire vendeur"}
                                   <ExternalLink className="h-3 w-3" />
                                 </a>
                               </Button>
@@ -154,6 +253,13 @@ export default function MyDeliveriesTable() {
                                 <Navigation className="h-3 w-3" />
                                 Itinéraire
                               </Button>
+                            )}
+                            {/* WhatsApp contact */}
+                            {!pickupDone && sellerUserId && (
+                              <WhatsAppButton userId={sellerUserId} label="Vendeur" />
+                            )}
+                            {pickupDone && delivery.buyer_id && (
+                              <WhatsAppButton userId={delivery.buyer_id} label="Acheteur" />
                             )}
                           </div>
                           
