@@ -34,6 +34,7 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
 interface OrderWithItems {
   id: string;
   status: string;
+  updated_at: string;
   total_amount: number;
   delivery_fee: number;
   currency: string;
