@@ -822,6 +822,33 @@ export type Database = {
         }
         Relationships: []
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           created_at: string | null
@@ -941,6 +968,122 @@ export type Database = {
           resolved_at?: string | null
           resolved_by?: string | null
           status?: string | null
+        }
+        Relationships: []
+      }
+      restaurant_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_available: boolean | null
+          name: string
+          preparation_time: number | null
+          price: number
+          restaurant_id: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean | null
+          name: string
+          preparation_time?: number | null
+          price: number
+          restaurant_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean | null
+          name?: string
+          preparation_time?: number | null
+          price?: number
+          restaurant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_items_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      restaurants: {
+        Row: {
+          address: string
+          city: string
+          cover_url: string | null
+          created_at: string
+          cuisine_type: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_approved: boolean | null
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          opening_hours: Json | null
+          phone: string | null
+          seller_id: string
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address: string
+          city: string
+          cover_url?: string | null
+          created_at?: string
+          cuisine_type?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_approved?: boolean | null
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          opening_hours?: Json | null
+          phone?: string | null
+          seller_id: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string
+          city?: string
+          cover_url?: string | null
+          created_at?: string
+          cuisine_type?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_approved?: boolean | null
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          opening_hours?: Json | null
+          phone?: string | null
+          seller_id?: string
+          updated_at?: string
+          whatsapp?: string | null
         }
         Relationships: []
       }
