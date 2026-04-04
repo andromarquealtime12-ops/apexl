@@ -24,6 +24,7 @@ import SupportTicketsManager from "@/components/admin/SupportTicketsManager";
 import ReportsManager from "@/components/admin/ReportsManager";
 import AuditLogsViewer from "@/components/admin/AuditLogsViewer";
 import PlatformSettingsManager from "@/components/admin/PlatformSettingsManager";
+import RefundRequestsManager from "@/components/admin/RefundRequestsManager";
 
 import { usePendingIdentityVerifications, useSupportTickets, useReports } from "@/hooks/useAdminAdvanced";
 
