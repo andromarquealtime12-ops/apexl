@@ -665,6 +665,7 @@ export type Database = {
           user_id: string
           verification_code: string | null
           verification_code_expires_at: string | null
+          whatsapp: string | null
         }
         Insert: {
           account_status?: string | null
@@ -705,6 +706,7 @@ export type Database = {
           user_id: string
           verification_code?: string | null
           verification_code_expires_at?: string | null
+          whatsapp?: string | null
         }
         Update: {
           account_status?: string | null
@@ -745,6 +747,7 @@ export type Database = {
           user_id?: string
           verification_code?: string | null
           verification_code_expires_at?: string | null
+          whatsapp?: string | null
         }
         Relationships: []
       }
@@ -1154,6 +1157,7 @@ export type Database = {
         Args: { p_amount: number; p_currency: string }
         Returns: Json
       }
+      driver_accept_order: { Args: { p_order_id: string }; Returns: Json }
       freeze_wallet: {
         Args: { p_reason: string; p_user_id: string }
         Returns: Json
