@@ -13,7 +13,6 @@ serve(async (req) => {
   }
 
   try {
-    // Validate JWT - require authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -22,11 +21,16 @@ serve(async (req) => {
       });
     }
 
-    const supabaseAuth = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    // Service role client for DB queries
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
     const token = authHeader.replace('Bearer ', '');
     const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
@@ -49,7 +53,7 @@ serve(async (req) => {
 
     const { action, data, userType, message, context, history } = await req.json();
 
-    // Validate admin actions require admin role
+    // Validate admin actions
     const adminActions = ["analyze-report", "verify-receipt", "check-seller"];
     if (adminActions.includes(action)) {
       const { data: roleCheck } = await supabaseAuth.rpc('has_role', { _user_id: userId, _role: 'admin' });
@@ -61,6 +65,134 @@ serve(async (req) => {
       }
     }
 
+    // ========== FETCH REAL DATABASE STATS ==========
+    let dbContext = "";
+
+    try {
+      if (userType === "acheteur") {
+        // Buyer: wallet, orders, available products
+        const [walletRes, ordersRes, productsRes, shopsRes] = await Promise.all([
+          supabaseAdmin.from("wallets").select("balance_dop, balance_htg, balance_usd").eq("user_id", userId).single(),
+          supabaseAdmin.from("orders").select("id, status, total_amount, currency, created_at").eq("buyer_id", userId).order("created_at", { ascending: false }).limit(10),
+          supabaseAdmin.from("products").select("id").eq("is_active", true),
+          supabaseAdmin.from("seller_applications").select("id").eq("status", "approved"),
+        ]);
+
+        const w = walletRes.data;
+        const orders = ordersRes.data || [];
+        const pendingOrders = orders.filter(o => !["delivered", "cancelled"].includes(o.status || ""));
+        
+        dbContext = `
+DONNÉES RÉELLES DE L'UTILISATEUR:
+- Solde portefeuille: ${w?.balance_dop || 0} DOP, ${w?.balance_htg || 0} HTG, ${w?.balance_usd || 0} USD
+- Commandes totales: ${orders.length}
+- Commandes en cours: ${pendingOrders.length}
+- Dernières commandes: ${orders.slice(0, 3).map(o => `#${o.id.slice(0,8)} (${o.status}, ${o.total_amount} ${o.currency})`).join(", ") || "Aucune"}
+- Produits disponibles sur la plateforme: ${productsRes.data?.length || 0}
+- Boutiques actives: ${shopsRes.data?.length || 0}`;
+
+      } else if (userType === "vendeur") {
+        // Seller: products, orders, revenue, wallet
+        const [productsRes, itemsRes, walletRes, shopsRes] = await Promise.all([
+          supabaseAdmin.from("products").select("id, name, is_active, price, stock_quantity").eq("seller_id", userId),
+          supabaseAdmin.from("order_items").select("total_price, order_id, quantity, product_id").eq("seller_id", userId),
+          supabaseAdmin.from("wallets").select("balance_dop, balance_htg, balance_usd").eq("user_id", userId).single(),
+          supabaseAdmin.from("seller_applications").select("shop_name").eq("user_id", userId).eq("status", "approved").single(),
+        ]);
+
+        const products = productsRes.data || [];
+        const items = itemsRes.data || [];
+        const totalRevenue = items.reduce((s, i) => s + Number(i.total_price), 0);
+        const orderIds = [...new Set(items.map(i => i.order_id))];
+        const w = walletRes.data;
+
+        // Get order statuses
+        let pendingOrders = 0;
+        if (orderIds.length > 0) {
+          const { data: ords } = await supabaseAdmin.from("orders").select("id, status").in("id", orderIds);
+          pendingOrders = ords?.filter(o => ["confirmed", "preparing", "ready"].includes(o.status || "")).length || 0;
+        }
+
+        const lowStock = products.filter(p => (p.stock_quantity || 0) <= 3 && p.is_active);
+
+        dbContext = `
+DONNÉES RÉELLES DU VENDEUR:
+- Boutique: ${shopsRes.data?.shop_name || "Non définie"}
+- Produits total: ${products.length} (${products.filter(p => p.is_active).length} actifs)
+- Commandes totales: ${orderIds.length}
+- Commandes à traiter: ${pendingOrders}
+- Revenue total: ${totalRevenue} DOP
+- Solde portefeuille: ${w?.balance_dop || 0} DOP, ${w?.balance_htg || 0} HTG, ${w?.balance_usd || 0} USD
+- Produits en rupture/faible stock: ${lowStock.length > 0 ? lowStock.map(p => `${p.name} (${p.stock_quantity} restants)`).join(", ") : "Aucun"}
+- Top produits: ${products.slice(0, 5).map(p => `${p.name} (${p.price} DOP)`).join(", ")}`;
+
+      } else if (userType === "livreur") {
+        // Driver: deliveries, earnings, wallet
+        const [ordersRes, walletRes, driverRes] = await Promise.all([
+          supabaseAdmin.from("orders").select("id, status, delivery_fee, currency, created_at, delivery_city").eq("driver_id", userId).order("created_at", { ascending: false }).limit(20),
+          supabaseAdmin.from("wallets").select("balance_dop, balance_htg, balance_usd").eq("user_id", userId).single(),
+          supabaseAdmin.from("driver_applications").select("vehicle_type, vehicle_brand, city, status").eq("user_id", userId).single(),
+        ]);
+
+        const orders = ordersRes.data || [];
+        const delivered = orders.filter(o => o.status === "delivered");
+        const inProgress = orders.filter(o => ["ready_for_pickup", "picked_up", "in_transit"].includes(o.status || ""));
+        const totalEarnings = delivered.reduce((s, o) => s + Number(o.delivery_fee || 0), 0);
+        const w = walletRes.data;
+
+        // Available deliveries
+        const { data: available } = await supabaseAdmin.from("orders").select("id").eq("status", "ready").is("driver_id", null);
+
+        dbContext = `
+DONNÉES RÉELLES DU LIVREUR:
+- Véhicule: ${driverRes.data?.vehicle_type || "N/A"} ${driverRes.data?.vehicle_brand || ""}
+- Ville: ${driverRes.data?.city || "N/A"}
+- Livraisons complétées: ${delivered.length}
+- Livraisons en cours: ${inProgress.length}
+- Gains totaux: ${totalEarnings} DOP
+- Solde portefeuille: ${w?.balance_dop || 0} DOP, ${w?.balance_htg || 0} HTG, ${w?.balance_usd || 0} USD
+- Livraisons disponibles à prendre: ${available?.length || 0}`;
+
+      } else if (userType === "admin") {
+        // Admin: platform-wide stats
+        const [usersRes, ordersRes, productsRes, ticketsRes, reportsRes, walletsRes, sellersRes, driversRes] = await Promise.all([
+          supabaseAdmin.from("profiles").select("id", { count: "exact", head: true }),
+          supabaseAdmin.from("orders").select("id, status, total_amount, created_at"),
+          supabaseAdmin.from("products").select("id", { count: "exact", head: true }).eq("is_active", true),
+          supabaseAdmin.from("support_tickets").select("id", { count: "exact", head: true }).eq("status", "open"),
+          supabaseAdmin.from("reports").select("id", { count: "exact", head: true }).eq("status", "pending"),
+          supabaseAdmin.from("wallets").select("balance_dop, balance_htg, balance_usd"),
+          supabaseAdmin.from("seller_applications").select("id", { count: "exact", head: true }).eq("status", "approved"),
+          supabaseAdmin.from("driver_applications").select("id", { count: "exact", head: true }).eq("status", "approved"),
+        ]);
+
+        const orders = ordersRes.data || [];
+        const today = new Date().toISOString().split("T")[0];
+        const todayOrders = orders.filter(o => o.created_at?.startsWith(today));
+        const totalRevenue = orders.reduce((s, o) => s + Number(o.total_amount || 0), 0);
+        const pendingOrders = orders.filter(o => ["pending", "confirmed"].includes(o.status || ""));
+        const wallets = walletsRes.data || [];
+        const totalDOP = wallets.reduce((s, w) => s + Number(w.balance_dop || 0), 0);
+
+        dbContext = `
+DONNÉES RÉELLES DE LA PLATEFORME:
+- Utilisateurs inscrits: ${usersRes.count || 0}
+- Vendeurs approuvés: ${sellersRes.count || 0}
+- Livreurs approuvés: ${driversRes.count || 0}
+- Produits actifs: ${productsRes.count || 0}
+- Commandes totales: ${orders.length}
+- Commandes aujourd'hui: ${todayOrders.length}
+- Commandes en attente: ${pendingOrders.length}
+- Revenue total plateforme: ${totalRevenue} DOP
+- Tickets support ouverts: ${ticketsRes.count || 0}
+- Signalements en attente: ${reportsRes.count || 0}
+- Total en circulation (DOP): ${totalDOP}`;
+      }
+    } catch (dbErr) {
+      console.error("DB context fetch error:", dbErr);
+      dbContext = "\n(Impossible de récupérer les données en temps réel)";
+    }
+
     let systemPrompt = "";
     let userPrompt = "";
     let temperature = 0.7;
@@ -68,7 +200,7 @@ serve(async (req) => {
 
     // ============ ADMIN ACTIONS ============
     if (action === "analyze-report") {
-      systemPrompt = `Tu es un expert en modération de marketplace. Analyse les signalements et donne des recommandations objectives. Réponds TOUJOURS en français.`;
+      systemPrompt = `Tu es un expert en modération de marketplace. Analyse les signalements et donne des recommandations objectives. Réponds TOUJOURS en français.${dbContext}`;
       userPrompt = `Analyse ce signalement :
 Type: ${data.type}
 Description: ${data.description}
@@ -79,7 +211,7 @@ Fournis une analyse structurée avec: niveau de risque, recommandation, raison, 
       temperature = 0.3;
       useToolCalling = true;
     } else if (action === "verify-receipt") {
-      systemPrompt = `Tu es un expert en vérification de paiements. Analyse les reçus et détecte les anomalies.`;
+      systemPrompt = `Tu es un expert en vérification de paiements. Analyse les reçus et détecte les anomalies.${dbContext}`;
       userPrompt = `Vérifie ce reçu :
 Texte OCR: "${data.receiptText}"
 Montant attendu: ${data.expectedAmount} RD$
@@ -89,7 +221,7 @@ Fournis: montant trouvé, ID transaction trouvé, date trouvée, validité, anom
       temperature = 0.2;
       useToolCalling = true;
     } else if (action === "check-seller") {
-      systemPrompt = `Tu es un expert en détection de fraude pour marketplace.`;
+      systemPrompt = `Tu es un expert en détection de fraude pour marketplace.${dbContext}`;
       userPrompt = `Évalue ce vendeur :
 - Inscrit depuis: ${data.joinDate || "inconnu"}
 - Total ventes: ${data.totalSales || 0} RD$
@@ -109,52 +241,49 @@ Fournis: risque de fraude (0-100), score fiabilité, recommandation, drapeaux ro
 Tu parles français et créole selon la langue de l'utilisateur.
 Tu es chaleureux, patient et toujours prêt à aider.
 
-Informations contextuelles:
-- L'utilisateur a ${context?.cartItems || 0} articles dans son panier
-- Il a ${context?.pastOrders || 0} commandes précédentes
-- Solde portefeuille: ${context?.walletBalance || "non disponible"}
+${dbContext}
 
 Tu peux aider avec: recherche de produits, suivi de commandes, explication du processus d'achat, problèmes de livraison, rechargement du portefeuille, contact avec les vendeurs.
+
+IMPORTANT: Utilise les données réelles ci-dessus pour donner des réponses personnalisées et précises. Par exemple, si l'utilisateur demande son solde, donne le vrai solde. Si il demande ses commandes, donne les vraies infos.
 
 Utilise "nou" pour inclure l'utilisateur dans tes réponses. Sois encourageant et positif. Garde les réponses courtes et utiles.`;
       userPrompt = message;
     } else if (userType === "vendeur") {
       systemPrompt = `Tu es un assistant spécialisé pour les vendeurs sur Ayiti Marché RD.
 
+${dbContext}
+
 Tu aides avec: ajout et gestion des produits, préparation des commandes, communication avec les livreurs, problèmes de paiement et retraits, optimisation des ventes, résolution de litiges.
 
-Informations contextuelles:
-- Produits actifs: ${context?.activeProducts || 0}
-- Commandes en attente: ${context?.pendingOrders || 0}
-- Ventes totales: ${context?.totalSales || "N/A"}
+IMPORTANT: Utilise les données réelles ci-dessus. Si le vendeur demande ses stats, ses produits, ses commandes, donne les vrais chiffres. Donne des conseils personnalisés basés sur ses données réelles (ex: alerter sur les stocks bas, féliciter pour les ventes).
 
 Donne des conseils pratiques et précis. Explique les procédures étape par étape. Sois encourageant et professionnel. Garde les réponses courtes.`;
       userPrompt = message;
     } else if (userType === "livreur") {
       systemPrompt = `Tu es un assistant pour les livreurs de Ayiti Marché RD.
 
+${dbContext}
+
 Tu aides avec: navigation et itinéraires, codes de vérification, relations avec vendeurs et clients, calcul des gains, signalement de problèmes, conseils de sécurité.
 
-Informations contextuelles:
-- Livraisons complétées: ${context?.completedDeliveries || 0}
-- Gains totaux: ${context?.totalEarnings || "N/A"}
+IMPORTANT: Utilise les données réelles ci-dessus. Informe le livreur de ses stats réelles, ses gains, les livraisons disponibles. Motive-le à prendre plus de livraisons.
 
 Réponds de manière simple et directe. Priorise la sécurité et l'efficacité. Garde les réponses courtes.`;
       userPrompt = message;
     } else if (userType === "admin") {
       systemPrompt = `Tu es un assistant expert pour l'administrateur de Ayiti Marché RD.
 
+${dbContext}
+
 Tu aides avec: gestion des utilisateurs, modération, analyse des performances, détection de fraude, configuration de la plateforme, résolution de litiges.
 
-Informations contextuelles:
-- Utilisateurs totaux: ${context?.totalUsers || 0}
-- Commandes aujourd'hui: ${context?.todayOrders || 0}
-- Tickets ouverts: ${context?.openTickets || 0}
+IMPORTANT: Utilise les données réelles ci-dessus pour donner des analyses précises de la plateforme. Identifie les tendances, alerte sur les problèmes, propose des actions concrètes basées sur les vrais chiffres.
 
 Sois précis, factuel et professionnel. Donne des recommandations actionnables.`;
       userPrompt = message;
     } else {
-      systemPrompt = "Tu es un assistant expert pour Ayiti Marché RD, un marketplace. Réponds de manière utile et précise en français.";
+      systemPrompt = `Tu es un assistant expert pour Ayiti Marché RD, un marketplace. Réponds de manière utile et précise en français.${dbContext}`;
       userPrompt = message || data?.prompt || "Bonjour";
     }
 
@@ -164,12 +293,11 @@ Sois précis, factuel et professionnel. Donne des recommandations actionnables.`
     ];
 
     if (history && history.length > 0) {
-      messages.push(...history.slice(-10)); // Keep last 10 messages for context
+      messages.push(...history.slice(-10));
     }
 
     messages.push({ role: "user", content: userPrompt });
 
-    // Build request body
     const body: Record<string, unknown> = {
       model: "google/gemini-2.5-flash",
       messages,
@@ -177,7 +305,6 @@ Sois précis, factuel et professionnel. Donne des recommandations actionnables.`
       stream: !useToolCalling,
     };
 
-    // For structured actions, use tool calling
     if (useToolCalling) {
       const toolDef = getToolDefinition(action);
       if (toolDef) {
@@ -214,7 +341,6 @@ Sois précis, factuel et professionnel. Donne des recommandations actionnables.`
       });
     }
 
-    // For tool calling (structured responses), return JSON
     if (useToolCalling) {
       const result = await response.json();
       const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
@@ -230,14 +356,12 @@ Sois précis, factuel et professionnel. Donne des recommandations actionnables.`
           });
         }
       }
-      // Fallback to content
       const content = result.choices?.[0]?.message?.content || "";
       return new Response(JSON.stringify({ success: true, response: content }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // For chat, stream the response
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
