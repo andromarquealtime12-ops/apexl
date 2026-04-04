@@ -274,7 +274,7 @@ export default function BuyerOrdersTracker() {
                     </Button>
                   </div>
                 </div>
-              )
+              )}
             </CardContent>
           </Card>
         );
