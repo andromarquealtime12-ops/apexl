@@ -25,6 +25,7 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
   const [pickupCode, setPickupCode] = useState<string | null>(null);
   const { data: verification } = useDeliveryVerification(orderId);
   const createVerification = useCreateDeliveryVerification();
+  const regenerateCode = useRegeneratePickupCode();
   const queryClient = useQueryClient();
 
   const updateOrderStatus = useMutation({
