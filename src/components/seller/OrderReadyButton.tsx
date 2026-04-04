@@ -38,6 +38,8 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["seller-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["buyer-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["available-deliveries"] });
     },
   });
 
