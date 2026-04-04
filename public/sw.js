@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ayiti-marche-v1';
+const CACHE_NAME = 'ayiti-marche-v2';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
@@ -35,11 +35,46 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// Web Push handler - shows notification on lock screen / home screen
+self.addEventListener('push', (event) => {
+  let data = { title: 'Ayiti Marché', body: '', url: '/', tag: 'ayiti-marche' };
+  
+  try {
+    if (event.data) {
+      data = { ...data, ...event.data.json() };
+    }
+  } catch (e) {
+    if (event.data) {
+      data.body = event.data.text();
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-96x96.png',
+    tag: data.tag,
+    data: { url: data.url },
+    vibrate: [200, 100, 200, 100, 200],
+    requireInteraction: true,
+    actions: [
+      { action: 'open', title: 'Ouvrir' },
+      { action: 'dismiss', title: 'Fermer' },
+    ],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
 // Push notification click handler
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+
+  if (event.action === 'dismiss') return;
   
-  const url = event.notification.data?.url || '/driver';
+  const url = event.notification.data?.url || '/';
   
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {

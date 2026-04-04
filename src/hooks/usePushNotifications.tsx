@@ -4,15 +4,68 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { alertDriver } from "@/utils/notificationSound";
 
+const VAPID_PUBLIC_KEY = "BKXcqEXdtpRiR3wqvS7JDjhkiQ-KVhbQWAfIIe4BSXFTioDK8-ZERuZ83GEhtbqGjxDCLcWQchu-CdI2ZFQI2aI";
+
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 export function usePushNotifications() {
+  const { user } = useAuth();
   const [permission, setPermission] = useState<NotificationPermission>(
     typeof Notification !== "undefined" ? Notification.permission : "default"
   );
   const [isSupported, setIsSupported] = useState(false);
 
   useEffect(() => {
-    setIsSupported("Notification" in window && "serviceWorker" in navigator);
+    setIsSupported("Notification" in window && "serviceWorker" in navigator && "PushManager" in window);
   }, []);
+
+  const subscribeToPush = useCallback(async () => {
+    if (!user || !isSupported) return false;
+
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      
+      // Check existing subscription
+      let subscription = await registration.pushManager.getSubscription();
+      
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        });
+      }
+
+      const key = subscription.getKey('p256dh');
+      const auth = subscription.getKey('auth');
+
+      if (!key || !auth) return false;
+
+      const p256dh = btoa(String.fromCharCode(...new Uint8Array(key)));
+      const authStr = btoa(String.fromCharCode(...new Uint8Array(auth)));
+
+      // Save to database
+      await supabase.from('push_subscriptions').upsert({
+        user_id: user.id,
+        endpoint: subscription.endpoint,
+        p256dh: p256dh,
+        auth: authStr,
+      }, { onConflict: 'user_id,endpoint' });
+
+      return true;
+    } catch (e) {
+      console.error("Push subscription error:", e);
+      return false;
+    }
+  }, [user, isSupported]);
 
   const requestPermission = useCallback(async () => {
     if (!isSupported) {
@@ -25,17 +78,24 @@ export function usePushNotifications() {
 
     if (result === "granted") {
       toast.success("Notifications activées !");
+      await subscribeToPush();
       return true;
     } else {
       toast.error("Notifications refusées. Activez-les dans les paramètres du navigateur.");
       return false;
     }
-  }, [isSupported]);
+  }, [isSupported, subscribeToPush]);
+
+  // Auto-subscribe when permission already granted
+  useEffect(() => {
+    if (permission === "granted" && user && isSupported) {
+      subscribeToPush();
+    }
+  }, [permission, user, isSupported, subscribeToPush]);
 
   const sendLocalNotification = useCallback((title: string, options?: NotificationOptions & { sound?: "newOrder" | "pickup" | "alert" }) => {
     if (permission !== "granted") return;
 
-    // Play sound and vibrate
     alertDriver(options?.sound || "newOrder");
 
     try {
@@ -45,6 +105,7 @@ export function usePushNotifications() {
             icon: "/icons/icon-192x192.png",
             badge: "/icons/icon-96x96.png",
             tag: "ayiti-marche",
+            vibrate: [200, 100, 200],
             ...options,
           } as any);
         });
@@ -64,6 +125,7 @@ export function usePushNotifications() {
     isSupported,
     requestPermission,
     sendLocalNotification,
+    subscribeToPush,
   };
 }
 
@@ -79,11 +141,7 @@ export function useDriverOrderNotifications() {
       .channel(`driver-new-orders-${user.id}`)
       .on(
         "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "orders",
-        },
+        { event: "INSERT", schema: "public", table: "orders" },
         (payload) => {
           const order = payload.new as any;
           if (["confirmed", "ready", "ready_for_pickup"].includes(order.status) && !order.driver_id) {
@@ -98,16 +156,11 @@ export function useDriverOrderNotifications() {
       )
       .on(
         "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "orders",
-        },
+        { event: "UPDATE", schema: "public", table: "orders" },
         (payload) => {
           const order = payload.new as any;
           const oldOrder = payload.old as any;
 
-          // Notify when order becomes available (seller marks ready)
           if (
             ["ready", "ready_for_pickup"].includes(order.status) &&
             !order.driver_id &&
@@ -121,17 +174,15 @@ export function useDriverOrderNotifications() {
             });
           }
 
-          // Notify when assigned to this driver
           if (order.driver_id === user.id && oldOrder.driver_id !== user.id) {
             sendLocalNotification("🎉 Livraison assignée !", {
-              body: `La commande #${(order.id as string).slice(0, 8)} vous a été assignée. Rendez-vous chez le vendeur.`,
+              body: `La commande #${(order.id as string).slice(0, 8)} vous a été assignée.`,
               data: { url: `/driver` },
               tag: `assigned-${order.id}`,
               sound: "pickup",
             });
           }
 
-          // Notify when order ready for pickup (for assigned driver)
           if (
             order.driver_id === user.id &&
             order.status === "ready_for_pickup" &&
