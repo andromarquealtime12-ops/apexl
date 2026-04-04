@@ -249,6 +249,17 @@ export default function BuyerOrdersTracker() {
                       </Link>
                     </Button>
                   )}
+                  {/* Return button (2h window) */}
+                  <ReturnRequestButton orderId={order.id} orderStatus={order.status} deliveredAt={order.updated_at || order.created_at} />
+                  {/* Rating buttons for delivered orders */}
+                  {order.status === "delivered" && order.items?.[0] && (
+                    <Button size="sm" variant="ghost" className="gap-1" onClick={() => {
+                      const sellerId = (order.items[0] as any)?.seller_id;
+                      if (sellerId) setRatingOrder({ orderId: order.id, userId: sellerId, type: "buyer_to_seller" });
+                    }}>
+                      <Star className="h-3.5 w-3.5" /> Noter
+                    </Button>
+                  )}
                   {/* Refund button for delivered orders within 15 days */}
                   {order.status === "delivered" && differenceInDays(new Date(), new Date(order.created_at)) <= 15 && (
                     <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setRefundOrderId(order.id)}>
