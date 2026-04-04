@@ -183,6 +183,7 @@ export type Database = {
       }
       delivery_verification: {
         Row: {
+          attempt_count: number | null
           created_at: string
           delivery_code: string | null
           delivery_verified_at: string | null
@@ -194,6 +195,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          attempt_count?: number | null
           created_at?: string
           delivery_code?: string | null
           delivery_verified_at?: string | null
@@ -205,6 +207,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          attempt_count?: number | null
           created_at?: string
           delivery_code?: string | null
           delivery_verified_at?: string | null
