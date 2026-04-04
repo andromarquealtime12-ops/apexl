@@ -14,8 +14,10 @@ import ProductsManager from "@/components/seller/ProductsManager";
 import SellerOrdersTable from "@/components/seller/SellerOrdersTable";
 import { NearbyDriversCard } from "@/components/seller/NearbyDriversCard";
 import { useSellerStats, useSellerOrders } from "@/hooks/useSellerStats";
+import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 
 const SellerDashboard = () => {
+  useRealtimeOrders();
   const { user, isSeller, loading } = useAuth();
   const { data: stats, isLoading: statsLoading } = useSellerStats();
   const { data: orders } = useSellerOrders();
