@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Store, Package, ShoppingCart, TrendingUp, BarChart3 } from "lucide-react";
+import { Store, Package, ShoppingCart, TrendingUp, BarChart3, UtensilsCrossed } from "lucide-react";
+import RestaurantManager from "@/components/seller/RestaurantManager";
 import SellerReturnManager from "@/components/returns/SellerReturnManager";
 import SellerStatsCards from "@/components/seller/SellerStatsCards";
 import ProductsManager from "@/components/seller/ProductsManager";
