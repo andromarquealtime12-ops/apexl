@@ -115,3 +115,33 @@ export function useVerifyDeliveryCode() {
     },
   });
 }
+
+// Regenerate an expired pickup code
+export function useRegeneratePickupCode() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (orderId: string) => {
+      const { data, error } = await supabase.rpc("regenerate_pickup_code", {
+        p_order_id: orderId,
+      });
+
+      if (error) throw error;
+      
+      const result = data as { success: boolean; pickup_code?: string; error?: string };
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+      
+      return result;
+    },
+    onSuccess: (_, orderId) => {
+      queryClient.invalidateQueries({ queryKey: ["delivery-verification", orderId] });
+      queryClient.invalidateQueries({ queryKey: ["seller-orders"] });
+      toast.success("Nouveau code de récupération généré !");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Erreur lors de la régénération");
+    },
+  });
+}

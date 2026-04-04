@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, KeyRound, CheckCircle } from "lucide-react";
+import { Loader2, KeyRound, CheckCircle, AlertCircle } from "lucide-react";
 import Header from "@/components/Header";
 
 const ResetPassword = () => {
@@ -15,6 +15,34 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Listen for the PASSWORD_RECOVERY event
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setIsReady(true);
+      }
+    });
+
+    // Also check if user is already in a recovery session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setIsReady(true);
+      } else {
+        // Check URL hash for recovery token
+        const hash = window.location.hash;
+        if (hash.includes("type=recovery")) {
+          setIsReady(true);
+        } else {
+          setError("Lien invalide ou expiré. Demandez un nouveau lien de réinitialisation.");
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +70,28 @@ const ResetPassword = () => {
     toast.success("Mot de passe modifié avec succès !");
   };
 
+  if (error && !isReady) {
+    return (
+      <main className="min-h-screen bg-background">
+        <Header />
+        <div className="container px-4 py-16 max-w-md mx-auto">
+          <Card>
+            <CardContent className="pt-6 text-center space-y-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10">
+                <AlertCircle className="h-8 w-8 text-destructive" />
+              </div>
+              <h2 className="text-xl font-bold">Lien expiré</h2>
+              <p className="text-muted-foreground">{error}</p>
+              <Button onClick={() => navigate("/")} className="w-full">
+                Retour à l'accueil
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    );
+  }
+
   if (success) {
     return (
       <main className="min-h-screen bg-background">
@@ -49,8 +99,8 @@ const ResetPassword = () => {
         <div className="container px-4 py-16 max-w-md mx-auto">
           <Card>
             <CardContent className="pt-6 text-center space-y-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30">
-                <CheckCircle className="h-8 w-8 text-green-500" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
+                <CheckCircle className="h-8 w-8 text-primary" />
               </div>
               <h2 className="text-xl font-bold">Mot de passe modifié !</h2>
               <p className="text-muted-foreground">
