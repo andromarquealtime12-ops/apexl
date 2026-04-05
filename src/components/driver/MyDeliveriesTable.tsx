@@ -43,6 +43,15 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
     label: "Annulée", 
     variant: "destructive"
   },
+  pending: { label: "En attente", variant: "secondary" },
+  confirmed: { label: "Confirmée", variant: "default" },
+  preparing: { label: "En préparation", variant: "outline" },
+  return_requested: { label: "Retour demandé", variant: "destructive" },
+  return_pickup_ready: { label: "Retour prêt", variant: "outline" },
+  return_in_transit: { label: "Retour en cours", variant: "default" },
+  returned: { label: "Retourné", variant: "secondary" },
+  refunded: { label: "Remboursé", variant: "destructive" },
+  redelivery: { label: "Re-livraison", variant: "default" },
 };
 
 function getNavigationUrl(lat?: number | null, lng?: number | null, address?: string | null) {
