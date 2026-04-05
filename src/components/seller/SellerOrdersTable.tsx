@@ -17,6 +17,8 @@ import { Package, Clock, CheckCircle, Truck, XCircle, MessageCircle, ChevronDown
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
+import { RotateCcw, RefreshCw, DollarSign } from "lucide-react";
+
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
   pending: { label: "En attente", variant: "secondary", icon: Clock },
   confirmed: { label: "Confirmée", variant: "default", icon: CheckCircle },
@@ -27,6 +29,12 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
   in_transit: { label: "En livraison", variant: "default", icon: Truck },
   delivered: { label: "Livrée", variant: "secondary", icon: CheckCircle },
   cancelled: { label: "Annulée", variant: "destructive", icon: XCircle },
+  return_requested: { label: "Retour demandé", variant: "destructive", icon: RotateCcw },
+  return_pickup_ready: { label: "Retour prêt", variant: "outline", icon: RotateCcw },
+  return_in_transit: { label: "Retour en cours", variant: "default", icon: RotateCcw },
+  returned: { label: "Retourné", variant: "secondary", icon: RotateCcw },
+  refunded: { label: "Remboursé", variant: "destructive", icon: DollarSign },
+  redelivery: { label: "Re-livraison", variant: "default", icon: RefreshCw },
 };
 
 export default function SellerOrdersTable() {

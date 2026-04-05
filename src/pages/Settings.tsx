@@ -203,6 +203,22 @@ export default function Settings() {
             )}
           </CardContent>
         </Card>
+
+        {/* About */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>À propos</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <p><strong>Ayiti Market</strong> — Plateforme de commerce et livraison en Haïti et République Dominicaine.</p>
+            <p>Version 1.0.0</p>
+            <div className="pt-2 border-t space-y-1">
+              <p>📧 Contact : support@ayitimarket.com</p>
+              <p>📱 WhatsApp : +509 39 29 7720</p>
+            </div>
+            <p className="text-xs pt-2">© {new Date().getFullYear()} Ayiti Market. Tous droits réservés.</p>
+          </CardContent>
+        </Card>
       </div>
       <Footer />
     </main>
