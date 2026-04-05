@@ -8,7 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { 
   ShieldCheck, Users, Package, ShoppingCart, 
   Wallet, Settings, UserCog, Shield, 
-  MessageSquare, Flag, History, Sliders
+  MessageSquare, Flag, History, Sliders,
+  UtensilsCrossed, Building2
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import PendingWithdrawalsTable from "@/components/admin/PendingWithdrawalsTable";
@@ -26,6 +27,8 @@ import AuditLogsViewer from "@/components/admin/AuditLogsViewer";
 import PlatformSettingsManager from "@/components/admin/PlatformSettingsManager";
 import RefundRequestsManager from "@/components/admin/RefundRequestsManager";
 import ReturnsManager from "@/components/admin/ReturnsManager";
+import AdminRestaurantsManager from "@/components/admin/AdminRestaurantsManager";
+import AdminAgentsManager from "@/components/admin/AdminAgentsManager";
 
 import { usePendingIdentityVerifications, useSupportTickets, useReports } from "@/hooks/useAdminAdvanced";
 
@@ -74,16 +77,14 @@ const Admin = () => {
           </div>
         </div>
 
-        {/* Advanced Stats Overview */}
         <div className="mb-8">
           <AdvancedStatsCards />
         </div>
 
-        {/* Admin Tabs */}
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid grid-cols-4 md:grid-cols-7 w-full">
+          <TabsList className="flex flex-wrap w-full gap-1">
             <TabsTrigger value="users" className="relative">
-              <Users className="h-4 w-4 mr-2" />
+              <Users className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Utilisateurs</span>
               {pendingApplicationsCount > 0 && (
                 <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
@@ -92,7 +93,7 @@ const Admin = () => {
               )}
             </TabsTrigger>
             <TabsTrigger value="identity" className="relative">
-              <Shield className="h-4 w-4 mr-2" />
+              <Shield className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Identité</span>
               {pendingVerificationsCount > 0 && (
                 <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
@@ -100,8 +101,12 @@ const Admin = () => {
                 </Badge>
               )}
             </TabsTrigger>
+            <TabsTrigger value="restaurants">
+              <UtensilsCrossed className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Restaurants</span>
+            </TabsTrigger>
             <TabsTrigger value="support" className="relative">
-              <MessageSquare className="h-4 w-4 mr-2" />
+              <MessageSquare className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Support</span>
               {openTicketsCount > 0 && (
                 <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
@@ -110,7 +115,7 @@ const Admin = () => {
               )}
             </TabsTrigger>
             <TabsTrigger value="reports" className="relative">
-              <Flag className="h-4 w-4 mr-2" />
+              <Flag className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Signalements</span>
               {pendingReportsCount > 0 && (
                 <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
@@ -118,25 +123,22 @@ const Admin = () => {
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="products">
-              <Package className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Produits</span>
-            </TabsTrigger>
             <TabsTrigger value="wallets">
-              <Wallet className="h-4 w-4 mr-2" />
+              <Wallet className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Finance</span>
             </TabsTrigger>
+            <TabsTrigger value="agents">
+              <Building2 className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Agents</span>
+            </TabsTrigger>
             <TabsTrigger value="settings">
-              <Settings className="h-4 w-4 mr-2" />
+              <Settings className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Config</span>
             </TabsTrigger>
           </TabsList>
 
-
           <TabsContent value="users" className="space-y-6">
-            {/* Applications Manager */}
             <ApplicationsManager />
-            
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -155,26 +157,16 @@ const Admin = () => {
             <IdentityVerificationsManager />
           </TabsContent>
 
+          <TabsContent value="restaurants" className="space-y-6">
+            <AdminRestaurantsManager />
+          </TabsContent>
+
           <TabsContent value="support" className="space-y-6">
             <SupportTicketsManager />
           </TabsContent>
 
           <TabsContent value="reports" className="space-y-6">
             <ReportsManager />
-          </TabsContent>
-
-          <TabsContent value="products">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion des produits</CardTitle>
-                <CardDescription>Approuvez, modifiez ou supprimez des produits</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-center py-8">
-                  Module de gestion des produits en cours de développement
-                </p>
-              </CardContent>
-            </Card>
           </TabsContent>
 
           <TabsContent value="wallets" className="space-y-6">
@@ -197,9 +189,7 @@ const Admin = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  Demandes de retrait en attente
-                </CardTitle>
+                <CardTitle>Demandes de retrait en attente</CardTitle>
                 <CardDescription>Approuvez ou rejetez les demandes de retrait</CardDescription>
               </CardHeader>
               <CardContent>
@@ -218,11 +208,13 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="agents" className="space-y-6">
+            <AdminAgentsManager />
+          </TabsContent>
+
           <TabsContent value="settings" className="space-y-6">
             <PlatformSettingsManager />
-            
             <AdminCodesManager />
-            
             <AuditLogsViewer />
           </TabsContent>
         </Tabs>
