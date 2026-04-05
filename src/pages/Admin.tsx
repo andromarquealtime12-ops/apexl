@@ -29,6 +29,8 @@ import RefundRequestsManager from "@/components/admin/RefundRequestsManager";
 import ReturnsManager from "@/components/admin/ReturnsManager";
 import AdminRestaurantsManager from "@/components/admin/AdminRestaurantsManager";
 import AdminAgentsManager from "@/components/admin/AdminAgentsManager";
+import DepositMethodsManager from "@/components/admin/DepositMethodsManager";
+import CurrencyRatesManager from "@/components/admin/CurrencyRatesManager";
 
 import { usePendingIdentityVerifications, useSupportTickets, useReports } from "@/hooks/useAdminAdvanced";
 
@@ -213,6 +215,8 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
+            <DepositMethodsManager />
+            <CurrencyRatesManager />
             <PlatformSettingsManager />
             <AdminCodesManager />
             <AuditLogsViewer />
