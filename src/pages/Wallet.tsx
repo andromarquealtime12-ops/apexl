@@ -42,6 +42,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import AgentDepositSection from "@/components/wallet/AgentDepositSection";
+import CurrencyConverterCard from "@/components/wallet/CurrencyConverterCard";
 
 const paymentMethodIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   "credit-card": CreditCard,

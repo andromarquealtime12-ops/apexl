@@ -14,7 +14,7 @@ import { QueryClient } from "@tanstack/react-query";
 
 interface Props {
   wallet: Wallet | null | undefined;
-  currencyRates: { id: string; from_currency: string; to_currency: string; rate: number }[];
+  currencyRates: any[];
   queryClient: QueryClient;
 }
 
