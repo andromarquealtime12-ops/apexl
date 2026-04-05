@@ -190,6 +190,11 @@ export default function AdminAgentsManager() {
                   <Input type="number" value={form.commission_percent} onChange={e => setForm(f => ({ ...f, commission_percent: e.target.value }))} />
                 </div>
                 <div>
+                  <Label>Email du compte agent (pour lier un utilisateur)</Label>
+                  <Input type="email" placeholder="agent@email.com" value={form.agent_user_email} onChange={e => setForm(f => ({ ...f, agent_user_email: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground mt-1">L'utilisateur lié pourra accéder au dashboard agent (/agent). Le rôle "agent" lui sera nécessaire.</p>
+                </div>
+                <div>
                   <Label>Notes</Label>
                   <Input value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
                 </div>
