@@ -34,36 +34,67 @@
      return <Skeleton className="h-64 w-full" />;
    }
  
-   const settingsConfig = [
-     {
-       key: "identity_verification_threshold",
-       label: "Seuil de vérification d'identité",
-       description: "Montant en RD$ à partir duquel la vérification est requise",
-       icon: DollarSign,
-       suffix: "RD$"
-     },
-     {
-       key: "platform_commission_percent",
-       label: "Commission plateforme",
-       description: "Pourcentage prélevé sur chaque vente",
-       icon: Percent,
-       suffix: "%"
-     },
-     {
-       key: "delivery_base_fee",
-       label: "Frais de livraison de base",
-       description: "Montant minimum pour une livraison",
-       icon: MapPin,
-       suffix: "RD$"
-     },
-     {
-       key: "referral_reward_percent",
-       label: "Récompense parrainage",
-       description: "Pourcentage de récompense sur les 3 premières commandes du filleul",
-       icon: Gift,
-       suffix: "%"
-     }
-   ];
+    const settingsConfig = [
+      {
+        key: "identity_verification_threshold",
+        label: "Seuil de vérification d'identité",
+        description: "Montant en RD$ à partir duquel la vérification est requise",
+        icon: DollarSign,
+        suffix: "RD$"
+      },
+      {
+        key: "platform_commission_percent",
+        label: "Commission plateforme",
+        description: "Pourcentage prélevé sur chaque vente",
+        icon: Percent,
+        suffix: "%"
+      },
+      {
+        key: "delivery_base_fee",
+        label: "Frais de livraison de base",
+        description: "Montant minimum pour une livraison",
+        icon: MapPin,
+        suffix: "RD$"
+      },
+      {
+        key: "referral_reward_percent",
+        label: "Récompense parrainage",
+        description: "Pourcentage de récompense sur les 3 premières commandes du filleul",
+        icon: Gift,
+        suffix: "%"
+      },
+    ];
+
+    const textSettingsConfig = [
+      {
+        key: "wise_email",
+        label: "Email Wise",
+        description: "Adresse email pour recevoir les dépôts Wise",
+        icon: DollarSign,
+        placeholder: "votre@email.com"
+      },
+      {
+        key: "wise_account_name",
+        label: "Nom du compte Wise",
+        description: "Nom affiché pour le bénéficiaire Wise",
+        icon: DollarSign,
+        placeholder: "Ayiti Market"
+      },
+      {
+        key: "banreservas_account",
+        label: "Numéro compte Banreservas",
+        description: "Numéro de compte Banreservas pour les dépôts",
+        icon: DollarSign,
+        placeholder: "9607842951"
+      },
+      {
+        key: "moncash_number",
+        label: "Numéro Moncash",
+        description: "Numéro Moncash pour les dépôts",
+        icon: DollarSign,
+        placeholder: "39297720"
+      },
+    ];
  
    return (
      <Card>
@@ -102,9 +133,43 @@
                <Save className="h-4 w-4 mr-1" />
                Sauvegarder
              </Button>
-           </div>
-         ))}
-       </CardContent>
-     </Card>
-   );
- }
+            </div>
+          ))}
+
+          <div className="border-t pt-6 mt-6">
+            <h3 className="font-semibold mb-4 flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              Comptes de dépôt
+            </h3>
+            {textSettingsConfig.map((config) => (
+              <div key={config.key} className="flex items-end gap-4 mb-4">
+                <div className="flex-1 space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <config.icon className="h-4 w-4" />
+                    {config.label}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">{config.description}</p>
+                  <Input
+                    type="text"
+                    placeholder={config.placeholder}
+                    value={localSettings[config.key] || ""}
+                    onChange={(e) => setLocalSettings(s => ({ ...s, [config.key]: e.target.value }))}
+                    className="max-w-[300px]"
+                  />
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleSave(config.key)}
+                  disabled={localSettings[config.key] === settings?.[config.key]}
+                >
+                  <Save className="h-4 w-4 mr-1" />
+                  Sauvegarder
+                </Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }

@@ -105,7 +105,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     setLoading(false);
     
     if (error) {
-      toast.error("Échec de l'inscription. Essayez avec un autre email.");
+      const msg = error.message?.toLowerCase() || "";
+      if (msg.includes("already registered") || msg.includes("already been registered") || msg.includes("user already registered")) {
+        toast.error("Cette adresse email est déjà inscrite. Connectez-vous ou utilisez une autre adresse.");
+      } else if (msg.includes("password") && msg.includes("least")) {
+        toast.error("Le mot de passe doit avoir au moins 6 caractères.");
+      } else {
+        toast.error("Échec de l'inscription : " + (error.message || "Essayez avec un autre email."));
+      }
     } else {
       toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
       onClose();

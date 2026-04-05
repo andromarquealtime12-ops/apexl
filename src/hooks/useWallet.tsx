@@ -198,9 +198,9 @@ export const PAYMENT_INSTRUCTIONS: Record<string, {
     instructions: "Envoyez le paiement à notre compte PayPal, puis entrez l'ID de transaction et téléchargez la capture d'écran de confirmation."
   },
   wise: {
-    accountNumber: "À définir",
+    accountNumber: "andromarquealtime455@gmail.com",
     accountName: "Ayiti Market",
-    instructions: "Effectuez un transfert via Wise, puis entrez la référence de transaction et téléchargez la preuve."
+    instructions: "Envoyez le montant via Wise à l'adresse email indiquée, puis entrez la référence de transaction et téléchargez la capture d'écran de confirmation."
   },
   bank_other: {
     accountNumber: "Contactez-nous",

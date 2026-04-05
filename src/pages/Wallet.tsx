@@ -49,7 +49,7 @@ const paymentMethodIcons: Record<string, React.ComponentType<{ className?: strin
 
 // Methods that require manual transfer with proof
 const MANUAL_PAYMENT_METHODS: PaymentMethodType[] = [
-  "banreservas", "bhd", "bank_transfer_do", "bank_transfer_ht", "moncash", "orange_money"
+  "banreservas", "bhd", "bank_transfer_do", "bank_transfer_ht", "moncash", "orange_money", "wise"
 ];
 
 const Wallet = () => {
