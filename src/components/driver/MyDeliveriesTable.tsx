@@ -188,7 +188,7 @@ export default function MyDeliveriesTable() {
             </h3>
             <div className="grid gap-4">
               {activeDeliveries.map((delivery) => {
-                const status = statusConfig[delivery.status || "ready_for_pickup"];
+                const status = statusConfig[delivery.status || "ready_for_pickup"] || { label: delivery.status || "Inconnu", variant: "outline" as const };
                 const pickupDone = isPickupDone(delivery.status);
                 const seller = sellerLocations?.[delivery.id];
                 
@@ -307,7 +307,7 @@ export default function MyDeliveriesTable() {
             </h3>
             <div className="grid gap-2">
               {completedDeliveries.slice(0, 10).map((delivery) => {
-                const status = statusConfig[delivery.status || "delivered"];
+                const status = statusConfig[delivery.status || "delivered"] || { label: delivery.status || "Inconnu", variant: "outline" as const };
                 
                 return (
                   <Card key={delivery.id} className="bg-muted/30">
