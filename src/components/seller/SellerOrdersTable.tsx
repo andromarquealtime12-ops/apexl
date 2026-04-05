@@ -76,7 +76,7 @@ export default function SellerOrdersTable() {
         </TableHeader>
         <TableBody>
           {orders.map((order) => {
-            const status = statusConfig[order.status || "pending"];
+            const status = statusConfig[order.status || "pending"] || statusConfig["pending"];
             const StatusIcon = status.icon;
             const orderTotal = order.items.reduce((sum: number, item: any) => sum + Number(item.total_price), 0);
             const isActive = !["delivered", "cancelled"].includes(order.status || "");
