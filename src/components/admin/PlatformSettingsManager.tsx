@@ -34,36 +34,67 @@
      return <Skeleton className="h-64 w-full" />;
    }
  
-   const settingsConfig = [
-     {
-       key: "identity_verification_threshold",
-       label: "Seuil de vérification d'identité",
-       description: "Montant en RD$ à partir duquel la vérification est requise",
-       icon: DollarSign,
-       suffix: "RD$"
-     },
-     {
-       key: "platform_commission_percent",
-       label: "Commission plateforme",
-       description: "Pourcentage prélevé sur chaque vente",
-       icon: Percent,
-       suffix: "%"
-     },
-     {
-       key: "delivery_base_fee",
-       label: "Frais de livraison de base",
-       description: "Montant minimum pour une livraison",
-       icon: MapPin,
-       suffix: "RD$"
-     },
-     {
-       key: "referral_reward_percent",
-       label: "Récompense parrainage",
-       description: "Pourcentage de récompense sur les 3 premières commandes du filleul",
-       icon: Gift,
-       suffix: "%"
-     }
-   ];
+    const settingsConfig = [
+      {
+        key: "identity_verification_threshold",
+        label: "Seuil de vérification d'identité",
+        description: "Montant en RD$ à partir duquel la vérification est requise",
+        icon: DollarSign,
+        suffix: "RD$"
+      },
+      {
+        key: "platform_commission_percent",
+        label: "Commission plateforme",
+        description: "Pourcentage prélevé sur chaque vente",
+        icon: Percent,
+        suffix: "%"
+      },
+      {
+        key: "delivery_base_fee",
+        label: "Frais de livraison de base",
+        description: "Montant minimum pour une livraison",
+        icon: MapPin,
+        suffix: "RD$"
+      },
+      {
+        key: "referral_reward_percent",
+        label: "Récompense parrainage",
+        description: "Pourcentage de récompense sur les 3 premières commandes du filleul",
+        icon: Gift,
+        suffix: "%"
+      },
+    ];
+
+    const textSettingsConfig = [
+      {
+        key: "wise_email",
+        label: "Email Wise",
+        description: "Adresse email pour recevoir les dépôts Wise",
+        icon: DollarSign,
+        placeholder: "votre@email.com"
+      },
+      {
+        key: "wise_account_name",
+        label: "Nom du compte Wise",
+        description: "Nom affiché pour le bénéficiaire Wise",
+        icon: DollarSign,
+        placeholder: "Ayiti Market"
+      },
+      {
+        key: "banreservas_account",
+        label: "Numéro compte Banreservas",
+        description: "Numéro de compte Banreservas pour les dépôts",
+        icon: DollarSign,
+        placeholder: "9607842951"
+      },
+      {
+        key: "moncash_number",
+        label: "Numéro Moncash",
+        description: "Numéro Moncash pour les dépôts",
+        icon: DollarSign,
+        placeholder: "39297720"
+      },
+    ];
  
    return (
      <Card>
