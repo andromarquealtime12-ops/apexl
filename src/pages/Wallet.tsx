@@ -672,6 +672,9 @@ const Wallet = () => {
           </Dialog>
         </div>
 
+        {/* Agent Deposit */}
+        <AgentDepositSection />
+
         {/* Transactions */}
         <Card>
           <CardHeader>
