@@ -289,6 +289,29 @@ const Wallet = () => {
           </div>
         )}
 
+        {/* Currency Converter */}
+        {currencyRates && currencyRates.length > 0 && (
+          <Card className="mb-8">
+            <CardContent className="pt-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-medium">Taux de change en temps réel</span>
+              </div>
+              <div className="flex flex-wrap gap-3 text-sm">
+                {currencyRates.filter(r => r.from_currency === "USD").map(r => (
+                  <Badge key={r.id} variant="outline" className="text-xs">
+                    1 USD = {r.rate} {r.to_currency}
+                  </Badge>
+                ))}
+                {currencyRates.filter(r => r.from_currency === "DOP" && r.to_currency === "HTG").map(r => (
+                  <Badge key={r.id} variant="outline" className="text-xs">
+                    1 DOP = {r.rate} HTG
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Actions */}
         <div className="flex gap-4 mb-8">
           {/* Withdraw Dialog */}
