@@ -137,6 +137,59 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_deposits: {
+        Row: {
+          admin_notes: string | null
+          agent_id: string
+          amount: number
+          created_at: string
+          currency: string | null
+          customer_user_id: string
+          id: string
+          processed_at: string | null
+          processed_by: string | null
+          proof_image_url: string | null
+          status: string | null
+          transaction_reference: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          agent_id: string
+          amount: number
+          created_at?: string
+          currency?: string | null
+          customer_user_id: string
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          proof_image_url?: string | null
+          status?: string | null
+          transaction_reference?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          agent_id?: string
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          customer_user_id?: string
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          proof_image_url?: string | null
+          status?: string | null
+          transaction_reference?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_deposits_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "deposit_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -227,6 +280,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      deposit_agents: {
+        Row: {
+          address: string
+          agent_user_id: string | null
+          city: string
+          commission_percent: number | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          is_verified: boolean | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          notes: string | null
+          opening_hours: Json | null
+          phone: string | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address: string
+          agent_user_id?: string | null
+          city: string
+          commission_percent?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          notes?: string | null
+          opening_hours?: Json | null
+          phone?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string
+          agent_user_id?: string | null
+          city?: string
+          commission_percent?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          notes?: string | null
+          opening_hours?: Json | null
+          phone?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
       }
       driver_applications: {
         Row: {
