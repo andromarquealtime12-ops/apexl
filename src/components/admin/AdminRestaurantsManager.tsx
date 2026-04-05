@@ -198,7 +198,7 @@ export default function AdminRestaurantsManager() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm">{r.profiles?.full_name || "—"}</TableCell>
+                      <TableCell className="text-sm">{r.seller_name}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1 text-sm">
                           <MapPin className="h-3 w-3" /> {r.city}
