@@ -156,11 +156,20 @@ export default function AvailableDeliveriesTable() {
                 )}
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">Commission</p>
                   <p className="text-xl font-bold text-green-600">{formatCurrency(delivery.delivery_fee || 0)}</p>
                 </div>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setMapOrderId(mapOrderId === delivery.id ? null : delivery.id)}
+                  title="Voir sur la carte"
+                >
+                  <Map className="h-4 w-4" />
+                </Button>
                 
                 <Button
                   onClick={() => handleAccept(delivery.id)}
@@ -172,6 +181,20 @@ export default function AvailableDeliveriesTable() {
                 </Button>
               </div>
             </div>
+
+            {/* Map Preview */}
+            {mapOrderId === delivery.id && (
+              <div className="mt-3">
+                <DeliveryMapPreview
+                  orderId={delivery.id}
+                  buyerLat={delivery.buyer_latitude}
+                  buyerLng={delivery.buyer_longitude}
+                  driverLat={position?.latitude}
+                  driverLng={position?.longitude}
+                  onClose={() => setMapOrderId(null)}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}
