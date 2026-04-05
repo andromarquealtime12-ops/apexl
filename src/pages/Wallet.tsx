@@ -54,8 +54,6 @@ const paymentMethodIcons: Record<string, React.ComponentType<{ className?: strin
 const Wallet = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: transactions, isLoading: transactionsLoading } = useWalletTransactions();
   const { data: depositMethodsData } = useDepositMethods();
@@ -82,39 +80,6 @@ const Wallet = () => {
   const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType>("banreservas");
   const [withdrawAccount, setWithdrawAccount] = useState("");
 
-  // Handle PayPal return
-  useEffect(() => {
-    const paypalStatus = searchParams.get("paypal");
-    const paypalOrderId = sessionStorage.getItem("paypal_order_id");
-    const paypalCurr = sessionStorage.getItem("paypal_currency") as Currency;
-    
-    if (paypalStatus === "success" && paypalOrderId && user) {
-      supabase.functions.invoke("paypal-payment", {
-        body: {
-          action: "capture_order",
-          order_id: paypalOrderId,
-          currency: paypalCurr || "DOP",
-          user_id: user.id,
-        },
-      }).then(({ data, error }) => {
-        if (data?.success) {
-          toast.success("Paiement PayPal réussi ! Votre portefeuille a été rechargé.");
-          queryClient.invalidateQueries({ queryKey: ["wallet"] });
-          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-        } else {
-          toast.error(error?.message || "Erreur lors de la capture PayPal");
-        }
-        sessionStorage.removeItem("paypal_order_id");
-        sessionStorage.removeItem("paypal_amount");
-        sessionStorage.removeItem("paypal_currency");
-        navigate("/wallet", { replace: true });
-      });
-    } else if (paypalStatus === "cancel") {
-      toast.error("Paiement PayPal annulé");
-      sessionStorage.removeItem("paypal_order_id");
-      navigate("/wallet", { replace: true });
-    }
-  }, [searchParams, user]);
 
   if (authLoading) {
     return (
@@ -694,42 +659,6 @@ const Wallet = () => {
         </Card>
       </div>
 
-      <DemoStripePayment
-        isOpen={cardDemoOpen}
-        onClose={() => setCardDemoOpen(false)}
-        amount={cardDemoAmount}
-        currency={depositCurrency}
-        onSuccess={async () => {
-          const { error } = await supabase.rpc("demo_wallet_topup" as any, {
-            p_amount: cardDemoAmount,
-            p_currency: depositCurrency,
-          });
-
-          if (error) {
-            toast.error("Erreur lors du paiement démo");
-            return;
-          }
-
-          await queryClient.invalidateQueries({ queryKey: ["wallet"] });
-          await queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-          setDepositOpen(false);
-          resetDepositForm();
-        }}
-      />
-
-      <PayPalPayment
-        isOpen={showPayPal}
-        onClose={() => setShowPayPal(false)}
-        amount={paypalAmount}
-        currency={paypalCurrency}
-        onSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ["wallet"] });
-          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-          setDepositOpen(false);
-          resetDepositForm();
-          setShowPayPal(false);
-        }}
-      />
 
       <Footer />
     </main>
