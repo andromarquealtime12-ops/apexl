@@ -24,6 +24,7 @@ import OrderSearch from "./pages/OrderSearch";
 import ResetPassword from "./pages/ResetPassword";
 import Restaurants from "./pages/Restaurants";
 import RestaurantDetail from "./pages/RestaurantDetail";
+import AgentDashboard from "./pages/AgentDashboard";
 import SupportChatWidget from "./components/support/SupportChatWidget";
 import AIAssistantWidget from "./components/ai/AIAssistantWidget";
 
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/restaurants" element={<Restaurants />} />
               <Route path="/restaurant/:restaurantId" element={<RestaurantDetail />} />
+              <Route path="/agent" element={<AgentDashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
