@@ -215,6 +215,11 @@ const Header = () => {
                   </Link>
                   <Link to="/seller" className="text-lg font-medium py-2 border-b">Vendre</Link>
                   <Link to="/driver" className="text-lg font-medium py-2 border-b">Livrer</Link>
+                  {isAgent && (
+                    <Link to="/agent" className="text-lg font-medium py-2 border-b flex items-center gap-2 text-primary">
+                      <Building2 className="h-4 w-4" /> Agent
+                    </Link>
+                  )}
                   {!user && (
                     <div className="flex flex-col gap-2 pt-4">
                       <Button onClick={openSignIn}>Connexion</Button>
