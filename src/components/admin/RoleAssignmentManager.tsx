@@ -130,6 +130,8 @@ export default function RoleAssignmentManager() {
         return "Livreur";
       case "buyer":
         return "Acheteur";
+      case "agent":
+        return "Agent";
       default:
         return role;
     }
@@ -244,6 +246,9 @@ export default function RoleAssignmentManager() {
                               )}
                               {!user.roles.includes("admin") && (
                                 <SelectItem value="admin">Admin</SelectItem>
+                              )}
+                              {!user.roles.includes("agent") && (
+                                <SelectItem value="agent">Agent</SelectItem>
                               )}
                             </SelectContent>
                           </Select>
