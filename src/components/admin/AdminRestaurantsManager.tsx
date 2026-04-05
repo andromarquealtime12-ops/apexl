@@ -16,12 +16,16 @@ function useAdminRestaurants(status?: string) {
   return useQuery({
     queryKey: ["admin-restaurants", status],
     queryFn: async () => {
-      let query = supabase.from("restaurants").select("*, profiles!inner(full_name)").order("created_at", { ascending: false });
+      let query = supabase.from("restaurants").select("*").order("created_at", { ascending: false });
       if (status === "pending") query = query.eq("is_approved", false);
       if (status === "approved") query = query.eq("is_approved", true);
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+      // Fetch seller names
+      const sellerIds = [...new Set((data || []).map(r => r.seller_id))];
+      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", sellerIds);
+      const profileMap = Object.fromEntries((profiles || []).map(p => [p.user_id, p.full_name]));
+      return (data || []).map(r => ({ ...r, seller_name: profileMap[r.seller_id] || "—" }));
     },
   });
 }
