@@ -50,10 +50,7 @@ const paymentMethodIcons: Record<string, React.ComponentType<{ className?: strin
   landmark: Landmark,
 };
 
-// Methods that require manual transfer with proof
-const MANUAL_PAYMENT_METHODS: PaymentMethodType[] = [
-  "banreservas", "bhd", "bank_transfer_do", "bank_transfer_ht", "moncash", "orange_money", "wise"
-];
+// All methods are now dynamic from DB
 
 const Wallet = () => {
   const { user, loading: authLoading } = useAuth();
@@ -291,25 +288,11 @@ const Wallet = () => {
 
         {/* Currency Converter */}
         {currencyRates && currencyRates.length > 0 && (
-          <Card className="mb-8">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-medium">Taux de change en temps réel</span>
-              </div>
-              <div className="flex flex-wrap gap-3 text-sm">
-                {currencyRates.filter(r => r.from_currency === "USD").map(r => (
-                  <Badge key={r.id} variant="outline" className="text-xs">
-                    1 USD = {r.rate} {r.to_currency}
-                  </Badge>
-                ))}
-                {currencyRates.filter(r => r.from_currency === "DOP" && r.to_currency === "HTG").map(r => (
-                  <Badge key={r.id} variant="outline" className="text-xs">
-                    1 DOP = {r.rate} HTG
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <CurrencyConverterCard 
+            wallet={wallet} 
+            currencyRates={currencyRates} 
+            queryClient={queryClient}
+          />
         )}
 
         {/* Actions */}
