@@ -60,7 +60,7 @@ export default function BuyerOrdersTracker() {
   const [refundOrderId, setRefundOrderId] = useState<string | null>(null);
   const [refundReason, setRefundReason] = useState("");
   const [ratingOrder, setRatingOrder] = useState<{ orderId: string; userId: string; type: "buyer_to_seller" | "buyer_to_driver" } | null>(null);
-
+  const [chatOrderId, setChatOrderId] = useState<string | null>(null);
   const refundMutation = useMutation({
     mutationFn: async ({ orderId, reason }: { orderId: string; reason: string }) => {
       const { data, error } = await supabase.rpc("request_refund", { p_order_id: orderId, p_reason: reason });
