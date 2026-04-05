@@ -39,6 +39,7 @@ import {
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import AgentDepositSection from "@/components/wallet/AgentDepositSection";
 
 const paymentMethodIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   "credit-card": CreditCard,
@@ -670,6 +671,9 @@ const Wallet = () => {
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Agent Deposit */}
+        <AgentDepositSection />
 
         {/* Transactions */}
         <Card>
