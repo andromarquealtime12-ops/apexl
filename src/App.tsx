@@ -24,6 +24,7 @@ import OrderSearch from "./pages/OrderSearch";
 import ResetPassword from "./pages/ResetPassword";
 import Restaurants from "./pages/Restaurants";
 import RestaurantDetail from "./pages/RestaurantDetail";
+import AgentDashboard from "./pages/AgentDashboard";
 import SupportChatWidget from "./components/support/SupportChatWidget";
 import AIAssistantWidget from "./components/ai/AIAssistantWidget";
 
