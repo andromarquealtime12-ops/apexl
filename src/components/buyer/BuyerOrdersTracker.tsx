@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare, RotateCcw, Star } from "lucide-react";
+import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare, RotateCcw, Star, MessageCircle } from "lucide-react";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
 import ReturnRequestButton from "@/components/returns/ReturnRequestButton";
 import OrderRatingDialog from "@/components/reviews/OrderRatingDialog";
