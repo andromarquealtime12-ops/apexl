@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useSellerOrders } from "@/hooks/useSellerStats";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -76,14 +76,14 @@ export default function SellerOrdersTable() {
         </TableHeader>
         <TableBody>
           {orders.map((order) => {
-            const status = statusConfig[order.status || "pending"];
+            const status = statusConfig[order.status || "pending"] || statusConfig["pending"];
             const StatusIcon = status.icon;
             const orderTotal = order.items.reduce((sum: number, item: any) => sum + Number(item.total_price), 0);
             const isActive = !["delivered", "cancelled"].includes(order.status || "");
 
             return (
-              <>
-                <TableRow key={order.id}>
+              <React.Fragment key={order.id}>
+                <TableRow>
                   <TableCell className="font-mono text-sm">
                     #{order.id.slice(0, 8)}
                   </TableCell>
@@ -134,7 +134,7 @@ export default function SellerOrdersTable() {
                   </TableCell>
                 </TableRow>
                 {chatOrderId === order.id && (
-                  <TableRow key={`${order.id}-chat`}>
+                  <TableRow>
                     <TableCell colSpan={6} className="p-3 bg-muted/30">
                       <OrderChat
                         orderId={order.id}
@@ -144,7 +144,7 @@ export default function SellerOrdersTable() {
                     </TableCell>
                   </TableRow>
                 )}
-              </>
+              </React.Fragment>
             );
           })}
         </TableBody>
