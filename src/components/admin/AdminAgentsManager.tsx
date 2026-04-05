@@ -53,37 +53,15 @@ export default function AdminAgentsManager() {
 
   const createAgent = useMutation({
     mutationFn: async () => {
-      // Resolve agent_user_id from email if provided
       let agentUserId: string | null = null;
       if (form.agent_user_email.trim()) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("user_id")
-          .ilike("full_name", `%${form.agent_user_email}%`)
-          .limit(1)
-          .maybeSingle();
-        
-        // Try matching by looking up user email via profiles
-        const { data: allProfiles } = await supabase
-          .from("profiles")
-          .select("user_id");
-        
-        if (allProfiles) {
-          // We need to find by email - use auth admin or a workaround
-          // Since we can't query auth.users from client, store the email as-is
-          // and use an RPC or just search profiles
-        }
-        
-        // Simpler: admin enters the user_id directly or we search by name
-        const { data: profileByName } = await supabase
-          .from("profiles")
-          .select("user_id, full_name")
-          .ilike("full_name", `%${form.agent_user_email}%`)
-          .limit(1)
-          .maybeSingle();
-        
-        if (profileByName) {
-          agentUserId = profileByName.user_id;
+        const { data } = await supabase.rpc("find_user_id_by_email" as any, {
+          p_email: form.agent_user_email.trim(),
+        });
+        if (data) {
+          agentUserId = data as string;
+        } else {
+          throw new Error("Aucun utilisateur trouvé avec cet email");
         }
       }
 
