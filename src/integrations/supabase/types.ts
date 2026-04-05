@@ -234,6 +234,30 @@ export type Database = {
           },
         ]
       }
+      currency_rates: {
+        Row: {
+          from_currency: string
+          id: string
+          rate: number
+          to_currency: string
+          updated_at: string
+        }
+        Insert: {
+          from_currency: string
+          id?: string
+          rate?: number
+          to_currency: string
+          updated_at?: string
+        }
+        Update: {
+          from_currency?: string
+          id?: string
+          rate?: number
+          to_currency?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       delivery_verification: {
         Row: {
           attempt_count: number | null
@@ -335,6 +359,54 @@ export type Database = {
           phone?: string | null
           updated_at?: string
           whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      deposit_methods: {
+        Row: {
+          account_name: string | null
+          account_number: string | null
+          country: string
+          created_at: string
+          icon: string | null
+          id: string
+          instructions: string | null
+          is_active: boolean | null
+          label: string
+          method_key: string
+          method_type: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          account_name?: string | null
+          account_number?: string | null
+          country?: string
+          created_at?: string
+          icon?: string | null
+          id?: string
+          instructions?: string | null
+          is_active?: boolean | null
+          label: string
+          method_key: string
+          method_type?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          account_name?: string | null
+          account_number?: string | null
+          country?: string
+          created_at?: string
+          icon?: string | null
+          id?: string
+          instructions?: string | null
+          is_active?: boolean | null
+          label?: string
+          method_key?: string
+          method_type?: string
+          sort_order?: number | null
+          updated_at?: string
         }
         Relationships: []
       }

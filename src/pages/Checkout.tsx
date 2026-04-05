@@ -28,15 +28,7 @@ import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { calculateDistance } from "@/hooks/useGeolocation";
-
-const CITIES = [
-  { value: "Santo Domingo", label: "Santo Domingo", country: "DO" },
-  { value: "Santiago", label: "Santiago", country: "DO" },
-  { value: "La Romana", label: "La Romana", country: "DO" },
-  { value: "Port-au-Prince", label: "Port-au-Prince", country: "HT" },
-  { value: "Cap-Haïtien", label: "Cap-Haïtien", country: "HT" },
-  { value: "Pétion-Ville", label: "Pétion-Ville", country: "HT" },
-];
+import { ALL_CITIES } from "@/utils/cities";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -298,11 +290,14 @@ const Checkout = () => {
                         <SelectTrigger>
                           <SelectValue placeholder="Sélectionner une ville" />
                         </SelectTrigger>
-                        <SelectContent>
-                          {CITIES.map((city) => (
-                            <SelectItem key={city.value} value={city.value}>
-                              {city.label} ({city.country})
-                            </SelectItem>
+                        <SelectContent className="max-h-60">
+                          <SelectItem value="__do_header" disabled>🇩🇴 République Dominicaine</SelectItem>
+                          {ALL_CITIES.DO.map((city) => (
+                            <SelectItem key={city} value={city}>{city}</SelectItem>
+                          ))}
+                          <SelectItem value="__ht_header" disabled>🇭🇹 Haïti</SelectItem>
+                          {ALL_CITIES.HT.map((city) => (
+                            <SelectItem key={city} value={city}>{city}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>

@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { ALL_CITIES } from "@/utils/cities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -193,14 +194,11 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
               <Label htmlFor="shop_city">Ville *</Label>
               <Select value={formData.shop_city} onValueChange={(value) => handleChange("shop_city", value)} required>
                 <SelectTrigger><SelectValue placeholder="Ville" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Port-au-Prince">Port-au-Prince</SelectItem>
-                  <SelectItem value="Cap-Haïtien">Cap-Haïtien</SelectItem>
-                  <SelectItem value="Santo Domingo">Santo Domingo</SelectItem>
-                  <SelectItem value="Santiago">Santiago</SelectItem>
-                  <SelectItem value="Gonaïves">Gonaïves</SelectItem>
-                  <SelectItem value="Les Cayes">Les Cayes</SelectItem>
-                  <SelectItem value="Autre">Autre</SelectItem>
+                <SelectContent className="max-h-60">
+                  <SelectItem value="__do" disabled>🇩🇴 République Dominicaine</SelectItem>
+                  {ALL_CITIES.DO.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  <SelectItem value="__ht" disabled>🇭🇹 Haïti</SelectItem>
+                  {ALL_CITIES.HT.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>

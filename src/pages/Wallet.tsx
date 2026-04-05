@@ -3,8 +3,10 @@ import { Navigate, useSearchParams, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
-import { useWallet, useWalletTransactions, useDepositToWallet, useRequestWithdrawal, PAYMENT_INSTRUCTIONS } from "@/hooks/useWallet";
+import { useWallet, useWalletTransactions, useDepositToWallet, useRequestWithdrawal } from "@/hooks/useWallet";
 import { PAYMENT_METHODS, CURRENCY_SYMBOLS, PaymentMethodType, Currency } from "@/types/database";
+import { useDepositMethods, DepositMethod } from "@/hooks/useDepositMethods";
+import { useCurrencyRates, convertCurrency } from "@/hooks/useCurrencyRates";
 import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
 import { PayPalPayment } from "@/components/checkout/PayPalPayment";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,6 +62,8 @@ const Wallet = () => {
   const navigate = useNavigate();
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: transactions, isLoading: transactionsLoading } = useWalletTransactions();
+  const { data: depositMethodsData } = useDepositMethods();
+  const { data: currencyRates } = useCurrencyRates();
   const depositMutation = useDepositToWallet();
   const withdrawalMutation = useRequestWithdrawal();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -228,12 +232,13 @@ const Wallet = () => {
     }
   };
 
-  const filteredPaymentMethods = PAYMENT_METHODS.filter(
+  // Use dynamic deposit methods from database
+  const filteredDepositMethods = (depositMethodsData || []).filter(
     m => m.country === "both" || m.country === (depositCurrency === "HTG" ? "HT" : "DO")
-  ).filter(m => MANUAL_PAYMENT_METHODS.includes(m.value));
+  );
 
-  const currentInstructions = PAYMENT_INSTRUCTIONS[depositMethod];
-  const isManualMethod = MANUAL_PAYMENT_METHODS.includes(depositMethod);
+  const currentMethod = filteredDepositMethods.find(m => m.method_key === depositMethod);
+  const isManualMethod = !!currentMethod;
 
   return (
     <main className="min-h-screen bg-background">
@@ -282,6 +287,29 @@ const Wallet = () => {
               </CardHeader>
             </Card>
           </div>
+        )}
+
+        {/* Currency Converter */}
+        {currencyRates && currencyRates.length > 0 && (
+          <Card className="mb-8">
+            <CardContent className="pt-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-medium">Taux de change en temps réel</span>
+              </div>
+              <div className="flex flex-wrap gap-3 text-sm">
+                {currencyRates.filter(r => r.from_currency === "USD").map(r => (
+                  <Badge key={r.id} variant="outline" className="text-xs">
+                    1 USD = {r.rate} {r.to_currency}
+                  </Badge>
+                ))}
+                {currencyRates.filter(r => r.from_currency === "DOP" && r.to_currency === "HTG").map(r => (
+                  <Badge key={r.id} variant="outline" className="text-xs">
+                    1 DOP = {r.rate} HTG
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Actions */}
@@ -503,14 +531,14 @@ const Wallet = () => {
                   <div className="space-y-2">
                     <Label>Méthode de paiement</Label>
                     <div className="grid grid-cols-2 gap-2">
-                      {filteredPaymentMethods.map((method) => {
-                        const Icon = paymentMethodIcons[method.icon] || CreditCard;
+                      {filteredDepositMethods.map((method) => {
+                        const Icon = paymentMethodIcons[method.icon || "building"] || CreditCard;
                         return (
                           <Button
-                            key={method.value}
-                            variant={depositMethod === method.value ? "default" : "outline"}
+                            key={method.method_key}
+                            variant={depositMethod === method.method_key ? "default" : "outline"}
                             className="justify-start h-auto py-3"
-                            onClick={() => setDepositMethod(method.value)}
+                            onClick={() => setDepositMethod(method.method_key as PaymentMethodType)}
                           >
                             <Icon className="h-4 w-4 mr-2" />
                             {method.label}
@@ -537,13 +565,13 @@ const Wallet = () => {
               )}
 
               {/* Step 2: Transfer instructions */}
-              {depositStep === "transfer" && currentInstructions && (
+              {depositStep === "transfer" && currentMethod && (
                 <div className="space-y-4 pt-4">
                   <Alert className="bg-primary/10 border-primary">
                     <Info className="h-4 w-4" />
                     <AlertTitle>Instructions de transfert</AlertTitle>
                     <AlertDescription className="mt-2">
-                      {currentInstructions.instructions}
+                      {currentMethod.instructions}
                     </AlertDescription>
                   </Alert>
 
@@ -552,16 +580,16 @@ const Wallet = () => {
                       <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                         <div>
                           <p className="text-sm text-muted-foreground">
-                            {depositMethod === "moncash" || depositMethod === "orange_money" 
+                            {currentMethod.method_type === "mobile_money" 
                               ? "Numéro" 
-                              : "Numéro de compte"}
+                              : "Numéro de compte / Email"}
                           </p>
-                          <p className="text-xl font-bold font-mono">{currentInstructions.accountNumber}</p>
+                          <p className="text-xl font-bold font-mono">{currentMethod.account_number || "Non configuré"}</p>
                         </div>
                         <Button 
                           variant="outline" 
                           size="icon"
-                          onClick={() => handleCopyAccount(currentInstructions.accountNumber)}
+                          onClick={() => handleCopyAccount(currentMethod.account_number || "")}
                         >
                           {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                         </Button>
@@ -569,7 +597,7 @@ const Wallet = () => {
                       
                       <div className="p-3 bg-muted rounded-lg">
                         <p className="text-sm text-muted-foreground">Nom du bénéficiaire</p>
-                        <p className="font-semibold">{currentInstructions.accountName}</p>
+                        <p className="font-semibold">{currentMethod.account_name || "—"}</p>
                       </div>
 
                       <div className="p-3 bg-muted rounded-lg">
