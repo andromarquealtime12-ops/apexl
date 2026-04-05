@@ -82,8 +82,8 @@ export default function SellerOrdersTable() {
             const isActive = !["delivered", "cancelled"].includes(order.status || "");
 
             return (
-              <>
-                <TableRow key={order.id}>
+              <React.Fragment key={order.id}>
+                <TableRow>
                   <TableCell className="font-mono text-sm">
                     #{order.id.slice(0, 8)}
                   </TableCell>
