@@ -508,14 +508,14 @@ const Wallet = () => {
                   <div className="space-y-2">
                     <Label>Méthode de paiement</Label>
                     <div className="grid grid-cols-2 gap-2">
-                      {filteredPaymentMethods.map((method) => {
-                        const Icon = paymentMethodIcons[method.icon] || CreditCard;
+                      {filteredDepositMethods.map((method) => {
+                        const Icon = paymentMethodIcons[method.icon || "building"] || CreditCard;
                         return (
                           <Button
-                            key={method.value}
-                            variant={depositMethod === method.value ? "default" : "outline"}
+                            key={method.method_key}
+                            variant={depositMethod === method.method_key ? "default" : "outline"}
                             className="justify-start h-auto py-3"
-                            onClick={() => setDepositMethod(method.value)}
+                            onClick={() => setDepositMethod(method.method_key as PaymentMethodType)}
                           >
                             <Icon className="h-4 w-4 mr-2" />
                             {method.label}
@@ -542,13 +542,13 @@ const Wallet = () => {
               )}
 
               {/* Step 2: Transfer instructions */}
-              {depositStep === "transfer" && currentInstructions && (
+              {depositStep === "transfer" && currentMethod && (
                 <div className="space-y-4 pt-4">
                   <Alert className="bg-primary/10 border-primary">
                     <Info className="h-4 w-4" />
                     <AlertTitle>Instructions de transfert</AlertTitle>
                     <AlertDescription className="mt-2">
-                      {currentInstructions.instructions}
+                      {currentMethod.instructions}
                     </AlertDescription>
                   </Alert>
 
@@ -557,16 +557,16 @@ const Wallet = () => {
                       <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                         <div>
                           <p className="text-sm text-muted-foreground">
-                            {depositMethod === "moncash" || depositMethod === "orange_money" 
+                            {currentMethod.method_type === "mobile_money" 
                               ? "Numéro" 
-                              : "Numéro de compte"}
+                              : "Numéro de compte / Email"}
                           </p>
-                          <p className="text-xl font-bold font-mono">{currentInstructions.accountNumber}</p>
+                          <p className="text-xl font-bold font-mono">{currentMethod.account_number || "Non configuré"}</p>
                         </div>
                         <Button 
                           variant="outline" 
                           size="icon"
-                          onClick={() => handleCopyAccount(currentInstructions.accountNumber)}
+                          onClick={() => handleCopyAccount(currentMethod.account_number || "")}
                         >
                           {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                         </Button>
@@ -574,7 +574,7 @@ const Wallet = () => {
                       
                       <div className="p-3 bg-muted rounded-lg">
                         <p className="text-sm text-muted-foreground">Nom du bénéficiaire</p>
-                        <p className="font-semibold">{currentInstructions.accountName}</p>
+                        <p className="font-semibold">{currentMethod.account_name || "—"}</p>
                       </div>
 
                       <div className="p-3 bg-muted rounded-lg">
