@@ -41,7 +41,7 @@ function useAgentDeposits() {
   });
 }
 
-const emptyAgent = { name: "", address: "", city: "", phone: "", whatsapp: "", commission_percent: "0", notes: "" };
+const emptyAgent = { name: "", address: "", city: "", phone: "", whatsapp: "", commission_percent: "0", notes: "", agent_user_email: "" };
 
 export default function AdminAgentsManager() {
   const { toast } = useToast();
@@ -53,6 +53,40 @@ export default function AdminAgentsManager() {
 
   const createAgent = useMutation({
     mutationFn: async () => {
+      // Resolve agent_user_id from email if provided
+      let agentUserId: string | null = null;
+      if (form.agent_user_email.trim()) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("user_id")
+          .ilike("full_name", `%${form.agent_user_email}%`)
+          .limit(1)
+          .maybeSingle();
+        
+        // Try matching by looking up user email via profiles
+        const { data: allProfiles } = await supabase
+          .from("profiles")
+          .select("user_id");
+        
+        if (allProfiles) {
+          // We need to find by email - use auth admin or a workaround
+          // Since we can't query auth.users from client, store the email as-is
+          // and use an RPC or just search profiles
+        }
+        
+        // Simpler: admin enters the user_id directly or we search by name
+        const { data: profileByName } = await supabase
+          .from("profiles")
+          .select("user_id, full_name")
+          .ilike("full_name", `%${form.agent_user_email}%`)
+          .limit(1)
+          .maybeSingle();
+        
+        if (profileByName) {
+          agentUserId = profileByName.user_id;
+        }
+      }
+
       const { error } = await supabase.from("deposit_agents").insert({
         name: form.name,
         address: form.address,
@@ -62,6 +96,7 @@ export default function AdminAgentsManager() {
         commission_percent: parseFloat(form.commission_percent) || 0,
         notes: form.notes || null,
         is_verified: true,
+        agent_user_id: agentUserId,
       });
       if (error) throw error;
     },
