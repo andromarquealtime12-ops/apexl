@@ -140,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAdmin: roles.includes("admin"),
     isSeller: roles.includes("seller"),
     isDriver: roles.includes("driver"),
+    isAgent: roles.includes("agent"),
     signUp,
     signIn,
     signOut,
