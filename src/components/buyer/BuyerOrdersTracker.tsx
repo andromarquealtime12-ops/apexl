@@ -169,7 +169,7 @@ export default function BuyerOrdersTracker() {
     <>
     <div className="space-y-4">
       {orders.map((order) => {
-        const status = statusConfig[order.status || "pending"];
+        const status = statusConfig[order.status || "pending"] || statusConfig["pending"];
         const StatusIcon = status.icon;
         const verification = verifications?.[order.id];
         const currencySymbol = CURRENCY_SYMBOLS[order.currency as keyof typeof CURRENCY_SYMBOLS] || "$";
