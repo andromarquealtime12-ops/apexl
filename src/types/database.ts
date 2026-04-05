@@ -125,20 +125,6 @@ export interface OrderItem {
   product?: Product;
 }
 
-export const PAYMENT_METHODS: { value: PaymentMethodType; label: string; icon: string; country: "DO" | "HT" | "both" }[] = [
-  { value: "card_visa", label: "Visa", icon: "credit-card", country: "both" },
-  { value: "card_mastercard", label: "Mastercard", icon: "credit-card", country: "both" },
-  { value: "orange_money", label: "Orange Money", icon: "smartphone", country: "HT" },
-  { value: "moncash", label: "Moncash", icon: "smartphone", country: "HT" },
-  { value: "banreservas", label: "Banreservas", icon: "building", country: "DO" },
-  { value: "bhd", label: "BHD León", icon: "building", country: "DO" },
-  { value: "popular", label: "Banco Popular", icon: "building", country: "DO" },
-  { value: "bank_transfer_do", label: "Transfert Bancaire (RD)", icon: "landmark", country: "DO" },
-  { value: "bank_transfer_ht", label: "Transfert Bancaire (HT)", icon: "landmark", country: "HT" },
-  { value: "paypal", label: "PayPal", icon: "globe", country: "both" },
-  { value: "wise", label: "Wise", icon: "globe", country: "both" },
-  { value: "bank_other", label: "Autre banque", icon: "landmark", country: "both" },
-];
 
 export const CURRENCY_SYMBOLS: Record<Currency, string> = {
   DOP: "RD$",

@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet, useWalletTransactions, useDepositToWallet, useRequestWithdrawal } from "@/hooks/useWallet";
-import { PAYMENT_METHODS, CURRENCY_SYMBOLS, PaymentMethodType, Currency } from "@/types/database";
+import { CURRENCY_SYMBOLS, PaymentMethodType, Currency } from "@/types/database";
 import { useDepositMethods, DepositMethod } from "@/hooks/useDepositMethods";
 import { useCurrencyRates, convertCurrency } from "@/hooks/useCurrencyRates";
 import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
@@ -342,8 +342,8 @@ const Wallet = () => {
                   <Select value={withdrawMethod} onValueChange={(v) => setWithdrawMethod(v as PaymentMethodType)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      {PAYMENT_METHODS.filter(m => !m.value.startsWith("card_")).map(m => (
-                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      {(depositMethodsData || []).map(m => (
+                        <SelectItem key={m.method_key} value={m.method_key}>{m.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
