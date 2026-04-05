@@ -30,6 +30,11 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
   delivered: { label: "Livrée", variant: "secondary", icon: CheckCircle, description: "Commande livrée avec succès !" },
   cancelled: { label: "Annulée", variant: "destructive", icon: Package, description: "Cette commande a été annulée" },
   refunded: { label: "Remboursée", variant: "outline", icon: RotateCcw, description: "Cette commande a été remboursée" },
+  return_requested: { label: "Retour demandé", variant: "destructive", icon: RotateCcw, description: "Votre demande de retour est en cours de traitement" },
+  return_pickup_ready: { label: "Retour prêt", variant: "outline", icon: RotateCcw, description: "Le retour est prêt à être récupéré" },
+  return_in_transit: { label: "Retour en cours", variant: "default", icon: RotateCcw, description: "Le colis retour est en route" },
+  returned: { label: "Retourné", variant: "secondary", icon: RotateCcw, description: "Le colis a été retourné au vendeur" },
+  redelivery: { label: "Re-livraison", variant: "default", icon: Truck, description: "Votre commande est en re-livraison" },
 };
 
 interface OrderWithItems {
@@ -164,7 +169,7 @@ export default function BuyerOrdersTracker() {
     <>
     <div className="space-y-4">
       {orders.map((order) => {
-        const status = statusConfig[order.status || "pending"];
+        const status = statusConfig[order.status || "pending"] || statusConfig["pending"];
         const StatusIcon = status.icon;
         const verification = verifications?.[order.id];
         const currencySymbol = CURRENCY_SYMBOLS[order.currency as keyof typeof CURRENCY_SYMBOLS] || "$";
