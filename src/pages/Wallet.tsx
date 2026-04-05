@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { Navigate, useSearchParams, useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
+import { Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,8 +7,6 @@ import { useWallet, useWalletTransactions, useDepositToWallet, useRequestWithdra
 import { CURRENCY_SYMBOLS, PaymentMethodType, Currency } from "@/types/database";
 import { useDepositMethods, DepositMethod } from "@/hooks/useDepositMethods";
 import { useCurrencyRates, convertCurrency } from "@/hooks/useCurrencyRates";
-import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
-import { PayPalPayment } from "@/components/checkout/PayPalPayment";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,8 +54,6 @@ const paymentMethodIcons: Record<string, React.ComponentType<{ className?: strin
 const Wallet = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: transactions, isLoading: transactionsLoading } = useWalletTransactions();
   const { data: depositMethodsData } = useDepositMethods();
@@ -77,12 +73,6 @@ const Wallet = () => {
   const [proofPreview, setProofPreview] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const [cardDemoOpen, setCardDemoOpen] = useState(false);
-  const [cardDemoAmount, setCardDemoAmount] = useState(0);
-
-  const [showPayPal, setShowPayPal] = useState(false);
-  const [paypalAmount, setPaypalAmount] = useState(0);
-  const [paypalCurrency, setPaypalCurrency] = useState<Currency>("DOP");
 
   // Withdrawal state
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -90,39 +80,6 @@ const Wallet = () => {
   const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType>("banreservas");
   const [withdrawAccount, setWithdrawAccount] = useState("");
 
-  // Handle PayPal return
-  useEffect(() => {
-    const paypalStatus = searchParams.get("paypal");
-    const paypalOrderId = sessionStorage.getItem("paypal_order_id");
-    const paypalCurr = sessionStorage.getItem("paypal_currency") as Currency;
-    
-    if (paypalStatus === "success" && paypalOrderId && user) {
-      supabase.functions.invoke("paypal-payment", {
-        body: {
-          action: "capture_order",
-          order_id: paypalOrderId,
-          currency: paypalCurr || "DOP",
-          user_id: user.id,
-        },
-      }).then(({ data, error }) => {
-        if (data?.success) {
-          toast.success("Paiement PayPal réussi ! Votre portefeuille a été rechargé.");
-          queryClient.invalidateQueries({ queryKey: ["wallet"] });
-          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-        } else {
-          toast.error(error?.message || "Erreur lors de la capture PayPal");
-        }
-        sessionStorage.removeItem("paypal_order_id");
-        sessionStorage.removeItem("paypal_amount");
-        sessionStorage.removeItem("paypal_currency");
-        navigate("/wallet", { replace: true });
-      });
-    } else if (paypalStatus === "cancel") {
-      toast.error("Paiement PayPal annulé");
-      sessionStorage.removeItem("paypal_order_id");
-      navigate("/wallet", { replace: true });
-    }
-  }, [searchParams, user]);
 
   if (authLoading) {
     return (
@@ -448,69 +405,6 @@ const Wallet = () => {
                     </div>
                   </div>
 
-                  {/* PayPal real payment */}
-                  <Card className="border-primary/30 bg-primary/5">
-                    <CardContent className="pt-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-medium flex items-center gap-2">
-                            💳 Carte bancaire / PayPal
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Paiement sécurisé via PayPal (carte ou compte)
-                          </p>
-                        </div>
-                        <Button
-                          type="button"
-                          className="bg-[#0070ba] hover:bg-[#005ea6] text-white"
-                          onClick={() => {
-                            const amount = parseFloat(depositAmount);
-                            if (isNaN(amount) || amount <= 0) {
-                              toast.error("Veuillez entrer un montant valide");
-                              return;
-                            }
-                            setPaypalAmount(amount);
-                            setPaypalCurrency(depositCurrency);
-                            setShowPayPal(true);
-                          }}
-                        >
-                          Payer
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Card (demo) top-up */}
-                  <Card className="border-dashed">
-                    <CardContent className="pt-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-medium flex items-center gap-2">
-                            <CreditCard className="h-4 w-4" />
-                            Carte bancaire (démo)
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Recharge instantanée (carte test 4242 4242 4242 4242)
-                          </p>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            const amount = parseFloat(depositAmount);
-                            if (isNaN(amount) || amount <= 0) {
-                              toast.error("Veuillez entrer un montant valide");
-                              return;
-                            }
-                            setCardDemoAmount(amount);
-                            setCardDemoOpen(true);
-                          }}
-                        >
-                          Payer
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
 
                   <div className="space-y-2">
                     <Label>Méthode de paiement</Label>
@@ -765,42 +659,6 @@ const Wallet = () => {
         </Card>
       </div>
 
-      <DemoStripePayment
-        isOpen={cardDemoOpen}
-        onClose={() => setCardDemoOpen(false)}
-        amount={cardDemoAmount}
-        currency={depositCurrency}
-        onSuccess={async () => {
-          const { error } = await supabase.rpc("demo_wallet_topup" as any, {
-            p_amount: cardDemoAmount,
-            p_currency: depositCurrency,
-          });
-
-          if (error) {
-            toast.error("Erreur lors du paiement démo");
-            return;
-          }
-
-          await queryClient.invalidateQueries({ queryKey: ["wallet"] });
-          await queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-          setDepositOpen(false);
-          resetDepositForm();
-        }}
-      />
-
-      <PayPalPayment
-        isOpen={showPayPal}
-        onClose={() => setShowPayPal(false)}
-        amount={paypalAmount}
-        currency={paypalCurrency}
-        onSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ["wallet"] });
-          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-          setDepositOpen(false);
-          resetDepositForm();
-          setShowPayPal(false);
-        }}
-      />
 
       <Footer />
     </main>
