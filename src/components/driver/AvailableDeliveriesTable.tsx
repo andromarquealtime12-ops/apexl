@@ -32,7 +32,7 @@ export default function AvailableDeliveriesTable() {
   const acceptDelivery = useAcceptDelivery();
   const { position, getCurrentPosition } = useCurrentPosition();
   const [enriched, setEnriched] = useState<EnrichedDelivery[]>([]);
-
+  const [mapOrderId, setMapOrderId] = useState<string | null>(null);
   useEffect(() => {
     getCurrentPosition();
   }, []);
