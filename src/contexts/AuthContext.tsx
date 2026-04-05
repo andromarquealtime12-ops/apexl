@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -77,6 +77,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: { full_name: fullName }
       }
     });
+    
+    // Supabase returns a fake user with empty identities when email already exists
+    if (!error && data?.user && data.user.identities?.length === 0) {
+      return { error: new Error("Cette adresse email est déjà inscrite.") as any };
+    }
+    
     return { error };
   };
 
