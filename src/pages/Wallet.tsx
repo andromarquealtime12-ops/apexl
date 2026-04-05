@@ -7,6 +7,7 @@ import { useWallet, useWalletTransactions, useDepositToWallet, useRequestWithdra
 import { PAYMENT_METHODS, CURRENCY_SYMBOLS, PaymentMethodType, Currency } from "@/types/database";
 import { useDepositMethods, DepositMethod } from "@/hooks/useDepositMethods";
 import { useCurrencyRates, convertCurrency } from "@/hooks/useCurrencyRates";
+import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
 import { PayPalPayment } from "@/components/checkout/PayPalPayment";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -61,6 +62,8 @@ const Wallet = () => {
   const navigate = useNavigate();
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: transactions, isLoading: transactionsLoading } = useWalletTransactions();
+  const { data: depositMethodsData } = useDepositMethods();
+  const { data: currencyRates } = useCurrencyRates();
   const depositMutation = useDepositToWallet();
   const withdrawalMutation = useRequestWithdrawal();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -229,12 +232,13 @@ const Wallet = () => {
     }
   };
 
-  const filteredPaymentMethods = PAYMENT_METHODS.filter(
+  // Use dynamic deposit methods from database
+  const filteredDepositMethods = (depositMethodsData || []).filter(
     m => m.country === "both" || m.country === (depositCurrency === "HTG" ? "HT" : "DO")
-  ).filter(m => MANUAL_PAYMENT_METHODS.includes(m.value));
+  );
 
-  const currentInstructions = PAYMENT_INSTRUCTIONS[depositMethod];
-  const isManualMethod = MANUAL_PAYMENT_METHODS.includes(depositMethod);
+  const currentMethod = filteredDepositMethods.find(m => m.method_key === depositMethod);
+  const isManualMethod = !!currentMethod;
 
   return (
     <main className="min-h-screen bg-background">
