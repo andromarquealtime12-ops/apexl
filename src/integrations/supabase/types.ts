@@ -1591,6 +1591,24 @@ export type Database = {
     }
     Functions: {
       activate_user: { Args: { p_user_id: string }; Returns: Json }
+      agent_deposit_to_wallet: {
+        Args: {
+          p_amount: number
+          p_currency?: string
+          p_customer_email: string
+          p_notes?: string
+        }
+        Returns: Json
+      }
+      agent_withdraw_from_wallet: {
+        Args: {
+          p_amount: number
+          p_currency?: string
+          p_customer_email: string
+          p_notes?: string
+        }
+        Returns: Json
+      }
       approve_deposit: {
         Args: { admin_id_input: string; transaction_id_input: string }
         Returns: Json
@@ -1768,7 +1786,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "buyer" | "seller" | "driver"
+      app_role: "admin" | "buyer" | "seller" | "driver" | "agent"
       payment_method_type:
         | "card_visa"
         | "card_mastercard"
@@ -1909,7 +1927,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "buyer", "seller", "driver"],
+      app_role: ["admin", "buyer", "seller", "driver", "agent"],
       payment_method_type: [
         "card_visa",
         "card_mastercard",
