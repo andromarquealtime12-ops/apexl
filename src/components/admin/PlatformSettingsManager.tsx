@@ -133,9 +133,43 @@
                <Save className="h-4 w-4 mr-1" />
                Sauvegarder
              </Button>
-           </div>
-         ))}
-       </CardContent>
-     </Card>
-   );
- }
+            </div>
+          ))}
+
+          <div className="border-t pt-6 mt-6">
+            <h3 className="font-semibold mb-4 flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              Comptes de dépôt
+            </h3>
+            {textSettingsConfig.map((config) => (
+              <div key={config.key} className="flex items-end gap-4 mb-4">
+                <div className="flex-1 space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <config.icon className="h-4 w-4" />
+                    {config.label}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">{config.description}</p>
+                  <Input
+                    type="text"
+                    placeholder={config.placeholder}
+                    value={localSettings[config.key] || ""}
+                    onChange={(e) => setLocalSettings(s => ({ ...s, [config.key]: e.target.value }))}
+                    className="max-w-[300px]"
+                  />
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleSave(config.key)}
+                  disabled={localSettings[config.key] === settings?.[config.key]}
+                >
+                  <Save className="h-4 w-4 mr-1" />
+                  Sauvegarder
+                </Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
