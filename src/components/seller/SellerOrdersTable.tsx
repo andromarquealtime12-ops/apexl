@@ -134,7 +134,7 @@ export default function SellerOrdersTable() {
                   </TableCell>
                 </TableRow>
                 {chatOrderId === order.id && (
-                  <TableRow key={`${order.id}-chat`}>
+                  <TableRow>
                     <TableCell colSpan={6} className="p-3 bg-muted/30">
                       <OrderChat
                         orderId={order.id}
@@ -144,7 +144,7 @@ export default function SellerOrdersTable() {
                     </TableCell>
                   </TableRow>
                 )}
-              </>
+              </React.Fragment>
             );
           })}
         </TableBody>
