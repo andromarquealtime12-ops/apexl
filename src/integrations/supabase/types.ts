@@ -1720,6 +1720,14 @@ export type Database = {
         }
         Returns: Json
       }
+      convert_wallet_currency: {
+        Args: {
+          p_amount: number
+          p_from_currency: string
+          p_to_currency: string
+        }
+        Returns: Json
+      }
       create_delivery_verification: {
         Args: { p_order_id: string }
         Returns: Json
