@@ -94,6 +94,48 @@
         icon: DollarSign,
         placeholder: "39297720"
       },
+      {
+        key: "bhd_account",
+        label: "Numéro compte BHD León",
+        description: "Numéro de compte BHD León pour les dépôts",
+        icon: DollarSign,
+        placeholder: "Numéro de compte"
+      },
+      {
+        key: "popular_account",
+        label: "Numéro compte Banco Popular",
+        description: "Numéro de compte Banco Popular pour les dépôts",
+        icon: DollarSign,
+        placeholder: "Numéro de compte"
+      },
+      {
+        key: "orange_money_number",
+        label: "Numéro Orange Money",
+        description: "Numéro Orange Money pour les dépôts",
+        icon: DollarSign,
+        placeholder: "Numéro"
+      },
+      {
+        key: "paypal_email",
+        label: "Email PayPal",
+        description: "Adresse email PayPal pour recevoir les paiements",
+        icon: DollarSign,
+        placeholder: "payments@example.com"
+      },
+      {
+        key: "bank_transfer_do_details",
+        label: "Détails virement RD",
+        description: "Coordonnées pour virements bancaires en République Dominicaine",
+        icon: DollarSign,
+        placeholder: "Nom de banque, numéro de compte..."
+      },
+      {
+        key: "bank_transfer_ht_details",
+        label: "Détails virement Haïti",
+        description: "Coordonnées pour virements bancaires en Haïti",
+        icon: DollarSign,
+        placeholder: "Nom de banque, numéro de compte..."
+      },
     ];
  
    return (
