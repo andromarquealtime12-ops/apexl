@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useSellerOrders } from "@/hooks/useSellerStats";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,7 +12,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { OrderReadyButton } from "./OrderReadyButton";
-import { Package, Clock, CheckCircle, Truck, XCircle } from "lucide-react";
+import OrderChat from "@/components/chat/OrderChat";
+import { Package, Clock, CheckCircle, Truck, XCircle, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -28,6 +31,7 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
 
 export default function SellerOrdersTable() {
   const { data: orders, isLoading } = useSellerOrders();
+  const [chatOrderId, setChatOrderId] = useState<string | null>(null);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-DO", {
@@ -75,45 +79,72 @@ export default function SellerOrdersTable() {
             const status = statusConfig[order.status || "pending"];
             const StatusIcon = status.icon;
             const orderTotal = order.items.reduce((sum: number, item: any) => sum + Number(item.total_price), 0);
+            const isActive = !["delivered", "cancelled"].includes(order.status || "");
 
             return (
-              <TableRow key={order.id}>
-                <TableCell className="font-mono text-sm">
-                  #{order.id.slice(0, 8)}
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-1">
-                    {order.items.slice(0, 2).map((item: any, idx: number) => (
-                      <p key={idx} className="text-sm">
-                        {item.quantity}x {item.products?.name || "Produit"}
-                      </p>
-                    ))}
-                    {order.items.length > 2 && (
-                      <p className="text-xs text-muted-foreground">
-                        +{order.items.length - 2} autre(s)
-                      </p>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">
-                  {formatCurrency(orderTotal)}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={status.variant} className="gap-1">
-                    <StatusIcon className="h-3 w-3" />
-                    {status.label}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
-                  {formatDistanceToNow(new Date(order.created_at), { 
-                    addSuffix: true, 
-                    locale: fr 
-                  })}
-                </TableCell>
-                <TableCell className="text-right">
-                  <OrderReadyButton orderId={order.id} currentStatus={order.status || "pending"} />
-                </TableCell>
-              </TableRow>
+              <>
+                <TableRow key={order.id}>
+                  <TableCell className="font-mono text-sm">
+                    #{order.id.slice(0, 8)}
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      {order.items.slice(0, 2).map((item: any, idx: number) => (
+                        <p key={idx} className="text-sm">
+                          {item.quantity}x {item.products?.name || "Produit"}
+                        </p>
+                      ))}
+                      {order.items.length > 2 && (
+                        <p className="text-xs text-muted-foreground">
+                          +{order.items.length - 2} autre(s)
+                        </p>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {formatCurrency(orderTotal)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={status.variant} className="gap-1">
+                      <StatusIcon className="h-3 w-3" />
+                      {status.label}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-sm">
+                    {formatDistanceToNow(new Date(order.created_at), { 
+                      addSuffix: true, 
+                      locale: fr 
+                    })}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      {isActive && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="gap-1"
+                          onClick={() => setChatOrderId(chatOrderId === order.id ? null : order.id)}
+                        >
+                          <MessageCircle className="h-3.5 w-3.5" />
+                          {chatOrderId === order.id ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                        </Button>
+                      )}
+                      <OrderReadyButton orderId={order.id} currentStatus={order.status || "pending"} />
+                    </div>
+                  </TableCell>
+                </TableRow>
+                {chatOrderId === order.id && (
+                  <TableRow key={`${order.id}-chat`}>
+                    <TableCell colSpan={6} className="p-3 bg-muted/30">
+                      <OrderChat
+                        orderId={order.id}
+                        otherUserName="Acheteur / Livreur"
+                        compact
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </>
             );
           })}
         </TableBody>

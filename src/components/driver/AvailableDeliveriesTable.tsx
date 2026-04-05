@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Clock, Check, Navigation, Loader2 } from "lucide-react";
+import { MapPin, Package, Clock, Check, Navigation, Loader2, Map } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import DeliveryMapPreview from "./DeliveryMapPreview";
 
 interface EnrichedDelivery {
   id: string;
@@ -31,7 +32,7 @@ export default function AvailableDeliveriesTable() {
   const acceptDelivery = useAcceptDelivery();
   const { position, getCurrentPosition } = useCurrentPosition();
   const [enriched, setEnriched] = useState<EnrichedDelivery[]>([]);
-
+  const [mapOrderId, setMapOrderId] = useState<string | null>(null);
   useEffect(() => {
     getCurrentPosition();
   }, []);
@@ -155,11 +156,20 @@ export default function AvailableDeliveriesTable() {
                 )}
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">Commission</p>
                   <p className="text-xl font-bold text-green-600">{formatCurrency(delivery.delivery_fee || 0)}</p>
                 </div>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setMapOrderId(mapOrderId === delivery.id ? null : delivery.id)}
+                  title="Voir sur la carte"
+                >
+                  <Map className="h-4 w-4" />
+                </Button>
                 
                 <Button
                   onClick={() => handleAccept(delivery.id)}
@@ -171,6 +181,20 @@ export default function AvailableDeliveriesTable() {
                 </Button>
               </div>
             </div>
+
+            {/* Map Preview */}
+            {mapOrderId === delivery.id && (
+              <div className="mt-3">
+                <DeliveryMapPreview
+                  orderId={delivery.id}
+                  buyerLat={delivery.buyer_latitude}
+                  buyerLng={delivery.buyer_longitude}
+                  driverLat={position?.latitude}
+                  driverLng={position?.longitude}
+                  onClose={() => setMapOrderId(null)}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}

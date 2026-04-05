@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare, RotateCcw, Star } from "lucide-react";
+import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare, RotateCcw, Star, MessageCircle } from "lucide-react";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
 import ReturnRequestButton from "@/components/returns/ReturnRequestButton";
 import OrderRatingDialog from "@/components/reviews/OrderRatingDialog";
 import UserRatingBadge from "@/components/reviews/UserRatingBadge";
 import { WhatsAppContact } from "@/components/contact/WhatsAppContact";
+import OrderChat from "@/components/chat/OrderChat";
 import { Link } from "react-router-dom";
 import { fr } from "date-fns/locale";
 import { CURRENCY_SYMBOLS } from "@/types/database";
@@ -59,7 +60,7 @@ export default function BuyerOrdersTracker() {
   const [refundOrderId, setRefundOrderId] = useState<string | null>(null);
   const [refundReason, setRefundReason] = useState("");
   const [ratingOrder, setRatingOrder] = useState<{ orderId: string; userId: string; type: "buyer_to_seller" | "buyer_to_driver" } | null>(null);
-
+  const [chatOrderId, setChatOrderId] = useState<string | null>(null);
   const refundMutation = useMutation({
     mutationFn: async ({ orderId, reason }: { orderId: string; reason: string }) => {
       const { data, error } = await supabase.rpc("request_refund", { p_order_id: orderId, p_reason: reason });
@@ -272,6 +273,28 @@ export default function BuyerOrdersTracker() {
                   )}
                 </div>
               </div>
+
+              {/* Chat button */}
+              {["confirmed", "preparing", "ready", "ready_for_pickup", "picked_up", "in_transit"].includes(order.status || "") && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2"
+                  onClick={() => setChatOrderId(chatOrderId === order.id ? null : order.id)}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  {chatOrderId === order.id ? "Fermer le chat" : "Discuter (vendeur / livreur)"}
+                </Button>
+              )}
+
+              {/* Chat */}
+              {chatOrderId === order.id && (
+                <OrderChat
+                  orderId={order.id}
+                  otherUserName="Vendeur / Livreur"
+                  compact
+                />
+              )}
 
               {/* Refund form */}
               {refundOrderId === order.id && (
