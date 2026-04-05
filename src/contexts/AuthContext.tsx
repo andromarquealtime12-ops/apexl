@@ -37,6 +37,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const syncEmailVerified = async (userId: string, emailConfirmedAt: string | null) => {
+    if (emailConfirmedAt) {
+      await supabase
+        .from("profiles")
+        .update({ email_verified: true, verification_code: null, verification_code_expires_at: null })
+        .eq("user_id", userId)
+        .eq("email_verified", false);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -47,6 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (session?.user) {
           // Use setTimeout to avoid potential race conditions
           setTimeout(() => fetchUserRoles(session.user.id), 0);
+          // Sync email verification status from auth to profile
+          if (session.user.email_confirmed_at) {
+            setTimeout(() => syncEmailVerified(session.user.id, session.user.email_confirmed_at ?? null), 100);
+          }
         } else {
           setRoles([]);
         }
@@ -61,6 +75,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchUserRoles(session.user.id);
+        if (session.user.email_confirmed_at) {
+          syncEmailVerified(session.user.id, session.user.email_confirmed_at ?? null);
+        }
       }
       setLoading(false);
     });
