@@ -274,6 +274,28 @@ export default function BuyerOrdersTracker() {
                 </div>
               </div>
 
+              {/* Chat button */}
+              {["confirmed", "preparing", "ready", "ready_for_pickup", "picked_up", "in_transit"].includes(order.status || "") && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2"
+                  onClick={() => setChatOrderId(chatOrderId === order.id ? null : order.id)}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  {chatOrderId === order.id ? "Fermer le chat" : "Discuter (vendeur / livreur)"}
+                </Button>
+              )}
+
+              {/* Chat */}
+              {chatOrderId === order.id && (
+                <OrderChat
+                  orderId={order.id}
+                  otherUserName="Vendeur / Livreur"
+                  compact
+                />
+              )}
+
               {/* Refund form */}
               {refundOrderId === order.id && (
                 <div className="bg-muted/50 rounded-lg p-3 space-y-2">
