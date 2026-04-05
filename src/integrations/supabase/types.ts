@@ -1659,6 +1659,7 @@ export type Database = {
       }
       driver_accept_order: { Args: { p_order_id: string }; Returns: Json }
       driver_accept_return: { Args: { p_return_id: string }; Returns: Json }
+      find_user_id_by_email: { Args: { p_email: string }; Returns: string }
       freeze_wallet: {
         Args: { p_reason: string; p_user_id: string }
         Returns: Json

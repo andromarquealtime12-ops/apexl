@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   ShoppingBag, User, Menu, Wallet, 
   LogOut, ChevronDown, Settings, Package, Search,
-  Store, Truck, UtensilsCrossed
+  Store, Truck, UtensilsCrossed, Building2
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/sheet";
 
 const Header = () => {
-  const { user, isAdmin, isSeller, isDriver, signOut, loading } = useAuth();
+  const { user, isAdmin, isSeller, isDriver, isAgent, signOut, loading } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"signin" | "signup">("signin");
 
@@ -115,6 +115,7 @@ const Header = () => {
                     {isAdmin && <Badge className="ml-2 text-xs">Admin</Badge>}
                     {isSeller && <Badge variant="secondary" className="ml-2 text-xs">Vendeur</Badge>}
                     {isDriver && <Badge variant="outline" className="ml-2 text-xs">Livreur</Badge>}
+                    {isAgent && <Badge variant="outline" className="ml-2 text-xs">Agent</Badge>}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
@@ -154,6 +155,14 @@ const Header = () => {
                       <Link to="/driver" className="cursor-pointer text-primary">
                         <Truck className="mr-2 h-4 w-4" />
                         Dashboard livreur
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {isAgent && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/agent" className="cursor-pointer text-primary">
+                        <Building2 className="mr-2 h-4 w-4" />
+                        Dashboard agent
                       </Link>
                     </DropdownMenuItem>
                   )}
@@ -206,6 +215,11 @@ const Header = () => {
                   </Link>
                   <Link to="/seller" className="text-lg font-medium py-2 border-b">Vendre</Link>
                   <Link to="/driver" className="text-lg font-medium py-2 border-b">Livrer</Link>
+                  {isAgent && (
+                    <Link to="/agent" className="text-lg font-medium py-2 border-b flex items-center gap-2 text-primary">
+                      <Building2 className="h-4 w-4" /> Agent
+                    </Link>
+                  )}
                   {!user && (
                     <div className="flex flex-col gap-2 pt-4">
                       <Button onClick={openSignIn}>Connexion</Button>

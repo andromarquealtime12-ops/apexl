@@ -41,7 +41,7 @@ function useAgentDeposits() {
   });
 }
 
-const emptyAgent = { name: "", address: "", city: "", phone: "", whatsapp: "", commission_percent: "0", notes: "" };
+const emptyAgent = { name: "", address: "", city: "", phone: "", whatsapp: "", commission_percent: "0", notes: "", agent_user_email: "" };
 
 export default function AdminAgentsManager() {
   const { toast } = useToast();
@@ -53,6 +53,18 @@ export default function AdminAgentsManager() {
 
   const createAgent = useMutation({
     mutationFn: async () => {
+      let agentUserId: string | null = null;
+      if (form.agent_user_email.trim()) {
+        const { data } = await supabase.rpc("find_user_id_by_email" as any, {
+          p_email: form.agent_user_email.trim(),
+        });
+        if (data) {
+          agentUserId = data as string;
+        } else {
+          throw new Error("Aucun utilisateur trouvé avec cet email");
+        }
+      }
+
       const { error } = await supabase.from("deposit_agents").insert({
         name: form.name,
         address: form.address,
@@ -62,6 +74,7 @@ export default function AdminAgentsManager() {
         commission_percent: parseFloat(form.commission_percent) || 0,
         notes: form.notes || null,
         is_verified: true,
+        agent_user_id: agentUserId,
       });
       if (error) throw error;
     },
@@ -175,6 +188,11 @@ export default function AdminAgentsManager() {
                 <div>
                   <Label>Commission (%)</Label>
                   <Input type="number" value={form.commission_percent} onChange={e => setForm(f => ({ ...f, commission_percent: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Email du compte agent (pour lier un utilisateur)</Label>
+                  <Input type="email" placeholder="agent@email.com" value={form.agent_user_email} onChange={e => setForm(f => ({ ...f, agent_user_email: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground mt-1">L'utilisateur lié pourra accéder au dashboard agent (/agent). Le rôle "agent" lui sera nécessaire.</p>
                 </div>
                 <div>
                   <Label>Notes</Label>
