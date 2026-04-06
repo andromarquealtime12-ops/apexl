@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
-import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
 import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, Mail, Loader2, Navigation, Store } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -44,9 +43,6 @@ const Checkout = () => {
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
-  const [showStripePayment, setShowStripePayment] = useState(false);
-  const [showPayPalPayment, setShowPayPalPayment] = useState(false);
-  const [topUpAmount, setTopUpAmount] = useState(0);
   
   // Buyer GPS
   const [buyerLat, setBuyerLat] = useState<number | null>(null);
@@ -138,7 +134,12 @@ const Checkout = () => {
   const isEmailVerified = profile?.email_verified ?? false;
 
   const subtotal = getSubtotal();
-  const deliveryFee = getDeliveryFee(distanceKm);
+  // Calculate total delivery fee from all shops
+  const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
+  const deliveryFee = sellerIds.reduce((total, sid) => {
+    const shopInfo = shopDistances[sid];
+    return total + (shopInfo ? shopInfo.fee : Math.round(50 + 25 * 5));
+  }, 0);
   const total = subtotal + deliveryFee;
 
   const balanceField = currency === "DOP" ? "balance_dop" : currency === "HTG" ? "balance_htg" : "balance_usd";
