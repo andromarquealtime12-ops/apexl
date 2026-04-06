@@ -16,6 +16,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [added, setAdded] = useState(false);
   const currencySymbol = CURRENCY_SYMBOLS[product.currency];
   const mainImage = product.images?.[0] || "/placeholder.svg";
+  const hasVariants = Boolean(product.available_colors?.length || product.available_sizes?.length);
 
   const isInCart = items.some((item) => item.product.id === product.id);
 
@@ -70,30 +71,36 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Button
-          className="w-full"
-          size="sm"
-          disabled={product.stock_quantity === 0}
-          variant={added || isInCart ? "secondary" : "default"}
-          onClick={handleAddToCart}>
-          
-          {added ?
-          <>
-              <Check className="h-4 w-4 mr-2" />
-              Ajouté !
-            </> :
-          isInCart ?
-          <>
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Dans le panier
-            </> :
+        {hasVariants ? (
+          <Button className="w-full" size="sm" asChild>
+            <Link to={`/product/${product.id}`}>Choisir couleur / taille</Link>
+          </Button>
+        ) : (
+          <Button
+            className="w-full"
+            size="sm"
+            disabled={product.stock_quantity === 0}
+            variant={added || isInCart ? "secondary" : "default"}
+            onClick={handleAddToCart}>
+            
+            {added ?
+            <>
+                <Check className="h-4 w-4 mr-2" />
+                Ajouté !
+              </> :
+            isInCart ?
+            <>
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Dans le panier
+              </> :
 
-          <>
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Ajouter au panier
-            </>
-          }
-        </Button>
+            <>
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Ajouter au panier
+              </>
+            }
+          </Button>
+        )}
       </CardFooter>
     </Card>);
 

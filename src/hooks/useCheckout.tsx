@@ -34,6 +34,8 @@ export function useCheckout() {
         quantity: item.quantity,
         unit_price: item.product.price,
         total_price: item.product.price * item.quantity,
+        selected_color: item.selectedColor,
+        selected_size: item.selectedSize,
       }));
 
       const { data, error } = await supabase.rpc("process_checkout" as any, {

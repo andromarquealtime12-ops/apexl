@@ -103,6 +103,8 @@ export function useSellerOrders() {
           quantity,
           unit_price,
           total_price,
+            selected_color,
+            selected_size,
           product_id,
           order_id,
           products(name, images)

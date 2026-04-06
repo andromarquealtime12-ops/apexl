@@ -620,6 +620,8 @@ export type Database = {
           order_id: string
           product_id: string | null
           quantity: number
+          selected_color: string | null
+          selected_size: string | null
           seller_id: string | null
           total_price: number
           unit_price: number
@@ -630,6 +632,8 @@ export type Database = {
           order_id: string
           product_id?: string | null
           quantity?: number
+          selected_color?: string | null
+          selected_size?: string | null
           seller_id?: string | null
           total_price: number
           unit_price: number
@@ -640,6 +644,8 @@ export type Database = {
           order_id?: string
           product_id?: string | null
           quantity?: number
+          selected_color?: string | null
+          selected_size?: string | null
           seller_id?: string | null
           total_price?: number
           unit_price?: number
@@ -824,6 +830,8 @@ export type Database = {
       }
       products: {
         Row: {
+          available_colors: string[]
+          available_sizes: string[]
           category_id: string | null
           created_at: string
           currency: string | null
@@ -835,10 +843,13 @@ export type Database = {
           name: string
           price: number
           seller_id: string
+          size_type: string
           stock_quantity: number | null
           updated_at: string
         }
         Insert: {
+          available_colors?: string[]
+          available_sizes?: string[]
           category_id?: string | null
           created_at?: string
           currency?: string | null
@@ -850,10 +861,13 @@ export type Database = {
           name: string
           price: number
           seller_id: string
+          size_type?: string
           stock_quantity?: number | null
           updated_at?: string
         }
         Update: {
+          available_colors?: string[]
+          available_sizes?: string[]
           category_id?: string | null
           created_at?: string
           currency?: string | null
@@ -865,6 +879,7 @@ export type Database = {
           name?: string
           price?: number
           seller_id?: string
+          size_type?: string
           stock_quantity?: number | null
           updated_at?: string
         }

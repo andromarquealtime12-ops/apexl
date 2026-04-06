@@ -51,6 +51,8 @@ interface OrderWithItems {
     id: string;
     quantity: number;
     unit_price: number;
+    selected_color?: string | null;
+    selected_size?: string | null;
     products: {
       name: string;
       images: string[];
@@ -108,6 +110,8 @@ export default function BuyerOrdersTracker() {
           quantity,
           unit_price,
           seller_id,
+          selected_color,
+          selected_size,
           products(name, images)
         `)
         .in("order_id", orderIds);
@@ -231,6 +235,20 @@ export default function BuyerOrdersTracker() {
                   <div className="w-12 h-12 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
                     +{order.items.length - 4}
                   </div>
+                )}
+              </div>
+
+              <div className="space-y-1 text-sm">
+                {order.items.slice(0, 3).map((item) => (
+                  <p key={item.id}>
+                    {item.quantity}x {item.products?.name || "Produit"}
+                    {(item.selected_color || item.selected_size) && (
+                      <span className="text-muted-foreground">{" "}• {[item.selected_color, item.selected_size].filter(Boolean).join(" / ")}</span>
+                    )}
+                  </p>
+                ))}
+                {order.items.length > 3 && (
+                  <p className="text-xs text-muted-foreground">+{order.items.length - 3} autre(s) article(s)</p>
                 )}
               </div>
 

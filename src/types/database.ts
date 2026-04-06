@@ -59,6 +59,9 @@ export interface Product {
   description: string | null;
   price: number;
   currency: Currency;
+  available_colors: string[];
+  available_sizes: string[];
+  size_type: string;
   stock_quantity: number;
   images: string[];
   is_active: boolean;

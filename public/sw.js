@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ayiti-marche-v2';
+const CACHE_NAME = 'ayiti-marche-v3';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',

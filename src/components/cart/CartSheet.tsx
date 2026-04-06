@@ -59,7 +59,7 @@ export function CartSheet() {
           <>
             <div className="flex-1 overflow-y-auto py-4">
               {items.map((item) => (
-                <CartItemComponent key={item.product.id} item={item} />
+                  <CartItemComponent key={item.id} item={item} />
               ))}
             </div>
 
