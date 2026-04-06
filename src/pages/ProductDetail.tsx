@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShoppingCart, Store, ArrowLeft, Plus, Minus, Check } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,6 +21,8 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
 
   // Get seller info
   const { data: seller } = useQuery({
@@ -73,11 +75,20 @@ export default function ProductDetail() {
 
   const isInCart = items.some((item) => item.product.id === product?.id);
 
+  const colorOptions = product?.available_colors?.filter(Boolean) || [];
+  const sizeOptions = product?.available_sizes?.filter(Boolean) || [];
+  const requiresColor = colorOptions.length > 0;
+  const requiresSize = sizeOptions.length > 0;
+  const canAddToCart = (!requiresColor || !!selectedColor) && (!requiresSize || !!selectedSize);
+
+  useEffect(() => {
+    setSelectedColor(colorOptions[0] || "");
+    setSelectedSize(sizeOptions[0] || "");
+  }, [product?.id]);
+
   const handleAddToCart = () => {
-    if (!product) return;
-    for (let i = 0; i < quantity; i++) {
-      addItem(product);
-    }
+    if (!product || !canAddToCart) return;
+    addItem(product, quantity, { selectedColor, selectedSize });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
@@ -163,6 +174,48 @@ export default function ProductDetail() {
               )}
             </div>
 
+            {(requiresColor || requiresSize) && (
+              <div className="space-y-4">
+                {requiresColor && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Couleur</p>
+                    <div className="flex flex-wrap gap-2">
+                      {colorOptions.map((color) => (
+                        <Button
+                          key={color}
+                          type="button"
+                          variant={selectedColor === color ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSelectedColor(color)}
+                        >
+                          {color}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {requiresSize && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">{product.size_type === "shoe" ? "Pointure" : "Taille"}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {sizeOptions.map((size) => (
+                        <Button
+                          key={size}
+                          type="button"
+                          variant={selectedSize === size ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSelectedSize(size)}
+                        >
+                          {size}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Quantity + Add to cart */}
             <div className="flex items-center gap-4">
               <div className="flex items-center border rounded-lg">
@@ -170,7 +223,7 @@ export default function ProductDetail() {
                 <span className="w-10 text-center font-medium">{quantity}</span>
                 <Button variant="ghost" size="icon" onClick={() => setQuantity(quantity + 1)}><Plus className="h-4 w-4" /></Button>
               </div>
-              <Button className="flex-1" size="lg" disabled={product.stock_quantity === 0} onClick={handleAddToCart}>
+              <Button className="flex-1" size="lg" disabled={product.stock_quantity === 0 || !canAddToCart} onClick={handleAddToCart}>
                 {added ? <><Check className="h-5 w-5 mr-2" />Ajouté !</> : <><ShoppingCart className="h-5 w-5 mr-2" />Ajouter au panier</>}
               </Button>
             </div>
