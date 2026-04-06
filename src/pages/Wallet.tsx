@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { Navigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { Navigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";

@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.identity-verify]
 verify_jwt = false
+
+[functions.stripe-wallet-topup]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
