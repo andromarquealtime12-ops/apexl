@@ -283,10 +283,15 @@ const Checkout = () => {
                         <span className="ml-1">{buyerLat ? "Actualiser" : "Ma position"}</span>
                       </Button>
                     </div>
-                    {distanceKm !== undefined && (
-                      <p className="text-xs text-primary mt-2">
-                        📏 Distance estimée: {distanceKm.toFixed(1)} km → Frais: RD$ {deliveryFee.toLocaleString()}
-                      </p>
+                    {Object.keys(shopDistances).length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {Object.entries(shopDistances).map(([sid, info]) => (
+                          <p key={sid} className="text-xs text-primary flex items-center gap-1">
+                            <Store className="h-3 w-3" />
+                            {info.shopName}: {info.distance.toFixed(1)} km → Livraison: RD$ {info.fee.toLocaleString()}
+                          </p>
+                        ))}
+                      </div>
                     )}
                   </div>
 
@@ -387,34 +392,13 @@ const Checkout = () => {
                   </div>
 
                   {!hasEnoughBalance && (
-                    <div className="space-y-3">
-                      <p className="text-destructive text-sm flex items-center gap-1">
-                        <AlertCircle className="h-4 w-4" />
-                        Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants)
-                      </p>
-                      <div className="border rounded-lg p-4 bg-muted/20">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="bg-primary/10 p-2 rounded-full">
-                            <CreditCard className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-medium">Payer par carte / PayPal</p>
-                            <p className="text-xs text-muted-foreground">Paiement sécurisé via PayPal</p>
-                          </div>
-                        </div>
-                        <Button
-                          type="button"
-                          className="w-full gap-2 bg-[#0070ba] hover:bg-[#005ea6] text-white"
-                          onClick={() => {
-                            setTopUpAmount(total - currentBalance);
-                            setShowPayPalPayment(true);
-                          }}
-                        >
-                          <CreditCard className="h-4 w-4" />
-                          Payer {CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} avec PayPal
-                        </Button>
-                      </div>
-                    </div>
+                    <p className="text-destructive text-sm flex items-center gap-1">
+                      <AlertCircle className="h-4 w-4" />
+                      Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants).
+                      <Button type="button" variant="link" className="h-auto p-0 pl-1" onClick={() => navigate("/wallet")}>
+                        Recharger le portefeuille
+                      </Button>
+                    </p>
                   )}
                 </CardContent>
               </Card>
