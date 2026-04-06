@@ -164,11 +164,33 @@ export default function AvailableDeliveriesTable() {
                   )}
                 </div>
                 
-                <div className="flex items-start gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                {/* Pickup location (seller) */}
+                {delivery.seller && (
+                  <div className="flex items-start gap-2 bg-orange-50 dark:bg-orange-950/20 rounded-lg p-2">
+                    <Store className="h-4 w-4 text-orange-500 mt-0.5" />
+                    <div>
+                      <p className="text-xs font-semibold text-orange-600">📦 Récupérer chez</p>
+                      <p className="font-medium text-sm">{delivery.seller.shop_name}</p>
+                      <p className="text-xs text-muted-foreground">{delivery.seller.shop_address}, {delivery.seller.shop_city}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Arrow between locations */}
+                {delivery.seller && (
+                  <div className="flex items-center gap-1 pl-2 text-muted-foreground">
+                    <ArrowRight className="h-3 w-3" />
+                    <span className="text-xs">puis livrer à</span>
+                  </div>
+                )}
+
+                {/* Delivery location (buyer) */}
+                <div className="flex items-start gap-2 bg-green-50 dark:bg-green-950/20 rounded-lg p-2">
+                  <MapPin className="h-4 w-4 text-green-600 mt-0.5" />
                   <div>
-                    <p className="font-medium">{delivery.delivery_city || "Ville non spécifiée"}</p>
-                    <p className="text-sm text-muted-foreground">{delivery.delivery_address || "Adresse à confirmer"}</p>
+                    <p className="text-xs font-semibold text-green-600">🏠 Livrer à</p>
+                    <p className="font-medium text-sm">{delivery.delivery_city || "Ville non spécifiée"}</p>
+                    <p className="text-xs text-muted-foreground">{delivery.delivery_address || "Adresse à confirmer"}</p>
                   </div>
                 </div>
 
