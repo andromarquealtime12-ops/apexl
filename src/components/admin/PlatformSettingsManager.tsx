@@ -63,6 +63,13 @@
         icon: Gift,
         suffix: "%"
       },
+      {
+        key: "conversion_commission_percent",
+        label: "Commission conversion",
+        description: "Pourcentage prélevé automatiquement lors des conversions de devises",
+        icon: Percent,
+        suffix: "%"
+      },
     ];
 
     const textSettingsConfig = [
