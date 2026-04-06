@@ -20,10 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
-import { PayPalPayment } from "@/components/checkout/PayPalPayment";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
-import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, CreditCard, Mail, Loader2, Navigation } from "lucide-react";
+import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
+import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, Mail, Loader2, Navigation, Store } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,7 +52,7 @@ const Checkout = () => {
   const [buyerLat, setBuyerLat] = useState<number | null>(null);
   const [buyerLng, setBuyerLng] = useState<number | null>(null);
   const [gettingLocation, setGettingLocation] = useState(false);
-  const [distanceKm, setDistanceKm] = useState<number | undefined>(undefined);
+  const [shopDistances, setShopDistances] = useState<Record<string, { distance: number; shopName: string; fee: number }>>({});
 
   // Get current position
   const handleGetLocation = useCallback(() => {
@@ -74,25 +73,32 @@ const Checkout = () => {
     );
   }, []);
 
-  // Calculate distance when buyer location + seller location available
+  // Calculate distance per shop when buyer location available
   useEffect(() => {
     if (!buyerLat || !buyerLng || items.length === 0) return;
     
-    const fetchSellerLocation = async () => {
+    const fetchSellerLocations = async () => {
       const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
       const { data } = await supabase
         .from("seller_applications")
-        .select("latitude, longitude")
+        .select("user_id, latitude, longitude, shop_name")
         .in("user_id", sellerIds)
         .eq("status", "approved")
         .not("latitude", "is", null);
       
-      if (data && data.length > 0 && data[0].latitude && data[0].longitude) {
-        const dist = calculateDistance(buyerLat, buyerLng, data[0].latitude, data[0].longitude);
-        setDistanceKm(dist);
+      if (data) {
+        const distances: Record<string, { distance: number; shopName: string; fee: number }> = {};
+        data.forEach(seller => {
+          if (seller.latitude && seller.longitude) {
+            const dist = calculateDistance(buyerLat, buyerLng, seller.latitude, seller.longitude);
+            const fee = Math.round(50 + 25 * dist);
+            distances[seller.user_id] = { distance: dist, shopName: seller.shop_name, fee };
+          }
+        });
+        setShopDistances(distances);
       }
     };
-    fetchSellerLocation();
+    fetchSellerLocations();
   }, [buyerLat, buyerLng, items]);
 
   // Handle PayPal return
