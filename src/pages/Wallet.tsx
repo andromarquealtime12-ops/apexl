@@ -54,6 +54,7 @@ const paymentMethodIcons: Record<string, React.ComponentType<{ className?: strin
 const Wallet = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: transactions, isLoading: transactionsLoading } = useWalletTransactions();
   const { data: depositMethodsData } = useDepositMethods();
@@ -72,13 +73,58 @@ const Wallet = () => {
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [proofPreview, setProofPreview] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [stripeLoading, setStripeLoading] = useState(false);
 
+  // Stripe card payment state
+  const [cardDepositOpen, setCardDepositOpen] = useState(false);
+  const [cardAmount, setCardAmount] = useState("");
+  const [cardCurrency, setCardCurrency] = useState<Currency>("USD");
 
   // Withdrawal state
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawCurrency, setWithdrawCurrency] = useState<Currency>("DOP");
   const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType>("banreservas");
   const [withdrawAccount, setWithdrawAccount] = useState("");
+
+  // Handle Stripe return
+  useEffect(() => {
+    if (searchParams.get("stripe_success") === "true") {
+      toast.success("Paiement réussi ! Votre portefeuille sera crédité dans quelques instants.");
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+      searchParams.delete("stripe_success");
+      setSearchParams(searchParams, { replace: true });
+    }
+    if (searchParams.get("stripe_cancel") === "true") {
+      toast.error("Paiement annulé");
+      searchParams.delete("stripe_cancel");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams]);
+
+  const handleStripePayment = async () => {
+    const amount = parseFloat(cardAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast.error("Montant invalide");
+      return;
+    }
+    setStripeLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("stripe-wallet-topup", {
+        body: { amount, currency: cardCurrency },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Erreur lors de la création du paiement");
+    } finally {
+      setStripeLoading(false);
+    }
+  };
 
 
   if (authLoading) {
