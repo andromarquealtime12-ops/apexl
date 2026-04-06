@@ -54,7 +54,7 @@ const paymentMethodIcons: Record<string, React.ComponentType<{ className?: strin
 const Wallet = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
-  const [searchParams, setSearchParams] = useSearchParams();
+  
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: transactions, isLoading: transactionsLoading } = useWalletTransactions();
   const { data: depositMethodsData } = useDepositMethods();
