@@ -12,6 +12,9 @@ interface ProductInput {
   is_active?: boolean;
   is_featured?: boolean;
   currency?: string;
+  available_colors?: string[];
+  available_sizes?: string[];
+  size_type?: string;
 }
 
 export function useCreateProduct() {

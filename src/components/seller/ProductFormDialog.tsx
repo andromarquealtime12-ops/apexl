@@ -48,7 +48,24 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
     stock_quantity: "",
     is_active: true,
     images: [] as string[],
+    available_colors: "",
+    available_sizes: "",
+    size_type: "standard",
   });
+
+  const parseList = (value: string) =>
+    value
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+
+  const sizeLabel = formData.size_type === "shoe" ? "Pointures disponibles" : "Tailles disponibles";
+  const sizePlaceholder =
+    formData.size_type === "shoe"
+      ? "Ex: 38, 39, 40, 41, 42"
+      : formData.size_type === "custom"
+        ? "Ex: Unique, 2 ans, 4 ans"
+        : "Ex: XS, S, M, L, XL, XXL";
 
   useEffect(() => {
     if (product) {
@@ -60,6 +77,9 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
         stock_quantity: product.stock_quantity?.toString() || "",
         is_active: product.is_active ?? true,
         images: product.images || [],
+          available_colors: product.available_colors?.join(", ") || "",
+          available_sizes: product.available_sizes?.join(", ") || "",
+          size_type: product.size_type || "standard",
       });
     } else {
       setFormData({
@@ -70,6 +90,9 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
         stock_quantity: "",
         is_active: true,
         images: [],
+          available_colors: "",
+          available_sizes: "",
+          size_type: "standard",
       });
     }
   }, [product, open]);
@@ -92,6 +115,9 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
         is_active: formData.is_active,
         images: formData.images,
         currency: "DOP",
+        available_colors: parseList(formData.available_colors),
+        available_sizes: parseList(formData.available_sizes),
+        size_type: formData.size_type,
       };
 
       if (product) {
@@ -187,6 +213,45 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="available_colors">Couleurs disponibles</Label>
+              <Input
+                id="available_colors"
+                value={formData.available_colors}
+                onChange={(e) => setFormData(prev => ({ ...prev, available_colors: e.target.value }))}
+                placeholder="Ex: Noir, Blanc, Rouge"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="size_type">Type de tailles</Label>
+              <Select
+                value={formData.size_type}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, size_type: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choisir un type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="standard">Vêtements</SelectItem>
+                  <SelectItem value="shoe">Chaussures / tennis</SelectItem>
+                  <SelectItem value="custom">Autres tailles</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="available_sizes">{sizeLabel}</Label>
+            <Input
+              id="available_sizes"
+              value={formData.available_sizes}
+              onChange={(e) => setFormData(prev => ({ ...prev, available_sizes: e.target.value }))}
+              placeholder={sizePlaceholder}
+            />
           </div>
 
           <div className="space-y-2">

@@ -13,6 +13,7 @@ export function CartItemComponent({ item }: CartItemProps) {
   const { product, quantity } = item;
   const currencySymbol = CURRENCY_SYMBOLS[product.currency];
   const mainImage = product.images?.[0] || "/placeholder.svg";
+  const variantLabel = [item.selectedColor, item.selectedSize].filter(Boolean).join(" • ");
 
   return (
     <div className="flex gap-3 py-3 border-b last:border-b-0">
@@ -23,6 +24,9 @@ export function CartItemComponent({ item }: CartItemProps) {
       />
       <div className="flex-1 min-w-0">
         <h4 className="font-medium text-sm line-clamp-2">{product.name}</h4>
+        {variantLabel && (
+          <p className="text-xs text-muted-foreground mt-1">{variantLabel}</p>
+        )}
         <p className="text-primary font-semibold text-sm mt-1">
           {currencySymbol} {product.price.toLocaleString()}
         </p>
@@ -31,7 +35,7 @@ export function CartItemComponent({ item }: CartItemProps) {
             variant="outline"
             size="icon"
             className="h-7 w-7"
-            onClick={() => updateQuantity(product.id, quantity - 1)}
+            onClick={() => updateQuantity(item.id, quantity - 1)}
           >
             <Minus className="h-3 w-3" />
           </Button>
@@ -40,7 +44,7 @@ export function CartItemComponent({ item }: CartItemProps) {
             variant="outline"
             size="icon"
             className="h-7 w-7"
-            onClick={() => updateQuantity(product.id, quantity + 1)}
+            onClick={() => updateQuantity(item.id, quantity + 1)}
             disabled={quantity >= product.stock_quantity}
           >
             <Plus className="h-3 w-3" />
@@ -49,7 +53,7 @@ export function CartItemComponent({ item }: CartItemProps) {
             variant="ghost"
             size="icon"
             className="h-7 w-7 ml-auto text-destructive hover:text-destructive"
-            onClick={() => removeItem(product.id)}
+            onClick={() => removeItem(item.id)}
           >
             <Trash2 className="h-4 w-4" />
           </Button>

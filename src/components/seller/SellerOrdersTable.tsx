@@ -100,6 +100,9 @@ export default function SellerOrdersTable() {
                       {order.items.slice(0, 2).map((item: any, idx: number) => (
                         <p key={idx} className="text-sm">
                           {item.quantity}x {item.products?.name || "Produit"}
+                          {(item.selected_color || item.selected_size) && (
+                            <span className="text-muted-foreground">{" "}• {[item.selected_color, item.selected_size].filter(Boolean).join(" / ")}</span>
+                          )}
                         </p>
                       ))}
                       {order.items.length > 2 && (
