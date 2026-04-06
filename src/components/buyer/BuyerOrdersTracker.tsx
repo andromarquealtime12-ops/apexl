@@ -269,13 +269,7 @@ export default function BuyerOrdersTracker() {
                       <Star className="h-3.5 w-3.5" /> Noter
                     </Button>
                   )}
-                  {/* Refund button for delivered orders within 15 days */}
-                  {order.status === "delivered" && differenceInDays(new Date(), new Date(order.created_at)) <= 15 && (
-                    <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setRefundOrderId(order.id)}>
-                      <RotateCcw className="h-3.5 w-3.5" />
-                      Remboursement
-                    </Button>
-                  )}
+                  {/* Refund is now only available after a return request - removed direct refund button */}
                 </div>
               </div>
 
@@ -301,26 +295,6 @@ export default function BuyerOrdersTracker() {
                 />
               )}
 
-              {/* Refund form */}
-              {refundOrderId === order.id && (
-                <div className="bg-muted/50 rounded-lg p-3 space-y-2">
-                  <Textarea
-                    placeholder="Raison du remboursement..."
-                    value={refundReason}
-                    onChange={(e) => setRefundReason(e.target.value)}
-                    rows={2}
-                  />
-                  <div className="flex gap-2">
-                    <Button size="sm" disabled={!refundReason.trim() || refundMutation.isPending}
-                      onClick={() => refundMutation.mutate({ orderId: order.id, reason: refundReason })}>
-                      {refundMutation.isPending ? "Envoi..." : "Envoyer"}
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => { setRefundOrderId(null); setRefundReason(""); }}>
-                      Annuler
-                    </Button>
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
         );

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -20,10 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DemoStripePayment } from "@/components/checkout/DemoStripePayment";
-import { PayPalPayment } from "@/components/checkout/PayPalPayment";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
-import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, CreditCard, Mail, Loader2, Navigation } from "lucide-react";
+import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, Mail, Loader2, Navigation, Store } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,7 +30,6 @@ import { ALL_CITIES } from "@/utils/cities";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { items, getSubtotal, getDeliveryFee, getTotal } = useCart();
@@ -45,15 +42,12 @@ const Checkout = () => {
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
-  const [showStripePayment, setShowStripePayment] = useState(false);
-  const [showPayPalPayment, setShowPayPalPayment] = useState(false);
-  const [topUpAmount, setTopUpAmount] = useState(0);
   
   // Buyer GPS
   const [buyerLat, setBuyerLat] = useState<number | null>(null);
   const [buyerLng, setBuyerLng] = useState<number | null>(null);
   const [gettingLocation, setGettingLocation] = useState(false);
-  const [distanceKm, setDistanceKm] = useState<number | undefined>(undefined);
+  const [shopDistances, setShopDistances] = useState<Record<string, { distance: number; shopName: string; fee: number }>>({});
 
   // Get current position
   const handleGetLocation = useCallback(() => {
@@ -74,65 +68,44 @@ const Checkout = () => {
     );
   }, []);
 
-  // Calculate distance when buyer location + seller location available
+  // Calculate distance per shop when buyer location available
   useEffect(() => {
     if (!buyerLat || !buyerLng || items.length === 0) return;
     
-    const fetchSellerLocation = async () => {
+    const fetchSellerLocations = async () => {
       const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
       const { data } = await supabase
         .from("seller_applications")
-        .select("latitude, longitude")
+        .select("user_id, latitude, longitude, shop_name")
         .in("user_id", sellerIds)
         .eq("status", "approved")
         .not("latitude", "is", null);
       
-      if (data && data.length > 0 && data[0].latitude && data[0].longitude) {
-        const dist = calculateDistance(buyerLat, buyerLng, data[0].latitude, data[0].longitude);
-        setDistanceKm(dist);
+      if (data) {
+        const distances: Record<string, { distance: number; shopName: string; fee: number }> = {};
+        data.forEach(seller => {
+          if (seller.latitude && seller.longitude) {
+            const dist = calculateDistance(buyerLat, buyerLng, seller.latitude, seller.longitude);
+            const fee = Math.round(50 + 25 * dist);
+            distances[seller.user_id] = { distance: dist, shopName: seller.shop_name, fee };
+          }
+        });
+        setShopDistances(distances);
       }
     };
-    fetchSellerLocation();
+    fetchSellerLocations();
   }, [buyerLat, buyerLng, items]);
 
-  // Handle PayPal return
-  useEffect(() => {
-    const paypalStatus = searchParams.get("paypal");
-    const paypalOrderId = sessionStorage.getItem("paypal_order_id");
-    const paypalCurrency = sessionStorage.getItem("paypal_currency") as Currency;
-    
-    if (paypalStatus === "success" && paypalOrderId && user) {
-      supabase.functions.invoke("paypal-payment", {
-        body: {
-          action: "capture_order",
-          order_id: paypalOrderId,
-          currency: paypalCurrency || "DOP",
-          user_id: user.id,
-        },
-      }).then(({ data, error }) => {
-        if (data?.success) {
-          toast({ title: "Paiement PayPal réussi !", description: "Votre portefeuille a été rechargé" });
-          queryClient.invalidateQueries({ queryKey: ["wallet"] });
-          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-        } else {
-          toast({ title: "Erreur PayPal", description: error?.message || "Erreur lors de la capture", variant: "destructive" });
-        }
-        sessionStorage.removeItem("paypal_order_id");
-        sessionStorage.removeItem("paypal_amount");
-        sessionStorage.removeItem("paypal_currency");
-        navigate("/checkout", { replace: true });
-      });
-    } else if (paypalStatus === "cancel") {
-      toast({ title: "Paiement annulé", description: "Le paiement PayPal a été annulé" });
-      sessionStorage.removeItem("paypal_order_id");
-      navigate("/checkout", { replace: true });
-    }
-  }, [searchParams, user]);
 
   const isEmailVerified = profile?.email_verified ?? false;
 
   const subtotal = getSubtotal();
-  const deliveryFee = getDeliveryFee(distanceKm);
+  // Calculate total delivery fee from all shops
+  const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
+  const deliveryFee = sellerIds.reduce((total, sid) => {
+    const shopInfo = shopDistances[sid];
+    return total + (shopInfo ? shopInfo.fee : Math.round(50 + 25 * 5));
+  }, 0);
   const total = subtotal + deliveryFee;
 
   const balanceField = currency === "DOP" ? "balance_dop" : currency === "HTG" ? "balance_htg" : "balance_usd";
@@ -276,10 +249,15 @@ const Checkout = () => {
                         <span className="ml-1">{buyerLat ? "Actualiser" : "Ma position"}</span>
                       </Button>
                     </div>
-                    {distanceKm !== undefined && (
-                      <p className="text-xs text-primary mt-2">
-                        📏 Distance estimée: {distanceKm.toFixed(1)} km → Frais: RD$ {deliveryFee.toLocaleString()}
-                      </p>
+                    {Object.keys(shopDistances).length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {Object.entries(shopDistances).map(([sid, info]) => (
+                          <p key={sid} className="text-xs text-primary flex items-center gap-1">
+                            <Store className="h-3 w-3" />
+                            {info.shopName}: {info.distance.toFixed(1)} km → Livraison: RD$ {info.fee.toLocaleString()}
+                          </p>
+                        ))}
+                      </div>
                     )}
                   </div>
 
@@ -380,34 +358,13 @@ const Checkout = () => {
                   </div>
 
                   {!hasEnoughBalance && (
-                    <div className="space-y-3">
-                      <p className="text-destructive text-sm flex items-center gap-1">
-                        <AlertCircle className="h-4 w-4" />
-                        Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants)
-                      </p>
-                      <div className="border rounded-lg p-4 bg-muted/20">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="bg-primary/10 p-2 rounded-full">
-                            <CreditCard className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-medium">Payer par carte / PayPal</p>
-                            <p className="text-xs text-muted-foreground">Paiement sécurisé via PayPal</p>
-                          </div>
-                        </div>
-                        <Button
-                          type="button"
-                          className="w-full gap-2 bg-[#0070ba] hover:bg-[#005ea6] text-white"
-                          onClick={() => {
-                            setTopUpAmount(total - currentBalance);
-                            setShowPayPalPayment(true);
-                          }}
-                        >
-                          <CreditCard className="h-4 w-4" />
-                          Payer {CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} avec PayPal
-                        </Button>
-                      </div>
-                    </div>
+                    <p className="text-destructive text-sm flex items-center gap-1">
+                      <AlertCircle className="h-4 w-4" />
+                      Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants).
+                      <Button type="button" variant="link" className="h-auto p-0 pl-1" onClick={() => navigate("/wallet")}>
+                        Recharger le portefeuille
+                      </Button>
+                    </p>
                   )}
                 </CardContent>
               </Card>
@@ -443,13 +400,25 @@ const Checkout = () => {
                       <span className="text-muted-foreground">Sous-total</span>
                       <span>{CURRENCY_SYMBOLS[currency]} {subtotal.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground flex items-center gap-1">
-                        <Truck className="h-3 w-3" />
-                        Livraison {distanceKm !== undefined ? `(${distanceKm.toFixed(1)} km)` : ""}
-                      </span>
-                      <span>{CURRENCY_SYMBOLS[currency]} {deliveryFee.toLocaleString()}</span>
-                    </div>
+                    {Object.entries(shopDistances).length > 0 ? (
+                      Object.entries(shopDistances).map(([sid, info]) => (
+                        <div key={sid} className="flex justify-between">
+                          <span className="text-muted-foreground flex items-center gap-1 text-xs">
+                            <Truck className="h-3 w-3" />
+                            {info.shopName} ({info.distance.toFixed(1)} km)
+                          </span>
+                          <span className="text-xs">{CURRENCY_SYMBOLS[currency]} {info.fee.toLocaleString()}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground flex items-center gap-1">
+                          <Truck className="h-3 w-3" />
+                          Livraison
+                        </span>
+                        <span>{CURRENCY_SYMBOLS[currency]} {deliveryFee.toLocaleString()}</span>
+                      </div>
+                    )}
                     <div className="border-t pt-2">
                       <div className="flex justify-between font-bold text-lg">
                         <span>Total</span>
@@ -472,31 +441,6 @@ const Checkout = () => {
           </div>
         </form>
 
-        {showStripePayment && (
-          <DemoStripePayment
-            isOpen={showStripePayment}
-            onClose={() => setShowStripePayment(false)}
-            amount={topUpAmount}
-            currency={currency}
-            onSuccess={() => {
-              setShowStripePayment(false);
-              queryClient.invalidateQueries({ queryKey: ["wallet"] });
-            }}
-          />
-        )}
-
-        {showPayPalPayment && (
-          <PayPalPayment
-            isOpen={showPayPalPayment}
-            onClose={() => setShowPayPalPayment(false)}
-            amount={topUpAmount}
-            currency={currency}
-            onSuccess={() => {
-              setShowPayPalPayment(false);
-              queryClient.invalidateQueries({ queryKey: ["wallet"] });
-            }}
-          />
-        )}
       </main>
       <Footer />
     </div>

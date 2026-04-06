@@ -6,12 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Clock, Check, Navigation, Loader2, Map } from "lucide-react";
+import { MapPin, Package, Clock, Check, Navigation, Loader2, Map, Store, ArrowRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import DeliveryMapPreview from "./DeliveryMapPreview";
+
+interface SellerInfo {
+  shop_name: string;
+  shop_address: string;
+  shop_city: string;
+  latitude: number | null;
+  longitude: number | null;
+}
 
 interface EnrichedDelivery {
   id: string;
@@ -25,6 +33,7 @@ interface EnrichedDelivery {
   total_amount: number;
   distance_km?: number;
   itemCount?: number;
+  seller?: SellerInfo;
 }
 
 export default function AvailableDeliveriesTable() {
@@ -46,25 +55,45 @@ export default function AvailableDeliveriesTable() {
 
     const enrich = async () => {
       const orderIds = deliveries.map(d => d.id);
+      
+      // Fetch item counts and seller IDs
       const { data: items } = await supabase
         .from("order_items")
-        .select("order_id")
+        .select("order_id, seller_id")
         .in("order_id", orderIds);
 
       const itemCounts: Record<string, number> = {};
+      const orderSellerIds: Record<string, string> = {};
       items?.forEach(item => {
         itemCounts[item.order_id] = (itemCounts[item.order_id] || 0) + 1;
+        if (item.seller_id) orderSellerIds[item.order_id] = item.seller_id;
       });
+
+      // Fetch seller locations
+      const uniqueSellerIds = [...new Set(Object.values(orderSellerIds))];
+      const sellerMap: Record<string, SellerInfo> = {};
+      if (uniqueSellerIds.length > 0) {
+        const { data: sellers } = await supabase
+          .from("seller_applications")
+          .select("user_id, shop_name, shop_address, shop_city, latitude, longitude")
+          .in("user_id", uniqueSellerIds)
+          .eq("status", "approved");
+        sellers?.forEach(s => {
+          sellerMap[s.user_id] = s;
+        });
+      }
 
       const result: EnrichedDelivery[] = deliveries.map(d => {
         let distance_km: number | undefined;
         if (position && d.buyer_latitude && d.buyer_longitude) {
           distance_km = calculateDistance(position.latitude, position.longitude, d.buyer_latitude, d.buyer_longitude);
         }
+        const sellerId = orderSellerIds[d.id];
         return {
           ...d,
           distance_km,
           itemCount: itemCounts[d.id] || 0,
+          seller: sellerId ? sellerMap[sellerId] : undefined,
         };
       });
 
@@ -135,11 +164,33 @@ export default function AvailableDeliveriesTable() {
                   )}
                 </div>
                 
-                <div className="flex items-start gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                {/* Pickup location (seller) */}
+                {delivery.seller && (
+                  <div className="flex items-start gap-2 bg-orange-50 dark:bg-orange-950/20 rounded-lg p-2">
+                    <Store className="h-4 w-4 text-orange-500 mt-0.5" />
+                    <div>
+                      <p className="text-xs font-semibold text-orange-600">📦 Récupérer chez</p>
+                      <p className="font-medium text-sm">{delivery.seller.shop_name}</p>
+                      <p className="text-xs text-muted-foreground">{delivery.seller.shop_address}, {delivery.seller.shop_city}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Arrow between locations */}
+                {delivery.seller && (
+                  <div className="flex items-center gap-1 pl-2 text-muted-foreground">
+                    <ArrowRight className="h-3 w-3" />
+                    <span className="text-xs">puis livrer à</span>
+                  </div>
+                )}
+
+                {/* Delivery location (buyer) */}
+                <div className="flex items-start gap-2 bg-green-50 dark:bg-green-950/20 rounded-lg p-2">
+                  <MapPin className="h-4 w-4 text-green-600 mt-0.5" />
                   <div>
-                    <p className="font-medium">{delivery.delivery_city || "Ville non spécifiée"}</p>
-                    <p className="text-sm text-muted-foreground">{delivery.delivery_address || "Adresse à confirmer"}</p>
+                    <p className="text-xs font-semibold text-green-600">🏠 Livrer à</p>
+                    <p className="font-medium text-sm">{delivery.delivery_city || "Ville non spécifiée"}</p>
+                    <p className="text-xs text-muted-foreground">{delivery.delivery_address || "Adresse à confirmer"}</p>
                   </div>
                 </div>
 
