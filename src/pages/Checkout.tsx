@@ -434,13 +434,25 @@ const Checkout = () => {
                       <span className="text-muted-foreground">Sous-total</span>
                       <span>{CURRENCY_SYMBOLS[currency]} {subtotal.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground flex items-center gap-1">
-                        <Truck className="h-3 w-3" />
-                        Livraison {distanceKm !== undefined ? `(${distanceKm.toFixed(1)} km)` : ""}
-                      </span>
-                      <span>{CURRENCY_SYMBOLS[currency]} {deliveryFee.toLocaleString()}</span>
-                    </div>
+                    {Object.entries(shopDistances).length > 0 ? (
+                      Object.entries(shopDistances).map(([sid, info]) => (
+                        <div key={sid} className="flex justify-between">
+                          <span className="text-muted-foreground flex items-center gap-1 text-xs">
+                            <Truck className="h-3 w-3" />
+                            {info.shopName} ({info.distance.toFixed(1)} km)
+                          </span>
+                          <span className="text-xs">{CURRENCY_SYMBOLS[currency]} {info.fee.toLocaleString()}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground flex items-center gap-1">
+                          <Truck className="h-3 w-3" />
+                          Livraison
+                        </span>
+                        <span>{CURRENCY_SYMBOLS[currency]} {deliveryFee.toLocaleString()}</span>
+                      </div>
+                    )}
                     <div className="border-t pt-2">
                       <div className="flex justify-between font-bold text-lg">
                         <span>Total</span>
@@ -463,31 +475,6 @@ const Checkout = () => {
           </div>
         </form>
 
-        {showStripePayment && (
-          <DemoStripePayment
-            isOpen={showStripePayment}
-            onClose={() => setShowStripePayment(false)}
-            amount={topUpAmount}
-            currency={currency}
-            onSuccess={() => {
-              setShowStripePayment(false);
-              queryClient.invalidateQueries({ queryKey: ["wallet"] });
-            }}
-          />
-        )}
-
-        {showPayPalPayment && (
-          <PayPalPayment
-            isOpen={showPayPalPayment}
-            onClose={() => setShowPayPalPayment(false)}
-            amount={topUpAmount}
-            currency={currency}
-            onSuccess={() => {
-              setShowPayPalPayment(false);
-              queryClient.invalidateQueries({ queryKey: ["wallet"] });
-            }}
-          />
-        )}
       </main>
       <Footer />
     </div>
