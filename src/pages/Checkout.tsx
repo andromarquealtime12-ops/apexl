@@ -30,7 +30,6 @@ import { ALL_CITIES } from "@/utils/cities";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { items, getSubtotal, getDeliveryFee, getTotal } = useCart();
