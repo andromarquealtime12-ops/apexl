@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { Navigate, useSearchParams } from "react-router-dom";
+import { useState, useRef } from "react";
+import { Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -54,7 +54,7 @@ const paymentMethodIcons: Record<string, React.ComponentType<{ className?: strin
 const Wallet = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
-  const [searchParams, setSearchParams] = useSearchParams();
+  
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: transactions, isLoading: transactionsLoading } = useWalletTransactions();
   const { data: depositMethodsData } = useDepositMethods();
@@ -73,58 +73,12 @@ const Wallet = () => {
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [proofPreview, setProofPreview] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [stripeLoading, setStripeLoading] = useState(false);
-
-  // Stripe card payment state
-  const [cardDepositOpen, setCardDepositOpen] = useState(false);
-  const [cardAmount, setCardAmount] = useState("");
-  const [cardCurrency, setCardCurrency] = useState<Currency>("USD");
 
   // Withdrawal state
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawCurrency, setWithdrawCurrency] = useState<Currency>("DOP");
   const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType>("banreservas");
   const [withdrawAccount, setWithdrawAccount] = useState("");
-
-  // Handle Stripe return
-  useEffect(() => {
-    if (searchParams.get("stripe_success") === "true") {
-      toast.success("Paiement réussi ! Votre portefeuille sera crédité dans quelques instants.");
-      queryClient.invalidateQueries({ queryKey: ["wallet"] });
-      queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-      searchParams.delete("stripe_success");
-      setSearchParams(searchParams, { replace: true });
-    }
-    if (searchParams.get("stripe_cancel") === "true") {
-      toast.error("Paiement annulé");
-      searchParams.delete("stripe_cancel");
-      setSearchParams(searchParams, { replace: true });
-    }
-  }, [searchParams]);
-
-  const handleStripePayment = async () => {
-    const amount = parseFloat(cardAmount);
-    if (isNaN(amount) || amount <= 0) {
-      toast.error("Montant invalide");
-      return;
-    }
-    setStripeLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("stripe-wallet-topup", {
-        body: { amount, currency: cardCurrency },
-      });
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error("No checkout URL returned");
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Erreur lors de la création du paiement");
-    } finally {
-      setStripeLoading(false);
-    }
-  };
 
 
   if (authLoading) {
@@ -300,79 +254,6 @@ const Wallet = () => {
         )}
 
         {/* Actions */}
-        <div className="flex gap-4 mb-4">
-          {/* Card Payment Button */}
-          <Dialog open={cardDepositOpen} onOpenChange={setCardDepositOpen}>
-            <DialogTrigger asChild>
-              <Button size="lg" variant="default" className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700">
-                <CreditCard className="h-5 w-5 mr-2" />
-                Payer par carte
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5" />
-                  Paiement par carte bancaire
-                </DialogTitle>
-                <DialogDescription>
-                  Rechargez votre portefeuille instantanément avec Stripe
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Montant</Label>
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      value={cardAmount}
-                      onChange={(e) => setCardAmount(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Devise</Label>
-                    <Select value={cardCurrency} onValueChange={(v) => setCardCurrency(v as Currency)}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="USD">$ (Dollar)</SelectItem>
-                        <SelectItem value="DOP">RD$ (Peso)</SelectItem>
-                        <SelectItem value="HTG">G (Gourde)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <Alert className="bg-primary/5 border-primary/20">
-                  <CreditCard className="h-4 w-4" />
-                  <AlertDescription>
-                    Paiement sécurisé via Stripe. Votre portefeuille sera crédité immédiatement après confirmation.
-                  </AlertDescription>
-                </Alert>
-
-                <Button
-                  className="w-full"
-                  size="lg"
-                  onClick={handleStripePayment}
-                  disabled={stripeLoading || !cardAmount}
-                >
-                  {stripeLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      Redirection...
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="h-4 w-4 mr-2" />
-                      Payer {cardAmount ? `${CURRENCY_SYMBOLS[cardCurrency]} ${parseFloat(cardAmount || "0").toLocaleString()}` : ""}
-                    </>
-                  )}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
         <div className="flex gap-4 mb-8">
           {/* Withdraw Dialog */}
           <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>

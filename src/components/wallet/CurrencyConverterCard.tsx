@@ -126,9 +126,9 @@ export default function CurrencyConverterCard({ wallet, currencyRates, queryClie
         </div>
 
         {preview !== null && fromCurrency !== toCurrency && (
-          <p className="text-sm text-muted-foreground">
-            ≈ {CURRENCY_SYMBOLS[toCurrency]} {preview.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-          </p>
+          <div className="text-sm text-muted-foreground space-y-1">
+            <p>≈ {CURRENCY_SYMBOLS[toCurrency]} {preview.toLocaleString(undefined, { maximumFractionDigits: 2 })} <span className="text-xs">(après commission)</span></p>
+          </div>
         )}
       </CardContent>
     </Card>
