@@ -10,14 +10,13 @@ import {
   Phone, 
   MapPin 
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 py-16">
-        {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {/* Brand Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="bg-secondary p-2 rounded-lg">
@@ -34,74 +33,77 @@ const Footer = () => {
               pour une économie digitale prospère.
             </p>
             <div className="flex gap-2">
-              <Button size="icon" variant="secondary" className="h-8 w-8">
-                <Facebook className="h-4 w-4" />
-              </Button>
-              <Button size="icon" variant="secondary" className="h-8 w-8">
-                <Instagram className="h-4 w-4" />
-              </Button>
-              <Button size="icon" variant="secondary" className="h-8 w-8">
-                <Twitter className="h-4 w-4" />
-              </Button>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+                <Button size="icon" variant="secondary" className="h-8 w-8">
+                  <Facebook className="h-4 w-4" />
+                </Button>
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                <Button size="icon" variant="secondary" className="h-8 w-8">
+                  <Instagram className="h-4 w-4" />
+                </Button>
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+                <Button size="icon" variant="secondary" className="h-8 w-8">
+                  <Twitter className="h-4 w-4" />
+                </Button>
+              </a>
             </div>
           </div>
 
-          {/* Quick Links */}
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">Liens rapides</h4>
             <div className="space-y-2 text-sm">
-              <a href="#" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
+              <Link to="/about" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
                 À propos
-              </a>
-              <a href="#" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
+              </Link>
+              <Link to="/how-it-works" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
                 Comment ça marche
-              </a>
-              <a href="#" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
+              </Link>
+              <Link to="/terms" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
                 Conditions d'utilisation
-              </a>
-              <a href="#" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
+              </Link>
+              <Link to="/privacy" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
                 Politique de confidentialité
-              </a>
-              <a href="#" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
+              </Link>
+              <Link to="/settings" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
                 Aide et support
-              </a>
+              </Link>
             </div>
           </div>
 
-          {/* For Business */}
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">Pour les entreprises</h4>
             <div className="space-y-2 text-sm">
-              <a href="#" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
+              <Link to="/shops" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
                 Devenir vendeur
-              </a>
-              <a href="#" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
-                Devenir livreur partenaire
-              </a>
-              <a href="#" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
-                API développeurs
-              </a>
-              <a href="#" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
+              </Link>
+              <Link to="/products" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
+                Voir les produits
+              </Link>
+              <Link to="/restaurants" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
+                Restaurants
+              </Link>
+              <Link to="/about" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
                 Solutions entreprises
-              </a>
-              <a href="#" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
+              </Link>
+              <Link to="/settings" className="block text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
                 Programme d'affiliation
-              </a>
+              </Link>
             </div>
           </div>
 
-          {/* Contact & Newsletter */}
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">Restez connecté</h4>
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm">
+              <a href="mailto:contact@ayitimarket.com" className="flex items-center gap-2 text-sm hover:text-primary-foreground/100 text-primary-foreground/80">
                 <Mail className="h-4 w-4" />
                 <span>contact@ayitimarket.com</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
+              </a>
+              <a href="tel:+18296999294" className="flex items-center gap-2 text-sm hover:text-primary-foreground/100 text-primary-foreground/80">
                 <Phone className="h-4 w-4" />
-                <span>+1 (809) 123-4567</span>
-              </div>
+                <span>+1 (829) 699-9294</span>
+              </a>
               <div className="flex items-center gap-2 text-sm">
                 <MapPin className="h-4 w-4" />
                 <span>Santo Domingo, RD</span>
@@ -128,21 +130,20 @@ const Footer = () => {
 
         <Separator className="mb-8 bg-primary-foreground/20" />
 
-        {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/80">
           <p>
-            © 2024 Ayiti Market. Tous droits réservés.
+            © 2026 Ayiti Market. Tous droits réservés.
           </p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-primary-foreground transition-smooth">
+            <Link to="/legal" className="hover:text-primary-foreground transition-smooth">
               Mentions légales
-            </a>
-            <a href="#" className="hover:text-primary-foreground transition-smooth">
+            </Link>
+            <Link to="/cookies" className="hover:text-primary-foreground transition-smooth">
               Cookies
-            </a>
-            <a href="#" className="hover:text-primary-foreground transition-smooth">
+            </Link>
+            <Link to="/about" className="hover:text-primary-foreground transition-smooth">
               Plan du site
-            </a>
+            </Link>
           </div>
         </div>
       </div>
