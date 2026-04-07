@@ -376,9 +376,9 @@ export function useAdminUsers(filters?: { role?: string; status?: string; search
  
    return useMutation({
      mutationFn: async ({ key, value }: { key: string; value: string }) => {
-       const { error } = await supabase
-         .from("platform_settings")
-         .upsert({ key, value, updated_at: new Date().toISOString() });
+      const { error } = await supabase
+          .from("platform_settings")
+          .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
        if (error) throw error;
      },
      onSuccess: () => {
