@@ -25,6 +25,12 @@ import ResetPassword from "./pages/ResetPassword";
 import Restaurants from "./pages/Restaurants";
 import RestaurantDetail from "./pages/RestaurantDetail";
 import AgentDashboard from "./pages/AgentDashboard";
+import About from "./pages/About";
+import HowItWorks from "./pages/HowItWorks";
+import TermsOfUse from "./pages/TermsOfUse";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import LegalNotice from "./pages/LegalNotice";
+import CookiesPolicy from "./pages/CookiesPolicy";
 import SupportChatWidget from "./components/support/SupportChatWidget";
 import AIAssistantWidget from "./components/ai/AIAssistantWidget";
 
@@ -58,6 +64,12 @@ const App = () => (
               <Route path="/restaurants" element={<Restaurants />} />
               <Route path="/restaurant/:restaurantId" element={<RestaurantDetail />} />
               <Route path="/agent" element={<AgentDashboard />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/terms" element={<TermsOfUse />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/legal" element={<LegalNotice />} />
+              <Route path="/cookies" element={<CookiesPolicy />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
