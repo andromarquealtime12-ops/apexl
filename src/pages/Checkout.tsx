@@ -453,13 +453,15 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full" size="lg" disabled={checkout.isPending || !hasEnoughBalance}>
-                    {checkout.isPending ? (
+                  <Button type="submit" className="w-full" size="lg" disabled={checkout.isPending || cashCheckout.isPending || (paymentMethod === "wallet" && !hasEnoughBalance)}>
+                    {(checkout.isPending || cashCheckout.isPending) ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : paymentMethod === "cash" ? (
+                      <Banknote className="h-4 w-4 mr-2" />
                     ) : (
                       <CheckCircle className="h-4 w-4 mr-2" />
                     )}
-                    Confirmer la commande
+                    {paymentMethod === "cash" ? "Commander (paiement cash)" : "Confirmer la commande"}
                   </Button>
                 </CardContent>
               </Card>
