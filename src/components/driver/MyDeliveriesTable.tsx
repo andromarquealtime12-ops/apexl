@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Navigation, Key, ExternalLink, MessageSquare } from "lucide-react";
+import { MapPin, Package, Navigation, Key, ExternalLink, MessageSquare, Phone, ShoppingBag } from "lucide-react";
 import { DeliveryCodeVerification } from "./DeliveryCodeVerification";
 import OrderChat from "@/components/chat/OrderChat";
 import { useQuery } from "@tanstack/react-query";
@@ -94,6 +94,32 @@ function WhatsAppButton({ userId, label }: { userId: string; label: string }) {
   );
 }
 
+function PhoneCallButton({ userId, label }: { userId: string; label: string }) {
+  const { data: profile } = useQuery({
+    queryKey: ["contact-phone", userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("phone, full_name")
+        .eq("user_id", userId)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+  });
+
+  if (!profile?.phone) return null;
+
+  return (
+    <Button variant="outline" size="sm" className="gap-1" asChild>
+      <a href={`tel:${profile.phone}`}>
+        <Phone className="h-3 w-3" />
+        Appeler {label}
+      </a>
+    </Button>
+  );
+}
+
 export default function MyDeliveriesTable() {
   const [verificationModal, setVerificationModal] = useState<{
     isOpen: boolean;
@@ -124,7 +150,6 @@ export default function MyDeliveriesTable() {
         .in("user_id", sellerIds as string[])
         .eq("status", "approved");
 
-      // Map order_id -> seller info
       const result: Record<string, any> = {};
       items.forEach(item => {
         if (item.seller_id) {
@@ -133,6 +158,48 @@ export default function MyDeliveriesTable() {
             result[item.order_id] = seller;
           }
         }
+      });
+      return result;
+    },
+    enabled: !!deliveries?.length,
+  });
+
+  // Fetch order items with product names for deliveries
+  const { data: orderProducts } = useQuery({
+    queryKey: ["delivery-order-items", deliveries?.map(d => d.id)],
+    queryFn: async () => {
+      if (!deliveries?.length) return {};
+      const orderIds = deliveries.map(d => d.id);
+      const { data: items } = await supabase
+        .from("order_items")
+        .select("order_id, quantity, unit_price, selected_color, selected_size, product_id")
+        .in("order_id", orderIds);
+
+      if (!items?.length) return {};
+
+      // Fetch product names
+      const productIds = [...new Set(items.map(i => i.product_id).filter(Boolean))];
+      const { data: products } = await supabase
+        .from("products")
+        .select("id, name, images")
+        .in("id", productIds as string[]);
+
+      const productMap: Record<string, { name: string; image?: string }> = {};
+      products?.forEach(p => {
+        productMap[p.id] = { name: p.name, image: p.images?.[0] };
+      });
+
+      const result: Record<string, Array<{ name: string; quantity: number; color?: string; size?: string; image?: string }>> = {};
+      items.forEach(item => {
+        if (!result[item.order_id]) result[item.order_id] = [];
+        const product = item.product_id ? productMap[item.product_id] : null;
+        result[item.order_id].push({
+          name: product?.name || "Produit",
+          quantity: item.quantity,
+          color: item.selected_color || undefined,
+          size: item.selected_size || undefined,
+          image: product?.image,
+        });
       });
       return result;
     },
@@ -241,6 +308,31 @@ export default function MyDeliveriesTable() {
                           </div>
                         )}
 
+                        {/* Product details */}
+                        {orderProducts?.[delivery.id] && orderProducts[delivery.id].length > 0 && (
+                          <div className="bg-muted/40 rounded-lg p-3 space-y-2">
+                            <p className="text-xs font-semibold flex items-center gap-1 text-muted-foreground uppercase tracking-wide">
+                              <ShoppingBag className="h-3 w-3" />
+                              Contenu du colis
+                            </p>
+                            {orderProducts[delivery.id].map((item, idx) => (
+                              <div key={idx} className="flex items-center gap-2 text-sm">
+                                {item.image && (
+                                  <img src={item.image} alt={item.name} className="w-8 h-8 rounded object-cover" />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium truncate">{item.name}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Qté: {item.quantity}
+                                    {item.color && ` • ${item.color}`}
+                                    {item.size && ` • ${item.size}`}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
                         {delivery.delivery_notes && pickupDone && (
                           <p className="text-sm bg-muted/50 p-2 rounded italic">
                             "{delivery.delivery_notes}"
@@ -263,12 +355,18 @@ export default function MyDeliveriesTable() {
                                 Itinéraire
                               </Button>
                             )}
-                            {/* WhatsApp contact */}
+                            {/* WhatsApp + Phone contact */}
                             {!pickupDone && sellerUserId && (
-                              <WhatsAppButton userId={sellerUserId} label="Vendeur" />
+                              <>
+                                <WhatsAppButton userId={sellerUserId} label="Vendeur" />
+                                <PhoneCallButton userId={sellerUserId} label="vendeur" />
+                              </>
                             )}
                             {pickupDone && delivery.buyer_id && (
-                              <WhatsAppButton userId={delivery.buyer_id} label="Acheteur" />
+                              <>
+                                <WhatsAppButton userId={delivery.buyer_id} label="Acheteur" />
+                                <PhoneCallButton userId={delivery.buyer_id} label="acheteur" />
+                              </>
                             )}
                           </div>
                           
