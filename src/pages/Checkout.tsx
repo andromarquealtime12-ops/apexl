@@ -128,13 +128,13 @@ const Checkout = () => {
       return;
     }
 
-    if (!hasEnoughBalance) {
-      toast({ title: "Solde insuffisant", description: "Rechargez votre portefeuille pour continuer", variant: "destructive" });
+    if (paymentMethod === "wallet" && !hasEnoughBalance) {
+      toast({ title: "Solde insuffisant", description: "Rechargez votre portefeuille ou payez en cash", variant: "destructive" });
       return;
     }
 
     try {
-      await checkout.mutateAsync({
+      const params = {
         deliveryAddress,
         deliveryCity,
         deliveryNotes,
@@ -142,10 +142,16 @@ const Checkout = () => {
         buyerLatitude: buyerLat,
         buyerLongitude: buyerLng,
         deliveryFee,
-      });
+      };
+
+      if (paymentMethod === "cash") {
+        await cashCheckout.mutateAsync(params);
+      } else {
+        await checkout.mutateAsync(params);
+      }
       
       setOrderSuccess(true);
-      toast({ title: "Commande confirmée !", description: "Votre commande a été passée avec succès" });
+      toast({ title: "Commande confirmée !", description: paymentMethod === "cash" ? "Préparez le montant exact pour le livreur" : "Votre commande a été passée avec succès" });
     } catch (error: any) {
       toast({ title: "Erreur", description: error.message || "Une erreur est survenue", variant: "destructive" });
     }
