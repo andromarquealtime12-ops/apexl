@@ -128,37 +128,42 @@ export default function MyDeliveriesTable() {
   }>({ isOpen: false, orderId: "", type: "pickup" });
   const { data: deliveries, isLoading } = useDriverDeliveries();
 
-  // Fetch seller locations for navigation to seller (not buyer) before pickup
-  const { data: sellerLocations } = useQuery({
-    queryKey: ["seller-locations-for-deliveries", deliveries?.map(d => d.id)],
+  // Fetch order items with product names for deliveries
+  const { data: orderProducts } = useQuery({
+    queryKey: ["delivery-order-items", deliveries?.map(d => d.id)],
     queryFn: async () => {
       if (!deliveries?.length) return {};
-      const orderIds = deliveries.filter(d => !["delivered", "cancelled"].includes(d.status || "")).map(d => d.id);
-      if (orderIds.length === 0) return {};
-
+      const orderIds = deliveries.map(d => d.id);
       const { data: items } = await supabase
         .from("order_items")
-        .select("order_id, seller_id")
+        .select("order_id, quantity, unit_price, selected_color, selected_size, product_id")
         .in("order_id", orderIds);
 
       if (!items?.length) return {};
 
-      const sellerIds = [...new Set(items.map(i => i.seller_id).filter(Boolean))];
-      const { data: sellers } = await supabase
-        .from("seller_applications")
-        .select("user_id, latitude, longitude, shop_address, shop_city, shop_name")
-        .in("user_id", sellerIds as string[])
-        .eq("status", "approved");
+      // Fetch product names
+      const productIds = [...new Set(items.map(i => i.product_id).filter(Boolean))];
+      const { data: products } = await supabase
+        .from("products")
+        .select("id, name, images")
+        .in("id", productIds as string[]);
 
-      // Map order_id -> seller info
-      const result: Record<string, any> = {};
+      const productMap: Record<string, { name: string; image?: string }> = {};
+      products?.forEach(p => {
+        productMap[p.id] = { name: p.name, image: p.images?.[0] };
+      });
+
+      const result: Record<string, Array<{ name: string; quantity: number; color?: string; size?: string; image?: string }>> = {};
       items.forEach(item => {
-        if (item.seller_id) {
-          const seller = sellers?.find(s => s.user_id === item.seller_id);
-          if (seller) {
-            result[item.order_id] = seller;
-          }
-        }
+        if (!result[item.order_id]) result[item.order_id] = [];
+        const product = item.product_id ? productMap[item.product_id] : null;
+        result[item.order_id].push({
+          name: product?.name || "Produit",
+          quantity: item.quantity,
+          color: item.selected_color || undefined,
+          size: item.selected_size || undefined,
+          image: product?.image,
+        });
       });
       return result;
     },
