@@ -29,6 +29,7 @@ import RefundRequestsManager from "@/components/admin/RefundRequestsManager";
 import ReturnsManager from "@/components/admin/ReturnsManager";
 import AdminRestaurantsManager from "@/components/admin/AdminRestaurantsManager";
 import AdminAgentsManager from "@/components/admin/AdminAgentsManager";
+import NegativeBalanceManager from "@/components/admin/NegativeBalanceManager";
 import DepositMethodsManager from "@/components/admin/DepositMethodsManager";
 import CurrencyRatesManager from "@/components/admin/CurrencyRatesManager";
 
@@ -172,6 +173,7 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="wallets" className="space-y-6">
+            <NegativeBalanceManager />
             <ReturnsManager />
             <RefundRequestsManager />
             <Card>
