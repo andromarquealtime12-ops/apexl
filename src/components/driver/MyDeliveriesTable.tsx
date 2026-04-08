@@ -357,7 +357,10 @@ export default function MyDeliveriesTable() {
                             )}
                             {/* WhatsApp + Phone contact */}
                             {!pickupDone && sellerUserId && (
-                              <WhatsAppButton userId={sellerUserId} label="Vendeur" />
+                              <>
+                                <WhatsAppButton userId={sellerUserId} label="Vendeur" />
+                                <PhoneCallButton userId={sellerUserId} label="vendeur" />
+                              </>
                             )}
                             {pickupDone && delivery.buyer_id && (
                               <>
