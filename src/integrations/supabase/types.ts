@@ -1678,6 +1678,10 @@ export type Database = {
     }
     Functions: {
       activate_user: { Args: { p_user_id: string }; Returns: Json }
+      admin_clear_negative_balance: {
+        Args: { p_currency?: string; p_user_id: string }
+        Returns: Json
+      }
       agent_deposit_to_wallet: {
         Args: {
           p_amount: number
@@ -1780,6 +1784,19 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      process_cash_checkout: {
+        Args: {
+          p_buyer_id: string
+          p_currency: string
+          p_delivery_address: string
+          p_delivery_city: string
+          p_delivery_fee: number
+          p_delivery_notes: string
+          p_order_items: Json
+          p_total_amount: number
+        }
+        Returns: Json
       }
       process_checkout: {
         Args: {
@@ -1896,6 +1913,7 @@ export type Database = {
         | "wise"
         | "popular"
         | "bank_other"
+        | "cash"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2037,6 +2055,7 @@ export const Constants = {
         "wise",
         "popular",
         "bank_other",
+        "cash",
       ],
     },
   },
