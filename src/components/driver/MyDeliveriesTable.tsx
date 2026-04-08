@@ -308,6 +308,31 @@ export default function MyDeliveriesTable() {
                           </div>
                         )}
 
+                        {/* Product details */}
+                        {orderProducts?.[delivery.id] && orderProducts[delivery.id].length > 0 && (
+                          <div className="bg-muted/40 rounded-lg p-3 space-y-2">
+                            <p className="text-xs font-semibold flex items-center gap-1 text-muted-foreground uppercase tracking-wide">
+                              <ShoppingBag className="h-3 w-3" />
+                              Contenu du colis
+                            </p>
+                            {orderProducts[delivery.id].map((item, idx) => (
+                              <div key={idx} className="flex items-center gap-2 text-sm">
+                                {item.image && (
+                                  <img src={item.image} alt={item.name} className="w-8 h-8 rounded object-cover" />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium truncate">{item.name}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Qté: {item.quantity}
+                                    {item.color && ` • ${item.color}`}
+                                    {item.size && ` • ${item.size}`}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
                         {delivery.delivery_notes && pickupDone && (
                           <p className="text-sm bg-muted/50 p-2 rounded italic">
                             "{delivery.delivery_notes}"
@@ -330,12 +355,15 @@ export default function MyDeliveriesTable() {
                                 Itinéraire
                               </Button>
                             )}
-                            {/* WhatsApp contact */}
+                            {/* WhatsApp + Phone contact */}
                             {!pickupDone && sellerUserId && (
                               <WhatsAppButton userId={sellerUserId} label="Vendeur" />
                             )}
                             {pickupDone && delivery.buyer_id && (
-                              <WhatsAppButton userId={delivery.buyer_id} label="Acheteur" />
+                              <>
+                                <WhatsAppButton userId={delivery.buyer_id} label="Acheteur" />
+                                <PhoneCallButton userId={delivery.buyer_id} label="acheteur" />
+                              </>
                             )}
                           </div>
                           
