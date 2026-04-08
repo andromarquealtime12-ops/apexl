@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/hooks/useWallet";
 import { useCheckout } from "@/hooks/useCheckout";
+import { useCashCheckout } from "@/hooks/useCashCheckout";
 import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
-import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, Mail, Loader2, Navigation, Store } from "lucide-react";
+import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, Mail, Loader2, Navigation, Store, Banknote } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,12 +37,14 @@ const Checkout = () => {
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: profile } = useProfile();
   const checkout = useCheckout();
+  const cashCheckout = useCashCheckout();
 
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryCity, setDeliveryCity] = useState("");
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"wallet" | "cash">("wallet");
   
   // Buyer GPS
   const [buyerLat, setBuyerLat] = useState<number | null>(null);
