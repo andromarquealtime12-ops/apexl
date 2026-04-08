@@ -329,7 +329,7 @@ const Checkout = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <Wallet className="h-5 w-5" />
-                    Paiement
+                    Mode de paiement
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -345,7 +345,11 @@ const Checkout = () => {
                     </Alert>
                   )}
 
-                  <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+                  {/* Wallet payment option */}
+                  <div
+                    className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === "wallet" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "bg-muted/30 hover:bg-muted/50"}`}
+                    onClick={() => setPaymentMethod("wallet")}
+                  >
                     <div className="flex items-center gap-3">
                       <div className="bg-primary/10 p-2 rounded-full">
                         <Wallet className="h-5 w-5 text-primary" />
@@ -357,24 +361,37 @@ const Checkout = () => {
                         </p>
                       </div>
                     </div>
-                    {hasEnoughBalance ? (
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                    ) : (
-                      <Button type="button" variant="outline" size="sm" onClick={() => navigate("/wallet")}>
-                        Recharger
-                      </Button>
-                    )}
+                    {paymentMethod === "wallet" && <CheckCircle className="h-5 w-5 text-primary" />}
                   </div>
 
-                  {!hasEnoughBalance && (
+                  {paymentMethod === "wallet" && !hasEnoughBalance && (
                     <p className="text-destructive text-sm flex items-center gap-1">
                       <AlertCircle className="h-4 w-4" />
                       Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants).
                       <Button type="button" variant="link" className="h-auto p-0 pl-1" onClick={() => navigate("/wallet")}>
-                        Recharger le portefeuille
+                        Recharger
                       </Button>
                     </p>
                   )}
+
+                  {/* Cash payment option */}
+                  <div
+                    className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === "cash" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "bg-muted/30 hover:bg-muted/50"}`}
+                    onClick={() => setPaymentMethod("cash")}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="bg-accent/50 p-2 rounded-full">
+                        <Banknote className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Paiement en cash</p>
+                        <p className="text-sm text-muted-foreground">
+                          Payez en espèces au livreur à la réception
+                        </p>
+                      </div>
+                    </div>
+                    {paymentMethod === "cash" && <CheckCircle className="h-5 w-5 text-primary" />}
+                  </div>
                 </CardContent>
               </Card>
             </div>
