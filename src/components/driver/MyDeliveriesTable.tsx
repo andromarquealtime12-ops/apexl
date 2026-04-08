@@ -94,6 +94,32 @@ function WhatsAppButton({ userId, label }: { userId: string; label: string }) {
   );
 }
 
+function PhoneCallButton({ userId, label }: { userId: string; label: string }) {
+  const { data: profile } = useQuery({
+    queryKey: ["contact-phone", userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("phone, full_name")
+        .eq("user_id", userId)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+  });
+
+  if (!profile?.phone) return null;
+
+  return (
+    <Button variant="outline" size="sm" className="gap-1" asChild>
+      <a href={`tel:${profile.phone}`}>
+        <Phone className="h-3 w-3" />
+        Appeler {label}
+      </a>
+    </Button>
+  );
+}
+
 export default function MyDeliveriesTable() {
   const [verificationModal, setVerificationModal] = useState<{
     isOpen: boolean;
