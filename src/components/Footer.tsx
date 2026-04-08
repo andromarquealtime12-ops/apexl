@@ -33,17 +33,17 @@ const Footer = () => {
               pour une économie digitale prospère.
             </p>
             <div className="flex gap-2">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.facebook.com/AyitiMarketRD" target="_blank" rel="noopener noreferrer">
                 <Button size="icon" variant="secondary" className="h-8 w-8">
                   <Facebook className="h-4 w-4" />
                 </Button>
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.instagram.com/ayitimarket" target="_blank" rel="noopener noreferrer">
                 <Button size="icon" variant="secondary" className="h-8 w-8">
                   <Instagram className="h-4 w-4" />
                 </Button>
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://x.com/AyitiMarket" target="_blank" rel="noopener noreferrer">
                 <Button size="icon" variant="secondary" className="h-8 w-8">
                   <Twitter className="h-4 w-4" />
                 </Button>

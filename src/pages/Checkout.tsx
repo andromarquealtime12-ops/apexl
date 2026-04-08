@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/hooks/useWallet";
 import { useCheckout } from "@/hooks/useCheckout";
+import { useCashCheckout } from "@/hooks/useCashCheckout";
 import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
-import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, Mail, Loader2, Navigation, Store } from "lucide-react";
+import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, Mail, Loader2, Navigation, Store, Banknote } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,12 +37,14 @@ const Checkout = () => {
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const { data: profile } = useProfile();
   const checkout = useCheckout();
+  const cashCheckout = useCashCheckout();
 
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryCity, setDeliveryCity] = useState("");
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"wallet" | "cash">("wallet");
   
   // Buyer GPS
   const [buyerLat, setBuyerLat] = useState<number | null>(null);
@@ -125,13 +128,13 @@ const Checkout = () => {
       return;
     }
 
-    if (!hasEnoughBalance) {
-      toast({ title: "Solde insuffisant", description: "Rechargez votre portefeuille pour continuer", variant: "destructive" });
+    if (paymentMethod === "wallet" && !hasEnoughBalance) {
+      toast({ title: "Solde insuffisant", description: "Rechargez votre portefeuille ou payez en cash", variant: "destructive" });
       return;
     }
 
     try {
-      await checkout.mutateAsync({
+      const params = {
         deliveryAddress,
         deliveryCity,
         deliveryNotes,
@@ -139,10 +142,16 @@ const Checkout = () => {
         buyerLatitude: buyerLat,
         buyerLongitude: buyerLng,
         deliveryFee,
-      });
+      };
+
+      if (paymentMethod === "cash") {
+        await cashCheckout.mutateAsync(params);
+      } else {
+        await checkout.mutateAsync(params);
+      }
       
       setOrderSuccess(true);
-      toast({ title: "Commande confirmée !", description: "Votre commande a été passée avec succès" });
+      toast({ title: "Commande confirmée !", description: paymentMethod === "cash" ? "Préparez le montant exact pour le livreur" : "Votre commande a été passée avec succès" });
     } catch (error: any) {
       toast({ title: "Erreur", description: error.message || "Une erreur est survenue", variant: "destructive" });
     }
@@ -320,7 +329,7 @@ const Checkout = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <Wallet className="h-5 w-5" />
-                    Paiement
+                    Mode de paiement
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -336,7 +345,11 @@ const Checkout = () => {
                     </Alert>
                   )}
 
-                  <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+                  {/* Wallet payment option */}
+                  <div
+                    className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === "wallet" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "bg-muted/30 hover:bg-muted/50"}`}
+                    onClick={() => setPaymentMethod("wallet")}
+                  >
                     <div className="flex items-center gap-3">
                       <div className="bg-primary/10 p-2 rounded-full">
                         <Wallet className="h-5 w-5 text-primary" />
@@ -348,24 +361,37 @@ const Checkout = () => {
                         </p>
                       </div>
                     </div>
-                    {hasEnoughBalance ? (
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                    ) : (
-                      <Button type="button" variant="outline" size="sm" onClick={() => navigate("/wallet")}>
-                        Recharger
-                      </Button>
-                    )}
+                    {paymentMethod === "wallet" && <CheckCircle className="h-5 w-5 text-primary" />}
                   </div>
 
-                  {!hasEnoughBalance && (
+                  {paymentMethod === "wallet" && !hasEnoughBalance && (
                     <p className="text-destructive text-sm flex items-center gap-1">
                       <AlertCircle className="h-4 w-4" />
                       Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants).
                       <Button type="button" variant="link" className="h-auto p-0 pl-1" onClick={() => navigate("/wallet")}>
-                        Recharger le portefeuille
+                        Recharger
                       </Button>
                     </p>
                   )}
+
+                  {/* Cash payment option */}
+                  <div
+                    className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === "cash" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "bg-muted/30 hover:bg-muted/50"}`}
+                    onClick={() => setPaymentMethod("cash")}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="bg-accent/50 p-2 rounded-full">
+                        <Banknote className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Paiement en cash</p>
+                        <p className="text-sm text-muted-foreground">
+                          Payez en espèces au livreur à la réception
+                        </p>
+                      </div>
+                    </div>
+                    {paymentMethod === "cash" && <CheckCircle className="h-5 w-5 text-primary" />}
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -427,13 +453,15 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full" size="lg" disabled={checkout.isPending || !hasEnoughBalance}>
-                    {checkout.isPending ? (
+                  <Button type="submit" className="w-full" size="lg" disabled={checkout.isPending || cashCheckout.isPending || (paymentMethod === "wallet" && !hasEnoughBalance)}>
+                    {(checkout.isPending || cashCheckout.isPending) ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : paymentMethod === "cash" ? (
+                      <Banknote className="h-4 w-4 mr-2" />
                     ) : (
                       <CheckCircle className="h-4 w-4 mr-2" />
                     )}
-                    Confirmer la commande
+                    {paymentMethod === "cash" ? "Commander (paiement cash)" : "Confirmer la commande"}
                   </Button>
                 </CardContent>
               </Card>

@@ -70,6 +70,13 @@
         icon: Percent,
         suffix: "%"
       },
+      {
+        key: "cash_commission_percent",
+        label: "Commission paiement cash",
+        description: "Pourcentage prélevé sur les vendeurs pour les paiements en espèces",
+        icon: Percent,
+        suffix: "%"
+      },
     ];
 
     const textSettingsConfig = [
