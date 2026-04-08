@@ -128,6 +128,42 @@ export default function MyDeliveriesTable() {
   }>({ isOpen: false, orderId: "", type: "pickup" });
   const { data: deliveries, isLoading } = useDriverDeliveries();
 
+  // Fetch seller locations for navigation to seller (not buyer) before pickup
+  const { data: sellerLocations } = useQuery({
+    queryKey: ["seller-locations-for-deliveries", deliveries?.map(d => d.id)],
+    queryFn: async () => {
+      if (!deliveries?.length) return {};
+      const orderIds = deliveries.filter(d => !["delivered", "cancelled"].includes(d.status || "")).map(d => d.id);
+      if (orderIds.length === 0) return {};
+
+      const { data: items } = await supabase
+        .from("order_items")
+        .select("order_id, seller_id")
+        .in("order_id", orderIds);
+
+      if (!items?.length) return {};
+
+      const sellerIds = [...new Set(items.map(i => i.seller_id).filter(Boolean))];
+      const { data: sellers } = await supabase
+        .from("seller_applications")
+        .select("user_id, latitude, longitude, shop_address, shop_city, shop_name")
+        .in("user_id", sellerIds as string[])
+        .eq("status", "approved");
+
+      const result: Record<string, any> = {};
+      items.forEach(item => {
+        if (item.seller_id) {
+          const seller = sellers?.find(s => s.user_id === item.seller_id);
+          if (seller) {
+            result[item.order_id] = seller;
+          }
+        }
+      });
+      return result;
+    },
+    enabled: !!deliveries?.length,
+  });
+
   // Fetch order items with product names for deliveries
   const { data: orderProducts } = useQuery({
     queryKey: ["delivery-order-items", deliveries?.map(d => d.id)],
