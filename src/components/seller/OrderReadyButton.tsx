@@ -28,14 +28,11 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
   const regenerateCode = useRegeneratePickupCode();
   const queryClient = useQueryClient();
 
-  const updateOrderStatus = useMutation({
+  const markReady = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from("orders")
-        .update({ status: "ready" })
-        .eq("id", orderId);
-      
+      const { data, error } = await supabase.rpc("mark_seller_items_ready", { p_order_id: orderId });
       if (error) throw error;
+      return data as { ready_sellers: number; total_sellers: number; all_ready: boolean };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["seller-orders"] });
@@ -79,27 +76,32 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
 
   const handleMarkReady = async () => {
     try {
-      await updateOrderStatus.mutateAsync();
-      const result = await createVerification.mutateAsync(orderId);
-      setPickupCode(result.pickup_code);
+      const result = await markReady.mutateAsync();
+      // Always create/get pickup verification for this seller
+      const verif = await createVerification.mutateAsync(orderId);
+      setPickupCode(verif.pickup_code);
       setShowCode(true);
 
-      const { data: order } = await supabase
-        .from("orders")
-        .select("buyer_id")
-        .eq("id", orderId)
-        .single();
+      if (result.all_ready) {
+        const { data: order } = await supabase
+          .from("orders")
+          .select("buyer_id")
+          .eq("id", orderId)
+          .single();
 
-      if (order?.buyer_id) {
-        notifyOrderStatusChange(orderId, order.buyer_id, "ready");
+        if (order?.buyer_id) {
+          notifyOrderStatusChange(orderId, order.buyer_id, "ready");
+        }
+
+        // Notify ALL nearby drivers automatically (only when fully ready)
+        await notifyNearbyDrivers();
+        toast.success("Commande complète prête ! Les livreurs ont été notifiés.");
+      } else {
+        const remaining = result.total_sellers - result.ready_sellers;
+        toast.success(`Vos articles sont prêts (${result.ready_sellers}/${result.total_sellers}). En attente de ${remaining} autre vendeur${remaining > 1 ? "s" : ""}.`);
       }
-
-      // Notify ALL nearby drivers automatically
-      await notifyNearbyDrivers();
-
-      toast.success("Commande prête ! Tous les livreurs à proximité ont été notifiés.");
-    } catch (error) {
-      toast.error("Erreur lors de la mise à jour");
+    } catch (error: any) {
+      toast.error(error?.message || "Erreur lors de la mise à jour");
     }
   };
 
@@ -192,10 +194,10 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
       <Button
         size="sm"
         onClick={handleMarkReady}
-        disabled={createVerification.isPending || updateOrderStatus.isPending}
+        disabled={createVerification.isPending || markReady.isPending}
         className="gap-1"
       >
-        {(createVerification.isPending || updateOrderStatus.isPending) ? (
+        {(createVerification.isPending || markReady.isPending) ? (
           <Loader2 className="h-3 w-3 animate-spin" />
         ) : (
           <Package className="h-3 w-3" />

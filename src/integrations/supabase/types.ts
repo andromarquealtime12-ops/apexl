@@ -738,6 +738,27 @@ export type Database = {
           },
         ]
       }
+      order_seller_readiness: {
+        Row: {
+          id: string
+          marked_ready_at: string
+          order_id: string
+          seller_id: string
+        }
+        Insert: {
+          id?: string
+          marked_ready_at?: string
+          order_id: string
+          seller_id: string
+        }
+        Update: {
+          id?: string
+          marked_ready_at?: string
+          order_id?: string
+          seller_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           buyer_id: string | null
@@ -1785,6 +1806,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      mark_seller_items_ready: { Args: { p_order_id: string }; Returns: Json }
       process_cash_checkout: {
         Args: {
           p_buyer_id: string
