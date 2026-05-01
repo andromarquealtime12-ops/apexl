@@ -51,6 +51,38 @@ export async function notifyNewOrder(orderId: string) {
 }
 
 /**
+ * Notify all online drivers when a new order is available for delivery
+ */
+export async function notifyAvailableDrivers(orderId: string) {
+  try {
+    const { data: onlineDrivers } = await supabase
+      .from("driver_locations")
+      .select("driver_id")
+      .eq("is_online", true);
+
+    if (!onlineDrivers || onlineDrivers.length === 0) return;
+
+    const { data: order } = await supabase
+      .from("orders")
+      .select("delivery_city")
+      .eq("id", orderId)
+      .single();
+
+    const notifications = onlineDrivers.map((d) => ({
+      user_id: d.driver_id,
+      title: "📦 Nouvelle commande disponible !",
+      message: `Une commande est disponible${order?.delivery_city ? ` vers ${order.delivery_city}` : ""}. Acceptez-la vite !`,
+      type: "info" as const,
+      action_url: "/driver",
+    }));
+
+    await supabase.from("notifications").insert(notifications);
+  } catch (e) {
+    console.error("notifyAvailableDrivers error:", e);
+  }
+}
+
+/**
  * Notify buyer when order status changes
  */
 export async function notifyOrderStatusChange(
