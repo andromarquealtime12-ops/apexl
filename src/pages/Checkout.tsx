@@ -269,12 +269,22 @@ const Checkout = () => {
                     </div>
                     {Object.keys(shopDistances).length > 0 && (
                       <div className="mt-2 space-y-1">
-                        {Object.entries(shopDistances).map(([sid, info]) => (
-                          <p key={sid} className="text-xs text-primary flex items-center gap-1">
+                        {Object.entries(shopDistances)
+                          .sort(([, a], [, b]) => a.distance - b.distance)
+                          .map(([sid, info], idx) => (
+                          <p key={sid} className="text-xs text-primary flex items-center gap-1 flex-wrap">
                             <Store className="h-3 w-3" />
-                            {info.shopName}: {info.distance.toFixed(1)} km → Livraison: RD$ {info.fee.toLocaleString()}
+                            {info.shopName}: {info.distance.toFixed(1)} km → RD$ {info.fee.toLocaleString()}
+                            {idx > 0 && info.distance <= 10 && (
+                              <span className="text-amber-600 ml-1">(+10% multi-vendeurs)</span>
+                            )}
                           </p>
                         ))}
+                        {Object.keys(shopDistances).length > 1 && (
+                          <p className="text-[11px] text-muted-foreground italic mt-1">
+                            ℹ️ La 1ère boutique (la plus proche) au tarif normal. Les boutiques additionnelles dans un rayon de 10 km : +10%.
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
