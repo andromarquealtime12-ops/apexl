@@ -85,13 +85,22 @@ const Checkout = () => {
         .not("latitude", "is", null);
       
       if (data) {
+        // Compute distance for each seller, then sort by distance
+        const sellersWithDist = data
+          .filter(s => s.latitude && s.longitude)
+          .map(seller => ({
+            user_id: seller.user_id,
+            shopName: seller.shop_name,
+            distance: calculateDistance(buyerLat, buyerLng, seller.latitude!, seller.longitude!),
+          }))
+          .sort((a, b) => a.distance - b.distance);
+
         const distances: Record<string, { distance: number; shopName: string; fee: number }> = {};
-        data.forEach(seller => {
-          if (seller.latitude && seller.longitude) {
-            const dist = calculateDistance(buyerLat, buyerLng, seller.latitude, seller.longitude);
-            const fee = Math.round(50 + 25 * dist);
-            distances[seller.user_id] = { distance: dist, shopName: seller.shop_name, fee };
-          }
+        sellersWithDist.forEach((s, idx) => {
+          const baseFee = Math.round(50 + 25 * s.distance);
+          // First (closest) shop = base fee. Additional shops within 10 km radius = +10%
+          const fee = idx === 0 ? baseFee : (s.distance <= 10 ? Math.round(baseFee * 1.10) : baseFee);
+          distances[s.user_id] = { distance: s.distance, shopName: s.shopName, fee };
         });
         setShopDistances(distances);
       }
