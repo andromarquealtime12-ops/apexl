@@ -55,28 +55,7 @@ export async function notifyNewOrder(orderId: string) {
  */
 export async function notifyAvailableDrivers(orderId: string) {
   try {
-    const { data: onlineDrivers } = await supabase
-      .from("driver_locations")
-      .select("driver_id")
-      .eq("is_online", true);
-
-    if (!onlineDrivers || onlineDrivers.length === 0) return;
-
-    const { data: order } = await supabase
-      .from("orders")
-      .select("delivery_city")
-      .eq("id", orderId)
-      .single();
-
-    const notifications = onlineDrivers.map((d) => ({
-      user_id: d.driver_id,
-      title: "📦 Nouvelle commande disponible !",
-      message: `Une commande est disponible${order?.delivery_city ? ` vers ${order.delivery_city}` : ""}. Acceptez-la vite !`,
-      type: "info" as const,
-      action_url: "/driver",
-    }));
-
-    await supabase.from("notifications").insert(notifications);
+    await supabase.rpc("notify_available_drivers_for_order", { p_order_id: orderId });
   } catch (e) {
     console.error("notifyAvailableDrivers error:", e);
   }
