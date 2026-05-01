@@ -194,10 +194,10 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
       <Button
         size="sm"
         onClick={handleMarkReady}
-        disabled={createVerification.isPending || updateOrderStatus.isPending}
+        disabled={createVerification.isPending || markReady.isPending}
         className="gap-1"
       >
-        {(createVerification.isPending || updateOrderStatus.isPending) ? (
+        {(createVerification.isPending || markReady.isPending) ? (
           <Loader2 className="h-3 w-3 animate-spin" />
         ) : (
           <Package className="h-3 w-3" />
