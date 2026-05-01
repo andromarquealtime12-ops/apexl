@@ -76,27 +76,32 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
 
   const handleMarkReady = async () => {
     try {
-      await updateOrderStatus.mutateAsync();
-      const result = await createVerification.mutateAsync(orderId);
-      setPickupCode(result.pickup_code);
+      const result = await markReady.mutateAsync();
+      // Always create/get pickup verification for this seller
+      const verif = await createVerification.mutateAsync(orderId);
+      setPickupCode(verif.pickup_code);
       setShowCode(true);
 
-      const { data: order } = await supabase
-        .from("orders")
-        .select("buyer_id")
-        .eq("id", orderId)
-        .single();
+      if (result.all_ready) {
+        const { data: order } = await supabase
+          .from("orders")
+          .select("buyer_id")
+          .eq("id", orderId)
+          .single();
 
-      if (order?.buyer_id) {
-        notifyOrderStatusChange(orderId, order.buyer_id, "ready");
+        if (order?.buyer_id) {
+          notifyOrderStatusChange(orderId, order.buyer_id, "ready");
+        }
+
+        // Notify ALL nearby drivers automatically (only when fully ready)
+        await notifyNearbyDrivers();
+        toast.success("Commande complète prête ! Les livreurs ont été notifiés.");
+      } else {
+        const remaining = result.total_sellers - result.ready_sellers;
+        toast.success(`Vos articles sont prêts (${result.ready_sellers}/${result.total_sellers}). En attente de ${remaining} autre vendeur${remaining > 1 ? "s" : ""}.`);
       }
-
-      // Notify ALL nearby drivers automatically
-      await notifyNearbyDrivers();
-
-      toast.success("Commande prête ! Tous les livreurs à proximité ont été notifiés.");
-    } catch (error) {
-      toast.error("Erreur lors de la mise à jour");
+    } catch (error: any) {
+      toast.error(error?.message || "Erreur lors de la mise à jour");
     }
   };
 
