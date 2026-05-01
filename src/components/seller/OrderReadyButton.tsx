@@ -28,14 +28,11 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
   const regenerateCode = useRegeneratePickupCode();
   const queryClient = useQueryClient();
 
-  const updateOrderStatus = useMutation({
+  const markReady = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from("orders")
-        .update({ status: "ready" })
-        .eq("id", orderId);
-      
+      const { data, error } = await supabase.rpc("mark_seller_items_ready", { p_order_id: orderId });
       if (error) throw error;
+      return data as { ready_sellers: number; total_sellers: number; all_ready: boolean };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["seller-orders"] });
