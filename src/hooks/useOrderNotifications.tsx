@@ -51,6 +51,17 @@ export async function notifyNewOrder(orderId: string) {
 }
 
 /**
+ * Notify all online drivers when a new order is available for delivery
+ */
+export async function notifyAvailableDrivers(orderId: string) {
+  try {
+    await supabase.rpc("notify_available_drivers_for_order", { p_order_id: orderId });
+  } catch (e) {
+    console.error("notifyAvailableDrivers error:", e);
+  }
+}
+
+/**
  * Notify buyer when order status changes
  */
 export async function notifyOrderStatusChange(

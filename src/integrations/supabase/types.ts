@@ -1807,6 +1807,10 @@ export type Database = {
         Returns: boolean
       }
       mark_seller_items_ready: { Args: { p_order_id: string }; Returns: Json }
+      notify_available_drivers_for_order: {
+        Args: { p_order_id: string }
+        Returns: Json
+      }
       process_cash_checkout: {
         Args: {
           p_buyer_id: string
