@@ -85,13 +85,22 @@ const Checkout = () => {
         .not("latitude", "is", null);
       
       if (data) {
+        // Compute distance for each seller, then sort by distance
+        const sellersWithDist = data
+          .filter(s => s.latitude && s.longitude)
+          .map(seller => ({
+            user_id: seller.user_id,
+            shopName: seller.shop_name,
+            distance: calculateDistance(buyerLat, buyerLng, seller.latitude!, seller.longitude!),
+          }))
+          .sort((a, b) => a.distance - b.distance);
+
         const distances: Record<string, { distance: number; shopName: string; fee: number }> = {};
-        data.forEach(seller => {
-          if (seller.latitude && seller.longitude) {
-            const dist = calculateDistance(buyerLat, buyerLng, seller.latitude, seller.longitude);
-            const fee = Math.round(50 + 25 * dist);
-            distances[seller.user_id] = { distance: dist, shopName: seller.shop_name, fee };
-          }
+        sellersWithDist.forEach((s, idx) => {
+          const baseFee = Math.round(50 + 25 * s.distance);
+          // First (closest) shop = base fee. Additional shops within 10 km radius = +10%
+          const fee = idx === 0 ? baseFee : (s.distance <= 10 ? Math.round(baseFee * 1.10) : baseFee);
+          distances[s.user_id] = { distance: s.distance, shopName: s.shopName, fee };
         });
         setShopDistances(distances);
       }
@@ -260,12 +269,22 @@ const Checkout = () => {
                     </div>
                     {Object.keys(shopDistances).length > 0 && (
                       <div className="mt-2 space-y-1">
-                        {Object.entries(shopDistances).map(([sid, info]) => (
-                          <p key={sid} className="text-xs text-primary flex items-center gap-1">
+                        {Object.entries(shopDistances)
+                          .sort(([, a], [, b]) => a.distance - b.distance)
+                          .map(([sid, info], idx) => (
+                          <p key={sid} className="text-xs text-primary flex items-center gap-1 flex-wrap">
                             <Store className="h-3 w-3" />
-                            {info.shopName}: {info.distance.toFixed(1)} km → Livraison: RD$ {info.fee.toLocaleString()}
+                            {info.shopName}: {info.distance.toFixed(1)} km → RD$ {info.fee.toLocaleString()}
+                            {idx > 0 && info.distance <= 10 && (
+                              <span className="text-amber-600 ml-1">(+10% multi-vendeurs)</span>
+                            )}
                           </p>
                         ))}
+                        {Object.keys(shopDistances).length > 1 && (
+                          <p className="text-[11px] text-muted-foreground italic mt-1">
+                            ℹ️ La 1ère boutique (la plus proche) au tarif normal. Les boutiques additionnelles dans un rayon de 10 km : +10%.
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

@@ -215,11 +215,13 @@ export default function AvailableDeliveriesTable() {
 
                 <Button
                   variant="outline"
-                  size="icon"
+                  size="sm"
                   onClick={() => setMapOrderId(mapOrderId === delivery.id ? null : delivery.id)}
-                  title="Voir sur la carte"
+                  title="Voir le parcours"
+                  className="gap-1"
                 >
                   <Map className="h-4 w-4" />
+                  <span className="hidden sm:inline">{mapOrderId === delivery.id ? "Masquer" : "Parcours"}</span>
                 </Button>
                 
                 <Button
