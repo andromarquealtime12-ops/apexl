@@ -10,6 +10,7 @@ import RestaurantManager from "@/components/seller/RestaurantManager";
 import SellerReturnManager from "@/components/returns/SellerReturnManager";
 import SellerStatsCards from "@/components/seller/SellerStatsCards";
 import ProductsManager from "@/components/seller/ProductsManager";
+import { ShopifySyncCard } from "@/components/seller/ShopifySyncCard";
 import SellerOrdersTable from "@/components/seller/SellerOrdersTable";
 import { useSellerStats } from "@/hooks/useSellerStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
@@ -96,7 +97,8 @@ const SellerDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="products">
+          <TabsContent value="products" className="space-y-6">
+            <ShopifySyncCard />
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
