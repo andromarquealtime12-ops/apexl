@@ -768,6 +768,7 @@ export type Database = {
           currency: string | null
           delivery_address: string | null
           delivery_city: string | null
+          delivery_country: string | null
           delivery_fee: number | null
           delivery_notes: string | null
           driver_id: string | null
@@ -776,6 +777,8 @@ export type Database = {
             | Database["public"]["Enums"]["payment_method_type"]
             | null
           payment_status: string | null
+          shopify_order_id: string | null
+          shopify_order_number: string | null
           status: string | null
           total_amount: number
           updated_at: string
@@ -788,6 +791,7 @@ export type Database = {
           currency?: string | null
           delivery_address?: string | null
           delivery_city?: string | null
+          delivery_country?: string | null
           delivery_fee?: number | null
           delivery_notes?: string | null
           driver_id?: string | null
@@ -796,6 +800,8 @@ export type Database = {
             | Database["public"]["Enums"]["payment_method_type"]
             | null
           payment_status?: string | null
+          shopify_order_id?: string | null
+          shopify_order_number?: string | null
           status?: string | null
           total_amount: number
           updated_at?: string
@@ -808,6 +814,7 @@ export type Database = {
           currency?: string | null
           delivery_address?: string | null
           delivery_city?: string | null
+          delivery_country?: string | null
           delivery_fee?: number | null
           delivery_notes?: string | null
           driver_id?: string | null
@@ -816,6 +823,8 @@ export type Database = {
             | Database["public"]["Enums"]["payment_method_type"]
             | null
           payment_status?: string | null
+          shopify_order_id?: string | null
+          shopify_order_number?: string | null
           status?: string | null
           total_amount?: number
           updated_at?: string
@@ -852,6 +861,7 @@ export type Database = {
       products: {
         Row: {
           available_colors: string[]
+          available_countries: string[] | null
           available_sizes: string[]
           category_id: string | null
           created_at: string
@@ -861,15 +871,19 @@ export type Database = {
           images: string[] | null
           is_active: boolean | null
           is_featured: boolean | null
+          is_shopify: boolean
           name: string
           price: number
           seller_id: string
+          shopify_product_id: string | null
+          shopify_variant_id: string | null
           size_type: string
           stock_quantity: number | null
           updated_at: string
         }
         Insert: {
           available_colors?: string[]
+          available_countries?: string[] | null
           available_sizes?: string[]
           category_id?: string | null
           created_at?: string
@@ -879,15 +893,19 @@ export type Database = {
           images?: string[] | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          is_shopify?: boolean
           name: string
           price: number
           seller_id: string
+          shopify_product_id?: string | null
+          shopify_variant_id?: string | null
           size_type?: string
           stock_quantity?: number | null
           updated_at?: string
         }
         Update: {
           available_colors?: string[]
+          available_countries?: string[] | null
           available_sizes?: string[]
           category_id?: string | null
           created_at?: string
@@ -897,9 +915,12 @@ export type Database = {
           images?: string[] | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          is_shopify?: boolean
           name?: string
           price?: number
           seller_id?: string
+          shopify_product_id?: string | null
+          shopify_variant_id?: string | null
           size_type?: string
           stock_quantity?: number | null
           updated_at?: string
@@ -1435,6 +1456,36 @@ export type Database = {
           status?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      shopify_connections: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          last_sync_at: string | null
+          seller_id: string
+          shop_domain: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_sync_at?: string | null
+          seller_id: string
+          shop_domain: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_sync_at?: string | null
+          seller_id?: string
+          shop_domain?: string
+          updated_at?: string
         }
         Relationships: []
       }
