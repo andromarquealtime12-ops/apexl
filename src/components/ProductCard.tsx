@@ -20,9 +20,16 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const isInCart = items.some((item) => item.product.id === product.id);
 
+  // Shopify product geographic availability
+  const isShopify = (product as any).is_shopify === true;
+  const availableCountries: string[] = (product as any).available_countries || ['DO', 'HT'];
+  const userCountry = (typeof navigator !== 'undefined' && navigator.language?.includes('HT')) ? 'HT' : 'DO';
+  const outOfCountry = isShopify && availableCountries.length > 0 && !availableCountries.includes(userCountry);
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (outOfCountry) return;
     addItem(product);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -39,6 +46,12 @@ export function ProductCard({ product }: ProductCardProps) {
           
           {product.is_featured &&
           <Badge className="absolute top-2 left-2 bg-primary">Vedette</Badge>
+          }
+          {isShopify &&
+          <Badge variant="secondary" className="absolute top-2 left-2 mt-8">Shopify</Badge>
+          }
+          {outOfCountry &&
+          <Badge variant="destructive" className="absolute bottom-2 left-2">Hors pays</Badge>
           }
           {product.stock_quantity === 0 &&
           <Badge variant="destructive" className="absolute top-2 right-2">
@@ -79,11 +92,13 @@ export function ProductCard({ product }: ProductCardProps) {
           <Button
             className="w-full"
             size="sm"
-            disabled={product.stock_quantity === 0}
+            disabled={product.stock_quantity === 0 || outOfCountry}
             variant={added || isInCart ? "secondary" : "default"}
             onClick={handleAddToCart}>
             
-            {added ?
+            {outOfCountry ?
+            <>Indisponible dans votre pays</> :
+            added ?
             <>
                 <Check className="h-4 w-4 mr-2" />
                 Ajouté !

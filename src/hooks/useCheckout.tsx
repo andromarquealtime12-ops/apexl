@@ -68,6 +68,18 @@ export function useCheckout() {
       if (result.order_id) {
         notifyNewOrder(result.order_id);
         notifyAvailableDrivers(result.order_id);
+
+        // If order contains Shopify products, forward to Shopify for fulfillment
+        const hasShopifyItem = items.some((it) => (it.product as any).is_shopify === true);
+        if (hasShopifyItem) {
+          try {
+            await supabase.functions.invoke("shopify-create-order", {
+              body: { order_id: result.order_id },
+            });
+          } catch (e) {
+            console.error("Shopify order forward failed:", e);
+          }
+        }
       }
 
       return { id: result.order_id };
