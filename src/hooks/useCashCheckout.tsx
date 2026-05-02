@@ -25,6 +25,12 @@ export function useCashCheckout() {
       if (!user) throw new Error("Utilisateur non connecté");
       if (items.length === 0) throw new Error("Le panier est vide");
 
+      // Block cash payment for Shopify products (wallet-only)
+      const hasShopifyItem = items.some((it) => (it.product as any).is_shopify === true);
+      if (hasShopifyItem) {
+        throw new Error("Les produits Shopify nécessitent un paiement par portefeuille. Veuillez utiliser le paiement Wallet.");
+      }
+
       const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
       const totalAmount = subtotal + deliveryFee;
 
