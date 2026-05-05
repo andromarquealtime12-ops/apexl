@@ -98,7 +98,7 @@ const SellerDashboard = () => {
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
-            <ShopifySyncCard />
+            
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
