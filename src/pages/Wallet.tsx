@@ -436,7 +436,7 @@ const Wallet = () => {
                     }}
                   >
                     <CreditCard className="h-4 w-4 mr-2" />
-                    Payer par carte bancaire (Stripe)
+                    Payer par carte bancaire
                   </Button>
 
                   <div className="relative">
