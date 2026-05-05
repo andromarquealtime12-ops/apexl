@@ -406,6 +406,48 @@ const Wallet = () => {
                   </div>
 
 
+                  <Button
+                    variant="default"
+                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+                    onClick={async () => {
+                      const amount = parseFloat(depositAmount);
+                      if (isNaN(amount) || amount <= 0) {
+                        toast.error("Veuillez entrer un montant valide");
+                        return;
+                      }
+                      try {
+                        toast.loading("Préparation du paiement Stripe...");
+                        const { data, error } = await supabase.functions.invoke("stripe-wallet-topup", {
+                          body: { amount, currency: depositCurrency },
+                        });
+                        toast.dismiss();
+                        if (error) throw error;
+                        if (data?.url) {
+                          window.open(data.url, "_blank");
+                          setDepositOpen(false);
+                          resetDepositForm();
+                        } else {
+                          throw new Error("URL de paiement manquante");
+                        }
+                      } catch (e: any) {
+                        toast.dismiss();
+                        toast.error(e.message || "Erreur Stripe");
+                      }
+                    }}
+                  >
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Payer par carte bancaire (Stripe)
+                  </Button>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">Ou méthode manuelle</span>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label>Méthode de paiement</Label>
                     <div className="grid grid-cols-2 gap-2">
