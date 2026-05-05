@@ -14,18 +14,17 @@ export const ShopifySyncCard = () => {
   const [productCount, setProductCount] = useState(0);
 
   const loadStatus = async () => {
-    if (!user) return;
     const { data: conn } = await supabase
       .from("shopify_connections")
       .select("*")
-      .eq("seller_id", user.id)
+      .order("last_sync_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
     setConnection(conn);
 
     const { count } = await supabase
       .from("products")
       .select("*", { count: "exact", head: true })
-      .eq("seller_id", user.id)
       .eq("is_shopify", true);
     setProductCount(count || 0);
   };
@@ -54,10 +53,10 @@ export const ShopifySyncCard = () => {
           <div>
             <CardTitle className="flex items-center gap-2">
               <ShoppingBag className="h-5 w-5" />
-              Boutique Shopify
+              Boutique Shopify centrale
             </CardTitle>
             <CardDescription>
-              Synchronisez vos produits Shopify avec Ayiti Market
+              Catalogue global du site — Shopify gère stock, expédition et fournisseurs
             </CardDescription>
           </div>
           {connection?.is_active && <Badge variant="default">Connecté</Badge>}
@@ -76,7 +75,7 @@ export const ShopifySyncCard = () => {
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">
-            Cliquez pour importer vos produits depuis Shopify. Paiement par portefeuille uniquement, livraison gérée par Shopify.
+            Importez le catalogue Shopify global. À chaque commande client, Shopify reçoit l'ordre et gère l'expédition.
           </p>
         )}
 
@@ -84,7 +83,7 @@ export const ShopifySyncCard = () => {
           {syncing ? (
             <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Synchronisation...</>
           ) : (
-            <><RefreshCw className="mr-2 h-4 w-4" /> Synchroniser les produits Shopify</>
+            <><RefreshCw className="mr-2 h-4 w-4" /> Synchroniser le catalogue Shopify</>
           )}
         </Button>
       </CardContent>
