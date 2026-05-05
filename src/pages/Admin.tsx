@@ -217,6 +217,7 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
+            <ShopifySyncCard />
             <DepositMethodsManager />
             <CurrencyRatesManager />
             <PlatformSettingsManager />
