@@ -79,7 +79,7 @@ export function useAvailableDeliveries() {
         .from("orders")
         .select("*")
         .is("driver_id", null)
-        .in("status", ["confirmed", "ready", "ready_for_pickup"])
+        .in("status", ["ready", "ready_for_pickup"])
         .order("created_at", { ascending: false });
 
       if (error) throw error;
