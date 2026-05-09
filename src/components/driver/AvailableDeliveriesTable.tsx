@@ -34,6 +34,7 @@ interface EnrichedDelivery {
   distance_km?: number;
   itemCount?: number;
   seller?: SellerInfo;
+  sellerCount?: number;
 }
 
 export default function AvailableDeliveriesTable() {
@@ -63,14 +64,19 @@ export default function AvailableDeliveriesTable() {
         .in("order_id", orderIds);
 
       const itemCounts: Record<string, number> = {};
-      const orderSellerIds: Record<string, string> = {};
+      const orderSellerIds: Record<string, string[]> = {};
       items?.forEach(item => {
         itemCounts[item.order_id] = (itemCounts[item.order_id] || 0) + 1;
-        if (item.seller_id) orderSellerIds[item.order_id] = item.seller_id;
+        if (item.seller_id) {
+          if (!orderSellerIds[item.order_id]) orderSellerIds[item.order_id] = [];
+          if (!orderSellerIds[item.order_id].includes(item.seller_id)) {
+            orderSellerIds[item.order_id].push(item.seller_id);
+          }
+        }
       });
 
       // Fetch seller locations
-      const uniqueSellerIds = [...new Set(Object.values(orderSellerIds))];
+      const uniqueSellerIds = [...new Set(Object.values(orderSellerIds).flat())];
       const sellerMap: Record<string, SellerInfo> = {};
       if (uniqueSellerIds.length > 0) {
         const { data: sellers } = await supabase
@@ -88,12 +94,13 @@ export default function AvailableDeliveriesTable() {
         if (position && d.buyer_latitude && d.buyer_longitude) {
           distance_km = calculateDistance(position.latitude, position.longitude, d.buyer_latitude, d.buyer_longitude);
         }
-        const sellerId = orderSellerIds[d.id];
+        const sellerIds = orderSellerIds[d.id] || [];
         return {
           ...d,
           distance_km,
           itemCount: itemCounts[d.id] || 0,
-          seller: sellerId ? sellerMap[sellerId] : undefined,
+          seller: sellerIds[0] ? sellerMap[sellerIds[0]] : undefined,
+          sellerCount: sellerIds.length,
         };
       });
 
@@ -169,8 +176,15 @@ export default function AvailableDeliveriesTable() {
                   <div className="flex items-start gap-2 bg-orange-50 dark:bg-orange-950/20 rounded-lg p-2">
                     <Store className="h-4 w-4 text-orange-500 mt-0.5" />
                     <div>
-                      <p className="text-xs font-semibold text-orange-600">📦 Récupérer chez</p>
-                      <p className="font-medium text-sm">{delivery.seller.shop_name}</p>
+                      <p className="text-xs font-semibold text-orange-600">
+                        📦 Récupérer chez {delivery.sellerCount && delivery.sellerCount > 1 ? `${delivery.sellerCount} boutiques` : ""}
+                      </p>
+                      <p className="font-medium text-sm">
+                        {delivery.seller.shop_name}
+                        {delivery.sellerCount && delivery.sellerCount > 1 && (
+                          <span className="text-muted-foreground"> + {delivery.sellerCount - 1} autre{delivery.sellerCount - 1 > 1 ? "s" : ""}</span>
+                        )}
+                      </p>
                       <p className="text-xs text-muted-foreground">{delivery.seller.shop_address}, {delivery.seller.shop_city}</p>
                     </div>
                   </div>
