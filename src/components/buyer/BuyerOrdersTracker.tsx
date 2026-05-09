@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare, RotateCcw, Star, MessageCircle } from "lucide-react";
+import { Package, Truck, MapPin, Key, CheckCircle, Clock, Navigation, MessageSquare, RotateCcw, Star, MessageCircle, Download } from "lucide-react";
+import { generateOrderReceipt } from "@/utils/generateReceipt";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
 import ReturnRequestButton from "@/components/returns/ReturnRequestButton";
 import OrderRatingDialog from "@/components/reviews/OrderRatingDialog";
@@ -287,7 +288,20 @@ export default function BuyerOrdersTracker() {
                       <Star className="h-3.5 w-3.5" /> Noter
                     </Button>
                   )}
-                  {/* Refund is now only available after a return request - removed direct refund button */}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1"
+                    onClick={async () => {
+                      try {
+                        await generateOrderReceipt(order.id);
+                      } catch (e: any) {
+                        toast({ title: "Erreur", description: e.message || "Impossible de générer le reçu", variant: "destructive" });
+                      }
+                    }}
+                  >
+                    <Download className="h-3.5 w-3.5" /> Reçu
+                  </Button>
                 </div>
               </div>
 
