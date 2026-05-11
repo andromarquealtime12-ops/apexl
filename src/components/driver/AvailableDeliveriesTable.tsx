@@ -239,11 +239,19 @@ export default function AvailableDeliveriesTable() {
                   </div>
                 </div>
 
-                {delivery.distance_km !== undefined && (
-                  <div className="flex items-center gap-1 text-sm">
-                    <Navigation className="h-3 w-3 text-primary" />
-                    <span className="font-medium text-primary">{delivery.distance_km.toFixed(1)} km</span>
-                    <span className="text-muted-foreground">de vous</span>
+                {(delivery.total_route_km !== undefined || delivery.distance_km !== undefined) && (
+                  <div className="flex items-center gap-2 text-sm flex-wrap">
+                    {delivery.total_route_km !== undefined && (
+                      <span className="flex items-center gap-1">
+                        <Navigation className="h-3 w-3 text-primary" />
+                        <span className="font-medium text-primary">Parcours total : {delivery.total_route_km.toFixed(1)} km</span>
+                      </span>
+                    )}
+                    {delivery.distance_km !== undefined && (
+                      <span className="text-xs text-muted-foreground">
+                        (client à {delivery.distance_km.toFixed(1)} km de vous)
+                      </span>
+                    )}
                   </div>
                 )}
 
