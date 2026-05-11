@@ -110,6 +110,7 @@ export default function AvailableDeliveriesTable() {
 
         // Chain nearest-next: driver → s1 → s2 → ... → buyer
         let total_route_km: number | undefined;
+        const steps: RouteStep[] = [];
         if (position) {
           const remaining = [...sellerStops];
           let curLat = position.latitude;
@@ -124,11 +125,24 @@ export default function AvailableDeliveriesTable() {
             });
             total += bestD;
             const next = remaining.splice(bestIdx, 1)[0];
+            steps.push({
+              label: next.shop_name,
+              sublabel: `${next.shop_address}, ${next.shop_city}`,
+              distance_from_prev: bestD,
+              type: "seller",
+            });
             curLat = next.latitude!;
             curLng = next.longitude!;
           }
           if (d.buyer_latitude && d.buyer_longitude) {
-            total += calculateDistance(curLat, curLng, d.buyer_latitude, d.buyer_longitude);
+            const dB = calculateDistance(curLat, curLng, d.buyer_latitude, d.buyer_longitude);
+            total += dB;
+            steps.push({
+              label: d.delivery_city || "Client",
+              sublabel: d.delivery_address || undefined,
+              distance_from_prev: dB,
+              type: "buyer",
+            });
           }
           total_route_km = total;
         }
@@ -140,6 +154,7 @@ export default function AvailableDeliveriesTable() {
           itemCount: itemCounts[d.id] || 0,
           seller: sellerIds[0] ? sellerMap[sellerIds[0]] : undefined,
           sellerCount: sellerIds.length,
+          steps,
         };
       });
 
