@@ -278,6 +278,44 @@ export default function AvailableDeliveriesTable() {
                   </div>
                 )}
 
+                {/* Étapes du parcours */}
+                {delivery.steps && delivery.steps.length > 0 && (
+                  <div className="rounded-lg border bg-muted/30 p-3 mt-2">
+                    <p className="text-xs font-semibold mb-2 flex items-center gap-1">
+                      <Navigation className="h-3 w-3 text-primary" />
+                      Étapes du parcours
+                    </p>
+                    <ol className="space-y-1.5">
+                      {delivery.steps.map((step, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-xs">
+                          <span className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                            step.type === "buyer" ? "bg-green-500/20 text-green-700" : "bg-orange-500/20 text-orange-700"
+                          }`}>
+                            {idx + 1}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">
+                              {step.type === "seller" ? "📦 " : "🏠 "}{step.label}
+                            </p>
+                            {step.sublabel && (
+                              <p className="text-muted-foreground truncate">{step.sublabel}</p>
+                            )}
+                          </div>
+                          <span className="text-muted-foreground whitespace-nowrap">
+                            +{step.distance_from_prev.toFixed(1)} km
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                    {delivery.total_route_km !== undefined && (
+                      <div className="mt-2 pt-2 border-t flex justify-between text-xs font-semibold">
+                        <span>Total</span>
+                        <span className="text-primary">{delivery.total_route_km.toFixed(1)} km</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {delivery.delivery_notes && (
                   <p className="text-sm text-muted-foreground italic">"{delivery.delivery_notes}"</p>
                 )}
