@@ -96,20 +96,50 @@ export default function AvailableDeliveriesTable() {
           distance_km = calculateDistance(position.latitude, position.longitude, d.buyer_latitude, d.buyer_longitude);
         }
         const sellerIds = orderSellerIds[d.id] || [];
+        const sellerStops = sellerIds
+          .map((id) => sellerMap[id])
+          .filter((s) => s && s.latitude != null && s.longitude != null) as SellerInfo[];
+
+        // Chain nearest-next: driver → s1 → s2 → ... → buyer
+        let total_route_km: number | undefined;
+        if (position) {
+          const remaining = [...sellerStops];
+          let curLat = position.latitude;
+          let curLng = position.longitude;
+          let total = 0;
+          while (remaining.length) {
+            let bestIdx = 0;
+            let bestD = Infinity;
+            remaining.forEach((s, i) => {
+              const dd = calculateDistance(curLat, curLng, s.latitude!, s.longitude!);
+              if (dd < bestD) { bestD = dd; bestIdx = i; }
+            });
+            total += bestD;
+            const next = remaining.splice(bestIdx, 1)[0];
+            curLat = next.latitude!;
+            curLng = next.longitude!;
+          }
+          if (d.buyer_latitude && d.buyer_longitude) {
+            total += calculateDistance(curLat, curLng, d.buyer_latitude, d.buyer_longitude);
+          }
+          total_route_km = total;
+        }
+
         return {
           ...d,
           distance_km,
+          total_route_km,
           itemCount: itemCounts[d.id] || 0,
           seller: sellerIds[0] ? sellerMap[sellerIds[0]] : undefined,
           sellerCount: sellerIds.length,
         };
       });
 
-      // Sort by distance if available
+      // Sort by total chained route distance
       result.sort((a, b) => {
-        if (a.distance_km !== undefined && b.distance_km !== undefined) return a.distance_km - b.distance_km;
-        if (a.distance_km !== undefined) return -1;
-        return 1;
+        const ka = a.total_route_km ?? a.distance_km ?? Infinity;
+        const kb = b.total_route_km ?? b.distance_km ?? Infinity;
+        return ka - kb;
       });
 
       setEnriched(result);
