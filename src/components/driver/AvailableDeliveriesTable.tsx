@@ -21,6 +21,13 @@ interface SellerInfo {
   longitude: number | null;
 }
 
+interface RouteStep {
+  label: string;
+  sublabel?: string;
+  distance_from_prev: number;
+  type: "seller" | "buyer";
+}
+
 interface EnrichedDelivery {
   id: string;
   created_at: string;
@@ -36,6 +43,7 @@ interface EnrichedDelivery {
   itemCount?: number;
   seller?: SellerInfo;
   sellerCount?: number;
+  steps?: RouteStep[];
 }
 
 export default function AvailableDeliveriesTable() {
