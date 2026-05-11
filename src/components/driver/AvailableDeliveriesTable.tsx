@@ -21,6 +21,13 @@ interface SellerInfo {
   longitude: number | null;
 }
 
+interface RouteStep {
+  label: string;
+  sublabel?: string;
+  distance_from_prev: number;
+  type: "seller" | "buyer";
+}
+
 interface EnrichedDelivery {
   id: string;
   created_at: string;
@@ -36,6 +43,7 @@ interface EnrichedDelivery {
   itemCount?: number;
   seller?: SellerInfo;
   sellerCount?: number;
+  steps?: RouteStep[];
 }
 
 export default function AvailableDeliveriesTable() {
@@ -102,6 +110,7 @@ export default function AvailableDeliveriesTable() {
 
         // Chain nearest-next: driver → s1 → s2 → ... → buyer
         let total_route_km: number | undefined;
+        const steps: RouteStep[] = [];
         if (position) {
           const remaining = [...sellerStops];
           let curLat = position.latitude;
@@ -116,11 +125,24 @@ export default function AvailableDeliveriesTable() {
             });
             total += bestD;
             const next = remaining.splice(bestIdx, 1)[0];
+            steps.push({
+              label: next.shop_name,
+              sublabel: `${next.shop_address}, ${next.shop_city}`,
+              distance_from_prev: bestD,
+              type: "seller",
+            });
             curLat = next.latitude!;
             curLng = next.longitude!;
           }
           if (d.buyer_latitude && d.buyer_longitude) {
-            total += calculateDistance(curLat, curLng, d.buyer_latitude, d.buyer_longitude);
+            const dB = calculateDistance(curLat, curLng, d.buyer_latitude, d.buyer_longitude);
+            total += dB;
+            steps.push({
+              label: d.delivery_city || "Client",
+              sublabel: d.delivery_address || undefined,
+              distance_from_prev: dB,
+              type: "buyer",
+            });
           }
           total_route_km = total;
         }
@@ -132,6 +154,7 @@ export default function AvailableDeliveriesTable() {
           itemCount: itemCounts[d.id] || 0,
           seller: sellerIds[0] ? sellerMap[sellerIds[0]] : undefined,
           sellerCount: sellerIds.length,
+          steps,
         };
       });
 
@@ -251,6 +274,44 @@ export default function AvailableDeliveriesTable() {
                       <span className="text-xs text-muted-foreground">
                         (client à {delivery.distance_km.toFixed(1)} km de vous)
                       </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Étapes du parcours */}
+                {delivery.steps && delivery.steps.length > 0 && (
+                  <div className="rounded-lg border bg-muted/30 p-3 mt-2">
+                    <p className="text-xs font-semibold mb-2 flex items-center gap-1">
+                      <Navigation className="h-3 w-3 text-primary" />
+                      Étapes du parcours
+                    </p>
+                    <ol className="space-y-1.5">
+                      {delivery.steps.map((step, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-xs">
+                          <span className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                            step.type === "buyer" ? "bg-green-500/20 text-green-700" : "bg-orange-500/20 text-orange-700"
+                          }`}>
+                            {idx + 1}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">
+                              {step.type === "seller" ? "📦 " : "🏠 "}{step.label}
+                            </p>
+                            {step.sublabel && (
+                              <p className="text-muted-foreground truncate">{step.sublabel}</p>
+                            )}
+                          </div>
+                          <span className="text-muted-foreground whitespace-nowrap">
+                            +{step.distance_from_prev.toFixed(1)} km
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                    {delivery.total_route_km !== undefined && (
+                      <div className="mt-2 pt-2 border-t flex justify-between text-xs font-semibold">
+                        <span>Total</span>
+                        <span className="text-primary">{delivery.total_route_km.toFixed(1)} km</span>
+                      </div>
                     )}
                   </div>
                 )}

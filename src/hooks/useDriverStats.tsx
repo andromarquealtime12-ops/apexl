@@ -75,39 +75,16 @@ export function useAvailableDeliveries() {
     queryFn: async () => {
       if (!user) throw new Error("Not authenticated");
 
+      // status='ready' is set by mark_seller_items_ready RPC only when ALL sellers are ready.
       const { data, error } = await supabase
         .from("orders")
         .select("*")
         .is("driver_id", null)
-        .in("status", ["confirmed", "ready", "ready_for_pickup"])
+        .in("status", ["ready", "ready_for_pickup"])
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      if (!data || data.length === 0) return [];
-
-      // Only show orders where ALL sellers have marked their packages ready
-      const orderIds = data.map((o) => o.id);
-      const [{ data: items }, { data: readiness }] = await Promise.all([
-        supabase.from("order_items").select("order_id, seller_id").in("order_id", orderIds),
-        supabase.from("order_seller_readiness").select("order_id, seller_id").in("order_id", orderIds),
-      ]);
-
-      const sellersByOrder: Record<string, Set<string>> = {};
-      (items || []).forEach((it: any) => {
-        if (!it.seller_id) return;
-        (sellersByOrder[it.order_id] ||= new Set()).add(it.seller_id);
-      });
-      const readyByOrder: Record<string, Set<string>> = {};
-      (readiness || []).forEach((r: any) => {
-        (readyByOrder[r.order_id] ||= new Set()).add(r.seller_id);
-      });
-
-      return data.filter((o) => {
-        const need = sellersByOrder[o.id];
-        if (!need || need.size === 0) return false;
-        const ready = readyByOrder[o.id] || new Set();
-        return [...need].every((s) => ready.has(s));
-      });
+      return data || [];
     },
     enabled: !!user,
   });
