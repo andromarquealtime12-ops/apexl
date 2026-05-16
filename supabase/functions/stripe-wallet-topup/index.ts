@@ -66,8 +66,31 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Map currency to Stripe currency code
-    const stripeCurrency = currency === "DOP" ? "dop" : currency === "HTG" ? "htg" : "usd";
+    // Stripe account is in Canada → charge in CAD.
+    // Convert the wallet currency (DOP/HTG/USD) to CAD using a live FX rate.
+    // Wallet will still be credited in the original currency after payment.
+    let fxRate = 0;
+    try {
+      const fxRes = await fetch(`https://open.er-api.com/v6/latest/${currency}`);
+      const fxJson = await fxRes.json();
+      fxRate = fxJson?.rates?.CAD;
+      if (!fxRate || typeof fxRate !== "number") throw new Error("No CAD rate");
+    } catch (e) {
+      console.error("FX fetch failed:", e);
+      return new Response(
+        JSON.stringify({ error: "Impossible de récupérer le taux de change vers CAD" }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const cadAmount = Math.round(amount * fxRate * 100) / 100; // 2 decimals
+    if (cadAmount < 0.5) {
+      return new Response(
+        JSON.stringify({ error: "Montant trop faible (minimum ~0.50 CAD)" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const stripeCurrency = "cad";
 
     // Check if customer exists
     const customers = await stripe.customers.list({
@@ -108,9 +131,9 @@ serve(async (req) => {
             currency: stripeCurrency,
             product_data: {
               name: `Recharge portefeuille - ${currency}`,
-              description: `Ajout de ${amount} ${currency} à votre portefeuille Ayiti Market`,
+              description: `Ajout de ${amount} ${currency} (≈ ${cadAmount} CAD au taux ${fxRate.toFixed(4)}) à votre portefeuille Ayiti Market`,
             },
-            unit_amount: Math.round(amount * 100), // Stripe uses cents
+            unit_amount: Math.round(cadAmount * 100), // CAD cents
           },
           quantity: 1,
         },
@@ -122,6 +145,8 @@ serve(async (req) => {
         user_id: user.id,
         amount: amount.toString(),
         currency,
+        cad_amount: cadAmount.toString(),
+        fx_rate: fxRate.toString(),
       },
     });
 
