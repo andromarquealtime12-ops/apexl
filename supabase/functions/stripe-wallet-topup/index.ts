@@ -131,9 +131,9 @@ serve(async (req) => {
             currency: stripeCurrency,
             product_data: {
               name: `Recharge portefeuille - ${currency}`,
-              description: `Ajout de ${amount} ${currency} à votre portefeuille Ayiti Market`,
+              description: `Ajout de ${amount} ${currency} (≈ ${cadAmount} CAD au taux ${fxRate.toFixed(4)}) à votre portefeuille Ayiti Market`,
             },
-            unit_amount: Math.round(amount * 100), // Stripe uses cents
+            unit_amount: Math.round(cadAmount * 100), // CAD cents
           },
           quantity: 1,
         },
@@ -145,6 +145,8 @@ serve(async (req) => {
         user_id: user.id,
         amount: amount.toString(),
         currency,
+        cad_amount: cadAmount.toString(),
+        fx_rate: fxRate.toString(),
       },
     });
 
