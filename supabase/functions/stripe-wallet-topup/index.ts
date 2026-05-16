@@ -66,8 +66,31 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Map currency to Stripe currency code
-    const stripeCurrency = currency === "DOP" ? "dop" : currency === "HTG" ? "htg" : "usd";
+    // Stripe account is in Canada → charge in CAD.
+    // Convert the wallet currency (DOP/HTG/USD) to CAD using a live FX rate.
+    // Wallet will still be credited in the original currency after payment.
+    let fxRate = 0;
+    try {
+      const fxRes = await fetch(`https://open.er-api.com/v6/latest/${currency}`);
+      const fxJson = await fxRes.json();
+      fxRate = fxJson?.rates?.CAD;
+      if (!fxRate || typeof fxRate !== "number") throw new Error("No CAD rate");
+    } catch (e) {
+      console.error("FX fetch failed:", e);
+      return new Response(
+        JSON.stringify({ error: "Impossible de récupérer le taux de change vers CAD" }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const cadAmount = Math.round(amount * fxRate * 100) / 100; // 2 decimals
+    if (cadAmount < 0.5) {
+      return new Response(
+        JSON.stringify({ error: "Montant trop faible (minimum ~0.50 CAD)" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const stripeCurrency = "cad";
 
     // Check if customer exists
     const customers = await stripe.customers.list({
