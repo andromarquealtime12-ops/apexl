@@ -415,20 +415,29 @@ const Wallet = () => {
                         toast.error("Veuillez entrer un montant valide");
                         return;
                       }
-                      try {
-                        toast.loading("Préparation du paiement Stripe...");
-                        const { data, error } = await supabase.functions.invoke("stripe-wallet-topup", {
-                          body: { amount, currency: depositCurrency },
-                        });
-                        toast.dismiss();
-                        if (error) throw error;
-                        if (data?.url) {
-                          window.open(data.url, "_blank");
-                          setDepositOpen(false);
-                          resetDepositForm();
-                        } else {
-                          throw new Error("URL de paiement manquante");
-                        }
+                       // iOS Safari requires window.open to be called synchronously in the user gesture.
+                       // Open a blank tab immediately, then set its URL after the async call.
+                       const popup = window.open("about:blank", "_blank");
+                       try {
+                         toast.loading("Préparation du paiement Stripe...");
+                         const { data, error } = await supabase.functions.invoke("stripe-wallet-topup", {
+                           body: { amount, currency: depositCurrency },
+                         });
+                         toast.dismiss();
+                         if (error) throw error;
+                         if (data?.url) {
+                           if (popup && !popup.closed) {
+                             popup.location.href = data.url;
+                           } else {
+                             // Popup blocked (common on iOS) — fallback to same-tab redirect
+                             window.location.href = data.url;
+                           }
+                           setDepositOpen(false);
+                           resetDepositForm();
+                         } else {
+                           if (popup) popup.close();
+                           throw new Error("URL de paiement manquante");
+                         }
                       } catch (e: any) {
                         toast.dismiss();
                         toast.error(e.message || "Erreur Stripe");
