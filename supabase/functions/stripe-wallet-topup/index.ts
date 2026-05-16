@@ -43,7 +43,7 @@ serve(async (req) => {
       });
     }
 
-    const { amount, currency } = await req.json();
+    const { amount, currency, returnOrigin } = await req.json();
 
     if (!amount || amount <= 0 || amount > 100000) {
       return new Response(
@@ -86,6 +86,18 @@ serve(async (req) => {
       customerId = customer.id;
     }
 
+    const requestOrigin = req.headers.get("origin");
+    const appOrigin = typeof returnOrigin === "string" && returnOrigin.startsWith("http")
+      ? returnOrigin
+      : requestOrigin;
+
+    if (!appOrigin) {
+      return new Response(JSON.stringify({ error: "Missing app origin" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -104,8 +116,8 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/wallet?stripe_success=true`,
-      cancel_url: `${req.headers.get("origin")}/wallet?stripe_cancel=true`,
+      success_url: `${appOrigin}/wallet?stripe_success=true`,
+      cancel_url: `${appOrigin}/wallet?stripe_cancel=true`,
       metadata: {
         user_id: user.id,
         amount: amount.toString(),
