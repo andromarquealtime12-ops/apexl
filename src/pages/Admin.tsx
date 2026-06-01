@@ -33,6 +33,7 @@ import NegativeBalanceManager from "@/components/admin/NegativeBalanceManager";
 import DepositMethodsManager from "@/components/admin/DepositMethodsManager";
 import CurrencyRatesManager from "@/components/admin/CurrencyRatesManager";
 import { ShopifySyncCard } from "@/components/admin/ShopifySyncCard";
+import { PrintfulSyncCard } from "@/components/admin/PrintfulSyncCard";
 import AdminOrdersManager from "@/components/admin/AdminOrdersManager";
 
 import { usePendingIdentityVerifications, useSupportTickets, useReports } from "@/hooks/useAdminAdvanced";
@@ -221,6 +222,7 @@ const Admin = () => {
 
           <TabsContent value="settings" className="space-y-6">
             <ShopifySyncCard />
+            <PrintfulSyncCard />
             <DepositMethodsManager />
             <CurrencyRatesManager />
             <PlatformSettingsManager />

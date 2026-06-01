@@ -11,3 +11,10 @@ verify_jwt = false
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.printful-sync-products]
+verify_jwt = true
+
+[functions.printful-create-order]
+verify_jwt = false
+

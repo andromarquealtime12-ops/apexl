@@ -20,8 +20,9 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const isInCart = items.some((item) => item.product.id === product.id);
 
-  // Shopify product geographic availability
+  // Shopify / Printful product geographic availability
   const isShopify = (product as any).is_shopify === true;
+  const isPrintful = (product as any).is_printful === true;
   const availableCountries: string[] = (product as any).available_countries || ['DO', 'HT'];
   const userCountry = (typeof navigator !== 'undefined' && navigator.language?.includes('HT')) ? 'HT' : 'DO';
   const outOfCountry = isShopify && availableCountries.length > 0 && !availableCountries.includes(userCountry);
@@ -49,6 +50,9 @@ export function ProductCard({ product }: ProductCardProps) {
           }
           {isShopify &&
           <Badge variant="secondary" className="absolute top-2 left-2 mt-8">Shopify</Badge>
+          }
+          {isPrintful &&
+          <Badge variant="secondary" className="absolute top-2 left-2 mt-8">Printful · POD</Badge>
           }
           {outOfCountry &&
           <Badge variant="destructive" className="absolute bottom-2 left-2">Hors pays</Badge>

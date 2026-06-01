@@ -80,6 +80,18 @@ export function useCheckout() {
             console.error("Shopify order forward failed:", e);
           }
         }
+
+        // If order contains Printful (POD) products, forward to Printful for fulfillment
+        const hasPrintfulItem = items.some((it) => (it.product as any).is_printful === true);
+        if (hasPrintfulItem) {
+          try {
+            await supabase.functions.invoke("printful-create-order", {
+              body: { order_id: result.order_id },
+            });
+          } catch (e) {
+            console.error("Printful order forward failed:", e);
+          }
+        }
       }
 
       return { id: result.order_id };

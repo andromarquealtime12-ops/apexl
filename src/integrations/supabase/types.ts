@@ -871,9 +871,12 @@ export type Database = {
           images: string[] | null
           is_active: boolean | null
           is_featured: boolean | null
+          is_printful: boolean
           is_shopify: boolean
           name: string
           price: number
+          printful_product_id: string | null
+          printful_variant_id: string | null
           seller_id: string
           shopify_product_id: string | null
           shopify_variant_id: string | null
@@ -893,9 +896,12 @@ export type Database = {
           images?: string[] | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          is_printful?: boolean
           is_shopify?: boolean
           name: string
           price: number
+          printful_product_id?: string | null
+          printful_variant_id?: string | null
           seller_id: string
           shopify_product_id?: string | null
           shopify_variant_id?: string | null
@@ -915,9 +921,12 @@ export type Database = {
           images?: string[] | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          is_printful?: boolean
           is_shopify?: boolean
           name?: string
           price?: number
+          printful_product_id?: string | null
+          printful_variant_id?: string | null
           seller_id?: string
           shopify_product_id?: string | null
           shopify_variant_id?: string | null
