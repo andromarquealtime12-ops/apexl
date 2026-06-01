@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
       city: order.delivery_city || profile?.city || "",
       country_code: order.delivery_country || "DO",
       phone: profile?.phone || "",
-      email: order.buyer_email || undefined,
+      
     };
 
     const pfHeaders: Record<string, string> = {
