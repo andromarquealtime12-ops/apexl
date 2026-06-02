@@ -45,7 +45,15 @@ const Checkout = () => {
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"wallet" | "cash">("wallet");
-  
+
+  // Printful international address
+  const [deliveryAddress2, setDeliveryAddress2] = useState("");
+  const [deliveryState, setDeliveryState] = useState("");
+  const [deliveryZip, setDeliveryZip] = useState("");
+  const [deliveryCountry, setDeliveryCountry] = useState(profile?.country || "DO");
+
+  const hasPrintfulItem = items.some((it) => (it.product as any).is_printful === true);
+
   // Buyer GPS
   const [buyerLat, setBuyerLat] = useState<number | null>(null);
   const [buyerLng, setBuyerLng] = useState<number | null>(null);
@@ -142,6 +150,11 @@ const Checkout = () => {
       return;
     }
 
+    if (hasPrintfulItem && (!deliveryAddress || !deliveryState || !deliveryZip || !deliveryCountry)) {
+      toast({ title: "Adresse incomplète", description: "Veuillez compléter l'adresse internationale pour Printful (ligne 1, état, code postal, pays).", variant: "destructive" });
+      return;
+    }
+
     try {
       const params = {
         deliveryAddress,
@@ -151,6 +164,10 @@ const Checkout = () => {
         buyerLatitude: buyerLat,
         buyerLongitude: buyerLng,
         deliveryFee,
+        deliveryAddress2: deliveryAddress2 || undefined,
+        deliveryState: deliveryState || undefined,
+        deliveryZip: deliveryZip || undefined,
+        deliveryCountry: deliveryCountry || undefined,
       };
 
       if (paymentMethod === "cash") {
