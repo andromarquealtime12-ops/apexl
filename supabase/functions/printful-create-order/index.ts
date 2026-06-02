@@ -63,10 +63,15 @@ Deno.serve(async (req) => {
     const recipient: Record<string, any> = {
       name: profile?.full_name || "Customer",
       address1: order.delivery_address || profile?.address || "",
+      address2: order.delivery_address2 || undefined,
       city: order.delivery_city || profile?.city || "",
+      state_code: order.delivery_state || undefined,
+      zip: order.delivery_zip || undefined,
       country_code: order.delivery_country || "DO",
       phone: profile?.phone || "",
     };
+    // Remove undefined keys for clean payload
+    Object.keys(recipient).forEach(k => recipient[k] === undefined && delete recipient[k]);
     if (email) recipient.email = email;
 
     const pfHeaders: Record<string, string> = {
