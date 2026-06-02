@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
-import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, Mail, Loader2, Navigation, Store, Banknote } from "lucide-react";
+import { ShoppingBag, MapPin, Wallet, Truck, AlertCircle, CheckCircle, Mail, Loader2, Navigation, Store, Banknote, Globe } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,7 +45,15 @@ const Checkout = () => {
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"wallet" | "cash">("wallet");
-  
+
+  // Printful international address
+  const [deliveryAddress2, setDeliveryAddress2] = useState("");
+  const [deliveryState, setDeliveryState] = useState("");
+  const [deliveryZip, setDeliveryZip] = useState("");
+  const [deliveryCountry, setDeliveryCountry] = useState(profile?.country || "DO");
+
+  const hasPrintfulItem = items.some((it) => (it.product as any).is_printful === true);
+
   // Buyer GPS
   const [buyerLat, setBuyerLat] = useState<number | null>(null);
   const [buyerLng, setBuyerLng] = useState<number | null>(null);
@@ -142,6 +150,11 @@ const Checkout = () => {
       return;
     }
 
+    if (hasPrintfulItem && (!deliveryAddress || !deliveryState || !deliveryZip || !deliveryCountry)) {
+      toast({ title: "Adresse incomplète", description: "Veuillez compléter l'adresse internationale pour Printful (ligne 1, état, code postal, pays).", variant: "destructive" });
+      return;
+    }
+
     try {
       const params = {
         deliveryAddress,
@@ -151,6 +164,10 @@ const Checkout = () => {
         buyerLatitude: buyerLat,
         buyerLongitude: buyerLng,
         deliveryFee,
+        deliveryAddress2: deliveryAddress2 || undefined,
+        deliveryState: deliveryState || undefined,
+        deliveryZip: deliveryZip || undefined,
+        deliveryCountry: deliveryCountry || undefined,
       };
 
       if (paymentMethod === "cash") {
@@ -342,6 +359,80 @@ const Checkout = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Adresse internationale Printful */}
+              {hasPrintfulItem && (
+                <Card className="border-primary/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      Adresse internationale (Printful)
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      Vos produits Printful sont expédiés depuis l'étranger. Merci de saisir une adresse complète.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="address2">Adresse ligne 2 (optionnel)</Label>
+                      <Input
+                        id="address2"
+                        placeholder="Appartement, suite, étage..."
+                        value={deliveryAddress2}
+                        onChange={(e) => setDeliveryAddress2(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="state">État / Province</Label>
+                        <Input
+                          id="state"
+                          placeholder="Ex: Distrito Nacional"
+                          value={deliveryState}
+                          onChange={(e) => setDeliveryState(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="zip">Code postal</Label>
+                        <Input
+                          id="zip"
+                          placeholder="Ex: 10101"
+                          value={deliveryZip}
+                          onChange={(e) => setDeliveryZip(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="country">Pays</Label>
+                        <Select value={deliveryCountry} onValueChange={setDeliveryCountry}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent className="max-h-60">
+                            <SelectItem value="DO">🇩🇴 République Dominicaine</SelectItem>
+                            <SelectItem value="HT">🇭🇹 Haïti</SelectItem>
+                            <SelectItem value="US">🇺🇸 États-Unis</SelectItem>
+                            <SelectItem value="CA">🇨🇦 Canada</SelectItem>
+                            <SelectItem value="FR">🇫🇷 France</SelectItem>
+                            <SelectItem value="MX">🇲🇽 Mexique</SelectItem>
+                            <SelectItem value="ES">🇪🇸 Espagne</SelectItem>
+                            <SelectItem value="BR">🇧🇷 Brésil</SelectItem>
+                            <SelectItem value="GB">🇬🇧 Royaume-Uni</SelectItem>
+                            <SelectItem value="DE">🇩🇪 Allemagne</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <Alert>
+                      <Globe className="h-4 w-4" />
+                      <AlertDescription className="text-xs">
+                        Les produits Printful sont facturés en USD et expédiés par Printful directement à cette adresse.
+                      </AlertDescription>
+                    </Alert>
+                  </CardContent>
+                </Card>
+              )}
+
+
 
               {/* Paiement */}
               <Card>

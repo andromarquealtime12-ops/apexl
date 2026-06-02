@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ShoppingBag, User, Menu, Wallet, 
+import {
+  ShoppingBag, User, Menu, Wallet,
   LogOut, ChevronDown, Settings, Package, Search,
   Store, Truck, UtensilsCrossed, Building2
 } from "lucide-react";
@@ -12,6 +13,7 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { CartSheet } from "@/components/cart/CartSheet";
 import { Input } from "@/components/ui/input";
 import NotificationsDropdown from "@/components/notifications/NotificationsDropdown";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +31,7 @@ import {
 } from "@/components/ui/sheet";
 
 const Header = () => {
+  const { t } = useTranslation();
   const { user, isAdmin, isSeller, isDriver, isAgent, signOut, loading } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"signin" | "signup">("signin");
@@ -63,8 +66,8 @@ const Header = () => {
           <div className="hidden md:flex flex-1 max-w-md mx-6">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Rechercher des produits..." 
+              <Input
+                placeholder={t("nav.search")}
                 className="pl-10 w-full"
               />
             </div>
@@ -72,26 +75,29 @@ const Header = () => {
 
           <nav className="hidden lg:flex items-center gap-6">
             <Link to="/" className="text-sm font-medium hover:text-primary transition-smooth">
-              Accueil
+              {t("nav.home")}
             </Link>
             <Link to="/products" className="text-sm font-medium hover:text-primary transition-smooth">
-              Produits
+              {t("nav.products")}
             </Link>
             <Link to="/shops" className="text-sm font-medium hover:text-primary transition-smooth">
-              Boutiques
+              {t("nav.shops")}
             </Link>
             <Link to="/restaurants" className="text-sm font-medium hover:text-primary transition-smooth">
-              Restaurants
+              {t("nav.restaurants")}
             </Link>
             <Link to="/seller" className="text-sm font-medium hover:text-primary transition-smooth">
-              Vendre
+              {t("nav.sell")}
             </Link>
             <Link to="/driver" className="text-sm font-medium hover:text-primary transition-smooth">
-              Livrer
+              {t("nav.deliver")}
             </Link>
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* Language */}
+            <LanguageSwitcher />
+
             {/* Notifications */}
             {user && <NotificationsDropdown />}
 
@@ -183,10 +189,10 @@ const Header = () => {
               <>
                 <Button variant="outline" size="sm" className="hidden sm:flex" onClick={openSignIn}>
                   <User className="h-4 w-4 mr-2" />
-                  Connexion
+                  {t("nav.signin")}
                 </Button>
                 <Button variant="hero" size="sm" onClick={openSignUp}>
-                  S'inscrire
+                  {t("nav.signup")}
                 </Button>
               </>
             )}

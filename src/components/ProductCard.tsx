@@ -2,17 +2,23 @@ import { Product, CURRENCY_SYMBOLS } from "@/types/database";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Check } from "lucide-react";
+import { ShoppingCart, Heart, Check, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { useProfile } from "@/hooks/useProfile";
+import { useCurrencyRates, convertCurrency } from "@/hooks/useCurrencyRates";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { t } = useTranslation();
   const { addItem, items } = useCart();
+  const { data: profile } = useProfile();
+  const { data: rates } = useCurrencyRates();
   const [added, setAdded] = useState(false);
   const currencySymbol = CURRENCY_SYMBOLS[product.currency];
   const mainImage = product.images?.[0] || "/placeholder.svg";
@@ -20,12 +26,35 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const isInCart = items.some((item) => item.product.id === product.id);
 
-  // Shopify / Printful product geographic availability
   const isShopify = (product as any).is_shopify === true;
   const isPrintful = (product as any).is_printful === true;
-  const availableCountries: string[] = (product as any).available_countries || ['DO', 'HT'];
-  const userCountry = (typeof navigator !== 'undefined' && navigator.language?.includes('HT')) ? 'HT' : 'DO';
-  const outOfCountry = isShopify && availableCountries.length > 0 && !availableCountries.includes(userCountry);
+  const sellerCountry: string | undefined = (product as any).seller_country;
+  const availableCountries: string[] = (product as any).available_countries || [];
+
+  // Detect buyer country: profile.country > navigator
+  const userCountry: string = profile?.country
+    ?? (typeof navigator !== "undefined" && navigator.language?.includes("HT") ? "HT" : "DO");
+
+  // Country availability rules:
+  // - Printful: worldwide (always available)
+  // - Shopify: based on available_countries
+  // - Local products: must share seller_country with buyer
+  let outOfCountry = false;
+  if (isPrintful) {
+    outOfCountry = false;
+  } else if (isShopify) {
+    outOfCountry = availableCountries.length > 0 && !availableCountries.includes(userCountry);
+  } else if (sellerCountry) {
+    outOfCountry = sellerCountry !== userCountry;
+  }
+
+  // Converted display price for Printful (USD → user currency)
+  const userCurrency = userCountry === "HT" ? "HTG" : userCountry === "DO" ? "DOP" : "USD";
+  const convertedPrice = useMemo(() => {
+    if (!isPrintful || !rates || userCurrency === product.currency) return null;
+    const v = convertCurrency(product.price, product.currency, userCurrency, rates);
+    return v > 0 ? v : null;
+  }, [isPrintful, rates, userCurrency, product.currency, product.price]);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -44,30 +73,34 @@ export function ProductCard({ product }: ProductCardProps) {
             src={mainImage}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-none shadow-sm" />
-          
-          {product.is_featured &&
-          <Badge className="absolute top-2 left-2 bg-primary">Vedette</Badge>
-          }
-          {isShopify &&
-          <Badge variant="secondary" className="absolute top-2 left-2 mt-8">Shopify</Badge>
-          }
-          {isPrintful &&
-          <Badge variant="secondary" className="absolute top-2 left-2 mt-8">Printful · POD</Badge>
-          }
-          {outOfCountry &&
-          <Badge variant="destructive" className="absolute bottom-2 left-2">Hors pays</Badge>
-          }
-          {product.stock_quantity === 0 &&
-          <Badge variant="destructive" className="absolute top-2 right-2">
-              Épuisé
+
+          {product.is_featured && (
+            <Badge className="absolute top-2 left-2 bg-primary">{t("product.featured")}</Badge>
+          )}
+          {isShopify && (
+            <Badge variant="secondary" className="absolute top-2 left-2 mt-8">Shopify</Badge>
+          )}
+          {isPrintful && (
+            <Badge variant="secondary" className="absolute top-2 left-2 mt-8 gap-1">
+              <Globe className="h-3 w-3" />
+              {t("product.worldwide")}
             </Badge>
-          }
+          )}
+          {outOfCountry && (
+            <Badge variant="destructive" className="absolute bottom-2 left-2">
+              {sellerCountry ? `${sellerCountry}` : "Hors pays"}
+            </Badge>
+          )}
+          {product.stock_quantity === 0 && (
+            <Badge variant="destructive" className="absolute top-2 right-2">
+              {t("product.outOfStock")}
+            </Badge>
+          )}
           <Button
             variant="ghost"
             size="icon"
             className="absolute top-2 right-2 bg-background/80 hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
             onClick={(e) => e.stopPropagation()}>
-            
             <Heart className="h-4 w-4" />
           </Button>
         </div>
@@ -79,18 +112,30 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
         </Link>
-        {product.category &&
-        <p className="text-xs text-muted-foreground mt-1">{product.category.name}</p>
-        }
-        <p className="text-lg font-bold text-primary mt-2">
-          {currencySymbol} {product.price.toLocaleString()}
-        </p>
+        {product.category && (
+          <p className="text-xs text-muted-foreground mt-1">{product.category.name}</p>
+        )}
+        <div className="mt-2">
+          <p className="text-lg font-bold text-primary">
+            {currencySymbol} {product.price.toLocaleString()}
+          </p>
+          {convertedPrice !== null && (
+            <p className="text-xs text-muted-foreground">
+              {t("product.approxPrice", {
+                symbol: CURRENCY_SYMBOLS[userCurrency as keyof typeof CURRENCY_SYMBOLS],
+                amount: Math.round(convertedPrice).toLocaleString(),
+              })}
+              {" · "}
+              {t("product.billedIn", { currency: product.currency })}
+            </p>
+          )}
+        </div>
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
         {hasVariants ? (
           <Button className="w-full" size="sm" asChild>
-            <Link to={`/product/${product.id}`}>Choisir couleur / taille</Link>
+            <Link to={`/product/${product.id}`}>{t("product.chooseVariant")}</Link>
           </Button>
         ) : (
           <Button
@@ -99,28 +144,27 @@ export function ProductCard({ product }: ProductCardProps) {
             disabled={product.stock_quantity === 0 || outOfCountry}
             variant={added || isInCart ? "secondary" : "default"}
             onClick={handleAddToCart}>
-            
-            {outOfCountry ?
-            <>Indisponible dans votre pays</> :
-            added ?
-            <>
+            {outOfCountry ? (
+              <>{t("product.outOfCountry")}</>
+            ) : added ? (
+              <>
                 <Check className="h-4 w-4 mr-2" />
-                Ajouté !
-              </> :
-            isInCart ?
-            <>
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Dans le panier
-              </> :
-
-            <>
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Ajouter au panier
+                {t("product.added")}
               </>
-            }
+            ) : isInCart ? (
+              <>
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                {t("product.inCart")}
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                {t("product.addToCart")}
+              </>
+            )}
           </Button>
         )}
       </CardFooter>
-    </Card>);
-
+    </Card>
+  );
 }

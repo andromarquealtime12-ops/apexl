@@ -13,6 +13,11 @@ interface CheckoutParams {
   buyerLatitude?: number | null;
   buyerLongitude?: number | null;
   deliveryFee: number;
+  // Extended international address (Printful)
+  deliveryAddress2?: string;
+  deliveryState?: string;
+  deliveryZip?: string;
+  deliveryCountry?: string;
 }
 
 export function useCheckout() {
@@ -21,7 +26,7 @@ export function useCheckout() {
   const { items, clearCart } = useCart();
 
   return useMutation({
-    mutationFn: async ({ deliveryAddress, deliveryCity, deliveryNotes, currency, buyerLatitude, buyerLongitude, deliveryFee }: CheckoutParams) => {
+    mutationFn: async ({ deliveryAddress, deliveryCity, deliveryNotes, currency, buyerLatitude, buyerLongitude, deliveryFee, deliveryAddress2, deliveryState, deliveryZip, deliveryCountry }: CheckoutParams) => {
       if (!user) throw new Error("Utilisateur non connecté");
       if (items.length === 0) throw new Error("Le panier est vide");
 
@@ -54,15 +59,20 @@ export function useCheckout() {
       const result = data as { success: boolean; order_id?: string; error?: string };
       if (!result.success) throw new Error(result.error || "Checkout failed");
 
-      // Save buyer GPS coordinates on the order
-      if (result.order_id && (buyerLatitude || buyerLongitude)) {
-        await supabase
-          .from("orders")
-          .update({
-            buyer_latitude: buyerLatitude,
-            buyer_longitude: buyerLongitude,
-          })
-          .eq("id", result.order_id);
+      // Save buyer GPS + extended international address on the order
+      if (result.order_id) {
+        const extraUpdate: any = {};
+        if (buyerLatitude || buyerLongitude) {
+          extraUpdate.buyer_latitude = buyerLatitude;
+          extraUpdate.buyer_longitude = buyerLongitude;
+        }
+        if (deliveryAddress2) extraUpdate.delivery_address2 = deliveryAddress2;
+        if (deliveryState) extraUpdate.delivery_state = deliveryState;
+        if (deliveryZip) extraUpdate.delivery_zip = deliveryZip;
+        if (deliveryCountry) extraUpdate.delivery_country = deliveryCountry;
+        if (Object.keys(extraUpdate).length > 0) {
+          await supabase.from("orders").update(extraUpdate).eq("id", result.order_id);
+        }
       }
 
       if (result.order_id) {

@@ -767,10 +767,13 @@ export type Database = {
           created_at: string
           currency: string | null
           delivery_address: string | null
+          delivery_address2: string | null
           delivery_city: string | null
           delivery_country: string | null
           delivery_fee: number | null
           delivery_notes: string | null
+          delivery_state: string | null
+          delivery_zip: string | null
           driver_id: string | null
           id: string
           payment_method:
@@ -790,10 +793,13 @@ export type Database = {
           created_at?: string
           currency?: string | null
           delivery_address?: string | null
+          delivery_address2?: string | null
           delivery_city?: string | null
           delivery_country?: string | null
           delivery_fee?: number | null
           delivery_notes?: string | null
+          delivery_state?: string | null
+          delivery_zip?: string | null
           driver_id?: string | null
           id?: string
           payment_method?:
@@ -813,10 +819,13 @@ export type Database = {
           created_at?: string
           currency?: string | null
           delivery_address?: string | null
+          delivery_address2?: string | null
           delivery_city?: string | null
           delivery_country?: string | null
           delivery_fee?: number | null
           delivery_notes?: string | null
+          delivery_state?: string | null
+          delivery_zip?: string | null
           driver_id?: string | null
           id?: string
           payment_method?:
@@ -877,6 +886,7 @@ export type Database = {
           price: number
           printful_product_id: string | null
           printful_variant_id: string | null
+          seller_country: string | null
           seller_id: string
           shopify_product_id: string | null
           shopify_variant_id: string | null
@@ -902,6 +912,7 @@ export type Database = {
           price: number
           printful_product_id?: string | null
           printful_variant_id?: string | null
+          seller_country?: string | null
           seller_id: string
           shopify_product_id?: string | null
           shopify_variant_id?: string | null
@@ -927,6 +938,7 @@ export type Database = {
           price?: number
           printful_product_id?: string | null
           printful_variant_id?: string | null
+          seller_country?: string | null
           seller_id?: string
           shopify_product_id?: string | null
           shopify_variant_id?: string | null
