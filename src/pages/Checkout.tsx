@@ -360,6 +360,80 @@ const Checkout = () => {
                 </CardContent>
               </Card>
 
+              {/* Adresse internationale Printful */}
+              {hasPrintfulItem && (
+                <Card className="border-primary/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      Adresse internationale (Printful)
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      Vos produits Printful sont expédiés depuis l'étranger. Merci de saisir une adresse complète.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="address2">Adresse ligne 2 (optionnel)</Label>
+                      <Input
+                        id="address2"
+                        placeholder="Appartement, suite, étage..."
+                        value={deliveryAddress2}
+                        onChange={(e) => setDeliveryAddress2(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="state">État / Province</Label>
+                        <Input
+                          id="state"
+                          placeholder="Ex: Distrito Nacional"
+                          value={deliveryState}
+                          onChange={(e) => setDeliveryState(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="zip">Code postal</Label>
+                        <Input
+                          id="zip"
+                          placeholder="Ex: 10101"
+                          value={deliveryZip}
+                          onChange={(e) => setDeliveryZip(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="country">Pays</Label>
+                        <Select value={deliveryCountry} onValueChange={setDeliveryCountry}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent className="max-h-60">
+                            <SelectItem value="DO">🇩🇴 République Dominicaine</SelectItem>
+                            <SelectItem value="HT">🇭🇹 Haïti</SelectItem>
+                            <SelectItem value="US">🇺🇸 États-Unis</SelectItem>
+                            <SelectItem value="CA">🇨🇦 Canada</SelectItem>
+                            <SelectItem value="FR">🇫🇷 France</SelectItem>
+                            <SelectItem value="MX">🇲🇽 Mexique</SelectItem>
+                            <SelectItem value="ES">🇪🇸 Espagne</SelectItem>
+                            <SelectItem value="BR">🇧🇷 Brésil</SelectItem>
+                            <SelectItem value="GB">🇬🇧 Royaume-Uni</SelectItem>
+                            <SelectItem value="DE">🇩🇪 Allemagne</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <Alert>
+                      <Globe className="h-4 w-4" />
+                      <AlertDescription className="text-xs">
+                        Les produits Printful sont facturés en USD et expédiés par Printful directement à cette adresse.
+                      </AlertDescription>
+                    </Alert>
+                  </CardContent>
+                </Card>
+              )}
+
+
+
               {/* Paiement */}
               <Card>
                 <CardHeader>
