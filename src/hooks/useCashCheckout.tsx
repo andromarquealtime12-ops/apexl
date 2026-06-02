@@ -13,6 +13,11 @@ interface CashCheckoutParams {
   buyerLatitude?: number | null;
   buyerLongitude?: number | null;
   deliveryFee: number;
+  // Accepted but ignored for cash (not relevant since Printful blocks cash)
+  deliveryAddress2?: string;
+  deliveryState?: string;
+  deliveryZip?: string;
+  deliveryCountry?: string;
 }
 
 export function useCashCheckout() {
