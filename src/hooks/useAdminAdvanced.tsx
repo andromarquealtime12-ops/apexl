@@ -117,8 +117,7 @@ export function useAdminUsers(filters?: { role?: string; status?: string; search
     queryKey: ["admin-users-list", filters],
     queryFn: async (): Promise<AdvancedUserProfile[]> => {
       let query = supabase
-        .from("profiles")
-        .select("*")
+        .rpc("admin_list_profiles")
         .order("created_at", { ascending: false });
 
       if (filters?.status && filters.status !== "all") {
