@@ -1768,42 +1768,6 @@ export type Database = {
         }
         Relationships: []
       }
-      public_seller_shops: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          latitude: number | null
-          longitude: number | null
-          shop_address: string | null
-          shop_city: string | null
-          shop_description: string | null
-          shop_name: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string | null
-          latitude?: number | null
-          longitude?: number | null
-          shop_address?: string | null
-          shop_city?: string | null
-          shop_description?: string | null
-          shop_name?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string | null
-          latitude?: number | null
-          longitude?: number | null
-          shop_address?: string | null
-          shop_city?: string | null
-          shop_description?: string | null
-          shop_name?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
     }
     Functions: {
       activate_user: { Args: { p_user_id: string }; Returns: Json }
@@ -1904,6 +1868,20 @@ export type Database = {
           latitude: number
           longitude: number
           updated_at: string
+        }[]
+      }
+      get_public_seller_shops: {
+        Args: { p_user_id?: string }
+        Returns: {
+          created_at: string
+          id: string
+          latitude: number
+          longitude: number
+          shop_address: string
+          shop_city: string
+          shop_description: string
+          shop_name: string
+          user_id: string
         }[]
       }
       get_seller_order_ids: { Args: never; Returns: string[] }
