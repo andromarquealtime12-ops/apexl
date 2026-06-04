@@ -97,11 +97,9 @@ function PhoneCallButton({ userId, label }: { userId: string; label: string }) {
     queryKey: ["contact-phone", userId],
     queryFn: async () => {
       const { data } = await supabase
-        .from("profiles")
-        .select("phone, full_name")
-        .eq("user_id", userId)
-        .maybeSingle();
-      return data;
+        .rpc("get_order_contact", { _other_user: userId });
+      const row = Array.isArray(data) ? data[0] : data;
+      return row ?? null;
     },
     enabled: !!userId,
   });
