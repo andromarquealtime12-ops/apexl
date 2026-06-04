@@ -1768,6 +1768,42 @@ export type Database = {
         }
         Relationships: []
       }
+      public_seller_shops: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          latitude: number | null
+          longitude: number | null
+          shop_address: string | null
+          shop_city: string | null
+          shop_description: string | null
+          shop_name: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          shop_address?: string | null
+          shop_city?: string | null
+          shop_description?: string | null
+          shop_name?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          shop_address?: string | null
+          shop_city?: string | null
+          shop_description?: string | null
+          shop_name?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       activate_user: { Args: { p_user_id: string }; Returns: Json }
@@ -1975,10 +2011,7 @@ export type Database = {
         Returns: Json
       }
       unfreeze_wallet: { Args: { p_user_id: string }; Returns: Json }
-      validate_admin_code: {
-        Args: { code_input: string; user_id_input: string }
-        Returns: boolean
-      }
+      validate_admin_code: { Args: { code_input: string }; Returns: boolean }
       verify_delivery_code: {
         Args: { p_code: string; p_order_id: string }
         Returns: Json
