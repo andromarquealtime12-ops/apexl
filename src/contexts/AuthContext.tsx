@@ -122,8 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     const { data, error } = await supabase.rpc("validate_admin_code", {
       code_input: code,
-      user_id_input: user.id
-    });
+    } as any);
     
     if (!error && data) {
       await fetchUserRoles(user.id);
