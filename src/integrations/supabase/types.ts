@@ -1775,6 +1775,106 @@ export type Database = {
         Args: { p_currency?: string; p_user_id: string }
         Returns: Json
       }
+      admin_get_profile: {
+        Args: { _user_id: string }
+        Returns: {
+          account_status: string | null
+          address: string | null
+          admin_notes: string | null
+          avatar_url: string | null
+          backup_email: string | null
+          backup_phone: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          email_verified: boolean | null
+          full_name: string
+          id: string
+          id_document_back: string | null
+          id_document_front: string | null
+          identity_status: string | null
+          last_login_at: string | null
+          last_login_device: string | null
+          last_login_ip: string | null
+          latitude: number | null
+          longitude: number | null
+          lost_packages_count: number | null
+          phone: string | null
+          phone_verified: boolean | null
+          referral_code: string | null
+          referred_by: string | null
+          report_count: number | null
+          selfie_photo: string | null
+          suspension_reason: string | null
+          suspension_until: string | null
+          total_earned: number | null
+          total_spent: number | null
+          trust_score: number | null
+          two_factor_enabled: boolean | null
+          two_factor_secret: string | null
+          updated_at: string
+          user_id: string
+          verification_code: string | null
+          verification_code_expires_at: string | null
+          whatsapp: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_list_profiles: {
+        Args: never
+        Returns: {
+          account_status: string | null
+          address: string | null
+          admin_notes: string | null
+          avatar_url: string | null
+          backup_email: string | null
+          backup_phone: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          email_verified: boolean | null
+          full_name: string
+          id: string
+          id_document_back: string | null
+          id_document_front: string | null
+          identity_status: string | null
+          last_login_at: string | null
+          last_login_device: string | null
+          last_login_ip: string | null
+          latitude: number | null
+          longitude: number | null
+          lost_packages_count: number | null
+          phone: string | null
+          phone_verified: boolean | null
+          referral_code: string | null
+          referred_by: string | null
+          report_count: number | null
+          selfie_photo: string | null
+          suspension_reason: string | null
+          suspension_until: string | null
+          total_earned: number | null
+          total_spent: number | null
+          trust_score: number | null
+          two_factor_enabled: boolean | null
+          two_factor_secret: string | null
+          updated_at: string
+          user_id: string
+          verification_code: string | null
+          verification_code_expires_at: string | null
+          whatsapp: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       agent_deposit_to_wallet: {
         Args: {
           p_amount: number
