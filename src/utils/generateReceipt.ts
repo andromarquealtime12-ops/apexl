@@ -26,7 +26,7 @@ async function fetchOrderBundle(orderId: string) {
   if (userIds.length) {
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("user_id, full_name, phone")
+      .select("user_id, full_name")
       .in("user_id", userIds);
     profilesMap = Object.fromEntries((profiles || []).map((p: any) => [p.user_id, p]));
   }
