@@ -85,12 +85,11 @@ const Checkout = () => {
     
     const fetchSellerLocations = async () => {
       const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
-      const { data } = await supabase
-        .from("seller_applications")
-        .select("user_id, latitude, longitude, shop_name")
-        .in("user_id", sellerIds)
-        .eq("status", "approved")
-        .not("latitude", "is", null);
+      const { data: allShops } = await (supabase as any)
+        .rpc("get_public_seller_shops", { p_user_id: null });
+      const data = (allShops || []).filter((s: any) =>
+        sellerIds.includes(s.user_id) && s.latitude != null && s.longitude != null
+      );
       
       if (data) {
         // Compute distance for each seller, then sort by distance

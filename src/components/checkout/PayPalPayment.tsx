@@ -37,7 +37,6 @@ export function PayPalPayment({ isOpen, onClose, amount, currency, onSuccess }: 
           action: "create_order",
           amount,
           currency,
-          user_id: user.id,
           return_url: window.location.origin,
         },
       });

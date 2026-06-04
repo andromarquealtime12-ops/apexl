@@ -44,13 +44,9 @@ export default function ProductDetail() {
     queryKey: ["seller-shop", product?.seller_id],
     queryFn: async () => {
       if (!product?.seller_id) return null;
-      const { data } = await supabase
-        .from("seller_applications")
-        .select("shop_name, shop_city, shop_description")
-        .eq("user_id", product.seller_id)
-        .eq("status", "approved")
-        .maybeSingle();
-      return data;
+      const { data } = await (supabase as any)
+        .rpc("get_public_seller_shops", { p_user_id: product.seller_id });
+      return Array.isArray(data) && data.length > 0 ? data[0] : null;
     },
     enabled: !!product?.seller_id,
   });

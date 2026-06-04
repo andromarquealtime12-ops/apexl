@@ -88,12 +88,10 @@ export default function AvailableDeliveriesTable() {
       const uniqueSellerIds = [...new Set(Object.values(orderSellerIds).flat())];
       const sellerMap: Record<string, SellerInfo> = {};
       if (uniqueSellerIds.length > 0) {
-        const { data: sellers } = await supabase
-          .from("seller_applications")
-          .select("user_id, shop_name, shop_address, shop_city, latitude, longitude")
-          .in("user_id", uniqueSellerIds)
-          .eq("status", "approved");
-        sellers?.forEach(s => {
+        const { data: allShops } = await (supabase as any)
+          .rpc("get_public_seller_shops", { p_user_id: null });
+        const sellers = (allShops || []).filter((s: any) => uniqueSellerIds.includes(s.user_id));
+        sellers?.forEach((s: any) => {
           sellerMap[s.user_id] = s;
         });
       }

@@ -153,6 +153,14 @@ DONNÉES RÉELLES DU LIVREUR:
 - Livraisons disponibles à prendre: ${available?.length || 0}`;
 
       } else if (userType === "admin") {
+        // Enforce admin role — userType is client-supplied and must not be trusted
+        const { data: adminCheck } = await supabaseAuth.rpc('has_role', { _user_id: userId, _role: 'admin' });
+        if (!adminCheck) {
+          return new Response(JSON.stringify({ error: 'Admin access required' }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
         // Admin: platform-wide stats
         const [usersRes, ordersRes, productsRes, ticketsRes, reportsRes, walletsRes, sellersRes, driversRes] = await Promise.all([
           supabaseAdmin.from("profiles").select("id", { count: "exact", head: true }),

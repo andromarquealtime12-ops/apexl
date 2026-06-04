@@ -144,11 +144,9 @@ export default function MyDeliveriesTable() {
       if (!items?.length) return {};
 
       const sellerIds = [...new Set(items.map(i => i.seller_id).filter(Boolean))];
-      const { data: sellers } = await supabase
-        .from("seller_applications")
-        .select("user_id, latitude, longitude, shop_address, shop_city, shop_name")
-        .in("user_id", sellerIds as string[])
-        .eq("status", "approved");
+      const { data: allShops } = await (supabase as any)
+        .rpc("get_public_seller_shops", { p_user_id: null });
+      const sellers = (allShops || []).filter((s: any) => (sellerIds as string[]).includes(s.user_id));
 
       const result: Record<string, any> = {};
       items.forEach(item => {

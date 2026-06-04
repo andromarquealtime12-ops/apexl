@@ -44,11 +44,9 @@ export default function DeliveryMapPreview({
       const ids = [...new Set((items || []).map((i: any) => i.seller_id).filter(Boolean))];
       if (!ids.length) return [];
 
-      const { data: shops } = await supabase
-        .from("seller_applications")
-        .select("user_id, shop_name, shop_city, latitude, longitude")
-        .in("user_id", ids as string[])
-        .eq("status", "approved");
+      const { data: allShops } = await (supabase as any)
+        .rpc("get_public_seller_shops", { p_user_id: null });
+      const shops = (allShops || []).filter((s: any) => (ids as string[]).includes(s.user_id));
 
       return (shops || []).filter((s: any) => s.latitude && s.longitude) as SellerStop[];
     },

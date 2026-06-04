@@ -1870,6 +1870,20 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_public_seller_shops: {
+        Args: { p_user_id?: string }
+        Returns: {
+          created_at: string
+          id: string
+          latitude: number
+          longitude: number
+          shop_address: string
+          shop_city: string
+          shop_description: string
+          shop_name: string
+          user_id: string
+        }[]
+      }
       get_seller_order_ids: { Args: never; Returns: string[] }
       has_role: {
         Args: {
@@ -1975,10 +1989,7 @@ export type Database = {
         Returns: Json
       }
       unfreeze_wallet: { Args: { p_user_id: string }; Returns: Json }
-      validate_admin_code: {
-        Args: { code_input: string; user_id_input: string }
-        Returns: boolean
-      }
+      validate_admin_code: { Args: { code_input: string }; Returns: boolean }
       verify_delivery_code: {
         Args: { p_code: string; p_order_id: string }
         Returns: Json

@@ -13,11 +13,11 @@ export default function Shops() {
   const { data: shops, isLoading } = useQuery({
     queryKey: ["all-shops"],
     queryFn: async () => {
-      const { data: applications } = await supabase
-        .from("seller_applications")
-        .select("*")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false });
+      const { data: applicationsRaw } = await (supabase as any)
+        .rpc("get_public_seller_shops", { p_user_id: null });
+      const applications = (applicationsRaw || []).sort(
+        (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
 
       if (!applications?.length) return [];
 

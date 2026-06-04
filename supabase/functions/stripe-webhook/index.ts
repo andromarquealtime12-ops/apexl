@@ -24,18 +24,22 @@ serve(async (req) => {
     let event: Stripe.Event;
 
     const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
-    if (webhookSecret && signature) {
-      try {
-        event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-      } catch (err) {
-        console.error("Webhook signature verification failed:", err.message);
-        return new Response(JSON.stringify({ error: "Invalid signature" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-    } else {
-      event = JSON.parse(body);
+    if (!webhookSecret || !signature) {
+      console.error("Webhook rejected: missing secret or signature");
+      return new Response(JSON.stringify({ error: "Webhook signature required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    try {
+      event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
+    } catch (err) {
+      console.error("Webhook signature verification failed:", err.message);
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     if (event.type === "checkout.session.completed") {

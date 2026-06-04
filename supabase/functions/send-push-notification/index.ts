@@ -96,12 +96,53 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // === Authenticate caller ===
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    const supabaseAuth = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_ANON_KEY')!, {
+      global: { headers: { Authorization: authHeader } }
+    })
+    const { data: authData, error: authErr } = await supabaseAuth.auth.getUser()
+    if (authErr || !authData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    const callerId = authData.user.id
+
     const { user_id, title, body, url, tag } = await req.json()
 
     if (!user_id || !title) {
       return new Response(JSON.stringify({ error: 'user_id and title required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
+    }
+
+    // Authorization: caller may only target self, unless they are admin
+    if (user_id !== callerId) {
+      const { data: isAdmin } = await supabaseAuth.rpc('has_role', { _user_id: callerId, _role: 'admin' })
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ error: 'Forbidden' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+    }
+
+    // Restrict notification url to same-origin app domains (prevent open-redirect phishing)
+    if (url && typeof url === 'string') {
+      const safe = url.startsWith('/') ||
+        url.startsWith('https://marketayiti.lovable.app') ||
+        url.startsWith('https://marketayiti.shop') ||
+        url.startsWith('https://www.marketayiti.shop')
+      if (!safe) {
+        return new Response(JSON.stringify({ error: 'Invalid url' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)

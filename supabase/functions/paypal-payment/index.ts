@@ -18,12 +18,33 @@ serve(async (req) => {
       throw new Error("PayPal credentials not configured");
     }
 
-    const { action, order_id, amount, currency, user_id, return_url } = await req.json();
-    
-    // Use sandbox for testing, switch to live when ready
+    // === Authenticate caller ===
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: userData, error: userErr } = await supabaseAuth.auth.getUser();
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const authedUserId = userData.user.id;
+
+    // user_id is intentionally ignored if supplied — always derive from auth.uid()
+    const { action, order_id, amount, currency, return_url } = await req.json();
+
     const PAYPAL_API = "https://api-m.paypal.com";
 
-    // Get PayPal access token
     const tokenRes = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
       method: "POST",
       headers: {
@@ -40,14 +61,13 @@ serve(async (req) => {
     const accessToken = tokenData.access_token;
 
     if (action === "create_order") {
-      // Map currency - PayPal uses standard ISO codes
       let usdAmount = amount;
       if (currency === "DOP") usdAmount = (amount / 58).toFixed(2);
       else if (currency === "HTG") usdAmount = (amount / 132).toFixed(2);
       else usdAmount = parseFloat(amount).toFixed(2);
 
       const baseUrl = return_url || "https://marketayiti.lovable.app";
-      
+
       const orderRes = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
         method: "POST",
         headers: {
@@ -58,11 +78,11 @@ serve(async (req) => {
           intent: "CAPTURE",
           purchase_units: [
             {
-              amount: {
-                currency_code: "USD",
-                value: usdAmount.toString(),
-              },
+              amount: { currency_code: "USD", value: usdAmount.toString() },
               description: `Ayiti Marché RD - Recharge portefeuille`,
+              // Bind this order to the authenticated user, used for the
+              // capture step instead of trusting client-supplied user_id.
+              custom_id: `${authedUserId}:${currency}`,
             },
           ],
           application_context: {
@@ -100,24 +120,48 @@ serve(async (req) => {
       }
 
       if (captureData.status === "COMPLETED") {
-        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
         const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
         const supabase = createClient(supabaseUrl, supabaseKey);
 
-        const capturedAmount = parseFloat(
-          captureData.purchase_units[0].payments.captures[0].amount.value
-        );
-        
-        let localAmount = capturedAmount;
-        if (currency === "DOP") localAmount = Math.round(capturedAmount * 58);
-        else if (currency === "HTG") localAmount = Math.round(capturedAmount * 132);
+        const unit = captureData.purchase_units?.[0];
+        const capturedAmount = parseFloat(unit?.payments?.captures?.[0]?.amount?.value || "0");
 
-        const balanceField = currency === "DOP" ? "balance_dop" : currency === "HTG" ? "balance_htg" : "balance_usd";
+        // Recover the user from custom_id we set at create_order time.
+        const customId: string = unit?.custom_id || "";
+        const [storedUserId, storedCurrency] = customId.split(":");
+        if (!storedUserId || storedUserId !== authedUserId) {
+          return new Response(JSON.stringify({ error: "Order does not belong to caller" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const finalCurrency = storedCurrency || currency || "USD";
+
+        let localAmount = capturedAmount;
+        if (finalCurrency === "DOP") localAmount = Math.round(capturedAmount * 58);
+        else if (finalCurrency === "HTG") localAmount = Math.round(capturedAmount * 132);
+
+        const balanceField =
+          finalCurrency === "DOP" ? "balance_dop" :
+          finalCurrency === "HTG" ? "balance_htg" : "balance_usd";
+
+        // Idempotency: skip if this PayPal order_id was already recorded
+        const { data: existingTx } = await supabase
+          .from("wallet_transactions")
+          .select("id")
+          .eq("transaction_reference", order_id)
+          .maybeSingle();
+        if (existingTx) {
+          return new Response(JSON.stringify({ success: true, capture: captureData, idempotent: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
 
         const { data: wallet } = await supabase
           .from("wallets")
           .select("id, " + balanceField)
-          .eq("user_id", user_id)
+          .eq("user_id", authedUserId)
           .single();
 
         if (wallet) {
@@ -131,7 +175,7 @@ serve(async (req) => {
             wallet_id: wallet.id,
             type: "deposit",
             amount: localAmount,
-            currency: currency,
+            currency: finalCurrency,
             status: "completed",
             payment_method: "paypal",
             description: `Paiement PayPal - $${capturedAmount} USD`,
