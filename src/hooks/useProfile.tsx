@@ -40,14 +40,11 @@ export function useProfile() {
     queryFn: async () => {
       if (!user) return null;
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select(PROFILE_SAFE_COLUMNS)
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const { data, error } = await supabase.rpc("get_my_profile");
 
       if (error) throw error;
-      return data as Profile | null;
+      const row = Array.isArray(data) ? data[0] : data;
+      return (row ?? null) as Profile | null;
     },
     enabled: !!user,
   });

@@ -16,11 +16,9 @@ export function WhatsAppContact({ userId, label = "WhatsApp", variant = "outline
     queryKey: ["contact-whatsapp", userId],
     queryFn: async () => {
       const { data } = await supabase
-        .from("profiles")
-        .select("whatsapp, phone, full_name")
-        .eq("user_id", userId)
-        .maybeSingle();
-      return data;
+        .rpc("get_order_contact", { _other_user: userId });
+      const row = Array.isArray(data) ? data[0] : data;
+      return row ?? null;
     },
     enabled: !!userId,
   });

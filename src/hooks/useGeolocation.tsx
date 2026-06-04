@@ -19,7 +19,7 @@ interface NearbyDriver {
   updated_at: string;
   profile?: {
     full_name: string;
-    phone: string;
+    phone?: string;
   };
 }
 
@@ -228,7 +228,7 @@ export function useNearbyDrivers(position: GeolocationPosition | null, radiusKm:
         const driverIds = driversWithDistance.map((d) => d.driver_id);
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("user_id, full_name, phone")
+          .select("user_id, full_name")
           .in("user_id", driverIds);
 
         return driversWithDistance.map((driver) => ({

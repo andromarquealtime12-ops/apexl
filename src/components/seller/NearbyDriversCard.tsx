@@ -29,7 +29,7 @@ interface DriverProfile {
   updated_at: string;
   profile?: {
     full_name: string;
-    phone: string;
+    phone?: string;
   };
   stats?: {
     totalDeliveries: number;
