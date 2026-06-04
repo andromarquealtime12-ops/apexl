@@ -15,6 +15,26 @@ Deno.serve(async (req) => {
       throw new Error('Shopify credentials not configured');
     }
 
+    // === Authenticate caller ===
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const supabaseAuth = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data: authData, error: authErr } = await supabaseAuth.auth.getUser();
+    if (authErr || !authData?.user) {
+      return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const callerId = authData.user.id;
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -30,6 +50,25 @@ Deno.serve(async (req) => {
       .eq('id', order_id)
       .single();
     if (orderErr || !order) throw new Error('Order not found');
+
+    // Authorization: only the buyer of the order or an admin can trigger Shopify order creation
+    if (order.buyer_id !== callerId) {
+      const { data: isAdmin } = await supabaseAuth.rpc('has_role', { _user_id: callerId, _role: 'admin' });
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ success: false, error: 'Forbidden' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // Idempotency: don't re-create if a Shopify order already exists
+    if ((order as any).shopify_order_id) {
+      return new Response(JSON.stringify({
+        success: true,
+        idempotent: true,
+        shopify_order_id: (order as any).shopify_order_id,
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
 
     const shopifyItems = (order.order_items || []).filter((it: any) => it.products?.is_shopify);
     if (shopifyItems.length === 0) {
