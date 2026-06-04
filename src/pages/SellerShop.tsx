@@ -15,13 +15,9 @@ export default function SellerShop() {
   const { data: shop } = useQuery({
     queryKey: ["shop-info", sellerId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("seller_applications")
-        .select("*")
-        .eq("user_id", sellerId!)
-        .eq("status", "approved")
-        .maybeSingle();
-      return data;
+      const { data } = await (supabase as any)
+        .rpc("get_public_seller_shops", { p_user_id: sellerId! });
+      return Array.isArray(data) && data.length > 0 ? data[0] : null;
     },
     enabled: !!sellerId,
   });
