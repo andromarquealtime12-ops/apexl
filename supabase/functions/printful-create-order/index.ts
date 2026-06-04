@@ -15,19 +15,49 @@ Deno.serve(async (req) => {
     if (!PRINTFUL_API_KEY) throw new Error("PRINTFUL_API_KEY not configured");
     const PRINTFUL_STORE_ID = Deno.env.get("PRINTFUL_STORE_ID");
 
+    // Auth guard: require a valid JWT and verify caller is buyer or admin
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const supabaseAuth = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data: userData, error: userErr } = await supabaseAuth.auth.getUser(
+      authHeader.replace("Bearer ", "")
+    );
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const callerId = userData.user.id;
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
     const { order_id } = await req.json();
-    if (!order_id) throw new Error("order_id required");
+    if (!order_id || typeof order_id !== "string") throw new Error("order_id required");
 
     const { data: order, error: orderErr } = await supabase
       .from("orders")
       .select("*, order_items(*, products(name, printful_variant_id, is_printful))")
       .eq("id", order_id).single();
     if (orderErr || !order) throw new Error("Order not found");
+
+    // Authorize: only the buyer or an admin can trigger Printful fulfillment
+    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: callerId, _role: "admin" });
+    if (order.buyer_id !== callerId && !isAdmin) {
+      return new Response(JSON.stringify({ success: false, error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Skip if already forwarded
     if (order.shopify_order_id && String(order.shopify_order_id).startsWith("printful:")) {

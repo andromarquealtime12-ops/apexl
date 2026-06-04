@@ -109,17 +109,17 @@ serve(async (req) => {
       customerId = customer.id;
     }
 
+    // Strict allowlist for redirect URLs (prevent open redirect)
+    const ALLOWED_ORIGINS = [
+      "https://marketayiti.lovable.app",
+      "https://marketayiti.shop",
+      "https://www.marketayiti.shop",
+      "https://id-preview--37a123cb-9a28-4232-83d4-4ade597e3626.lovable.app",
+    ];
     const requestOrigin = req.headers.get("origin");
-    const appOrigin = typeof returnOrigin === "string" && returnOrigin.startsWith("http")
-      ? returnOrigin
-      : requestOrigin;
-
-    if (!appOrigin) {
-      return new Response(JSON.stringify({ error: "Missing app origin" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const pick = (o: unknown) =>
+      typeof o === "string" && ALLOWED_ORIGINS.includes(o) ? o : null;
+    const appOrigin = pick(returnOrigin) ?? pick(requestOrigin) ?? ALLOWED_ORIGINS[0];
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({

@@ -64,6 +64,19 @@ serve(async (req) => {
           Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
         );
 
+        // Idempotency: skip if this session was already processed
+        const { data: existingTx } = await supabaseAdmin
+          .from("wallet_transactions")
+          .select("id")
+          .eq("transaction_reference", session.id)
+          .maybeSingle();
+        if (existingTx) {
+          console.log("Stripe session already processed, skipping:", session.id);
+          return new Response(JSON.stringify({ received: true, duplicate: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
         const balanceCol =
           currency === "DOP"
             ? "balance_dop"
