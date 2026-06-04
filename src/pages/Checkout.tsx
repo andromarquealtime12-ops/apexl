@@ -60,23 +60,53 @@ const Checkout = () => {
   const [gettingLocation, setGettingLocation] = useState(false);
   const [shopDistances, setShopDistances] = useState<Record<string, { distance: number; shopName: string; fee: number }>>({});
 
-  // Get current position
+  // Get current position (one-shot, high accuracy)
   const handleGetLocation = useCallback(() => {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+      toast({ title: "Erreur", description: "La géolocalisation n'est pas disponible sur cet appareil", variant: "destructive" });
+      return;
+    }
     setGettingLocation(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setBuyerLat(pos.coords.latitude);
         setBuyerLng(pos.coords.longitude);
         setGettingLocation(false);
-        toast({ title: "Position obtenue ✓", description: "Votre position a été enregistrée" });
+        toast({ title: "Position obtenue ✓", description: `Précision ~${Math.round(pos.coords.accuracy)} m` });
       },
-      () => {
+      (err) => {
         setGettingLocation(false);
-        toast({ title: "Erreur", description: "Impossible d'obtenir votre position", variant: "destructive" });
+        toast({
+          title: "Erreur de localisation",
+          description: err.code === 1 ? "Veuillez autoriser l'accès à votre position" : "Impossible d'obtenir votre position",
+          variant: "destructive",
+        });
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
+  }, []);
+
+  // Auto-request position on mount + continuous watch for robustness
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    handleGetLocation();
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        // Only update if accuracy improves or position drifts > 50m
+        setBuyerLat((prev) => {
+          if (prev == null) return pos.coords.latitude;
+          return pos.coords.accuracy < 50 ? pos.coords.latitude : prev;
+        });
+        setBuyerLng((prev) => {
+          if (prev == null) return pos.coords.longitude;
+          return pos.coords.accuracy < 50 ? pos.coords.longitude : prev;
+        });
+      },
+      () => {},
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 10000 }
+    );
+    return () => navigator.geolocation.clearWatch(watchId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Calculate distance per shop when buyer location available
