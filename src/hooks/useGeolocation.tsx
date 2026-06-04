@@ -19,7 +19,7 @@ interface NearbyDriver {
   updated_at: string;
   profile?: {
     full_name: string;
-    phone: string;
+    phone?: string;
   };
 }
 
