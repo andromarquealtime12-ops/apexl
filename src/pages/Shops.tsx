@@ -179,7 +179,7 @@ export default function Shops() {
             {displayedShops.map((shop: any) => (
               <Link to={`/shop/${shop.user_id}`} key={shop.id}>
                 <Card className="hover:shadow-lg transition-all hover:border-primary/50 h-full relative">
-                  {nearMe && shop._distance != null && shop._distance !== Infinity && (
+                  {shop._distance != null && shop._distance !== Infinity && (
                     <Badge className="absolute top-3 right-3 z-10 bg-primary/90 backdrop-blur">
                       <MapPinned className="h-3 w-3 mr-1" />
                       {shop._distance.toFixed(1)} km
