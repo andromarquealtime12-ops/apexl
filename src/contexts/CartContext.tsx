@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { Product } from "@/types/database";
+import { toast } from "@/hooks/use-toast";
 
 export interface CartItemSelection {
   selectedColor?: string;
