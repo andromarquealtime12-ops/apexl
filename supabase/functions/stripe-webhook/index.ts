@@ -64,73 +64,41 @@ serve(async (req) => {
           Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
         );
 
-        // Idempotency: skip if this session was already processed
-        const { data: existingTx } = await supabaseAdmin
-          .from("wallet_transactions")
-          .select("id")
-          .eq("transaction_reference", session.id)
-          .maybeSingle();
-        if (existingTx) {
+        // Atomic + idempotent wallet credit (prevents race conditions between
+        // concurrent payment events that could otherwise double-credit or
+        // overwrite each other via read-then-write).
+        const { data: creditResult, error: creditErr } = await supabaseAdmin.rpc(
+          "credit_wallet_atomic",
+          {
+            p_user_id: userId,
+            p_amount: amount,
+            p_currency: currency,
+            p_payment_method: "card_visa",
+            p_description: "Paiement par carte Stripe",
+            p_transaction_reference: session.id,
+          }
+        );
+
+        if (creditErr) {
+          console.error("credit_wallet_atomic error:", creditErr);
+          return new Response(JSON.stringify({ error: "Failed to credit wallet" }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if ((creditResult as any)?.idempotent) {
           console.log("Stripe session already processed, skipping:", session.id);
           return new Response(JSON.stringify({ received: true, duplicate: true }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-
-        const balanceCol =
-          currency === "DOP"
-            ? "balance_dop"
-            : currency === "HTG"
-            ? "balance_htg"
-            : "balance_usd";
-
-        // Get wallet
-        const { data: wallet, error: walletErr } = await supabaseAdmin
-          .from("wallets")
-          .select("id, " + balanceCol)
-          .eq("user_id", userId)
-          .single();
-
-        if (walletErr || !wallet) {
-          console.error("Wallet not found:", walletErr);
-          return new Response(
-            JSON.stringify({ error: "Wallet not found" }),
-            {
-              status: 404,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            }
-          );
+        if (!(creditResult as any)?.success) {
+          console.error("credit_wallet_atomic returned:", creditResult);
+          return new Response(JSON.stringify({ error: "Wallet credit failed" }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
         }
-
-        // Credit wallet
-        const currentBalance = (wallet as any)[balanceCol] || 0;
-        const { error: updateErr } = await supabaseAdmin
-          .from("wallets")
-          .update({ [balanceCol]: currentBalance + amount, updated_at: new Date().toISOString() })
-          .eq("id", wallet.id);
-
-        if (updateErr) {
-          console.error("Failed to update wallet:", updateErr);
-          return new Response(
-            JSON.stringify({ error: "Failed to credit wallet" }),
-            {
-              status: 500,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            }
-          );
-        }
-
-        // Record transaction
-        await supabaseAdmin.from("wallet_transactions").insert({
-          wallet_id: wallet.id,
-          type: "deposit",
-          amount,
-          currency,
-          status: "completed",
-          payment_method: "card_visa",
-          description: `Paiement par carte Stripe`,
-          transaction_reference: session.id,
-        });
 
         // Notify user
         await supabaseAdmin.from("notifications").insert({
