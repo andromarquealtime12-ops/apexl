@@ -33,8 +33,18 @@ import LegalNotice from "./pages/LegalNotice";
 import CookiesPolicy from "./pages/CookiesPolicy";
 import SupportChatWidget from "./components/support/SupportChatWidget";
 import AIAssistantWidget from "./components/ai/AIAssistantWidget";
+import { useEffect } from "react";
+import { startBackgroundWatch, stopBackgroundWatch } from "@/utils/persistentLocation";
 
 const queryClient = new QueryClient();
+
+const LocationBootstrap = () => {
+  useEffect(() => {
+    const id = startBackgroundWatch();
+    return () => stopBackgroundWatch(id);
+  }, []);
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
