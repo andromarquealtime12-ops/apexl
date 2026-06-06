@@ -66,7 +66,16 @@ serve(async (req) => {
       else if (currency === "HTG") usdAmount = (amount / 132).toFixed(2);
       else usdAmount = parseFloat(amount).toFixed(2);
 
-      const baseUrl = return_url || "https://marketayiti.lovable.app";
+      // Strict allowlist for return URL to prevent open-redirect phishing via PayPal
+      const ALLOWED_ORIGINS = [
+        "https://marketayiti.lovable.app",
+        "https://marketayiti.shop",
+        "https://www.marketayiti.shop",
+        "https://id-preview--37a123cb-9a28-4232-83d4-4ade597e3626.lovable.app",
+      ];
+      const pickOrigin = (o: unknown) =>
+        typeof o === "string" && ALLOWED_ORIGINS.includes(o) ? o : null;
+      const baseUrl = pickOrigin(return_url) ?? ALLOWED_ORIGINS[0];
 
       const orderRes = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
         method: "POST",
