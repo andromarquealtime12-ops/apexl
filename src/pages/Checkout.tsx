@@ -54,6 +54,11 @@ const Checkout = () => {
 
   const hasPrintfulItem = items.some((it) => (it.product as any).is_printful === true);
 
+  // Printful orders are billed in USD only — force currency
+  useEffect(() => {
+    if (hasPrintfulItem && currency !== "USD") setCurrency("USD");
+  }, [hasPrintfulItem, currency]);
+
   // Buyer GPS
   const [buyerLat, setBuyerLat] = useState<number | null>(null);
   const [buyerLng, setBuyerLng] = useState<number | null>(null);
@@ -462,14 +467,17 @@ const Checkout = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="currency">Devise</Label>
-                    <Select value={currency} onValueChange={(v) => setCurrency(v as Currency)}>
+                    <Select value={currency} onValueChange={(v) => setCurrency(v as Currency)} disabled={hasPrintfulItem}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="DOP">Peso Dominicain (RD$)</SelectItem>
-                        <SelectItem value="HTG">Gourde Haïtienne (G)</SelectItem>
+                        <SelectItem value="DOP" disabled={hasPrintfulItem}>Peso Dominicain (RD$)</SelectItem>
+                        <SelectItem value="HTG" disabled={hasPrintfulItem}>Gourde Haïtienne (G)</SelectItem>
                         <SelectItem value="USD">Dollar US ($)</SelectItem>
                       </SelectContent>
                     </Select>
+                    {hasPrintfulItem && (
+                      <p className="text-xs text-muted-foreground">Les commandes Printful sont obligatoirement réglées en USD.</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="notes">Instructions de livraison (optionnel)</Label>

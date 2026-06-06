@@ -100,15 +100,19 @@ export default function Shops() {
 
   const displayedShops = useMemo(() => {
     if (!shops) return [];
-    if (!nearMe || userLat == null || userLng == null) return shops;
-    return shops
-      .map((s: any) => {
-        const hasCoords = s.latitude != null && s.longitude != null;
-        const distance = hasCoords
-          ? calculateDistance(userLat, userLng, s.latitude, s.longitude)
-          : Infinity;
-        return { ...s, _distance: distance };
-      })
+    if (userLat == null || userLng == null) return shops;
+    const withDistance = shops.map((s: any) => {
+      const hasCoords = s.latitude != null && s.longitude != null;
+      const distance = hasCoords
+        ? calculateDistance(userLat, userLng, s.latitude, s.longitude)
+        : Infinity;
+      return { ...s, _distance: distance };
+    });
+    if (!nearMe) {
+      // Show all shops, but sorted by distance when known
+      return withDistance.sort((a: any, b: any) => a._distance - b._distance);
+    }
+    return withDistance
       .filter((s: any) => s._distance <= maxRadius)
       .sort((a: any, b: any) => a._distance - b._distance);
   }, [shops, nearMe, userLat, userLng, maxRadius]);
@@ -175,7 +179,7 @@ export default function Shops() {
             {displayedShops.map((shop: any) => (
               <Link to={`/shop/${shop.user_id}`} key={shop.id}>
                 <Card className="hover:shadow-lg transition-all hover:border-primary/50 h-full relative">
-                  {nearMe && shop._distance != null && shop._distance !== Infinity && (
+                  {shop._distance != null && shop._distance !== Infinity && (
                     <Badge className="absolute top-3 right-3 z-10 bg-primary/90 backdrop-blur">
                       <MapPinned className="h-3 w-3 mr-1" />
                       {shop._distance.toFixed(1)} km
