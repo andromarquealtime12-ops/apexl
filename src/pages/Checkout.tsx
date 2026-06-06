@@ -467,14 +467,17 @@ const Checkout = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="currency">Devise</Label>
-                    <Select value={currency} onValueChange={(v) => setCurrency(v as Currency)}>
+                    <Select value={currency} onValueChange={(v) => setCurrency(v as Currency)} disabled={hasPrintfulItem}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="DOP">Peso Dominicain (RD$)</SelectItem>
-                        <SelectItem value="HTG">Gourde Haïtienne (G)</SelectItem>
+                        <SelectItem value="DOP" disabled={hasPrintfulItem}>Peso Dominicain (RD$)</SelectItem>
+                        <SelectItem value="HTG" disabled={hasPrintfulItem}>Gourde Haïtienne (G)</SelectItem>
                         <SelectItem value="USD">Dollar US ($)</SelectItem>
                       </SelectContent>
                     </Select>
+                    {hasPrintfulItem && (
+                      <p className="text-xs text-muted-foreground">Les commandes Printful sont obligatoirement réglées en USD.</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="notes">Instructions de livraison (optionnel)</Label>
