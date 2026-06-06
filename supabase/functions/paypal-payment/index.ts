@@ -66,7 +66,16 @@ serve(async (req) => {
       else if (currency === "HTG") usdAmount = (amount / 132).toFixed(2);
       else usdAmount = parseFloat(amount).toFixed(2);
 
-      const baseUrl = return_url || "https://marketayiti.lovable.app";
+      // Strict allowlist for return URL to prevent open-redirect phishing via PayPal
+      const ALLOWED_ORIGINS = [
+        "https://marketayiti.lovable.app",
+        "https://marketayiti.shop",
+        "https://www.marketayiti.shop",
+        "https://id-preview--37a123cb-9a28-4232-83d4-4ade597e3626.lovable.app",
+      ];
+      const pickOrigin = (o: unknown) =>
+        typeof o === "string" && ALLOWED_ORIGINS.includes(o) ? o : null;
+      const baseUrl = pickOrigin(return_url) ?? ALLOWED_ORIGINS[0];
 
       const orderRes = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
         method: "POST",
@@ -142,44 +151,29 @@ serve(async (req) => {
         if (finalCurrency === "DOP") localAmount = Math.round(capturedAmount * 58);
         else if (finalCurrency === "HTG") localAmount = Math.round(capturedAmount * 132);
 
-        const balanceField =
-          finalCurrency === "DOP" ? "balance_dop" :
-          finalCurrency === "HTG" ? "balance_htg" : "balance_usd";
-
-        // Idempotency: skip if this PayPal order_id was already recorded
-        const { data: existingTx } = await supabase
-          .from("wallet_transactions")
-          .select("id")
-          .eq("transaction_reference", order_id)
-          .maybeSingle();
-        if (existingTx) {
-          return new Response(JSON.stringify({ success: true, capture: captureData, idempotent: true }), {
+        // Atomic, idempotent wallet credit (prevents race conditions between
+        // concurrent Stripe/PayPal events overwriting each other).
+        const { data: creditResult, error: creditErr } = await supabase.rpc(
+          "credit_wallet_atomic",
+          {
+            p_user_id: authedUserId,
+            p_amount: localAmount,
+            p_currency: finalCurrency,
+            p_payment_method: "paypal",
+            p_description: `Paiement PayPal - $${capturedAmount} USD`,
+            p_transaction_reference: order_id,
+          }
+        );
+        if (creditErr) {
+          console.error("credit_wallet_atomic error:", creditErr);
+          return new Response(JSON.stringify({ error: "Failed to credit wallet" }), {
+            status: 500,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-
-        const { data: wallet } = await supabase
-          .from("wallets")
-          .select("id, " + balanceField)
-          .eq("user_id", authedUserId)
-          .single();
-
-        if (wallet) {
-          const currentBalance = (wallet as any)[balanceField] || 0;
-          await supabase
-            .from("wallets")
-            .update({ [balanceField]: currentBalance + localAmount, updated_at: new Date().toISOString() })
-            .eq("id", wallet.id);
-
-          await supabase.from("wallet_transactions").insert({
-            wallet_id: wallet.id,
-            type: "deposit",
-            amount: localAmount,
-            currency: finalCurrency,
-            status: "completed",
-            payment_method: "paypal",
-            description: `Paiement PayPal - $${capturedAmount} USD`,
-            transaction_reference: order_id,
+        if ((creditResult as any)?.idempotent) {
+          return new Response(JSON.stringify({ success: true, capture: captureData, idempotent: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
       }

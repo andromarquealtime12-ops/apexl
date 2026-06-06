@@ -1944,6 +1944,17 @@ export type Database = {
         Args: { p_order_id: string }
         Returns: Json
       }
+      credit_wallet_atomic: {
+        Args: {
+          p_amount: number
+          p_currency: string
+          p_description: string
+          p_payment_method: string
+          p_transaction_reference: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       delete_user_account: { Args: { p_user_id: string }; Returns: Json }
       demo_wallet_topup: {
         Args: { p_amount: number; p_currency: string }
