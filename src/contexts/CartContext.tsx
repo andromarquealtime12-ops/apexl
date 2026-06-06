@@ -71,6 +71,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addItem = (product: Product, quantity: number = 1, selection: CartItemSelection = {}) => {
     const itemId = getCartItemId(product.id, selection.selectedColor, selection.selectedSize);
 
+    // Block mixing Printful (international, USD) with local products in the same cart
+    const incomingIsPrintful = (product as any).is_printful === true;
+    const cartHasPrintful = items.some((it) => (it.product as any).is_printful === true);
+    const cartHasLocal = items.some((it) => (it.product as any).is_printful !== true);
+    if (items.length > 0) {
+      if (incomingIsPrintful && cartHasLocal) {
+        toast({
+          title: "Panier incompatible",
+          description: "Les produits Printful (USD, expédition internationale) ne peuvent pas être ajoutés avec des produits locaux. Videz le panier d'abord.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!incomingIsPrintful && cartHasPrintful) {
+        toast({
+          title: "Panier incompatible",
+          description: "Votre panier contient déjà un produit Printful (USD). Finalisez cette commande ou videz le panier avant d'ajouter un produit local.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     setItems((currentItems) => {
       const existingItem = currentItems.find((item) => item.id === itemId);
       if (existingItem) {
