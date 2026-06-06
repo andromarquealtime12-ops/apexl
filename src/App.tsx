@@ -54,6 +54,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <LocationBootstrap />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/products" element={<Products />} />
