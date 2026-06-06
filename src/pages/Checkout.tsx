@@ -54,6 +54,11 @@ const Checkout = () => {
 
   const hasPrintfulItem = items.some((it) => (it.product as any).is_printful === true);
 
+  // Printful orders are billed in USD only — force currency
+  useEffect(() => {
+    if (hasPrintfulItem && currency !== "USD") setCurrency("USD");
+  }, [hasPrintfulItem, currency]);
+
   // Buyer GPS
   const [buyerLat, setBuyerLat] = useState<number | null>(null);
   const [buyerLng, setBuyerLng] = useState<number | null>(null);
