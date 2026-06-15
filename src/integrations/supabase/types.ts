@@ -1742,8 +1742,8 @@ export type Database = {
           country: string | null
           created_at: string | null
           full_name: string | null
-          referral_code: string | null
-          trust_score: number | null
+          id: string | null
+          identity_status: string | null
           user_id: string | null
         }
         Insert: {
@@ -1752,8 +1752,8 @@ export type Database = {
           country?: string | null
           created_at?: string | null
           full_name?: string | null
-          referral_code?: string | null
-          trust_score?: number | null
+          id?: string | null
+          identity_status?: string | null
           user_id?: string | null
         }
         Update: {
@@ -1762,8 +1762,8 @@ export type Database = {
           country?: string | null
           created_at?: string | null
           full_name?: string | null
-          referral_code?: string | null
-          trust_score?: number | null
+          id?: string | null
+          identity_status?: string | null
           user_id?: string | null
         }
         Relationships: []
