@@ -139,7 +139,8 @@ const Checkout = () => {
 
         const distances: Record<string, { distance: number; shopName: string; fee: number }> = {};
         sellersWithDist.forEach((s, idx) => {
-          const baseFee = Math.round(50 + 25 * s.distance);
+          // Tarif: 30 RD$ par km (minimum 30 RD$)
+          const baseFee = Math.max(30, Math.round(30 * s.distance));
           // First (closest) shop = base fee. Additional shops within 10 km radius = +10%
           const fee = idx === 0 ? baseFee : (s.distance <= 10 ? Math.round(baseFee * 1.10) : baseFee);
           distances[s.user_id] = { distance: s.distance, shopName: s.shopName, fee };
@@ -158,7 +159,8 @@ const Checkout = () => {
   const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
   const deliveryFee = sellerIds.reduce((total, sid) => {
     const shopInfo = shopDistances[sid];
-    return total + (shopInfo ? shopInfo.fee : Math.round(50 + 25 * 5));
+    // Default if distance unknown: 30 RD$ × 5 km estimé
+    return total + (shopInfo ? shopInfo.fee : 150);
   }, 0);
   const total = subtotal + deliveryFee;
 
