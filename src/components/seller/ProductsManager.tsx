@@ -75,21 +75,25 @@ export default function ProductsManager() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-2">
         <p className="text-sm text-muted-foreground">
           {products?.length || 0} produit(s)
         </p>
-        <Button onClick={() => setShowAddDialog(true)} size="sm">
-          <Plus className="h-4 w-4 mr-2" />
+        <Button onClick={() => setShowAddDialog(true)} size="lg" className="gap-2 shadow-md">
+          <Plus className="h-5 w-5" />
           Ajouter un produit
         </Button>
       </div>
 
       {!products || products.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
+        <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
           <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-          <p>Aucun produit pour le moment</p>
-          <p className="text-sm">Ajoutez votre premier produit pour commencer à vendre</p>
+          <p className="font-medium">Aucun produit pour le moment</p>
+          <p className="text-sm mb-4">Ajoutez votre premier produit pour commencer à vendre</p>
+          <Button onClick={() => setShowAddDialog(true)} size="lg" className="gap-2">
+            <Plus className="h-5 w-5" />
+            Ajouter mon premier produit
+          </Button>
         </div>
       ) : (
         <div className="border rounded-lg overflow-hidden">
