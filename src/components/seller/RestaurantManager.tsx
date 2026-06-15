@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useSellerRestaurants, useCreateRestaurant, useSellerRestaurantItems, useCreateMenuItem, useDeleteMenuItem } from "@/hooks/useRestaurants";
+import { useState, useRef } from "react";
+import { useSellerRestaurants, useCreateRestaurant, useSellerRestaurantItems, useCreateMenuItem, useUpdateMenuItem, useDeleteMenuItem } from "@/hooks/useRestaurants";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,9 +8,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UtensilsCrossed, Plus, Trash2, Clock, Store } from "lucide-react";
+import { UtensilsCrossed, Plus, Trash2, Clock, Store, Edit, Image as ImageIcon, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function RestaurantManager() {
   const { data: restaurants, isLoading } = useSellerRestaurants();
