@@ -171,25 +171,15 @@ function MenuItemDialog({
   const updateItem = useUpdateMenuItem();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
-  const [form, setForm] = useState<MenuFormState>(EMPTY_FORM);
-
-  // Reset form when opening
-  useState(() => {
-    if (open) {
-      setForm(editing ? {
-        name: editing.name || "",
-        description: editing.description || "",
-        price: String(editing.price ?? ""),
-        category: editing.category || "plat",
-        preparation_time: String(editing.preparation_time ?? "15"),
-        image_url: editing.image_url || "",
-        is_available: editing.is_available ?? true,
-      } : EMPTY_FORM);
-    }
-  });
-
-  // Re-sync when editing changes
-  useState(() => undefined);
+  const [form, setForm] = useState<MenuFormState>(() => editing ? {
+    name: editing.name || "",
+    description: editing.description || "",
+    price: String(editing.price ?? ""),
+    category: editing.category || "plat",
+    preparation_time: String(editing.preparation_time ?? "15"),
+    image_url: editing.image_url || "",
+    is_available: editing.is_available ?? true,
+  } : EMPTY_FORM);
 
   const uploadImage = async (file: File) => {
     if (!user) return;
