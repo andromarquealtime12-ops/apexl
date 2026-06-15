@@ -159,7 +159,8 @@ const Checkout = () => {
   const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
   const deliveryFee = sellerIds.reduce((total, sid) => {
     const shopInfo = shopDistances[sid];
-    return total + (shopInfo ? shopInfo.fee : Math.round(50 + 25 * 5));
+    // Default if distance unknown: 30 RD$ × 5 km estimé
+    return total + (shopInfo ? shopInfo.fee : 150);
   }, 0);
   const total = subtotal + deliveryFee;
 
