@@ -9,7 +9,7 @@ import {
   ShieldCheck, Users, Package, ShoppingCart, 
   Wallet, Settings, UserCog, Shield, 
   MessageSquare, Flag, History, Sliders,
-  UtensilsCrossed, Building2
+  UtensilsCrossed, Building2, MapPin
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import PendingWithdrawalsTable from "@/components/admin/PendingWithdrawalsTable";
@@ -35,6 +35,8 @@ import CurrencyRatesManager from "@/components/admin/CurrencyRatesManager";
 import { ShopifySyncCard } from "@/components/admin/ShopifySyncCard";
 import { PrintfulSyncCard } from "@/components/admin/PrintfulSyncCard";
 import AdminOrdersManager from "@/components/admin/AdminOrdersManager";
+import DeliveryZonesManager from "@/components/admin/DeliveryZonesManager";
+import LiveDriversMap from "@/components/admin/LiveDriversMap";
 
 import { usePendingIdentityVerifications, useSupportTickets, useReports } from "@/hooks/useAdminAdvanced";
 
@@ -137,6 +139,10 @@ const Admin = () => {
               <Building2 className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Agents</span>
             </TabsTrigger>
+            <TabsTrigger value="drivers-map">
+              <MapPin className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Livreurs</span>
+            </TabsTrigger>
             <TabsTrigger value="settings">
               <Settings className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Config</span>
@@ -220,9 +226,14 @@ const Admin = () => {
             <AdminAgentsManager />
           </TabsContent>
 
+          <TabsContent value="drivers-map" className="space-y-6">
+            <LiveDriversMap />
+          </TabsContent>
+
           <TabsContent value="settings" className="space-y-6">
             <ShopifySyncCard />
             <PrintfulSyncCard />
+            <DeliveryZonesManager />
             <DepositMethodsManager />
             <CurrencyRatesManager />
             <PlatformSettingsManager />

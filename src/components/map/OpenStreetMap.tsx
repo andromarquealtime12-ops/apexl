@@ -19,10 +19,12 @@ interface MapMarker {
 }
 
 interface RouteLine {
-  from: { lat: number; lng: number };
-  to: { lat: number; lng: number };
+  from?: { lat: number; lng: number };
+  to?: { lat: number; lng: number };
+  path?: Array<{ lat: number; lng: number }>; // when set, drawn as polyline through all points
   color?: string;
   dashed?: boolean;
+  weight?: number;
 }
 
 interface OpenStreetMapProps {
@@ -113,17 +115,20 @@ export default function OpenStreetMap({
         .addTo(markersLayerRef.current);
     }
 
-    // Draw route lines
+    // Draw route lines (multi-point polyline or simple from/to segment)
     routes.forEach((route) => {
-      const polyline = L.polyline(
-        [[route.from.lat, route.from.lng], [route.to.lat, route.to.lng]],
-        {
-          color: route.color || '#2563eb',
-          weight: 4,
-          opacity: 0.7,
-          dashArray: route.dashed ? '10, 10' : undefined,
-        }
-      );
+      const coords: Array<[number, number]> = route.path?.length
+        ? route.path.map((p) => [p.lat, p.lng])
+        : route.from && route.to
+          ? [[route.from.lat, route.from.lng], [route.to.lat, route.to.lng]]
+          : [];
+      if (coords.length < 2) return;
+      const polyline = L.polyline(coords, {
+        color: route.color || '#2563eb',
+        weight: route.weight ?? 4,
+        opacity: 0.8,
+        dashArray: route.dashed ? '10, 10' : undefined,
+      });
       polyline.addTo(markersLayerRef.current!);
     });
 
@@ -146,8 +151,12 @@ export default function OpenStreetMap({
       allPoints.push([userPosition.lat, userPosition.lng]);
     }
     routes.forEach((r) => {
-      allPoints.push([r.from.lat, r.from.lng]);
-      allPoints.push([r.to.lat, r.to.lng]);
+      if (r.path?.length) {
+        r.path.forEach((p) => allPoints.push([p.lat, p.lng]));
+      } else if (r.from && r.to) {
+        allPoints.push([r.from.lat, r.from.lng]);
+        allPoints.push([r.to.lat, r.to.lng]);
+      }
     });
     if (allPoints.length > 1 && mapInstanceRef.current) {
       mapInstanceRef.current.fitBounds(allPoints, { padding: [40, 40] });
