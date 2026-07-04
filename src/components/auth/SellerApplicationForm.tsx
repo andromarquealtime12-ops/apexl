@@ -167,7 +167,19 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
 
           <div className="space-y-2">
             <Label htmlFor="shop_address">Adresse *</Label>
-            <Input id="shop_address" placeholder="123 Rue du Commerce" value={formData.shop_address} onChange={(e) => handleChange("shop_address", e.target.value)} required />
+            <AddressAutocomplete
+              id="shop_address"
+              value={formData.shop_address}
+              onChange={(v) => handleChange("shop_address", v)}
+              onSelect={(s) => {
+                handleChange("shop_address", s.address);
+                if (s.city) handleChange("shop_city", s.city);
+                setShopLat(s.lat);
+                setShopLng(s.lng);
+                toast.success("Adresse et position enregistrées ✓");
+              }}
+              placeholder="Ex: Calle El Conde 100, Zona Colonial…"
+            />
           </div>
 
           {/* GPS Location */}
