@@ -433,12 +433,20 @@ const Checkout = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="address">Adresse ligne 1</Label>
-                    <Input
+                    <AddressAutocomplete
                       id="address"
-                      placeholder="Rue, numéro, quartier..."
                       value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      required
+                      onChange={setDeliveryAddress}
+                      onSelect={(s) => {
+                        setDeliveryAddress(s.address);
+                        if (s.city) setDeliveryCity(s.city);
+                        if (s.state) setDeliveryState(s.state);
+                        if (s.postcode) setDeliveryZip(s.postcode);
+                        setBuyerLat(s.lat);
+                        setBuyerLng(s.lng);
+                      }}
+                      placeholder="Ex: Av. 27 de Febrero, Santo Domingo…"
+                      countryCodes={deliveryCountry === "HT" ? "ht" : deliveryCountry === "DO" ? "do" : "do,ht"}
                     />
                   </div>
                   <div className="space-y-2">
