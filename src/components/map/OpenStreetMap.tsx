@@ -115,17 +115,20 @@ export default function OpenStreetMap({
         .addTo(markersLayerRef.current);
     }
 
-    // Draw route lines
+    // Draw route lines (multi-point polyline or simple from/to segment)
     routes.forEach((route) => {
-      const polyline = L.polyline(
-        [[route.from.lat, route.from.lng], [route.to.lat, route.to.lng]],
-        {
-          color: route.color || '#2563eb',
-          weight: 4,
-          opacity: 0.7,
-          dashArray: route.dashed ? '10, 10' : undefined,
-        }
-      );
+      const coords: Array<[number, number]> = route.path?.length
+        ? route.path.map((p) => [p.lat, p.lng])
+        : route.from && route.to
+          ? [[route.from.lat, route.from.lng], [route.to.lat, route.to.lng]]
+          : [];
+      if (coords.length < 2) return;
+      const polyline = L.polyline(coords, {
+        color: route.color || '#2563eb',
+        weight: route.weight ?? 4,
+        opacity: 0.8,
+        dashArray: route.dashed ? '10, 10' : undefined,
+      });
       polyline.addTo(markersLayerRef.current!);
     });
 
