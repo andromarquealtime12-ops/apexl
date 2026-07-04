@@ -226,9 +226,14 @@ const Admin = () => {
             <AdminAgentsManager />
           </TabsContent>
 
+          <TabsContent value="drivers-map" className="space-y-6">
+            <LiveDriversMap />
+          </TabsContent>
+
           <TabsContent value="settings" className="space-y-6">
             <ShopifySyncCard />
             <PrintfulSyncCard />
+            <DeliveryZonesManager />
             <DepositMethodsManager />
             <CurrencyRatesManager />
             <PlatformSettingsManager />
