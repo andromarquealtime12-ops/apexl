@@ -19,10 +19,12 @@ interface MapMarker {
 }
 
 interface RouteLine {
-  from: { lat: number; lng: number };
-  to: { lat: number; lng: number };
+  from?: { lat: number; lng: number };
+  to?: { lat: number; lng: number };
+  path?: Array<{ lat: number; lng: number }>; // when set, drawn as polyline through all points
   color?: string;
   dashed?: boolean;
+  weight?: number;
 }
 
 interface OpenStreetMapProps {
