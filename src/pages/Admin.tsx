@@ -35,6 +35,8 @@ import CurrencyRatesManager from "@/components/admin/CurrencyRatesManager";
 import { ShopifySyncCard } from "@/components/admin/ShopifySyncCard";
 import { PrintfulSyncCard } from "@/components/admin/PrintfulSyncCard";
 import AdminOrdersManager from "@/components/admin/AdminOrdersManager";
+import DeliveryZonesManager from "@/components/admin/DeliveryZonesManager";
+import LiveDriversMap from "@/components/admin/LiveDriversMap";
 
 import { usePendingIdentityVerifications, useSupportTickets, useReports } from "@/hooks/useAdminAdvanced";
 
