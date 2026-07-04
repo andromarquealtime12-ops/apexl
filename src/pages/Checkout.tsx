@@ -28,6 +28,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { calculateDistance } from "@/hooks/useGeolocation";
 import { ALL_CITIES } from "@/utils/cities";
+import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
+import { useDeliveryZones } from "@/hooks/useDeliveryZones";
+import { getZoneForPoint, calculateFee } from "@/utils/deliveryPricing";
 
 const Checkout = () => {
   const navigate = useNavigate();
