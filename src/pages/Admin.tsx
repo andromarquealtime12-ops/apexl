@@ -9,7 +9,7 @@ import {
   ShieldCheck, Users, Package, ShoppingCart, 
   Wallet, Settings, UserCog, Shield, 
   MessageSquare, Flag, History, Sliders,
-  UtensilsCrossed, Building2
+  UtensilsCrossed, Building2, MapPin
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import PendingWithdrawalsTable from "@/components/admin/PendingWithdrawalsTable";
