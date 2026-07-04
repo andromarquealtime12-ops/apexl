@@ -208,11 +208,22 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
     });
   }
   
-  // Dashed line from driver to destination
+  // Fetch OSRM route from driver to buyer whenever driver moves significantly
+  useEffect(() => {
+    if (!driverPosition || !order?.buyer_latitude || !order?.buyer_longitude) return;
+    let cancelled = false;
+    getRoute(driverPosition, { lat: order.buyer_latitude, lng: order.buyer_longitude }).then((r) => {
+      if (!cancelled) setRemainingRoute(r.coordinates);
+    });
+    return () => { cancelled = true; };
+  }, [driverPosition?.lat, driverPosition?.lng, order?.buyer_latitude, order?.buyer_longitude]);
+
+  // Dashed OSRM route from driver to destination
   if (driverPosition && order.buyer_latitude && order.buyer_longitude) {
     mapRoutes.push({
-      from: driverPosition,
-      to: { lat: order.buyer_latitude, lng: order.buyer_longitude },
+      path: remainingRoute.length > 1
+        ? remainingRoute
+        : [driverPosition, { lat: order.buyer_latitude, lng: order.buyer_longitude }],
       color: '#16a34a',
       dashed: true,
     });
