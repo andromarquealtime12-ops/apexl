@@ -41,6 +41,7 @@ const Checkout = () => {
   const { data: profile } = useProfile();
   const checkout = useCheckout();
   const cashCheckout = useCashCheckout();
+  const { data: zones } = useDeliveryZones(false);
 
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryCity, setDeliveryCity] = useState("");
