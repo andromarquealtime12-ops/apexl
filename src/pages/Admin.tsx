@@ -139,6 +139,10 @@ const Admin = () => {
               <Building2 className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Agents</span>
             </TabsTrigger>
+            <TabsTrigger value="drivers-map">
+              <MapPin className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Livreurs</span>
+            </TabsTrigger>
             <TabsTrigger value="settings">
               <Settings className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Config</span>
