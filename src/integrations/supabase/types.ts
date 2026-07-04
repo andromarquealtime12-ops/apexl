@@ -1937,6 +1937,30 @@ export type Database = {
       }
       generate_pin_code: { Args: never; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
+      get_active_deposit_methods: {
+        Args: never
+        Returns: {
+          account_name: string | null
+          account_number: string | null
+          country: string
+          created_at: string
+          icon: string | null
+          id: string
+          instructions: string | null
+          is_active: boolean | null
+          label: string
+          method_key: string
+          method_type: string
+          sort_order: number | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "deposit_methods"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_buyer_order_ids: { Args: never; Returns: string[] }
       get_driver_order_ids: { Args: never; Returns: string[] }
       get_my_profile: {
