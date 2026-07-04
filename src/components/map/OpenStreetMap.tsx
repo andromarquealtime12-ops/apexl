@@ -151,8 +151,12 @@ export default function OpenStreetMap({
       allPoints.push([userPosition.lat, userPosition.lng]);
     }
     routes.forEach((r) => {
-      allPoints.push([r.from.lat, r.from.lng]);
-      allPoints.push([r.to.lat, r.to.lng]);
+      if (r.path?.length) {
+        r.path.forEach((p) => allPoints.push([p.lat, p.lng]));
+      } else if (r.from && r.to) {
+        allPoints.push([r.from.lat, r.from.lng]);
+        allPoints.push([r.to.lat, r.to.lng]);
+      }
     });
     if (allPoints.length > 1 && mapInstanceRef.current) {
       mapInstanceRef.current.fitBounds(allPoints, { padding: [40, 40] });
