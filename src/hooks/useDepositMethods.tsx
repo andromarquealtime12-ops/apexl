@@ -19,12 +19,17 @@ export function useDepositMethods() {
   return useQuery({
     queryKey: ["deposit-methods"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Admins can read the table directly (RLS); everyone else goes through the RPC
+      // that returns only active methods.
+      const { data: directData, error: directError } = await supabase
         .from("deposit_methods")
         .select("*")
         .order("sort_order", { ascending: true });
+      if (!directError && directData) return directData as DepositMethod[];
+
+      const { data, error } = await supabase.rpc("get_active_deposit_methods");
       if (error) throw error;
-      return data as DepositMethod[];
+      return (data ?? []) as DepositMethod[];
     },
   });
 }
