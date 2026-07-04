@@ -41,7 +41,7 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
     setUploading(true);
     try {
       const ext = file.name.split(".").pop();
-      const path = `returns/${returnId}/${Date.now()}.${ext}`;
+      const path = `${user.id}/${returnId}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from("return-photos").upload(path, file);
       if (uploadError) throw uploadError;
 
