@@ -305,6 +305,54 @@ export type Database = {
           },
         ]
       }
+      delivery_zones: {
+        Row: {
+          active: boolean
+          base_fee: number
+          center_lat: number | null
+          center_lng: number | null
+          city: string | null
+          country: string
+          created_at: string
+          currency: string
+          fee_per_km: number
+          id: string
+          name: string
+          radius_km: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          base_fee?: number
+          center_lat?: number | null
+          center_lng?: number | null
+          city?: string | null
+          country: string
+          created_at?: string
+          currency?: string
+          fee_per_km?: number
+          id?: string
+          name: string
+          radius_km?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          base_fee?: number
+          center_lat?: number | null
+          center_lng?: number | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          currency?: string
+          fee_per_km?: number
+          id?: string
+          name?: string
+          radius_km?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       deposit_agents: {
         Row: {
           address: string
@@ -771,6 +819,8 @@ export type Database = {
           delivery_city: string | null
           delivery_country: string | null
           delivery_fee: number | null
+          delivery_lat: number | null
+          delivery_lng: number | null
           delivery_notes: string | null
           delivery_state: string | null
           delivery_zip: string | null
@@ -797,6 +847,8 @@ export type Database = {
           delivery_city?: string | null
           delivery_country?: string | null
           delivery_fee?: number | null
+          delivery_lat?: number | null
+          delivery_lng?: number | null
           delivery_notes?: string | null
           delivery_state?: string | null
           delivery_zip?: string | null
@@ -823,6 +875,8 @@ export type Database = {
           delivery_city?: string | null
           delivery_country?: string | null
           delivery_fee?: number | null
+          delivery_lat?: number | null
+          delivery_lng?: number | null
           delivery_notes?: string | null
           delivery_state?: string | null
           delivery_zip?: string | null
