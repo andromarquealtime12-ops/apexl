@@ -118,10 +118,10 @@ const Checkout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Calculate distance per shop when buyer location available
+  // Calculate distance per shop when buyer location available (uses zones for pricing)
   useEffect(() => {
     if (!buyerLat || !buyerLng || items.length === 0) return;
-    
+
     const fetchSellerLocations = async () => {
       const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
       const { data: allShops } = await (supabase as any)
@@ -129,9 +129,11 @@ const Checkout = () => {
       const data = (allShops || []).filter((s: any) =>
         sellerIds.includes(s.user_id) && s.latitude != null && s.longitude != null
       );
-      
+
       if (data) {
-        // Compute distance for each seller, then sort by distance
+        // Pick tarif zone based on buyer position
+        const buyerZone = getZoneForPoint(buyerLat, buyerLng, zones);
+
         const sellersWithDist = data
           .filter(s => s.latitude && s.longitude)
           .map(seller => ({
@@ -143,9 +145,8 @@ const Checkout = () => {
 
         const distances: Record<string, { distance: number; shopName: string; fee: number }> = {};
         sellersWithDist.forEach((s, idx) => {
-          // Tarif: 30 RD$ par km (minimum 30 RD$)
-          const baseFee = Math.max(30, Math.round(30 * s.distance));
-          // First (closest) shop = base fee. Additional shops within 10 km radius = +10%
+          const baseFee = calculateFee(s.distance, buyerZone);
+          // Additional shops within 10 km radius pay +10% surcharge
           const fee = idx === 0 ? baseFee : (s.distance <= 10 ? Math.round(baseFee * 1.10) : baseFee);
           distances[s.user_id] = { distance: s.distance, shopName: s.shopName, fee };
         });
@@ -153,7 +154,7 @@ const Checkout = () => {
       }
     };
     fetchSellerLocations();
-  }, [buyerLat, buyerLng, items]);
+  }, [buyerLat, buyerLng, items, zones]);
 
 
   const isEmailVerified = profile?.email_verified ?? false;
