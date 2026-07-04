@@ -14,6 +14,7 @@ import { useSubmitSellerApplication, useMySellerApplication } from "@/hooks/useA
 import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 
 interface SellerApplicationFormProps {
   isOpen: boolean;
