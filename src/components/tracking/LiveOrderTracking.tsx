@@ -17,6 +17,7 @@ import { CURRENCY_SYMBOLS } from "@/types/database";
 import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { useDriverLocationsRealtime } from "@/hooks/useGeolocation";
 import { estimateDeliveryTime } from "@/utils/deliveryEstimation";
+import { getRoute } from "@/utils/osrmRouting";
 import { Link } from "react-router-dom";
 import OrderChat from "@/components/chat/OrderChat";
 
