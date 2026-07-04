@@ -48,6 +48,7 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
   const { user } = useAuth();
   const [driverPosition, setDriverPosition] = useState<{ lat: number; lng: number } | null>(null);
   const [driverTrail, setDriverTrail] = useState<{ lat: number; lng: number }[]>([]);
+  const [remainingRoute, setRemainingRoute] = useState<{ lat: number; lng: number }[]>([]);
 
   // Fetch order
   const { data: order, refetch: refetchOrder } = useQuery({
