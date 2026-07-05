@@ -125,12 +125,21 @@ export default function LiveDriversMap() {
   const list = useMemo(() => Object.values(drivers), [drivers]);
   const filtered = useMemo(
     () =>
-      list.filter((d) =>
-        !search.trim()
+      list.filter((d) => {
+        const nameMatch = !search.trim()
           ? true
-          : (d.profile?.full_name ?? "").toLowerCase().includes(search.toLowerCase())
-      ),
-    [list, search]
+          : (d.profile?.full_name ?? "").toLowerCase().includes(search.toLowerCase());
+        if (!nameMatch) return false;
+        if (!activeZone || activeZone.center_lat == null || activeZone.center_lng == null) {
+          return true;
+        }
+        const dist = calculateDistance(
+          d.latitude, d.longitude,
+          Number(activeZone.center_lat), Number(activeZone.center_lng)
+        );
+        return dist <= Number(activeZone.radius_km);
+      }),
+    [list, search, activeZone]
   );
 
   const markers = filtered.map((d) => ({
