@@ -41,34 +41,13 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     },
   });
 
-  // Notify all nearby online drivers
+  // Notify all nearby online drivers via secure RPC
   const notifyNearbyDrivers = async () => {
     try {
-      // Get all online driver locations
-      const { data: onlineDrivers } = await supabase
-        .from("driver_locations")
-        .select("driver_id")
-        .eq("is_online", true);
-
-      if (!onlineDrivers || onlineDrivers.length === 0) return;
-
-      // Get order info for notification
-      const { data: order } = await supabase
-        .from("orders")
-        .select("delivery_city, delivery_address")
-        .eq("id", orderId)
-        .single();
-
-      // Insert notifications for all online drivers
-      const notifications = onlineDrivers.map(d => ({
-        user_id: d.driver_id,
-        title: "📦 Nouvelle commande disponible !",
-        message: `Une commande est prête à être récupérée${order?.delivery_city ? ` vers ${order.delivery_city}` : ""}. Acceptez-la vite !`,
-        type: "info" as const,
-        action_url: "/driver",
-      }));
-
-      await supabase.from("notifications").insert(notifications);
+      const { error } = await supabase.rpc("notify_available_drivers_for_order", {
+        p_order_id: orderId,
+      });
+      if (error) throw error;
     } catch (err) {
       console.error("Error notifying drivers:", err);
     }

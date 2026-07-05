@@ -205,23 +205,23 @@ export function useNearbyDrivers(position: GeolocationPosition | null, radiusKm:
     queryFn: async () => {
       if (!position) return [];
 
-      const { data, error } = await supabase
-        .from("driver_locations")
-        .select("driver_id, latitude, longitude, updated_at")
-        .eq("is_online", true);
+      const { data, error } = await supabase.rpc("get_nearby_drivers", {
+        p_latitude: position.latitude,
+        p_longitude: position.longitude,
+        p_radius_km: radiusKm,
+      });
 
       if (error) throw error;
       if (!data || data.length === 0) return [];
 
-      const driversWithDistance = data
+      const driversWithDistance = (data as any[])
         .map((driver) => ({
-          ...driver,
-          distance_km: calculateDistance(
-            position.latitude, position.longitude,
-            driver.latitude, driver.longitude
-          ),
+          driver_id: driver.driver_id,
+          latitude: driver.latitude,
+          longitude: driver.longitude,
+          updated_at: driver.updated_at,
+          distance_km: driver.distance_km,
         }))
-        .filter((d) => d.distance_km <= radiusKm)
         .sort((a, b) => a.distance_km - b.distance_km);
 
       if (driversWithDistance.length > 0) {
