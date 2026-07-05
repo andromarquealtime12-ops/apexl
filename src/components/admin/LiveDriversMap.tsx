@@ -71,8 +71,13 @@ export default function LiveDriversMap() {
         active_orders: activeCount[d.driver_id] ?? 0,
       }));
     },
-    refetchInterval: 30000, // safety net; realtime does most work
+    refetchInterval: refreshMs > 0 ? refreshMs : false, // realtime does most work; this is a safety net
   });
+
+  const activeZone = useMemo(
+    () => zones.find((z) => z.id === zoneId) ?? null,
+    [zones, zoneId]
+  );
 
   useEffect(() => {
     if (initial) {
