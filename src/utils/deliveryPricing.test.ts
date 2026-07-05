@@ -44,15 +44,18 @@ describe("calculateFee", () => {
       expect(calculateFee(0, portAuPrince)).toBe(250);
     });
 
-    it("ne descend jamais sous base_fee même pour de très courtes distances", () => {
-      // 0.1 km * 30 = 3, base 50 → plancher 50
-      expect(calculateFee(0.1, santoDomingo)).toBe(50);
-      expect(calculateFee(0.5, santoDomingo)).toBe(50);
+    it("applique la formule dès qu'il y a une distance (base + km × tarif)", () => {
+      // 0.1 km * 30 = 3 ; +50 = 53
+      expect(calculateFee(0.1, santoDomingo)).toBe(53);
+      // 0.5 km * 30 = 15 ; +50 = 65
+      expect(calculateFee(0.5, santoDomingo)).toBe(65);
     });
 
-    it("respecte le plancher pour Port-au-Prince (HTG)", () => {
-      // 1 km * 150 = 150, base 250 → plancher 250
-      expect(calculateFee(1, portAuPrince)).toBe(250);
+    it("garde base_fee comme plancher absolu (distance négative défensive)", () => {
+      // -1 km * 30 = -30 ; +50 = 20 → plancher 50
+      expect(calculateFee(-1, santoDomingo)).toBe(50);
+      // -10 km * 150 = -1500 ; +250 = -1250 → plancher 250
+      expect(calculateFee(-10, portAuPrince)).toBe(250);
     });
   });
 
