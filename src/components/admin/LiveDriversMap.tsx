@@ -30,7 +30,10 @@ interface DriverLive {
 
 export default function LiveDriversMap() {
   const [search, setSearch] = useState("");
+  const [zoneId, setZoneId] = useState<string>("all");
+  const [refreshMs, setRefreshMs] = useState<number>(30000);
   const [drivers, setDrivers] = useState<Record<string, DriverLive>>({});
+  const { data: zones = [] } = useDeliveryZones(false);
 
   // Initial load: all online drivers + profiles + active-order counts
   const { data: initial, refetch } = useQuery({
