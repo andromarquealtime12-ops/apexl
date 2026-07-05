@@ -6,9 +6,15 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Radio, Truck, Users } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import { Radio, Truck, Users, MapPin, Timer } from "lucide-react";
 import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { useDriverLocationsRealtime } from "@/hooks/useGeolocation";
+import { useDeliveryZones } from "@/hooks/useDeliveryZones";
+import { calculateDistance } from "@/hooks/useGeolocation";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -24,7 +30,10 @@ interface DriverLive {
 
 export default function LiveDriversMap() {
   const [search, setSearch] = useState("");
+  const [zoneId, setZoneId] = useState<string>("all");
+  const [refreshMs, setRefreshMs] = useState<number>(30000);
   const [drivers, setDrivers] = useState<Record<string, DriverLive>>({});
+  const { data: zones = [] } = useDeliveryZones(false);
 
   // Initial load: all online drivers + profiles + active-order counts
   const { data: initial, refetch } = useQuery({
@@ -62,8 +71,13 @@ export default function LiveDriversMap() {
         active_orders: activeCount[d.driver_id] ?? 0,
       }));
     },
-    refetchInterval: 30000, // safety net; realtime does most work
+    refetchInterval: refreshMs > 0 ? refreshMs : false, // realtime does most work; this is a safety net
   });
+
+  const activeZone = useMemo(
+    () => zones.find((z) => z.id === zoneId) ?? null,
+    [zones, zoneId]
+  );
 
   useEffect(() => {
     if (initial) {
@@ -111,12 +125,21 @@ export default function LiveDriversMap() {
   const list = useMemo(() => Object.values(drivers), [drivers]);
   const filtered = useMemo(
     () =>
-      list.filter((d) =>
-        !search.trim()
+      list.filter((d) => {
+        const nameMatch = !search.trim()
           ? true
-          : (d.profile?.full_name ?? "").toLowerCase().includes(search.toLowerCase())
-      ),
-    [list, search]
+          : (d.profile?.full_name ?? "").toLowerCase().includes(search.toLowerCase());
+        if (!nameMatch) return false;
+        if (!activeZone || activeZone.center_lat == null || activeZone.center_lng == null) {
+          return true;
+        }
+        const dist = calculateDistance(
+          d.latitude, d.longitude,
+          Number(activeZone.center_lat), Number(activeZone.center_lng)
+        );
+        return dist <= Number(activeZone.radius_km);
+      }),
+    [list, search, activeZone]
   );
 
   const markers = filtered.map((d) => ({
@@ -128,9 +151,11 @@ export default function LiveDriversMap() {
     }`,
   }));
 
-  const center = markers.length
-    ? { lat: markers[0].lat, lng: markers[0].lng }
-    : { lat: 18.4861, lng: -69.9312 };
+  const center = activeZone && activeZone.center_lat != null && activeZone.center_lng != null
+    ? { lat: Number(activeZone.center_lat), lng: Number(activeZone.center_lng) }
+    : markers.length
+      ? { lat: markers[0].lat, lng: markers[0].lng }
+      : { lat: 18.4861, lng: -69.9312 };
 
   return (
     <Card>
@@ -148,17 +173,53 @@ export default function LiveDriversMap() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-3">
-          <Input
-            placeholder="Rechercher un livreur…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-sm"
-          />
-          <Badge variant="outline" className="gap-1">
-            <Users className="h-3 w-3" /> {filtered.length} en ligne
-          </Badge>
+        <div className="grid gap-3 md:grid-cols-4">
+          <div className="space-y-1">
+            <Label className="text-xs">Rechercher</Label>
+            <Input
+              placeholder="Nom du livreur…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs flex items-center gap-1">
+              <MapPin className="h-3 w-3" /> Zone
+            </Label>
+            <Select value={zoneId} onValueChange={setZoneId}>
+              <SelectTrigger><SelectValue placeholder="Toutes les zones" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes les zones</SelectItem>
+                {zones.map((z) => (
+                  <SelectItem key={z.id} value={z.id}>
+                    {z.name} {z.city ? `— ${z.city}` : ""} ({z.country})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs flex items-center gap-1">
+              <Timer className="h-3 w-3" /> Actualisation
+            </Label>
+            <Select value={String(refreshMs)} onValueChange={(v) => setRefreshMs(Number(v))}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5000">Toutes les 5 s</SelectItem>
+                <SelectItem value="10000">Toutes les 10 s</SelectItem>
+                <SelectItem value="30000">Toutes les 30 s</SelectItem>
+                <SelectItem value="60000">Toutes les 60 s</SelectItem>
+                <SelectItem value="0">Realtime uniquement</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-end">
+            <Badge variant="outline" className="gap-1 w-full justify-center py-2">
+              <Users className="h-3 w-3" /> {filtered.length} en ligne
+            </Badge>
+          </div>
         </div>
+
 
         <OpenStreetMap
           center={center}
