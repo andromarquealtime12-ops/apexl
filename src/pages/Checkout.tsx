@@ -511,6 +511,22 @@ const Checkout = () => {
                     )}
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="buyer_phone">
+                      Téléphone de contact <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="buyer_phone"
+                      type="tel"
+                      placeholder="+1 809 000 0000"
+                      value={buyerPhone}
+                      onChange={(e) => setBuyerPhone(e.target.value)}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Obligatoire — le livreur vous appellera à ce numéro pour la livraison.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="notes">Instructions de livraison (optionnel)</Label>
                     <Textarea
                       id="notes"
@@ -543,18 +559,6 @@ const Checkout = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {!isEmailVerified && (
-                    <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
-                      <Mail className="h-4 w-4 text-amber-600" />
-                      <AlertDescription className="text-amber-800 dark:text-amber-200">
-                        Veuillez vérifier votre email avant de passer commande.
-                        <Button variant="link" className="h-auto p-0 pl-1 text-amber-600" onClick={() => navigate("/profile")}>
-                          Vérifier maintenant
-                        </Button>
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
                   {/* Wallet payment option */}
                   <div
                     className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === "wallet" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "bg-muted/30 hover:bg-muted/50"}`}
