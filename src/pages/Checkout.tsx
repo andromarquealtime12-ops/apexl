@@ -46,6 +46,7 @@ const Checkout = () => {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryCity, setDeliveryCity] = useState("");
   const [deliveryNotes, setDeliveryNotes] = useState("");
+  const [buyerPhone, setBuyerPhone] = useState("");
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"wallet" | "cash">("wallet");
@@ -157,7 +158,10 @@ const Checkout = () => {
   }, [buyerLat, buyerLng, items, zones]);
 
 
-  const isEmailVerified = profile?.email_verified ?? false;
+  // Prefill phone from profile
+  useEffect(() => {
+    if (profile?.phone && !buyerPhone) setBuyerPhone(profile.phone);
+  }, [profile?.phone, buyerPhone]);
 
   const subtotal = getSubtotal();
   // Calculate total delivery fee from all shops
