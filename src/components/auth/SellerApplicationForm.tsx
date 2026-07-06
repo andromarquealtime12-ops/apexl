@@ -236,7 +236,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitApplication.isPending}>
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending || !isEmailVerified}>
             {submitApplication.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             Soumettre ma demande
           </Button>
