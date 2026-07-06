@@ -19,8 +19,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useSubmitDriverApplication, useMyDriverApplication } from "@/hooks/useApplications";
-import { Loader2, Truck, CheckCircle, Clock } from "lucide-react";
+import { useIsEmailVerified } from "@/hooks/useProfile";
+import { Loader2, Truck, CheckCircle, Clock, Mail } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 interface DriverApplicationFormProps {
   isOpen: boolean;
@@ -37,6 +40,7 @@ const VEHICLE_TYPES = {
 export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationFormProps) {
   const { data: existingApplication, isLoading: loadingApplication } = useMyDriverApplication();
   const submitApplication = useSubmitDriverApplication();
+  const { isVerified: isEmailVerified } = useIsEmailVerified();
   
   const [formData, setFormData] = useState({
     vehicle_type: "" as "motorcycle" | "car" | "bicycle" | "truck" | "",
@@ -53,7 +57,11 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.vehicle_type) return;
-    
+    if (!isEmailVerified) {
+      toast.error("Veuillez vérifier votre email avant de soumettre une demande livreur.");
+      return;
+    }
+
     await submitApplication.mutateAsync({
       ...formData,
       vehicle_type: formData.vehicle_type as "motorcycle" | "car" | "bicycle" | "truck",
@@ -137,6 +145,14 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {!isEmailVerified && (
+            <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
+              <Mail className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm">
+                Vérification email obligatoire pour devenir livreur. Vérifiez votre email depuis votre profil.
+              </AlertDescription>
+            </Alert>
+          )}
           <div className="space-y-2">
             <Label htmlFor="vehicle_type">Type de véhicule *</Label>
             <Select
@@ -260,7 +276,7 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
           <Button
             type="submit"
             className="w-full"
-            disabled={submitApplication.isPending || !formData.vehicle_type}
+            disabled={submitApplication.isPending || !formData.vehicle_type || !isEmailVerified}
           >
             {submitApplication.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />

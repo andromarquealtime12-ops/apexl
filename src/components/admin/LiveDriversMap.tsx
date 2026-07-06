@@ -17,6 +17,7 @@ import { useDeliveryZones } from "@/hooks/useDeliveryZones";
 import { calculateDistance } from "@/hooks/useGeolocation";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import DriverActiveOrdersDialog from "./DriverActiveOrdersDialog";
 
 interface DriverLive {
   driver_id: string;
@@ -33,6 +34,7 @@ export default function LiveDriversMap() {
   const [zoneId, setZoneId] = useState<string>("all");
   const [refreshMs, setRefreshMs] = useState<number>(30000);
   const [drivers, setDrivers] = useState<Record<string, DriverLive>>({});
+  const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
   const { data: zones = [] } = useDeliveryZones(false);
 
   // Initial load: all online drivers + profiles + active-order counts
@@ -230,9 +232,11 @@ export default function LiveDriversMap() {
 
         <div className="space-y-2 max-h-64 overflow-auto">
           {filtered.map((d) => (
-            <div
+            <button
               key={d.driver_id}
-              className="flex items-center gap-3 p-2 border rounded-lg text-sm"
+              type="button"
+              onClick={() => setSelectedDriverId(d.driver_id)}
+              className="w-full flex items-center gap-3 p-2 border rounded-lg text-sm text-left hover:bg-muted/40 transition-colors"
             >
               <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
                 {d.profile?.full_name?.[0] ?? "?"}
@@ -256,14 +260,17 @@ export default function LiveDriversMap() {
                 </Badge>
               )}
               {d.profile?.phone && (
-                <a
-                  href={`tel:${d.profile.phone}`}
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.location.href = `tel:${d.profile?.phone}`;
+                  }}
                   className="text-xs text-primary hover:underline"
                 >
                   {d.profile.phone}
-                </a>
+                </span>
               )}
-            </div>
+            </button>
           ))}
           {filtered.length === 0 && (
             <p className="text-center text-muted-foreground py-6 text-sm">
@@ -272,6 +279,12 @@ export default function LiveDriversMap() {
           )}
         </div>
       </CardContent>
+
+      <DriverActiveOrdersDialog
+        driverId={selectedDriverId}
+        driverName={selectedDriverId ? drivers[selectedDriverId]?.profile?.full_name : undefined}
+        onClose={() => setSelectedDriverId(null)}
+      />
     </Card>
   );
 }

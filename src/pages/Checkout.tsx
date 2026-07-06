@@ -46,6 +46,7 @@ const Checkout = () => {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryCity, setDeliveryCity] = useState("");
   const [deliveryNotes, setDeliveryNotes] = useState("");
+  const [buyerPhone, setBuyerPhone] = useState("");
   const [currency, setCurrency] = useState<Currency>("DOP");
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"wallet" | "cash">("wallet");
@@ -157,7 +158,10 @@ const Checkout = () => {
   }, [buyerLat, buyerLng, items, zones]);
 
 
-  const isEmailVerified = profile?.email_verified ?? false;
+  // Prefill phone from profile
+  useEffect(() => {
+    if (profile?.phone && !buyerPhone) setBuyerPhone(profile.phone);
+  }, [profile?.phone, buyerPhone]);
 
   const subtotal = getSubtotal();
   // Calculate total delivery fee from all shops
@@ -184,6 +188,18 @@ const Checkout = () => {
     if (!deliveryAddress || !deliveryCity) {
       toast({ title: "Erreur", description: "Veuillez renseigner l'adresse de livraison", variant: "destructive" });
       return;
+    }
+
+    const phoneClean = buyerPhone.replace(/\s+/g, "");
+    if (!phoneClean || phoneClean.length < 7) {
+      toast({ title: "Téléphone requis", description: "Un numéro de téléphone valide est obligatoire pour que le livreur puisse vous contacter.", variant: "destructive" });
+      return;
+    }
+
+    // Persist phone on profile if changed
+    if (profile && profile.phone !== buyerPhone) {
+      await supabase.from("profiles").update({ phone: buyerPhone }).eq("user_id", user.id);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
     }
 
     if (paymentMethod === "wallet" && !hasEnoughBalance) {
@@ -495,6 +511,22 @@ const Checkout = () => {
                     )}
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="buyer_phone">
+                      Téléphone de contact <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="buyer_phone"
+                      type="tel"
+                      placeholder="+1 809 000 0000"
+                      value={buyerPhone}
+                      onChange={(e) => setBuyerPhone(e.target.value)}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Obligatoire — le livreur vous appellera à ce numéro pour la livraison.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="notes">Instructions de livraison (optionnel)</Label>
                     <Textarea
                       id="notes"
@@ -527,18 +559,6 @@ const Checkout = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {!isEmailVerified && (
-                    <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
-                      <Mail className="h-4 w-4 text-amber-600" />
-                      <AlertDescription className="text-amber-800 dark:text-amber-200">
-                        Veuillez vérifier votre email avant de passer commande.
-                        <Button variant="link" className="h-auto p-0 pl-1 text-amber-600" onClick={() => navigate("/profile")}>
-                          Vérifier maintenant
-                        </Button>
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
                   {/* Wallet payment option */}
                   <div
                     className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === "wallet" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "bg-muted/30 hover:bg-muted/50"}`}

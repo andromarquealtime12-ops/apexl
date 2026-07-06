@@ -11,8 +11,10 @@ import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { useSubmitSellerApplication, useMySellerApplication } from "@/hooks/useApplications";
-import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation } from "lucide-react";
+import { useIsEmailVerified } from "@/hooks/useProfile";
+import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation, Mail } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 
@@ -24,6 +26,7 @@ interface SellerApplicationFormProps {
 export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationFormProps) {
   const { data: existingApplication, isLoading: loadingApplication } = useMySellerApplication();
   const submitApplication = useSubmitSellerApplication();
+  const { isVerified: isEmailVerified } = useIsEmailVerified();
   
   const [formData, setFormData] = useState({
     shop_name: "",
@@ -61,6 +64,10 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isEmailVerified) {
+      toast.error("Veuillez vérifier votre email avant de soumettre une demande vendeur.");
+      return;
+    }
     await submitApplication.mutateAsync({
       ...formData,
       latitude: shopLat,
@@ -139,6 +146,14 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {!isEmailVerified && (
+            <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
+              <Mail className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm">
+                Vérification email obligatoire pour devenir vendeur. Vérifiez votre email depuis votre profil.
+              </AlertDescription>
+            </Alert>
+          )}
           <div className="space-y-2">
             <Label htmlFor="shop_name">Nom de la boutique *</Label>
             <Input id="shop_name" placeholder="Ma Super Boutique" value={formData.shop_name} onChange={(e) => handleChange("shop_name", e.target.value)} required />
@@ -221,7 +236,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitApplication.isPending}>
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending || !isEmailVerified}>
             {submitApplication.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             Soumettre ma demande
           </Button>
