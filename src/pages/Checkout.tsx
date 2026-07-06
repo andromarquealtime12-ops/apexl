@@ -190,6 +190,18 @@ const Checkout = () => {
       return;
     }
 
+    const phoneClean = buyerPhone.replace(/\s+/g, "");
+    if (!phoneClean || phoneClean.length < 7) {
+      toast({ title: "Téléphone requis", description: "Un numéro de téléphone valide est obligatoire pour que le livreur puisse vous contacter.", variant: "destructive" });
+      return;
+    }
+
+    // Persist phone on profile if changed
+    if (profile && profile.phone !== buyerPhone) {
+      await supabase.from("profiles").update({ phone: buyerPhone }).eq("user_id", user.id);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    }
+
     if (paymentMethod === "wallet" && !hasEnoughBalance) {
       toast({ title: "Solde insuffisant", description: "Rechargez votre portefeuille ou payez en cash", variant: "destructive" });
       return;
