@@ -146,6 +146,14 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {!isEmailVerified && (
+            <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
+              <Mail className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm">
+                Vérification email obligatoire pour devenir vendeur. Vérifiez votre email depuis votre profil.
+              </AlertDescription>
+            </Alert>
+          )}
           <div className="space-y-2">
             <Label htmlFor="shop_name">Nom de la boutique *</Label>
             <Input id="shop_name" placeholder="Ma Super Boutique" value={formData.shop_name} onChange={(e) => handleChange("shop_name", e.target.value)} required />
