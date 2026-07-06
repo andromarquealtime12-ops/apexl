@@ -17,6 +17,7 @@ import { useDeliveryZones } from "@/hooks/useDeliveryZones";
 import { calculateDistance } from "@/hooks/useGeolocation";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import DriverActiveOrdersDialog from "./DriverActiveOrdersDialog";
 
 interface DriverLive {
   driver_id: string;
@@ -33,6 +34,7 @@ export default function LiveDriversMap() {
   const [zoneId, setZoneId] = useState<string>("all");
   const [refreshMs, setRefreshMs] = useState<number>(30000);
   const [drivers, setDrivers] = useState<Record<string, DriverLive>>({});
+  const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
   const { data: zones = [] } = useDeliveryZones(false);
 
   // Initial load: all online drivers + profiles + active-order counts
