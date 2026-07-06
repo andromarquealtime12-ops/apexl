@@ -276,7 +276,7 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
           <Button
             type="submit"
             className="w-full"
-            disabled={submitApplication.isPending || !formData.vehicle_type}
+            disabled={submitApplication.isPending || !formData.vehicle_type || !isEmailVerified}
           >
             {submitApplication.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
