@@ -19,8 +19,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useSubmitDriverApplication, useMyDriverApplication } from "@/hooks/useApplications";
-import { Loader2, Truck, CheckCircle, Clock } from "lucide-react";
+import { useIsEmailVerified } from "@/hooks/useProfile";
+import { Loader2, Truck, CheckCircle, Clock, Mail } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 interface DriverApplicationFormProps {
   isOpen: boolean;
@@ -37,6 +40,7 @@ const VEHICLE_TYPES = {
 export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationFormProps) {
   const { data: existingApplication, isLoading: loadingApplication } = useMyDriverApplication();
   const submitApplication = useSubmitDriverApplication();
+  const { isVerified: isEmailVerified } = useIsEmailVerified();
   
   const [formData, setFormData] = useState({
     vehicle_type: "" as "motorcycle" | "car" | "bicycle" | "truck" | "",
@@ -53,7 +57,11 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.vehicle_type) return;
-    
+    if (!isEmailVerified) {
+      toast.error("Veuillez vérifier votre email avant de soumettre une demande livreur.");
+      return;
+    }
+
     await submitApplication.mutateAsync({
       ...formData,
       vehicle_type: formData.vehicle_type as "motorcycle" | "car" | "bicycle" | "truck",
