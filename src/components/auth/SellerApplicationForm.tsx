@@ -11,8 +11,10 @@ import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { useSubmitSellerApplication, useMySellerApplication } from "@/hooks/useApplications";
-import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation } from "lucide-react";
+import { useIsEmailVerified } from "@/hooks/useProfile";
+import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation, Mail } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 
@@ -24,6 +26,7 @@ interface SellerApplicationFormProps {
 export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationFormProps) {
   const { data: existingApplication, isLoading: loadingApplication } = useMySellerApplication();
   const submitApplication = useSubmitSellerApplication();
+  const { isVerified: isEmailVerified } = useIsEmailVerified();
   
   const [formData, setFormData] = useState({
     shop_name: "",
@@ -61,6 +64,10 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isEmailVerified) {
+      toast.error("Veuillez vérifier votre email avant de soumettre une demande vendeur.");
+      return;
+    }
     await submitApplication.mutateAsync({
       ...formData,
       latitude: shopLat,
