@@ -1915,10 +1915,7 @@ export type Database = {
         }
         Returns: Json
       }
-      approve_deposit: {
-        Args: { admin_id_input: string; transaction_id_input: string }
-        Returns: Json
-      }
+      approve_deposit: { Args: { transaction_id_input: string }; Returns: Json }
       approve_driver_application: {
         Args: { application_id: string }
         Returns: boolean
@@ -2194,11 +2191,7 @@ export type Database = {
       }
       regenerate_pickup_code: { Args: { p_order_id: string }; Returns: Json }
       reject_deposit: {
-        Args: {
-          admin_id_input: string
-          reason_input?: string
-          transaction_id_input: string
-        }
+        Args: { reason_input?: string; transaction_id_input: string }
         Returns: Json
       }
       reject_identity_verification: {
