@@ -309,16 +309,47 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
             />
           </div>
 
+          <div className="rounded-lg border p-3 space-y-3 bg-muted/30">
+            <p className="text-sm font-medium flex items-center gap-2">
+              <Upload className="h-4 w-4" /> Documents d'identité (obligatoires)
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Toutes les photos sont vérifiées par notre équipe. Compte en mode limité tant que la vérification n'est pas approuvée.
+            </p>
+
+            <div className="grid gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Permis de conduire — recto *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setLicenseFront(e.target.files?.[0] || null)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Permis de conduire — verso *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setLicenseBack(e.target.files?.[0] || null)} />
+              </div>
+              {isMoto && (
+                <div className="space-y-1">
+                  <Label className="text-xs">Carte grise / immatriculation moto *</Label>
+                  <Input type="file" accept="image/*" onChange={(e) => setVehicleReg(e.target.files?.[0] || null)} />
+                </div>
+              )}
+              <div className="space-y-1">
+                <Label className="text-xs">Selfie tenant votre pièce d'identité *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setSelfie(e.target.files?.[0] || null)} />
+              </div>
+            </div>
+          </div>
+
           <Button
             type="submit"
             className="w-full"
-            disabled={submitApplication.isPending || !formData.vehicle_type || !isEmailVerified}
+            disabled={submitApplication.isPending || uploading || !formData.vehicle_type || !isEmailVerified || !docsReady}
           >
-            {submitApplication.isPending ? (
+            {(submitApplication.isPending || uploading) ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : null}
-            Soumettre ma demande
+            {uploading ? "Envoi des documents…" : "Soumettre ma demande"}
           </Button>
+
         </form>
       </DialogContent>
     </Dialog>
