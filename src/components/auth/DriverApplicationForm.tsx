@@ -20,10 +20,13 @@ import {
 } from "@/components/ui/dialog";
 import { useSubmitDriverApplication, useMyDriverApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
-import { Loader2, Truck, CheckCircle, Clock, Mail } from "lucide-react";
+import { Loader2, Truck, CheckCircle, Clock, Mail, Upload } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { uploadApplicationDocument } from "@/utils/applicationUploads";
+
 
 interface DriverApplicationFormProps {
   isOpen: boolean;
@@ -54,6 +57,15 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
     availability: "",
   });
 
+  const [licenseFront, setLicenseFront] = useState<File | null>(null);
+  const [licenseBack, setLicenseBack] = useState<File | null>(null);
+  const [vehicleReg, setVehicleReg] = useState<File | null>(null);
+  const [selfie, setSelfie] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const isMoto = formData.vehicle_type === "motorcycle";
+  const docsReady = !!(licenseFront && licenseBack && selfie && (!isMoto || vehicleReg));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.vehicle_type) return;
@@ -61,17 +73,37 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
       toast.error("Veuillez vérifier votre email avant de soumettre une demande livreur.");
       return;
     }
+    if (!docsReady) {
+      toast.error("Veuillez joindre tous les documents requis (permis recto/verso, carte grise si moto, selfie).");
+      return;
+    }
 
-    await submitApplication.mutateAsync({
-      ...formData,
-      vehicle_type: formData.vehicle_type as "motorcycle" | "car" | "bicycle" | "truck",
-    });
-    onClose();
+    try {
+      setUploading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non authentifié");
+
+      const [frontUrl, backUrl, regUrl, selfieUrl] = await Promise.all([
+        uploadApplicationDocument(user.id, "driver-license-front", licenseFront!),
+        uploadApplicationDocument(user.id, "driver-license-back", licenseBack!),
+        vehicleReg ? uploadApplicationDocument(user.id, "vehicle-registration", vehicleReg) : Promise.resolve(null),
+        uploadApplicationDocument(user.id, "driver-selfie", selfie!),
+      ]);
+
+      await submitApplication.mutateAsync({
+        ...formData,
+        vehicle_type: formData.vehicle_type as "motorcycle" | "car" | "bicycle" | "truck",
+        driver_license_front_url: frontUrl,
+        driver_license_back_url: backUrl,
+        vehicle_registration_url: regUrl,
+        selfie_url: selfieUrl,
+      });
+      onClose();
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
 
   if (loadingApplication) {
     return (
