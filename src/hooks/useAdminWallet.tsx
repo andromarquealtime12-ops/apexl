@@ -129,7 +129,6 @@ export function useRejectDeposit() {
 
       const { data, error } = await supabase.rpc("reject_deposit" as any, {
         transaction_id_input: transactionId,
-        admin_id_input: user.id,
         reason_input: reason || "Demande rejetée par l'administrateur"
       });
 
