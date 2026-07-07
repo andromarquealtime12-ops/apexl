@@ -74,6 +74,10 @@ export function ProductCard({ product }: ProductCardProps) {
     return { km, fee: calculateFee(km, zone), currency: zone.currency };
   }, [isPrintful, isShopify, profile?.latitude, profile?.longitude, shops, zones, product.seller_id]);
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (outOfCountry) return;
 
     addItem(product);
     setAdded(true);
