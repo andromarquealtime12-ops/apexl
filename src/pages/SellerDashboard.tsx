@@ -73,6 +73,12 @@ const SellerDashboard = () => {
           </div>
         </div>
 
+        <div className="mb-6">
+          <IdentityRequiredBanner role="seller" />
+        </div>
+
+
+
         <div className="mb-8">
           <SellerStatsCards stats={stats} isLoading={statsLoading} />
         </div>

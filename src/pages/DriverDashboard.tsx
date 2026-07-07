@@ -80,6 +80,12 @@ const DriverDashboard = () => {
           </div>
         </div>
 
+        <div className="mb-6">
+          <IdentityRequiredBanner role="driver" />
+        </div>
+
+
+
         {/* Location Tracker + Stats Cards */}
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-1">
