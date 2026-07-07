@@ -29,6 +29,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { calculateDistance } from "@/hooks/useGeolocation";
 import { ALL_CITIES } from "@/utils/cities";
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
+import { GpsAddressField } from "@/components/ui/GpsAddressField";
+
 import { useDeliveryZones } from "@/hooks/useDeliveryZones";
 import { getZoneForPoint, calculateFee } from "@/utils/deliveryPricing";
 
@@ -449,22 +451,26 @@ const Checkout = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="address">Adresse ligne 1</Label>
-                    <AddressAutocomplete
+                    <GpsAddressField
                       id="address"
                       value={deliveryAddress}
                       onChange={setDeliveryAddress}
+                      coords={{ lat: buyerLat, lng: buyerLng }}
+                      onCoords={(la, lo) => {
+                        setBuyerLat(la);
+                        setBuyerLng(lo);
+                      }}
                       onSelect={(s) => {
                         setDeliveryAddress(s.address);
                         if (s.city) setDeliveryCity(s.city);
                         if (s.state) setDeliveryState(s.state);
                         if (s.postcode) setDeliveryZip(s.postcode);
-                        setBuyerLat(s.lat);
-                        setBuyerLng(s.lng);
                       }}
                       placeholder="Ex: Av. 27 de Febrero, Santo Domingo…"
                       countryCodes={deliveryCountry === "HT" ? "ht" : deliveryCountry === "DO" ? "do" : "do,ht"}
                     />
                   </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="address2">Adresse ligne 2 (optionnel)</Label>
                     <Input

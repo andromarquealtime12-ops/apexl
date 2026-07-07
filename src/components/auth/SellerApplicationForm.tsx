@@ -16,7 +16,7 @@ import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation, Mail } from "lu
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
+import { GpsAddressField } from "@/components/ui/GpsAddressField";
 
 interface SellerApplicationFormProps {
   isOpen: boolean;
@@ -181,41 +181,28 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="shop_address">Adresse *</Label>
-            <AddressAutocomplete
+            <Label htmlFor="shop_address">Adresse exacte de la boutique *</Label>
+            <GpsAddressField
               id="shop_address"
               value={formData.shop_address}
               onChange={(v) => handleChange("shop_address", v)}
+              coords={{ lat: shopLat, lng: shopLng }}
+              onCoords={(la, lo) => {
+                setShopLat(la);
+                setShopLng(lo);
+              }}
               onSelect={(s) => {
                 handleChange("shop_address", s.address);
                 if (s.city) handleChange("shop_city", s.city);
-                setShopLat(s.lat);
-                setShopLng(s.lng);
-                toast.success("Adresse et position enregistrées ✓");
               }}
               placeholder="Ex: Calle El Conde 100, Zona Colonial…"
             />
+            <p className="text-[11px] text-muted-foreground">
+              Utilisez « Ma position » depuis la boutique pour des coordonnées exactes que les
+              livreurs pourront suivre.
+            </p>
           </div>
 
-          {/* GPS Location */}
-          <div className="p-3 border rounded-lg bg-muted/30 space-y-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-sm flex items-center gap-1">
-                  <MapPin className="h-4 w-4" /> Localisation de la boutique
-                </p>
-                {shopLat && shopLng ? (
-                  <p className="text-xs text-green-600">Position enregistrée ✓</p>
-                ) : (
-                  <p className="text-xs text-muted-foreground">Permet aux livreurs de vous trouver</p>
-                )}
-              </div>
-              <Button type="button" variant="outline" size="sm" onClick={handleGetLocation} disabled={gettingLocation}>
-                {gettingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
-                <span className="ml-1">{shopLat ? "Actualiser" : "Ma position"}</span>
-              </Button>
-            </div>
-          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
