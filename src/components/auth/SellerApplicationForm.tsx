@@ -12,11 +12,14 @@ import {
 } from "@/components/ui/dialog";
 import { useSubmitSellerApplication, useMySellerApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
-import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation, Mail } from "lucide-react";
+import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation, Mail, Upload } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
+import { GpsAddressField } from "@/components/ui/GpsAddressField";
+import { supabase } from "@/integrations/supabase/client";
+import { uploadApplicationDocument } from "@/utils/applicationUploads";
+
 
 interface SellerApplicationFormProps {
   isOpen: boolean;
@@ -40,6 +43,12 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
   const [shopLat, setShopLat] = useState<number | null>(null);
   const [shopLng, setShopLng] = useState<number | null>(null);
   const [gettingLocation, setGettingLocation] = useState(false);
+
+  const [idFront, setIdFront] = useState<File | null>(null);
+  const [idBack, setIdBack] = useState<File | null>(null);
+  const [selfie, setSelfie] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const docsReady = !!(idFront && idBack && selfie);
 
   const handleGetLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -68,13 +77,33 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
       toast.error("Veuillez vérifier votre email avant de soumettre une demande vendeur.");
       return;
     }
-    await submitApplication.mutateAsync({
-      ...formData,
-      latitude: shopLat,
-      longitude: shopLng,
-    });
-    onClose();
+    if (!docsReady) {
+      toast.error("Veuillez joindre votre pièce d'identité (recto/verso) et un selfie.");
+      return;
+    }
+    try {
+      setUploading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non authentifié");
+      const [frontUrl, backUrl, selfieUrl] = await Promise.all([
+        uploadApplicationDocument(user.id, "seller-id-front", idFront!),
+        uploadApplicationDocument(user.id, "seller-id-back", idBack!),
+        uploadApplicationDocument(user.id, "seller-selfie", selfie!),
+      ]);
+      await submitApplication.mutateAsync({
+        ...formData,
+        latitude: shopLat,
+        longitude: shopLng,
+        id_document_front_url: frontUrl,
+        id_document_back_url: backUrl,
+        selfie_url: selfieUrl,
+      });
+      onClose();
+    } finally {
+      setUploading(false);
+    }
   };
+
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -181,41 +210,28 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="shop_address">Adresse *</Label>
-            <AddressAutocomplete
+            <Label htmlFor="shop_address">Adresse exacte de la boutique *</Label>
+            <GpsAddressField
               id="shop_address"
               value={formData.shop_address}
               onChange={(v) => handleChange("shop_address", v)}
+              coords={{ lat: shopLat, lng: shopLng }}
+              onCoords={(la, lo) => {
+                setShopLat(la);
+                setShopLng(lo);
+              }}
               onSelect={(s) => {
                 handleChange("shop_address", s.address);
                 if (s.city) handleChange("shop_city", s.city);
-                setShopLat(s.lat);
-                setShopLng(s.lng);
-                toast.success("Adresse et position enregistrées ✓");
               }}
               placeholder="Ex: Calle El Conde 100, Zona Colonial…"
             />
+            <p className="text-[11px] text-muted-foreground">
+              Utilisez « Ma position » depuis la boutique pour des coordonnées exactes que les
+              livreurs pourront suivre.
+            </p>
           </div>
 
-          {/* GPS Location */}
-          <div className="p-3 border rounded-lg bg-muted/30 space-y-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-sm flex items-center gap-1">
-                  <MapPin className="h-4 w-4" /> Localisation de la boutique
-                </p>
-                {shopLat && shopLng ? (
-                  <p className="text-xs text-green-600">Position enregistrée ✓</p>
-                ) : (
-                  <p className="text-xs text-muted-foreground">Permet aux livreurs de vous trouver</p>
-                )}
-              </div>
-              <Button type="button" variant="outline" size="sm" onClick={handleGetLocation} disabled={gettingLocation}>
-                {gettingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
-                <span className="ml-1">{shopLat ? "Actualiser" : "Ma position"}</span>
-              </Button>
-            </div>
-          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -236,10 +252,34 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitApplication.isPending || !isEmailVerified}>
-            {submitApplication.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-            Soumettre ma demande
+          <div className="rounded-lg border p-3 space-y-3 bg-muted/30">
+            <p className="text-sm font-medium flex items-center gap-2">
+              <Upload className="h-4 w-4" /> Vérification d'identité (obligatoire)
+            </p>
+            <p className="text-xs text-muted-foreground">
+              CIN + selfie. Compte en mode limité tant que la vérification n'est pas approuvée.
+            </p>
+            <div className="grid gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Pièce d'identité — recto *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setIdFront(e.target.files?.[0] || null)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Pièce d'identité — verso *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setIdBack(e.target.files?.[0] || null)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Selfie tenant votre pièce d'identité *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setSelfie(e.target.files?.[0] || null)} />
+              </div>
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !isEmailVerified || !docsReady}>
+            {(submitApplication.isPending || uploading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            {uploading ? "Envoi des documents…" : "Soumettre ma demande"}
           </Button>
+
         </form>
       </DialogContent>
     </Dialog>

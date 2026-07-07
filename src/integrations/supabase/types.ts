@@ -463,6 +463,8 @@ export type Database = {
           availability: string | null
           city: string
           created_at: string
+          driver_license_back_url: string | null
+          driver_license_front_url: string | null
           driver_license_number: string
           id: string
           is_online: boolean | null
@@ -473,11 +475,13 @@ export type Database = {
           phone: string
           reviewed_at: string | null
           reviewed_by: string | null
+          selfie_url: string | null
           status: string | null
           updated_at: string
           user_id: string
           vehicle_brand: string
           vehicle_model: string | null
+          vehicle_registration_url: string | null
           vehicle_type: string
           vehicle_year: string | null
         }
@@ -485,6 +489,8 @@ export type Database = {
           availability?: string | null
           city: string
           created_at?: string
+          driver_license_back_url?: string | null
+          driver_license_front_url?: string | null
           driver_license_number: string
           id?: string
           is_online?: boolean | null
@@ -495,11 +501,13 @@ export type Database = {
           phone: string
           reviewed_at?: string | null
           reviewed_by?: string | null
+          selfie_url?: string | null
           status?: string | null
           updated_at?: string
           user_id: string
           vehicle_brand: string
           vehicle_model?: string | null
+          vehicle_registration_url?: string | null
           vehicle_type: string
           vehicle_year?: string | null
         }
@@ -507,6 +515,8 @@ export type Database = {
           availability?: string | null
           city?: string
           created_at?: string
+          driver_license_back_url?: string | null
+          driver_license_front_url?: string | null
           driver_license_number?: string
           id?: string
           is_online?: boolean | null
@@ -517,11 +527,13 @@ export type Database = {
           phone?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
+          selfie_url?: string | null
           status?: string | null
           updated_at?: string
           user_id?: string
           vehicle_brand?: string
           vehicle_model?: string | null
+          vehicle_registration_url?: string | null
           vehicle_type?: string
           vehicle_year?: string | null
         }
@@ -1485,10 +1497,13 @@ export type Database = {
           business_type: string | null
           created_at: string
           id: string
+          id_document_back_url: string | null
+          id_document_front_url: string | null
           latitude: number | null
           longitude: number | null
           reviewed_at: string | null
           reviewed_by: string | null
+          selfie_url: string | null
           shop_address: string
           shop_city: string
           shop_description: string | null
@@ -1502,10 +1517,13 @@ export type Database = {
           business_type?: string | null
           created_at?: string
           id?: string
+          id_document_back_url?: string | null
+          id_document_front_url?: string | null
           latitude?: number | null
           longitude?: number | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          selfie_url?: string | null
           shop_address: string
           shop_city: string
           shop_description?: string | null
@@ -1519,10 +1537,13 @@ export type Database = {
           business_type?: string | null
           created_at?: string
           id?: string
+          id_document_back_url?: string | null
+          id_document_front_url?: string | null
           latitude?: number | null
           longitude?: number | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          selfie_url?: string | null
           shop_address?: string
           shop_city?: string
           shop_description?: string | null

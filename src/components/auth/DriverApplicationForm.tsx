@@ -20,10 +20,13 @@ import {
 } from "@/components/ui/dialog";
 import { useSubmitDriverApplication, useMyDriverApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
-import { Loader2, Truck, CheckCircle, Clock, Mail } from "lucide-react";
+import { Loader2, Truck, CheckCircle, Clock, Mail, Upload } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { uploadApplicationDocument } from "@/utils/applicationUploads";
+
 
 interface DriverApplicationFormProps {
   isOpen: boolean;
@@ -54,6 +57,15 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
     availability: "",
   });
 
+  const [licenseFront, setLicenseFront] = useState<File | null>(null);
+  const [licenseBack, setLicenseBack] = useState<File | null>(null);
+  const [vehicleReg, setVehicleReg] = useState<File | null>(null);
+  const [selfie, setSelfie] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const isMoto = formData.vehicle_type === "motorcycle";
+  const docsReady = !!(licenseFront && licenseBack && selfie && (!isMoto || vehicleReg));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.vehicle_type) return;
@@ -61,17 +73,41 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
       toast.error("Veuillez vérifier votre email avant de soumettre une demande livreur.");
       return;
     }
+    if (!docsReady) {
+      toast.error("Veuillez joindre tous les documents requis (permis recto/verso, carte grise si moto, selfie).");
+      return;
+    }
 
-    await submitApplication.mutateAsync({
-      ...formData,
-      vehicle_type: formData.vehicle_type as "motorcycle" | "car" | "bicycle" | "truck",
-    });
-    onClose();
+    try {
+      setUploading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non authentifié");
+
+      const [frontUrl, backUrl, regUrl, selfieUrl] = await Promise.all([
+        uploadApplicationDocument(user.id, "driver-license-front", licenseFront!),
+        uploadApplicationDocument(user.id, "driver-license-back", licenseBack!),
+        vehicleReg ? uploadApplicationDocument(user.id, "vehicle-registration", vehicleReg) : Promise.resolve(null),
+        uploadApplicationDocument(user.id, "driver-selfie", selfie!),
+      ]);
+
+      await submitApplication.mutateAsync({
+        ...formData,
+        vehicle_type: formData.vehicle_type as "motorcycle" | "car" | "bicycle" | "truck",
+        driver_license_front_url: frontUrl,
+        driver_license_back_url: backUrl,
+        vehicle_registration_url: regUrl,
+        selfie_url: selfieUrl,
+      });
+      onClose();
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
 
   if (loadingApplication) {
     return (
@@ -273,16 +309,47 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
             />
           </div>
 
+          <div className="rounded-lg border p-3 space-y-3 bg-muted/30">
+            <p className="text-sm font-medium flex items-center gap-2">
+              <Upload className="h-4 w-4" /> Documents d'identité (obligatoires)
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Toutes les photos sont vérifiées par notre équipe. Compte en mode limité tant que la vérification n'est pas approuvée.
+            </p>
+
+            <div className="grid gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Permis de conduire — recto *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setLicenseFront(e.target.files?.[0] || null)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Permis de conduire — verso *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setLicenseBack(e.target.files?.[0] || null)} />
+              </div>
+              {isMoto && (
+                <div className="space-y-1">
+                  <Label className="text-xs">Carte grise / immatriculation moto *</Label>
+                  <Input type="file" accept="image/*" onChange={(e) => setVehicleReg(e.target.files?.[0] || null)} />
+                </div>
+              )}
+              <div className="space-y-1">
+                <Label className="text-xs">Selfie tenant votre pièce d'identité *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setSelfie(e.target.files?.[0] || null)} />
+              </div>
+            </div>
+          </div>
+
           <Button
             type="submit"
             className="w-full"
-            disabled={submitApplication.isPending || !formData.vehicle_type || !isEmailVerified}
+            disabled={submitApplication.isPending || uploading || !formData.vehicle_type || !isEmailVerified || !docsReady}
           >
-            {submitApplication.isPending ? (
+            {(submitApplication.isPending || uploading) ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : null}
-            Soumettre ma demande
+            {uploading ? "Envoi des documents…" : "Soumettre ma demande"}
           </Button>
+
         </form>
       </DialogContent>
     </Dialog>

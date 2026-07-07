@@ -2,13 +2,18 @@ import { Product, CURRENCY_SYMBOLS } from "@/types/database";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Check, Globe } from "lucide-react";
+import { ShoppingCart, Heart, Check, Globe, MapPin, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProfile } from "@/hooks/useProfile";
 import { useCurrencyRates, convertCurrency } from "@/hooks/useCurrencyRates";
+import { useShopLocations } from "@/hooks/useShopLocations";
+import { useDeliveryZones } from "@/hooks/useDeliveryZones";
+import { calculateDistance } from "@/hooks/useGeolocation";
+import { getZoneForPoint, calculateFee } from "@/utils/deliveryPricing";
+
 
 interface ProductCardProps {
   product: Product;
@@ -56,10 +61,24 @@ export function ProductCard({ product }: ProductCardProps) {
     return v > 0 ? v : null;
   }, [isPrintful, rates, userCurrency, product.currency, product.price]);
 
+  // Distance + estimated delivery fee (local products only)
+  const { data: shops } = useShopLocations();
+  const { data: zones } = useDeliveryZones(false);
+  const distanceInfo = useMemo(() => {
+    if (isPrintful || isShopify) return null;
+    if (!profile?.latitude || !profile?.longitude) return null;
+    const shop = shops?.find((s) => s.user_id === product.seller_id);
+    if (!shop?.latitude || !shop?.longitude) return null;
+    const km = calculateDistance(profile.latitude, profile.longitude, shop.latitude, shop.longitude);
+    const zone = getZoneForPoint(profile.latitude, profile.longitude, zones);
+    return { km, fee: calculateFee(km, zone), currency: zone.currency };
+  }, [isPrintful, isShopify, profile?.latitude, profile?.longitude, shops, zones, product.seller_id]);
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (outOfCountry) return;
+
     addItem(product);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -129,8 +148,23 @@ export function ProductCard({ product }: ProductCardProps) {
               {t("product.billedIn", { currency: product.currency })}
             </p>
           )}
+          {distanceInfo && (
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-muted-foreground">
+                <MapPin className="h-3 w-3" />
+                {distanceInfo.km < 1
+                  ? `${Math.round(distanceInfo.km * 1000)} m`
+                  : `${distanceInfo.km.toFixed(1)} km`}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-primary">
+                <Truck className="h-3 w-3" />
+                Livraison ~{distanceInfo.currency} {distanceInfo.fee.toLocaleString()}
+              </span>
+            </div>
+          )}
         </div>
       </CardContent>
+
 
       <CardFooter className="p-4 pt-0">
         {hasVariants ? (

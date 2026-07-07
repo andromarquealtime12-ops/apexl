@@ -15,6 +15,8 @@ import { PushNotificationBanner } from "@/components/notifications/PushNotificat
 import { useDriverOrderNotifications } from "@/hooks/usePushNotifications";
 import { useDriverStats, useAvailableDeliveries } from "@/hooks/useDriverStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
+import { IdentityRequiredBanner } from "@/components/identity/IdentityRequiredBanner";
+
 
 const DriverDashboard = () => {
   useRealtimeOrders();
@@ -79,6 +81,12 @@ const DriverDashboard = () => {
             <p className="text-muted-foreground">Gérez vos livraisons et suivez vos gains</p>
           </div>
         </div>
+
+        <div className="mb-6">
+          <IdentityRequiredBanner role="driver" />
+        </div>
+
+
 
         {/* Location Tracker + Stats Cards */}
         <div className="grid lg:grid-cols-3 gap-6 mb-8">

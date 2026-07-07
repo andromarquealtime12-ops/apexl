@@ -14,6 +14,8 @@ import ProductsManager from "@/components/seller/ProductsManager";
 import SellerOrdersTable from "@/components/seller/SellerOrdersTable";
 import { useSellerStats } from "@/hooks/useSellerStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
+import { IdentityRequiredBanner } from "@/components/identity/IdentityRequiredBanner";
+
 
 const SellerDashboard = () => {
   useRealtimeOrders();
@@ -72,6 +74,12 @@ const SellerDashboard = () => {
             <p className="text-muted-foreground">Gérez vos produits et suivez vos ventes</p>
           </div>
         </div>
+
+        <div className="mb-6">
+          <IdentityRequiredBanner role="seller" />
+        </div>
+
+
 
         <div className="mb-8">
           <SellerStatsCards stats={stats} isLoading={statsLoading} />
