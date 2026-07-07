@@ -61,10 +61,20 @@ export function ProductCard({ product }: ProductCardProps) {
     return v > 0 ? v : null;
   }, [isPrintful, rates, userCurrency, product.currency, product.price]);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (outOfCountry) return;
+  // Distance + estimated delivery fee (local products only)
+  const { data: shops } = useShopLocations();
+  const { data: zones } = useDeliveryZones(false);
+  const distanceInfo = useMemo(() => {
+    if (isPrintful || isShopify) return null;
+    if (!profile?.latitude || !profile?.longitude) return null;
+    const shop = shops?.find((s) => s.user_id === product.seller_id);
+    if (!shop?.latitude || !shop?.longitude) return null;
+    const km = calculateDistance(profile.latitude, profile.longitude, shop.latitude, shop.longitude);
+    const zone = getZoneForPoint(profile.latitude, profile.longitude, zones);
+    return { km, fee: calculateFee(km, zone), currency: zone.currency };
+  }, [isPrintful, isShopify, profile?.latitude, profile?.longitude, shops, zones, product.seller_id]);
+
+
     addItem(product);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
