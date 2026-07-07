@@ -252,10 +252,34 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitApplication.isPending || !isEmailVerified}>
-            {submitApplication.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-            Soumettre ma demande
+          <div className="rounded-lg border p-3 space-y-3 bg-muted/30">
+            <p className="text-sm font-medium flex items-center gap-2">
+              <Upload className="h-4 w-4" /> Vérification d'identité (obligatoire)
+            </p>
+            <p className="text-xs text-muted-foreground">
+              CIN + selfie. Compte en mode limité tant que la vérification n'est pas approuvée.
+            </p>
+            <div className="grid gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Pièce d'identité — recto *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setIdFront(e.target.files?.[0] || null)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Pièce d'identité — verso *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setIdBack(e.target.files?.[0] || null)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Selfie tenant votre pièce d'identité *</Label>
+                <Input type="file" accept="image/*" onChange={(e) => setSelfie(e.target.files?.[0] || null)} />
+              </div>
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !isEmailVerified || !docsReady}>
+            {(submitApplication.isPending || uploading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            {uploading ? "Envoi des documents…" : "Soumettre ma demande"}
           </Button>
+
         </form>
       </DialogContent>
     </Dialog>
