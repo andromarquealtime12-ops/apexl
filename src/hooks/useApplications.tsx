@@ -82,6 +82,9 @@ export function useSubmitSellerApplication() {
       business_type?: string;
       latitude?: number | null;
       longitude?: number | null;
+      id_document_front_url?: string | null;
+      id_document_back_url?: string | null;
+      selfie_url?: string | null;
     }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
@@ -90,7 +93,7 @@ export function useSubmitSellerApplication() {
         .from("seller_applications")
         .insert({
           user_id: user.id,
-          ...data,
+          ...(data as any),
         });
       
       if (error) throw error;
@@ -119,6 +122,10 @@ export function useSubmitDriverApplication() {
       phone: string;
       city: string;
       availability?: string;
+      driver_license_front_url?: string | null;
+      driver_license_back_url?: string | null;
+      vehicle_registration_url?: string | null;
+      selfie_url?: string | null;
     }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
@@ -127,7 +134,7 @@ export function useSubmitDriverApplication() {
         .from("driver_applications")
         .insert({
           user_id: user.id,
-          ...data,
+          ...(data as any),
         });
       
       if (error) throw error;
@@ -141,6 +148,7 @@ export function useSubmitDriverApplication() {
     },
   });
 }
+
 
 // Admin hooks
 export function usePendingSellerApplications() {
