@@ -148,8 +148,23 @@ export function ProductCard({ product }: ProductCardProps) {
               {t("product.billedIn", { currency: product.currency })}
             </p>
           )}
+          {distanceInfo && (
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-muted-foreground">
+                <MapPin className="h-3 w-3" />
+                {distanceInfo.km < 1
+                  ? `${Math.round(distanceInfo.km * 1000)} m`
+                  : `${distanceInfo.km.toFixed(1)} km`}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-primary">
+                <Truck className="h-3 w-3" />
+                Livraison ~{distanceInfo.currency} {distanceInfo.fee.toLocaleString()}
+              </span>
+            </div>
+          )}
         </div>
       </CardContent>
+
 
       <CardFooter className="p-4 pt-0">
         {hasVariants ? (
