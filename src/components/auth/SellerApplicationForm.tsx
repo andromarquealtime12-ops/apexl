@@ -12,11 +12,14 @@ import {
 } from "@/components/ui/dialog";
 import { useSubmitSellerApplication, useMySellerApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
-import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation, Mail } from "lucide-react";
+import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation, Mail, Upload } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { GpsAddressField } from "@/components/ui/GpsAddressField";
+import { supabase } from "@/integrations/supabase/client";
+import { uploadApplicationDocument } from "@/utils/applicationUploads";
+
 
 interface SellerApplicationFormProps {
   isOpen: boolean;
@@ -40,6 +43,12 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
   const [shopLat, setShopLat] = useState<number | null>(null);
   const [shopLng, setShopLng] = useState<number | null>(null);
   const [gettingLocation, setGettingLocation] = useState(false);
+
+  const [idFront, setIdFront] = useState<File | null>(null);
+  const [idBack, setIdBack] = useState<File | null>(null);
+  const [selfie, setSelfie] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const docsReady = !!(idFront && idBack && selfie);
 
   const handleGetLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -68,13 +77,33 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
       toast.error("Veuillez vérifier votre email avant de soumettre une demande vendeur.");
       return;
     }
-    await submitApplication.mutateAsync({
-      ...formData,
-      latitude: shopLat,
-      longitude: shopLng,
-    });
-    onClose();
+    if (!docsReady) {
+      toast.error("Veuillez joindre votre pièce d'identité (recto/verso) et un selfie.");
+      return;
+    }
+    try {
+      setUploading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non authentifié");
+      const [frontUrl, backUrl, selfieUrl] = await Promise.all([
+        uploadApplicationDocument(user.id, "seller-id-front", idFront!),
+        uploadApplicationDocument(user.id, "seller-id-back", idBack!),
+        uploadApplicationDocument(user.id, "seller-selfie", selfie!),
+      ]);
+      await submitApplication.mutateAsync({
+        ...formData,
+        latitude: shopLat,
+        longitude: shopLng,
+        id_document_front_url: frontUrl,
+        id_document_back_url: backUrl,
+        selfie_url: selfieUrl,
+      });
+      onClose();
+    } finally {
+      setUploading(false);
+    }
   };
+
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
