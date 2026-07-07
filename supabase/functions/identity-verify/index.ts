@@ -2,8 +2,16 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-webhook-secret",
 };
+
+// Timing-safe string compare
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return mismatch === 0;
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -11,6 +19,85 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const diditApiKey = Deno.env.get("DIDIT_API_KEY");
+    const diditWebhookSecret = Deno.env.get("DIDIT_WEBHOOK_SECRET");
+
+    const body = await req.json();
+    const { action, verification_id, document_front_url, document_back_url, selfie_url } = body;
+
+    // ------------------------------------------------------------------
+    // Webhook action: Didit -> our endpoint. Authenticate via shared secret.
+    // NEVER trust user JWT here.
+    // ------------------------------------------------------------------
+    if (action === "webhook") {
+      if (!diditWebhookSecret) {
+        console.error("DIDIT_WEBHOOK_SECRET not configured; rejecting webhook call");
+        return new Response(JSON.stringify({ error: "Webhook not configured" }), {
+          status: 503,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const providedSecret =
+        req.headers.get("x-webhook-secret") ||
+        req.headers.get("x-didit-signature") ||
+        "";
+      if (!providedSecret || !safeEqual(providedSecret, diditWebhookSecret)) {
+        return new Response(JSON.stringify({ error: "Invalid webhook signature" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const admin = createClient(supabaseUrl, serviceRoleKey);
+      const vid: string | undefined = body.verification_id;
+      const status: string | undefined = body.status;
+      const details = body.details;
+
+      if (!vid || !status) {
+        return new Response(JSON.stringify({ error: "Missing verification_id or status" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const newStatus = status === "approved" ? "approved" : "rejected";
+
+      await admin
+        .from("identity_verifications")
+        .update({
+          status: newStatus,
+          admin_comment: `Didit: ${details || status}`,
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq("id", vid);
+
+      const { data: ver } = await admin
+        .from("identity_verifications")
+        .select("user_id")
+        .eq("id", vid)
+        .single();
+
+      if (ver) {
+        await admin
+          .from("profiles")
+          .update({
+            identity_status: newStatus === "approved" ? "verified" : "rejected",
+            ...(newStatus === "approved" ? { trust_score: 80 } : {}),
+          })
+          .eq("user_id", ver.user_id);
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // All other actions require an authenticated user JWT.
+    // ------------------------------------------------------------------
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -19,11 +106,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const diditApiKey = Deno.env.get("DIDIT_API_KEY");
-
-    const supabase = createClient(supabaseUrl, supabaseKey, {
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
 
@@ -37,11 +120,9 @@ Deno.serve(async (req) => {
     }
 
     const userId = claimsData.user.id;
-    const { action, verification_id, document_front_url, document_back_url, selfie_url } = await req.json();
 
     // Action: Submit verification with optional Didit AI analysis
     if (action === "submit") {
-      // Insert verification record
       const { data: verification, error: insertError } = await supabase
         .from("identity_verifications")
         .insert({
@@ -56,13 +137,11 @@ Deno.serve(async (req) => {
 
       if (insertError) throw insertError;
 
-      // Update profile status
       await supabase
         .from("profiles")
         .update({ identity_status: "pending" })
         .eq("user_id", userId);
 
-      // If Didit API key is available, run AI analysis
       let aiAnalysis = null;
       if (diditApiKey) {
         try {
@@ -82,8 +161,7 @@ Deno.serve(async (req) => {
 
           if (diditResponse.ok) {
             aiAnalysis = await diditResponse.json();
-            
-            // If Didit auto-approves, update status
+
             if (aiAnalysis?.status === "approved" || aiAnalysis?.verified === true) {
               await supabase
                 .from("identity_verifications")
@@ -99,7 +177,6 @@ Deno.serve(async (req) => {
                 .update({ identity_status: "verified", trust_score: 80 })
                 .eq("user_id", userId);
 
-              // Notify user
               await supabase.from("notifications").insert({
                 user_id: userId,
                 title: "Identité vérifiée ✓",
@@ -110,7 +187,6 @@ Deno.serve(async (req) => {
           }
         } catch (diditErr) {
           console.error("Didit API error:", diditErr);
-          // Continue without AI - manual review will happen
         }
       }
 
@@ -144,45 +220,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Didit webhook callback
-    if (action === "webhook") {
-      const { verification_id: vid, status, details } = await req.json();
-      
-      if (vid && status) {
-        const newStatus = status === "approved" ? "approved" : "rejected";
-        
-        await supabase
-          .from("identity_verifications")
-          .update({
-            status: newStatus,
-            admin_comment: `Didit: ${details || status}`,
-            reviewed_at: new Date().toISOString(),
-          })
-          .eq("id", vid);
-
-        // Get user_id from verification
-        const { data: ver } = await supabase
-          .from("identity_verifications")
-          .select("user_id")
-          .eq("id", vid)
-          .single();
-
-        if (ver) {
-          await supabase
-            .from("profiles")
-            .update({
-              identity_status: newStatus === "approved" ? "verified" : "rejected",
-              ...(newStatus === "approved" ? { trust_score: 80 } : {}),
-            })
-            .eq("user_id", ver.user_id);
-        }
-      }
-
-      return new Response(JSON.stringify({ success: true }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     return new Response(JSON.stringify({ error: "Unknown action" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -190,7 +227,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error("Error:", error);
     return new Response(
-      JSON.stringify({ error: error.message || "Internal error" }),
+      JSON.stringify({ error: (error as Error).message || "Internal error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
