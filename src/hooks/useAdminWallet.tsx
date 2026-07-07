@@ -106,7 +106,6 @@ export function useApproveDeposit() {
 
       const { data, error } = await supabase.rpc("approve_deposit" as any, {
         transaction_id_input: transactionId,
-        admin_id_input: user.id
       });
 
       if (error) throw error;
