@@ -14,6 +14,8 @@ import ProductsManager from "@/components/seller/ProductsManager";
 import SellerOrdersTable from "@/components/seller/SellerOrdersTable";
 import { useSellerStats } from "@/hooks/useSellerStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
+import { IdentityRequiredBanner } from "@/components/identity/IdentityRequiredBanner";
+
 
 const SellerDashboard = () => {
   useRealtimeOrders();
