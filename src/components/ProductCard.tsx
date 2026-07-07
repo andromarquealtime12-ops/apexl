@@ -2,13 +2,18 @@ import { Product, CURRENCY_SYMBOLS } from "@/types/database";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Check, Globe } from "lucide-react";
+import { ShoppingCart, Heart, Check, Globe, MapPin, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProfile } from "@/hooks/useProfile";
 import { useCurrencyRates, convertCurrency } from "@/hooks/useCurrencyRates";
+import { useShopLocations } from "@/hooks/useShopLocations";
+import { useDeliveryZones } from "@/hooks/useDeliveryZones";
+import { calculateDistance } from "@/hooks/useGeolocation";
+import { getZoneForPoint, calculateFee } from "@/utils/deliveryPricing";
+
 
 interface ProductCardProps {
   product: Product;
