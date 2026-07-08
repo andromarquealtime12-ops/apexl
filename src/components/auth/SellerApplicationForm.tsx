@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { useSubmitSellerApplication, useMySellerApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
+import { useSendVerificationCode } from "@/hooks/useEmailVerification";
 import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation, Mail, Upload } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -30,6 +31,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
   const { data: existingApplication, isLoading: loadingApplication } = useMySellerApplication();
   const submitApplication = useSubmitSellerApplication();
   const { isVerified: isEmailVerified } = useIsEmailVerified();
+  const sendVerification = useSendVerificationCode();
   
   const [formData, setFormData] = useState({
     shop_name: "",
@@ -73,10 +75,6 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isEmailVerified) {
-      toast.error("Veuillez vérifier votre email avant de soumettre une demande vendeur.");
-      return;
-    }
     if (!docsReady) {
       toast.error("Veuillez joindre votre pièce d'identité (recto/verso) et un selfie.");
       return;
@@ -178,8 +176,17 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
           {!isEmailVerified && (
             <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
               <Mail className="h-4 w-4 text-amber-600" />
-              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm">
-                Vérification email obligatoire pour devenir vendeur. Vérifiez votre email depuis votre profil.
+              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm flex items-center justify-between gap-3">
+                <span>Vérifiez votre email pour renforcer la confiance de votre boutique.</span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => sendVerification.mutate()}
+                  disabled={sendVerification.isPending}
+                >
+                  {sendVerification.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Envoyer le lien"}
+                </Button>
               </AlertDescription>
             </Alert>
           )}
@@ -275,7 +282,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !isEmailVerified || !docsReady}>
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !docsReady}>
             {(submitApplication.isPending || uploading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             {uploading ? "Envoi des documents…" : "Soumettre ma demande"}
           </Button>

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { useSubmitDriverApplication, useMyDriverApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
+import { useSendVerificationCode } from "@/hooks/useEmailVerification";
 import { Loader2, Truck, CheckCircle, Clock, Mail, Upload } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -44,6 +45,7 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
   const { data: existingApplication, isLoading: loadingApplication } = useMyDriverApplication();
   const submitApplication = useSubmitDriverApplication();
   const { isVerified: isEmailVerified } = useIsEmailVerified();
+  const sendVerification = useSendVerificationCode();
   
   const [formData, setFormData] = useState({
     vehicle_type: "" as "motorcycle" | "car" | "bicycle" | "truck" | "",
@@ -69,10 +71,6 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.vehicle_type) return;
-    if (!isEmailVerified) {
-      toast.error("Veuillez vérifier votre email avant de soumettre une demande livreur.");
-      return;
-    }
     if (!docsReady) {
       toast.error("Veuillez joindre tous les documents requis (permis recto/verso, carte grise si moto, selfie).");
       return;
@@ -184,8 +182,17 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
           {!isEmailVerified && (
             <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
               <Mail className="h-4 w-4 text-amber-600" />
-              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm">
-                Vérification email obligatoire pour devenir livreur. Vérifiez votre email depuis votre profil.
+              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm flex items-center justify-between gap-3">
+                <span>Vérifiez votre email pour renforcer la confiance sur votre compte livreur.</span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => sendVerification.mutate()}
+                  disabled={sendVerification.isPending}
+                >
+                  {sendVerification.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Envoyer le lien"}
+                </Button>
               </AlertDescription>
             </Alert>
           )}
@@ -342,7 +349,7 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
           <Button
             type="submit"
             className="w-full"
-            disabled={submitApplication.isPending || uploading || !formData.vehicle_type || !isEmailVerified || !docsReady}
+            disabled={submitApplication.isPending || uploading || !formData.vehicle_type || !docsReady}
           >
             {(submitApplication.isPending || uploading) ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
