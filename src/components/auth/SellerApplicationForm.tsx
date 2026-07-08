@@ -176,8 +176,17 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
           {!isEmailVerified && (
             <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
               <Mail className="h-4 w-4 text-amber-600" />
-              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm">
-                Vérification email obligatoire pour devenir vendeur. Vérifiez votre email depuis votre profil.
+              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm flex items-center justify-between gap-3">
+                <span>Vérifiez votre email pour renforcer la confiance de votre boutique.</span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => sendVerification.mutate()}
+                  disabled={sendVerification.isPending}
+                >
+                  {sendVerification.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Envoyer le lien"}
+                </Button>
               </AlertDescription>
             </Alert>
           )}
