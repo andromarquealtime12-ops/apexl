@@ -75,10 +75,6 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isEmailVerified) {
-      toast.error("Veuillez vérifier votre email avant de soumettre une demande vendeur.");
-      return;
-    }
     if (!docsReady) {
       toast.error("Veuillez joindre votre pièce d'identité (recto/verso) et un selfie.");
       return;
