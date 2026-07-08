@@ -45,6 +45,7 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
   const { data: existingApplication, isLoading: loadingApplication } = useMyDriverApplication();
   const submitApplication = useSubmitDriverApplication();
   const { isVerified: isEmailVerified } = useIsEmailVerified();
+  const sendVerification = useSendVerificationCode();
   
   const [formData, setFormData] = useState({
     vehicle_type: "" as "motorcycle" | "car" | "bicycle" | "truck" | "",
