@@ -114,7 +114,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
         toast.error("Échec de l'inscription : " + (error.message || "Essayez avec un autre email."));
       }
     } else {
-      toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
+      toast.success("Compte créé avec succès ! Bienvenue sur Ayiti Market.");
       onClose();
     }
   };
