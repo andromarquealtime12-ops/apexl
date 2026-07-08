@@ -64,9 +64,9 @@ export function useVerifyPickupCode() {
 
       if (error) throw error;
       
-      const result = data as { success: boolean; message: string; delivery_code?: string };
+      const result = data as { success: boolean; message?: string; error?: string; delivery_code?: string };
       if (!result.success) {
-        throw new Error(result.message);
+        throw new Error(result.error || result.message || "Code invalide");
       }
       
       return result;
