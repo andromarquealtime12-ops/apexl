@@ -31,6 +31,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
   const { data: existingApplication, isLoading: loadingApplication } = useMySellerApplication();
   const submitApplication = useSubmitSellerApplication();
   const { isVerified: isEmailVerified } = useIsEmailVerified();
+  const sendVerification = useSendVerificationCode();
   
   const [formData, setFormData] = useState({
     shop_name: "",
