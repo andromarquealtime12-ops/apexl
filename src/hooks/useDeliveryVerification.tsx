@@ -96,9 +96,9 @@ export function useVerifyDeliveryCode() {
 
       if (error) throw error;
       
-      const result = data as { success: boolean; message: string };
+      const result = data as { success: boolean; message?: string; error?: string };
       if (!result.success) {
-        throw new Error(result.message);
+        throw new Error(result.error || result.message || "Code invalide");
       }
       
       return result;
