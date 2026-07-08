@@ -69,10 +69,6 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.vehicle_type) return;
-    if (!isEmailVerified) {
-      toast.error("Veuillez vérifier votre email avant de soumettre une demande livreur.");
-      return;
-    }
     if (!docsReady) {
       toast.error("Veuillez joindre tous les documents requis (permis recto/verso, carte grise si moto, selfie).");
       return;
