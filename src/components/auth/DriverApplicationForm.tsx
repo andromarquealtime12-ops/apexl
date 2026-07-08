@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { useSubmitDriverApplication, useMyDriverApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
+import { useSendVerificationCode } from "@/hooks/useEmailVerification";
 import { Loader2, Truck, CheckCircle, Clock, Mail, Upload } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
