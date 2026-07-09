@@ -1962,6 +1962,10 @@ export type Database = {
         Args: { lat1: number; lat2: number; lon1: number; lon2: number }
         Returns: number
       }
+      cancel_order: {
+        Args: { p_order_id: string; p_reason?: string }
+        Returns: Json
+      }
       cleanup_old_data: { Args: never; Returns: Json }
       confirm_return_received: {
         Args: {

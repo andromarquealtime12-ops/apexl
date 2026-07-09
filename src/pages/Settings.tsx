@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Settings as SettingsIcon, Save, Bell, BellOff, CheckCircle } from "lucide-react";
+import SensitiveInfoCard from "@/components/settings/SensitiveInfoCard";
 
 export default function Settings() {
   const { user, loading } = useAuth();
@@ -22,8 +23,6 @@ export default function Settings() {
 
   const initial = useMemo(
     () => ({
-      full_name: profile?.full_name ?? "",
-      phone: profile?.phone ?? "",
       whatsapp: (profile as any)?.whatsapp ?? "",
       country: profile?.country ?? "",
       city: profile?.city ?? "",
@@ -54,8 +53,6 @@ export default function Settings() {
   const onSave = async () => {
     try {
       await updateProfile.mutateAsync({
-        full_name: form.full_name.trim() || profile?.full_name,
-        phone: form.phone.trim() || null,
         whatsapp: form.whatsapp.trim() || null,
         country: form.country.trim() || null,
         city: form.city.trim() || null,
@@ -79,11 +76,16 @@ export default function Settings() {
           </div>
         </header>
 
+        {/* Sensitive info (name / email / phone) with identity verification for sellers/drivers */}
+        <div className="mb-6">
+          <SensitiveInfoCard />
+        </div>
+
         <Card>
           <CardHeader>
-            <CardTitle>Informations personnelles</CardTitle>
+            <CardTitle>Coordonnées de contact & adresse</CardTitle>
             <CardDescription>
-              Modifiez vos coordonnées. (Mode démo: aucune confirmation email requise ici.)
+              WhatsApp, pays, ville et adresse. Ces informations peuvent être modifiées librement.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
@@ -91,27 +93,6 @@ export default function Settings() {
               <Skeleton className="h-40 w-full" />
             ) : (
               <>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="full_name">Nom complet</Label>
-                    <Input
-                      id="full_name"
-                      value={form.full_name}
-                      onChange={(e) => setForm((p) => ({ ...p, full_name: e.target.value }))}
-                      placeholder="Votre nom"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Téléphone</Label>
-                    <Input
-                      id="phone"
-                      value={form.phone}
-                      onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
-                      placeholder="+509 ..."
-                    />
-                  </div>
-                </div>
-
                 <div className="space-y-2">
                   <Label htmlFor="whatsapp">Numéro WhatsApp</Label>
                   <Input

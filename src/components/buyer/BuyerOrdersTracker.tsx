@@ -13,6 +13,7 @@ import OrderRatingDialog from "@/components/reviews/OrderRatingDialog";
 import UserRatingBadge from "@/components/reviews/UserRatingBadge";
 import { WhatsAppContact } from "@/components/contact/WhatsAppContact";
 import OrderChat from "@/components/chat/OrderChat";
+import CancelOrderButton from "@/components/orders/CancelOrderButton";
 import { Link } from "react-router-dom";
 import { fr } from "date-fns/locale";
 import { CURRENCY_SYMBOLS } from "@/types/database";
@@ -277,6 +278,13 @@ export default function BuyerOrdersTracker() {
                       </Link>
                     </Button>
                   )}
+                  {/* Cancel button (only pre-pickup) */}
+                  <CancelOrderButton
+                    orderId={order.id}
+                    orderStatus={order.status}
+                    hasDriver={!!(order as any).driver_id}
+                    role="buyer"
+                  />
                   {/* Return button (2h window) */}
                   <ReturnRequestButton orderId={order.id} orderStatus={order.status} deliveredAt={order.updated_at || order.created_at} />
                   {/* Rating buttons for delivered orders */}
