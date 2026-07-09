@@ -278,6 +278,13 @@ export default function BuyerOrdersTracker() {
                       </Link>
                     </Button>
                   )}
+                  {/* Cancel button (only pre-pickup) */}
+                  <CancelOrderButton
+                    orderId={order.id}
+                    orderStatus={order.status}
+                    hasDriver={!!(order as any).driver_id}
+                    role="buyer"
+                  />
                   {/* Return button (2h window) */}
                   <ReturnRequestButton orderId={order.id} orderStatus={order.status} deliveredAt={order.updated_at || order.created_at} />
                   {/* Rating buttons for delivered orders */}
