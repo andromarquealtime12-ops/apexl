@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Settings as SettingsIcon, Save, Bell, BellOff, CheckCircle } from "lucide-react";
+import SensitiveInfoCard from "@/components/settings/SensitiveInfoCard";
 
 export default function Settings() {
   const { user, loading } = useAuth();
