@@ -122,10 +122,11 @@ const Checkout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Calculate distance per shop when buyer location available (uses zones for pricing)
+  // Calculate REAL road distance per shop via OSRM when buyer location available
   useEffect(() => {
     if (!buyerLat || !buyerLng || items.length === 0) return;
 
+    let cancelled = false;
     const fetchSellerLocations = async () => {
       const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
       const { data: allShops } = await (supabase as any)
@@ -134,30 +135,40 @@ const Checkout = () => {
         sellerIds.includes(s.user_id) && s.latitude != null && s.longitude != null
       );
 
-      if (data) {
-        // Pick tarif zone based on buyer position
-        const buyerZone = getZoneForPoint(buyerLat, buyerLng, zones);
+      if (!data?.length) return;
 
-        const sellersWithDist = data
-          .filter(s => s.latitude && s.longitude)
-          .map(seller => ({
+      // Pick tarif zone based on buyer position
+      const buyerZone = getZoneForPoint(buyerLat, buyerLng, zones);
+
+      // Fetch real routing distance (parallel) for each seller
+      const routed = await Promise.all(
+        data.map(async (seller: any) => {
+          const route = await getRoute(
+            { lat: seller.latitude, lng: seller.longitude },
+            { lat: buyerLat, lng: buyerLng }
+          );
+          return {
             user_id: seller.user_id,
             shopName: seller.shop_name,
-            distance: calculateDistance(buyerLat, buyerLng, seller.latitude!, seller.longitude!),
-          }))
-          .sort((a, b) => a.distance - b.distance);
+            distance: route.distanceKm,
+          };
+        })
+      );
 
-        const distances: Record<string, { distance: number; shopName: string; fee: number }> = {};
-        sellersWithDist.forEach((s, idx) => {
-          const baseFee = calculateFee(s.distance, buyerZone);
-          // Additional shops within 10 km radius pay +10% surcharge
-          const fee = idx === 0 ? baseFee : (s.distance <= 10 ? Math.round(baseFee * 1.10) : baseFee);
-          distances[s.user_id] = { distance: s.distance, shopName: s.shopName, fee };
-        });
-        setShopDistances(distances);
-      }
+      if (cancelled) return;
+
+      const sorted = routed.sort((a, b) => a.distance - b.distance);
+      const distances: Record<string, { distance: number; shopName: string; fee: number }> = {};
+      sorted.forEach((s, idx) => {
+        const baseFee = calculateFee(s.distance, buyerZone);
+        // Additional shops within 10 km radius pay +10% surcharge
+        const fee = idx === 0 ? baseFee : (s.distance <= 10 ? Math.round(baseFee * 1.10) : baseFee);
+        distances[s.user_id] = { distance: s.distance, shopName: s.shopName, fee };
+      });
+      setShopDistances(distances);
     };
     fetchSellerLocations();
+    return () => { cancelled = true; };
   }, [buyerLat, buyerLng, items, zones]);
 
 
