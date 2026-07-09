@@ -365,16 +365,28 @@ export default function MyDeliveriesTable() {
                             )}
                           </div>
                           
-                          {status.action && (
-                            <Button
-                              size="sm"
-                              onClick={() => openVerification(delivery.id, status.action!)}
-                              className="gap-1"
-                            >
-                              <Key className="h-3 w-3" />
-                              {status.actionLabel}
-                            </Button>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {/* Driver can cancel only pre-pickup */}
+                            {!pickupDone && (
+                              <CancelOrderButton
+                                orderId={delivery.id}
+                                orderStatus={delivery.status}
+                                hasDriver={true}
+                                role="driver"
+                                invalidateKeys={[["driver-deliveries"], ["available-deliveries"]]}
+                              />
+                            )}
+                            {status.action && (
+                              <Button
+                                size="sm"
+                                onClick={() => openVerification(delivery.id, status.action!)}
+                                className="gap-1"
+                              >
+                                <Key className="h-3 w-3" />
+                                {status.actionLabel}
+                              </Button>
+                            )}
+                          </div>
                         </div>
                         {/* Chat with buyer */}
                         {delivery.buyer_id && delivery.status !== "delivered" && (
