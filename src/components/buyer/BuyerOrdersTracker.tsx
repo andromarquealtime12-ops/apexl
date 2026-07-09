@@ -13,6 +13,7 @@ import OrderRatingDialog from "@/components/reviews/OrderRatingDialog";
 import UserRatingBadge from "@/components/reviews/UserRatingBadge";
 import { WhatsAppContact } from "@/components/contact/WhatsAppContact";
 import OrderChat from "@/components/chat/OrderChat";
+import CancelOrderButton from "@/components/orders/CancelOrderButton";
 import { Link } from "react-router-dom";
 import { fr } from "date-fns/locale";
 import { CURRENCY_SYMBOLS } from "@/types/database";
