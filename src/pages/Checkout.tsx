@@ -33,6 +33,7 @@ import { GpsAddressField } from "@/components/ui/GpsAddressField";
 
 import { useDeliveryZones } from "@/hooks/useDeliveryZones";
 import { getZoneForPoint, calculateFee } from "@/utils/deliveryPricing";
+import { getRoute } from "@/utils/osrmRouting";
 
 const Checkout = () => {
   const navigate = useNavigate();
