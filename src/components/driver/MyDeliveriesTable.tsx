@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Package, Navigation, Key, ExternalLink, MessageSquare, Phone, ShoppingBag } from "lucide-react";
 import { DeliveryCodeVerification } from "./DeliveryCodeVerification";
 import OrderChat from "@/components/chat/OrderChat";
+import CancelOrderButton from "@/components/orders/CancelOrderButton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
