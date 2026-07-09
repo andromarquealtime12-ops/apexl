@@ -37,12 +37,16 @@ export default function SensitiveInfoCard() {
   const requestCode = useMutation({
     mutationFn: async () => {
       if (!user?.email) throw new Error("Email introuvable");
-      const { error } = await supabase.auth.reauthenticate();
+      // Send a 6-digit OTP to the current verified email (proof of identity)
+      const { error } = await supabase.auth.signInWithOtp({
+        email: user.email,
+        options: { shouldCreateUser: false },
+      });
       if (error) throw error;
     },
     onSuccess: () => {
       setCodeSent(true);
-      toast.success("Code envoyé à votre email");
+      toast.success("Code envoyé à votre email — vérifiez votre boîte de réception");
     },
     onError: (e: any) => toast.error(e.message || "Envoi impossible"),
   });
