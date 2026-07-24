@@ -17,32 +17,36 @@ import ReferralCard from "@/components/referral/ReferralCard";
 import { useMySellerApplication, useMyDriverApplication } from "@/hooks/useApplications";
 import { toast } from "sonner";
 
-
 const Profile = () => {
+  const { t } = useTranslation();
   const { user, loading, isSeller, isDriver, isAdmin } = useAuth();
   const [showSellerForm, setShowSellerForm] = useState(false);
   const [showDriverForm, setShowDriverForm] = useState(false);
   const [versionClicks, setVersionClicks] = useState(0);
   const navigate = useNavigate();
-  
+
   const { data: sellerApplication, isLoading: loadingSeller } = useMySellerApplication();
   const { data: driverApplication, isLoading: loadingDriver } = useMyDriverApplication();
 
-  // Secret admin access - 7 clicks on version
+  const STATUS_CONFIG: Record<string, { icon: typeof Clock; color: string; label: string }> = {
+    pending: { icon: Clock, color: "text-yellow-500", label: t("profile.pending") },
+    approved: { icon: CheckCircle, color: "text-green-500", label: t("profile.approved") },
+    rejected: { icon: XCircle, color: "text-red-500", label: t("profile.rejected") },
+  };
+
   const handleVersionClick = () => {
     const newCount = versionClicks + 1;
     setVersionClicks(newCount);
-    
     if (newCount >= 7) {
       if (isAdmin) {
-        toast.success("🔓 Accès admin déverrouillé !");
+        toast.success(t("profile.adminUnlocked"));
         navigate("/admin");
       } else {
-        toast.error("Vous n'avez pas les droits administrateur");
+        toast.error(t("profile.notAdmin"));
       }
       setVersionClicks(0);
     } else if (newCount >= 3) {
-      toast.info(`${7 - newCount} clics restants...`, { duration: 1000 });
+      toast.info(t("profile.clicksLeft", { n: 7 - newCount }), { duration: 1000 });
     }
   };
 
@@ -57,25 +61,20 @@ const Profile = () => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
+  if (!user) return <Navigate to="/" replace />;
 
   return (
     <main className="min-h-screen bg-background">
       <Header />
-
       <div className="container px-4 py-8 max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <User className="h-8 w-8 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">Mon Profil</h1>
+              <h1 className="text-2xl font-bold">{t("profile.title")}</h1>
               <p className="text-muted-foreground">{user.email}</p>
             </div>
           </div>
-          
-          {/* Version badge - Secret admin access */}
           <button
             onClick={handleVersionClick}
             className="text-xs text-muted-foreground hover:text-muted-foreground/80 transition-colors cursor-default select-none"
@@ -84,49 +83,41 @@ const Profile = () => {
           </button>
         </div>
 
-        {/* Email Verification & Location */}
         <div className="grid gap-6 md:grid-cols-2 mb-6">
           <EmailVerificationCard />
           <LocationCard />
         </div>
 
-        {/* Roles Badge */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Mes rôles</CardTitle>
+            <CardTitle>{t("profile.myRoles")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            <Badge>Acheteur</Badge>
-            {isSeller && <Badge variant="secondary">Vendeur</Badge>}
-            {isDriver && <Badge variant="secondary">Livreur</Badge>}
+            <Badge>{t("profile.buyer")}</Badge>
+            {isSeller && <Badge variant="secondary">{t("profile.seller")}</Badge>}
+            {isDriver && <Badge variant="secondary">{t("profile.driver")}</Badge>}
             {isAdmin && (
               <Badge className="bg-primary">
                 <Shield className="h-3 w-3 mr-1" />
-                Admin
+                {t("profile.admin")}
               </Badge>
             )}
           </CardContent>
         </Card>
 
         <div className="grid gap-6 md:grid-cols-2">
-          {/* Identity Verification */}
           <IdentityVerificationForm />
-          
-          {/* Referral Program */}
           <ReferralCard />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 mt-6">
-          {/* Seller Application Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Store className="h-5 w-5" />
-                Devenir Vendeur
+                {t("profile.becomeSellerTitle")}
               </CardTitle>
-              <CardDescription>
-                Vendez vos produits sur notre marketplace
-              </CardDescription>
+              <CardDescription>{t("profile.becomeSellerDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               {loadingSeller ? (
@@ -135,15 +126,15 @@ const Profile = () => {
                 <div className="flex items-center gap-2 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                   <CheckCircle className="h-5 w-5 text-green-500" />
                   <div>
-                    <p className="font-medium text-green-700 dark:text-green-400">Vous êtes vendeur !</p>
-                    <p className="text-sm text-green-600 dark:text-green-500">Accédez à votre dashboard vendeur</p>
+                    <p className="font-medium text-green-700 dark:text-green-400">{t("profile.youAreSeller")}</p>
+                    <p className="text-sm text-green-600 dark:text-green-500">{t("profile.youAreSellerDesc")}</p>
                   </div>
                 </div>
               ) : sellerApplication ? (
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     {(() => {
-                      const config = STATUS_CONFIG[sellerApplication.status as keyof typeof STATUS_CONFIG];
+                      const config = STATUS_CONFIG[sellerApplication.status];
                       const Icon = config.icon;
                       return (
                         <>
@@ -154,38 +145,31 @@ const Profile = () => {
                     })()}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    <p><strong>Boutique:</strong> {sellerApplication.shop_name}</p>
-                    <p><strong>Ville:</strong> {sellerApplication.shop_city}</p>
+                    <p><strong>{t("profile.shop")}:</strong> {sellerApplication.shop_name}</p>
+                    <p><strong>{t("profile.city")}:</strong> {sellerApplication.shop_city}</p>
                   </div>
                   {sellerApplication.status === "rejected" && (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowSellerForm(true)}
-                    >
-                      Soumettre à nouveau
+                    <Button variant="outline" size="sm" onClick={() => setShowSellerForm(true)}>
+                      {t("profile.resubmit")}
                     </Button>
                   )}
                 </div>
               ) : (
                 <Button onClick={() => setShowSellerForm(true)} className="w-full">
                   <Store className="h-4 w-4 mr-2" />
-                  Postuler comme vendeur
+                  {t("profile.applySeller")}
                 </Button>
               )}
             </CardContent>
           </Card>
 
-          {/* Driver Application Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Truck className="h-5 w-5" />
-                Devenir Livreur
+                {t("profile.becomeDriverTitle")}
               </CardTitle>
-              <CardDescription>
-                Livrez des commandes et gagnez de l'argent
-              </CardDescription>
+              <CardDescription>{t("profile.becomeDriverDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               {loadingDriver ? (
@@ -194,15 +178,15 @@ const Profile = () => {
                 <div className="flex items-center gap-2 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                   <CheckCircle className="h-5 w-5 text-green-500" />
                   <div>
-                    <p className="font-medium text-green-700 dark:text-green-400">Vous êtes livreur !</p>
-                    <p className="text-sm text-green-600 dark:text-green-500">Accédez à votre dashboard livreur</p>
+                    <p className="font-medium text-green-700 dark:text-green-400">{t("profile.youAreDriver")}</p>
+                    <p className="text-sm text-green-600 dark:text-green-500">{t("profile.youAreDriverDesc")}</p>
                   </div>
                 </div>
               ) : driverApplication ? (
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     {(() => {
-                      const config = STATUS_CONFIG[driverApplication.status as keyof typeof STATUS_CONFIG];
+                      const config = STATUS_CONFIG[driverApplication.status];
                       const Icon = config.icon;
                       return (
                         <>
@@ -213,23 +197,19 @@ const Profile = () => {
                     })()}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    <p><strong>Véhicule:</strong> {driverApplication.vehicle_brand} {driverApplication.vehicle_model}</p>
-                    <p><strong>Ville:</strong> {driverApplication.city}</p>
+                    <p><strong>{t("profile.vehicle")}:</strong> {driverApplication.vehicle_brand} {driverApplication.vehicle_model}</p>
+                    <p><strong>{t("profile.city")}:</strong> {driverApplication.city}</p>
                   </div>
                   {driverApplication.status === "rejected" && (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowDriverForm(true)}
-                    >
-                      Soumettre à nouveau
+                    <Button variant="outline" size="sm" onClick={() => setShowDriverForm(true)}>
+                      {t("profile.resubmit")}
                     </Button>
                   )}
                 </div>
               ) : (
                 <Button onClick={() => setShowDriverForm(true)} className="w-full">
                   <Truck className="h-4 w-4 mr-2" />
-                  Postuler comme livreur
+                  {t("profile.applyDriver")}
                 </Button>
               )}
             </CardContent>
@@ -237,15 +217,8 @@ const Profile = () => {
         </div>
       </div>
 
-      <SellerApplicationForm 
-        isOpen={showSellerForm} 
-        onClose={() => setShowSellerForm(false)} 
-      />
-      
-      <DriverApplicationForm 
-        isOpen={showDriverForm} 
-        onClose={() => setShowDriverForm(false)} 
-      />
+      <SellerApplicationForm isOpen={showSellerForm} onClose={() => setShowSellerForm(false)} />
+      <DriverApplicationForm isOpen={showDriverForm} onClose={() => setShowDriverForm(false)} />
     </main>
   );
 };
