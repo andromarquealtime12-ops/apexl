@@ -1,0 +1,25 @@
+{
+  "nav": {
+    "home": "首页", "products": "商品", "shops": "店铺", "restaurants": "餐厅",
+    "sell": "出售", "deliver": "配送", "menu": "菜单", "search": "搜索商品...",
+    "account": "我的账户", "signin": "登录", "signup": "注册", "profile": "我的资料",
+    "wallet": "我的钱包", "orders": "我的订单", "settings": "设置", "logout": "退出", "language": "语言"
+  },
+  "hero": {
+    "eyebrow": "新季 · 全球",
+    "title1": "购遍全球。",
+    "title2": "送达你手中。",
+    "description": "数千款潮流商品,一个全球市场。时尚、科技、家居等等 —— 快速发货,任何语言,任何国家。",
+    "shopNow": "立即购买",
+    "exploreShops": "探索店铺",
+    "countries": "国家", "products": "商品", "support": "客服"
+  },
+  "product": {
+    "addToCart": "加入购物车", "inCart": "已加入", "added": "已添加!",
+    "chooseVariant": "选择颜色 / 尺码", "outOfStock": "缺货",
+    "outOfCountry": "您所在的国家不可用", "featured": "精选",
+    "worldwide": "全球 · USD", "localOnly": "本地",
+    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "以 {{currency}} 结算"
+  },
+  "common": { "loading": "加载中...", "save": "保存", "cancel": "取消", "close": "关闭", "error": "错误" }
+}
