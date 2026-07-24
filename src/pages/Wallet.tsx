@@ -457,6 +457,47 @@ const Wallet = () => {
                     Payer par carte bancaire
                   </Button>
 
+                  {depositCurrency === "HTG" && (
+                    <Button
+                      variant="default"
+                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+                      onClick={async () => {
+                        const amount = parseFloat(depositAmount);
+                        if (isNaN(amount) || amount <= 0) {
+                          toast.error("Montant invalide");
+                          return;
+                        }
+                        if (amount > 75000) {
+                          toast.error("Maximum 75 000 HTG par transaction MonCash");
+                          return;
+                        }
+                        try {
+                          toast.loading("Préparation MonCash...");
+                          const { data, error } = await supabase.functions.invoke("bazik-deposit", {
+                            body: { amount, description: `Recharge portefeuille APEXL ${amount} HTG` },
+                          });
+                          toast.dismiss();
+                          if (error) throw error;
+                          const d = data as any;
+                          if (d?.error) throw new Error(d.error);
+                          if (d?.redirectUrl) {
+                            window.location.assign(d.redirectUrl);
+                            setDepositOpen(false);
+                            resetDepositForm();
+                          } else {
+                            throw new Error("URL MonCash manquante");
+                          }
+                        } catch (e: any) {
+                          toast.dismiss();
+                          toast.error(e.message || "Erreur MonCash");
+                        }
+                      }}
+                    >
+                      <Smartphone className="h-4 w-4 mr-2" />
+                      Payer avec MonCash (auto)
+                    </Button>
+                  )}
+
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t" />
