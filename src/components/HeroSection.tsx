@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingBag } from "lucide-react";
+import { ArrowRight, ShoppingBag, UtensilsCrossed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import heroImage from "@/assets/hero-global.jpg";
