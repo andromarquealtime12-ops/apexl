@@ -14,7 +14,8 @@ import {
 import { useSubmitSellerApplication, useMySellerApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
 import { useSendVerificationCode } from "@/hooks/useEmailVerification";
-import { Loader2, Store, CheckCircle, Clock, Mail, Upload } from "lucide-react";
+import { Loader2, Store, CheckCircle, Clock, Mail, Upload, MapPin } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
@@ -46,17 +47,23 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
 
   const [shopLat, setShopLat] = useState<number | null>(null);
   const [shopLng, setShopLng] = useState<number | null>(null);
+  const [pickupConfirmed, setPickupConfirmed] = useState(false);
 
   const [idFront, setIdFront] = useState<File | null>(null);
   const [idBack, setIdBack] = useState<File | null>(null);
   const [selfie, setSelfie] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const docsReady = !!(idFront && idBack && selfie);
+  const locationReady = shopLat != null && shopLng != null && pickupConfirmed;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!docsReady) {
       toast.error(t("sellerApp.docsMissing"));
+      return;
+    }
+    if (!locationReady) {
+      toast.error("Confirmez la position de retrait des colis");
       return;
     }
     try {
@@ -76,6 +83,13 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
         id_document_back_url: backUrl,
         selfie_url: selfieUrl,
       });
+      // Persist the confirmed pickup point on the profile so the app always
+      // knows where drivers should collect packages, even if the seller moves.
+      await supabase.from("profiles").update({
+        shop_latitude: shopLat,
+        shop_longitude: shopLng,
+        shop_address: formData.shop_address,
+      }).eq("user_id", user.id);
       onClose();
     } finally {
       setUploading(false);
@@ -219,6 +233,23 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             <p className="text-[11px] text-muted-foreground">{t("sellerApp.addressHint")}</p>
           </div>
 
+          {shopLat != null && shopLng != null && (
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 flex items-start gap-2 animate-fade-in">
+              <MapPin className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+              <label className="flex items-start gap-2 text-sm cursor-pointer">
+                <Checkbox
+                  checked={pickupConfirmed}
+                  onCheckedChange={(v) => setPickupConfirmed(v === true)}
+                  className="mt-0.5"
+                />
+                <span>
+                  Je confirme que <strong>les livreurs viendront chercher les colis à cette position</strong>.
+                  Cette adresse sera enregistrée comme point de retrait de ma boutique (modifiable plus tard).
+                </span>
+              </label>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="shop_city">{t("sellerApp.city")} *</Label>
@@ -259,7 +290,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !docsReady}>
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !docsReady || !locationReady}>
             {(submitApplication.isPending || uploading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             {uploading ? t("sellerApp.submitting") : t("sellerApp.submit")}
           </Button>
