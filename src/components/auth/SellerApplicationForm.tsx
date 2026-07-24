@@ -33,6 +33,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
   const { isVerified: isEmailVerified } = useIsEmailVerified();
   const sendVerification = useSendVerificationCode();
   
+  const [verifyEmail, setVerifyEmail] = useState("");
   const [formData, setFormData] = useState({
     shop_name: "",
     shop_description: "",
