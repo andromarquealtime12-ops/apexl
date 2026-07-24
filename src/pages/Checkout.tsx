@@ -221,10 +221,13 @@ const Checkout = () => {
   const subtotal = getSubtotal();
   // Calculate total delivery fee from all shops
   const sellerIds = [...new Set(items.map(i => i.product.seller_id))];
+  // When seller coords / distance unknown, fall back to the ZONE base fee
+  // (not a hardcoded 150) so a nearby buyer never overpays.
+  const activeZone = getZoneForPoint(buyerLat, buyerLng, zones);
+  const fallbackFee = calculateFee(0, activeZone); // = zone.base_fee
   const deliveryFee = sellerIds.reduce((total, sid) => {
     const shopInfo = shopDistances[sid];
-    // Default if distance unknown: 30 RD$ × 5 km estimé
-    return total + (shopInfo ? shopInfo.fee : 150);
+    return total + (shopInfo ? shopInfo.fee : fallbackFee);
   }, 0);
   const total = subtotal + deliveryFee;
 
