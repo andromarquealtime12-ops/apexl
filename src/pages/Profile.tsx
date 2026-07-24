@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { LocationCard } from "@/components/profile/LocationCard";
 import IdentityVerificationForm from "@/components/identity/IdentityVerificationForm";
 import ReferralCard from "@/components/referral/ReferralCard";
 import { useMySellerApplication, useMyDriverApplication } from "@/hooks/useApplications";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const Profile = () => {
@@ -24,9 +25,22 @@ const Profile = () => {
   const [showDriverForm, setShowDriverForm] = useState(false);
   const [versionClicks, setVersionClicks] = useState(0);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const queryClient = useQueryClient();
 
   const { data: sellerApplication, isLoading: loadingSeller } = useMySellerApplication();
   const { data: driverApplication, isLoading: loadingDriver } = useMyDriverApplication();
+
+  // Toast when returning from the email verification link
+  useEffect(() => {
+    if (searchParams.get("verified") === "1") {
+      toast.success("Email vérifié avec succès ! Vous pouvez continuer votre inscription.");
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      searchParams.delete("verified");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams, queryClient]);
+
 
   const STATUS_CONFIG: Record<string, { icon: typeof Clock; color: string; label: string }> = {
     pending: { icon: Clock, color: "text-yellow-500", label: t("profile.pending") },

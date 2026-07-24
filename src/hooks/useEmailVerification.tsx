@@ -11,6 +11,10 @@ export function useSendVerificationCode() {
       const email = (targetEmail && targetEmail.trim()) || user?.email;
       if (!email) throw new Error("No email provided");
 
+      // After clicking the confirmation link, the user lands back on /profile
+      // with ?verified=1 so we can display a success toast + refresh state.
+      const emailRedirectTo = `${window.location.origin}/profile?verified=1`;
+
       // If the target email differs from the account email, trigger an email
       // change — Supabase sends the confirmation link to the NEW address.
       if (
@@ -18,17 +22,27 @@ export function useSendVerificationCode() {
         targetEmail &&
         targetEmail.trim().toLowerCase() !== user.email.toLowerCase()
       ) {
-        const { error } = await supabase.auth.updateUser({ email: targetEmail.trim() });
+        const { error } = await supabase.auth.updateUser(
+          { email: targetEmail.trim() },
+          { emailRedirectTo }
+        );
         if (error) throw error;
         return { email: targetEmail.trim(), mode: "change" as const };
       }
 
-      const { error } = await supabase.auth.resend({ type: "signup", email });
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo },
+      });
       if (error) throw error;
       return { email, mode: "resend" as const };
     },
     onSuccess: (res) => {
-      toast.success(`Lien de vérification envoyé à ${res.email}.`);
+      toast.success(
+        `Lien de vérification envoyé à ${res.email}. Vérifiez votre boîte de réception (et vos spams).`,
+        { duration: 6000 }
+      );
     },
     onError: (error: any) => {
       toast.error(error?.message || "Erreur lors de l'envoi. Réessayez dans quelques minutes.");
