@@ -1,103 +1,23 @@
 {
-  "name": "APEX RD",
+  "name": "APEX",
   "short_name": "APEX",
-  "description": "La première plateforme marketplace pour la communauté haïtienne en République Dominicaine",
+  "description": "APEX — the global marketplace. Shop the world, delivered to you.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#2563eb",
-  "lang": "fr",
+  "theme_color": "#000000",
+  "lang": "en",
   "categories": ["shopping", "business"],
   "icons": [
-    {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-maskable-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/icons/icon-maskable-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/home.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Accueil APEX"
-    }
+    { "src": "/icons/apex-logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/apex-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/apex-logo.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/apex-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    {
-      "name": "Produits",
-      "short_name": "Produits",
-      "url": "/products",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Mon Portefeuille",
-      "short_name": "Wallet",
-      "url": "/wallet",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Mes Commandes",
-      "short_name": "Commandes",
-      "url": "/orders",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
-    }
+    { "name": "Products", "short_name": "Products", "url": "/products" },
+    { "name": "Wallet", "short_name": "Wallet", "url": "/wallet" },
+    { "name": "Orders", "short_name": "Orders", "url": "/orders" }
   ]
 }

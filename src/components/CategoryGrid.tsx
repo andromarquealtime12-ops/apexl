@@ -61,7 +61,7 @@ export function CategoryGrid() {
                     <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-3 group-hover:bg-foreground group-hover:text-background transition-colors">
                       <IconComponent className="h-7 w-7" />
                     </div>
-                    <h3 className="font-medium text-sm leading-tight">{category.name}</h3>
+                    <h3 className="font-medium text-sm leading-tight">{t(`categories.items.${category.icon}`, { defaultValue: category.name })}</h3>
                   </CardContent>
                 </Card>
               </Link>
