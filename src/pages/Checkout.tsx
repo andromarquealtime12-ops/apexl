@@ -509,7 +509,11 @@ const Checkout = () => {
                     <GpsAddressField
                       id="address"
                       value={deliveryAddress}
-                      onChange={setDeliveryAddress}
+                      onChange={(v) => {
+                        setDeliveryAddress(v);
+                        // User edited the auto-filled value → force re-confirmation
+                        if (addressAutoFilled) setAddressConfirmed(false);
+                      }}
                       coords={{ lat: buyerLat, lng: buyerLng }}
                       onCoords={(la, lo) => {
                         setBuyerLat(la);
@@ -520,11 +524,44 @@ const Checkout = () => {
                         if (s.city) setDeliveryCity(s.city);
                         if (s.state) setDeliveryState(s.state);
                         if (s.postcode) setDeliveryZip(s.postcode);
+                        setAddressConfirmed(false);
                       }}
                       placeholder="Ex: Av. 27 de Febrero, Santo Domingo…"
                       countryCodes={deliveryCountry === "HT" ? "ht" : deliveryCountry === "DO" ? "do" : "do,ht"}
                     />
+                    {reverseLoading && (
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Récupération de votre adresse depuis votre position…
+                      </p>
+                    )}
+                    {addressAutoFilled && !reverseLoading && (
+                      <p className="text-xs text-emerald-600">
+                        ✓ Adresse remplie automatiquement depuis votre position GPS. Modifiez-la si nécessaire.
+                      </p>
+                    )}
                   </div>
+
+                  {/* Address confirmation checkbox */}
+                  {deliveryAddress && (
+                    <div className={`flex items-start gap-3 p-3 rounded-lg border ${addressConfirmed ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20" : "border-amber-400 bg-amber-50 dark:bg-amber-950/20"}`}>
+                      <Checkbox
+                        id="confirm-address"
+                        checked={addressConfirmed}
+                        onCheckedChange={(v) => setAddressConfirmed(v === true)}
+                        className="mt-0.5"
+                      />
+                      <Label htmlFor="confirm-address" className="text-sm cursor-pointer leading-snug">
+                        Je confirme que <strong>{deliveryAddress}</strong>{deliveryCity ? `, ${deliveryCity}` : ""} est bien mon adresse de livraison.
+                        {!addressAutoFilled && buyerLat && buyerLng && (
+                          <span className="block text-xs text-amber-700 dark:text-amber-400 mt-1">
+                            ⚠️ Cette adresse ne correspond pas exactement à votre position GPS — assurez-vous qu'elle est correcte.
+                          </span>
+                        )}
+                      </Label>
+                    </div>
+                  )}
+
 
                   <div className="space-y-2">
                     <Label htmlFor="address2">Adresse ligne 2 (optionnel)</Label>
