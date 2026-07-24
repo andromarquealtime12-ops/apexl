@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, X, MapPinned, Navigation, Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+import { Search, Filter, X, MapPinned, Navigation, Loader2, Globe } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -31,8 +33,10 @@ const Products = () => {
 
   const categoryId = searchParams.get("category") || undefined;
   const nearMe = searchParams.get("near") === "1";
+  const international = searchParams.get("intl") === "1";
   const urlLat = searchParams.get("lat") ? parseFloat(searchParams.get("lat")!) : null;
   const urlLng = searchParams.get("lng") ? parseFloat(searchParams.get("lng")!) : null;
+
 
   const [userLat, setUserLat] = useState<number | null>(urlLat);
   const [userLng, setUserLng] = useState<number | null>(urlLng);
@@ -118,6 +122,7 @@ const Products = () => {
   const userCountry = useUserCountry();
 
   // Country-first + distance sort. When `nearMe` active also filter by radius.
+  // When `international` active, only show products from OTHER countries (Printful/Shopify/foreign sellers).
   const displayedProducts = useMemo(() => {
     if (!products) return [];
     const annotated = products.map((p: any) => {
@@ -127,11 +132,18 @@ const Products = () => {
         : Infinity;
       return { ...p, _distance: distance, _shopName: coords?.shopName };
     });
-    const filtered = nearMe && userLat && userLng
-      ? annotated.filter((p: any) => p._distance <= maxRadius)
-      : annotated;
+    let filtered = annotated;
+    if (nearMe && userLat && userLng) {
+      filtered = filtered.filter((p: any) => p._distance <= maxRadius);
+    }
+    if (international) {
+      filtered = filtered.filter((p: any) =>
+        p.is_printful || p.is_shopify || (p.seller_country && p.seller_country !== userCountry)
+      );
+    }
     return filtered.sort(compareByLocalThenDistance(userCountry));
-  }, [nearMe, userLat, userLng, products, sellerCoords, maxRadius, userCountry]);
+  }, [nearMe, international, userLat, userLng, products, sellerCoords, maxRadius, userCountry]);
+
 
 
   const handleCategoryChange = (value: string) => {
@@ -187,7 +199,32 @@ const Products = () => {
                 Produits près de moi
               </Button>
             )}
+            <Button
+              variant={international ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                if (international) {
+                  searchParams.delete("intl");
+                } else {
+                  searchParams.set("intl", "1");
+                }
+                setSearchParams(searchParams);
+              }}
+            >
+              <Globe className="h-4 w-4 mr-1" />
+              {international ? "Achat international ✓" : "Acheter à l'international"}
+            </Button>
           </div>
+
+          {international && (
+            <Alert className="bg-primary/5 border-primary/20">
+              <Globe className="h-4 w-4" />
+              <AlertDescription>
+                Vous consultez les produits des vendeurs situés hors de votre pays ({userCountry}). Le paiement se fait uniquement par <strong>portefeuille APEXL</strong> et les frais de livraison sont inclus jusqu'à votre domicile.
+              </AlertDescription>
+            </Alert>
+          )}
+
 
           {nearMe && userLat && userLng && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground p-2 bg-muted/30 rounded-md">

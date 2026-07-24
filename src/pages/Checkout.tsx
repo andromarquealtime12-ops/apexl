@@ -36,6 +36,8 @@ import { getZoneForPoint, calculateFee } from "@/utils/deliveryPricing";
 import { getRoute } from "@/utils/osrmRouting";
 import { reverseGeocode } from "@/utils/reverseGeocode";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useUserCountry } from "@/utils/userCountry";
+
 
 
 const Checkout = () => {
@@ -69,11 +71,23 @@ const Checkout = () => {
   const [deliveryCountry, setDeliveryCountry] = useState(savedAddress?.country || profile?.country || "DO");
 
   const hasPrintfulItem = items.some((it) => (it.product as any).is_printful === true);
+  const userCountry = useUserCountry();
+  const hasInternationalItem = items.some((it) => {
+    const p: any = it.product;
+    if (p.is_printful || p.is_shopify) return true;
+    return !!p.seller_country && p.seller_country !== userCountry;
+  });
+
+  // International orders (Printful, Shopify, or foreign seller) must be paid by wallet
+  useEffect(() => {
+    if (hasInternationalItem && paymentMethod === "cash") setPaymentMethod("wallet");
+  }, [hasInternationalItem, paymentMethod]);
 
   // Printful orders are billed in USD only — force currency
   useEffect(() => {
     if (hasPrintfulItem && currency !== "USD") setCurrency("USD");
   }, [hasPrintfulItem, currency]);
+
 
   // Buyer GPS (restore from saved address so distance/fees compute immediately)
   const [buyerLat, setBuyerLat] = useState<number | null>(savedAddress?.lat ?? null);
@@ -712,24 +726,34 @@ const Checkout = () => {
                     </p>
                   )}
 
-                  {/* Cash payment option */}
-                  <div
-                    className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === "cash" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "bg-muted/30 hover:bg-muted/50"}`}
-                    onClick={() => setPaymentMethod("cash")}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="bg-accent/50 p-2 rounded-full">
-                        <Banknote className="h-5 w-5 text-primary" />
+                  {/* Cash payment option — hidden for international orders (wallet-only) */}
+                  {hasInternationalItem ? (
+                    <Alert>
+                      <Globe className="h-4 w-4" />
+                      <AlertDescription>
+                        Achat international : le paiement se fait uniquement par portefeuille APEXL. Les frais de livraison sont inclus et le colis vous est livré à domicile.
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <div
+                      className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === "cash" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "bg-muted/30 hover:bg-muted/50"}`}
+                      onClick={() => setPaymentMethod("cash")}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="bg-accent/50 p-2 rounded-full">
+                          <Banknote className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium">Paiement en cash</p>
+                          <p className="text-sm text-muted-foreground">
+                            Payez en espèces au livreur à la réception
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">Paiement en cash</p>
-                        <p className="text-sm text-muted-foreground">
-                          Payez en espèces au livreur à la réception
-                        </p>
-                      </div>
+                      {paymentMethod === "cash" && <CheckCircle className="h-5 w-5 text-primary" />}
                     </div>
-                    {paymentMethod === "cash" && <CheckCircle className="h-5 w-5 text-primary" />}
-                  </div>
+                  )}
+
                 </CardContent>
               </Card>
             </div>
