@@ -189,7 +189,9 @@ const Checkout = () => {
   // Reverse-geocode buyer GPS → autofill address (only if the user has not typed anything)
   useEffect(() => {
     if (!buyerLat || !buyerLng) return;
+    if (addressConfirmed) return; // keep user-confirmed address as-is
     if (deliveryAddress.trim().length > 0 && !addressAutoFilled) return; // don't overwrite user input
+
     let cancelled = false;
     setReverseLoading(true);
     (async () => {
