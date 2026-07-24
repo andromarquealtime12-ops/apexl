@@ -13,8 +13,13 @@ async function getBazikToken(): Promise<string> {
       secretKey: Deno.env.get("BAZIK_SECRET_KEY"),
     }),
   });
-  if (!res.ok) throw new Error(`Bazik token failed [${res.status}]: ${await res.text()}`);
-  return (await res.json()).access_token;
+  const text = await res.text();
+  if (!res.ok) throw new Error(`Bazik token failed [${res.status}]: ${text}`);
+  let j: any = {};
+  try { j = JSON.parse(text); } catch { throw new Error(`Bazik token non-JSON: ${text.slice(0, 200)}`); }
+  const token = j.access_token || j.token || j.accessToken || j.data?.token || j.data?.access_token;
+  if (!token) throw new Error(`Bazik token missing: ${text.slice(0, 200)}`);
+  return token;
 }
 
 Deno.serve(async (req) => {
