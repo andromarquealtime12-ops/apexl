@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingBag } from "lucide-react";
+import { ArrowRight, ShoppingBag, UtensilsCrossed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import heroImage from "@/assets/hero-global.jpg";
@@ -52,6 +52,15 @@ const HeroSection = () => {
                 onClick={() => navigate("/shops")}
               >
                 {t("hero.exploreShops")}
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base px-8 h-12 rounded-none"
+                onClick={() => navigate("/restaurants")}
+              >
+                <UtensilsCrossed className="h-4 w-4 mr-2" />
+                Trouver un restaurant
               </Button>
             </div>
 

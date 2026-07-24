@@ -139,15 +139,16 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] max-h-[95vh] p-0 flex flex-col gap-0">
+        <DialogHeader className="p-6 pb-4 border-b shrink-0">
           <DialogTitle>{product ? "Modifier le produit" : "Nouveau produit"}</DialogTitle>
           <DialogDescription>
             {product ? "Modifiez les informations du produit" : "Ajoutez un nouveau produit à votre boutique"}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Nom du produit *</Label>
             <Input
@@ -307,7 +308,9 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
             />
           </div>
 
-          <DialogFooter>
+          </div>
+
+          <DialogFooter className="p-4 border-t bg-background shrink-0 sticky bottom-0 flex-row justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Annuler
             </Button>
