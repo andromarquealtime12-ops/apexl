@@ -34,6 +34,7 @@ interface ProductFormDialogProps {
 }
 
 export default function ProductFormDialog({ open, onOpenChange, product }: ProductFormDialogProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { data: categories } = useCategories();
   const createProduct = useCreateProduct();
