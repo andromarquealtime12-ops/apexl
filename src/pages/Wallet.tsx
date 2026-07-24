@@ -351,8 +351,9 @@ const Wallet = () => {
                 <Alert>
                   <Info className="h-4 w-4" />
                   <AlertDescription>
-                    Le montant sera déduit immédiatement et le virement traité sous 24-48h. 
-                    Si la demande est refusée, le montant sera remboursé.
+                    {isBazikWithdraw
+                      ? "Retrait MonCash automatique via Bazik.io — le montant sera envoyé directement sur votre numéro MonCash sous quelques minutes (HTG uniquement, max 75 000 HTG). En cas d'échec, remboursement automatique."
+                      : "Le montant sera déduit immédiatement et le virement traité sous 24-48h. Si la demande est refusée, le montant sera remboursé."}
                   </AlertDescription>
                 </Alert>
 
