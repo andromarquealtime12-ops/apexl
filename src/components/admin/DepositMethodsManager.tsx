@@ -159,7 +159,7 @@ export default function DepositMethodsManager() {
                   </div>
                   <div className="space-y-2">
                     <Label>Nom du bénéficiaire</Label>
-                    <Input value={form.account_name} onChange={(e) => setForm(f => ({ ...f, account_name: e.target.value }))} placeholder="Ayiti Market" />
+                    <Input value={form.account_name} onChange={(e) => setForm(f => ({ ...f, account_name: e.target.value }))} placeholder="Mantalite Kominote" />
                   </div>
                 </div>
                 <div className="space-y-2">

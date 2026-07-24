@@ -26,8 +26,8 @@
    const handleShare = () => {
      if (referralCode && navigator.share) {
        navigator.share({
-         title: "Rejoins Ayiti Marché RD",
-         text: `Utilise mon code ${referralCode} pour obtenir des avantages sur Ayiti Marché RD !`,
+         title: "Rejoins Mantalite Kominote RD",
+         text: `Utilise mon code ${referralCode} pour obtenir des avantages sur Mantalite Kominote RD !`,
          url: window.location.origin
        });
      }

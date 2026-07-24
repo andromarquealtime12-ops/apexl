@@ -83,18 +83,18 @@ const InstallAppModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-xl">
-            Installer Ayiti Marché
+            Installer Mantalite Kominote
           </DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-6 py-4">
-          <img src="/icons/icon-192x192.png" alt="Ayiti Marché" className="w-24 h-24 rounded-2xl shadow-lg" />
+          <img src="/icons/icon-192x192.png" alt="Mantalite Kominote" className="w-24 h-24 rounded-2xl shadow-lg" />
 
           {installed ? (
             <div className="text-center space-y-2">
               <div className="text-4xl">✅</div>
               <p className="text-lg font-semibold text-foreground">Application installée !</p>
-              <p className="text-sm text-muted-foreground">Retrouvez Ayiti Marché sur votre écran d'accueil.</p>
+              <p className="text-sm text-muted-foreground">Retrouvez Mantalite Kominote sur votre écran d'accueil.</p>
             </div>
           ) : ready ? (
             /* Native install prompt available */
@@ -162,7 +162,7 @@ const InstallAppModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: 
                       <div>
                         <p className="font-medium text-foreground">Ou utilisez le menu</p>
                         <p className="text-xs text-muted-foreground">
-                          Menu ⋮ → <strong>"Installer Ayiti Marché"</strong>
+                          Menu ⋮ → <strong>"Installer Mantalite Kominote"</strong>
                         </p>
                       </div>
                     </div>

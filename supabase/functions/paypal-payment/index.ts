@@ -88,14 +88,14 @@ serve(async (req) => {
           purchase_units: [
             {
               amount: { currency_code: "USD", value: usdAmount.toString() },
-              description: `Ayiti Marché RD - Recharge portefeuille`,
+              description: `Mantalite Kominote RD - Recharge portefeuille`,
               // Bind this order to the authenticated user, used for the
               // capture step instead of trusting client-supplied user_id.
               custom_id: `${authedUserId}:${currency}`,
             },
           ],
           application_context: {
-            brand_name: "Ayiti Marché RD",
+            brand_name: "Mantalite Kominote RD",
             landing_page: "NO_PREFERENCE",
             user_action: "PAY_NOW",
             return_url: `${baseUrl}/wallet?paypal=success`,

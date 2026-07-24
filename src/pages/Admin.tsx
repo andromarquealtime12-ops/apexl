@@ -81,7 +81,7 @@ const Admin = () => {
               SuperAdmin Dashboard
               <Badge className="text-xs">Accès restreint</Badge>
             </h1>
-            <p className="text-muted-foreground">Gestion avancée de Ayiti Marché RD</p>
+            <p className="text-muted-foreground">Gestion avancée de Mantalite Kominote RD</p>
           </div>
         </div>
 
