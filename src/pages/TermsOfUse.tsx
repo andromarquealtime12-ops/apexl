@@ -12,12 +12,12 @@ const TermsOfUse = () => {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">1. Acceptation des conditions</h2>
-            <p>En accédant et en utilisant APEX, vous acceptez d'être lié par les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre plateforme.</p>
+            <p>En accédant et en utilisant APEXL, vous acceptez d'être lié par les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre plateforme.</p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">2. Description du service</h2>
-            <p>APEX est une plateforme marketplace qui met en relation des vendeurs, des acheteurs et des livreurs. Nous fournissons l'infrastructure technologique mais ne sommes pas partie aux transactions entre utilisateurs.</p>
+            <p>APEXL est une plateforme marketplace qui met en relation des vendeurs, des acheteurs et des livreurs. Nous fournissons l'infrastructure technologique mais ne sommes pas partie aux transactions entre utilisateurs.</p>
           </section>
 
           <section className="space-y-3">
@@ -34,7 +34,7 @@ const TermsOfUse = () => {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">5. Paiements et portefeuille</h2>
-            <p>Les transactions sont effectuées via le portefeuille APEX. Les utilisateurs peuvent recharger leur portefeuille via les méthodes de dépôt disponibles. Une commission peut être appliquée sur les conversions de devises.</p>
+            <p>Les transactions sont effectuées via le portefeuille APEXL. Les utilisateurs peuvent recharger leur portefeuille via les méthodes de dépôt disponibles. Une commission peut être appliquée sur les conversions de devises.</p>
           </section>
 
           <section className="space-y-3">
@@ -55,17 +55,17 @@ const TermsOfUse = () => {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">8. Suspension de compte</h2>
-            <p>APEX se réserve le droit de suspendre ou de supprimer tout compte en cas de violation des présentes conditions, de signalements multiples ou de comportement frauduleux.</p>
+            <p>APEXL se réserve le droit de suspendre ou de supprimer tout compte en cas de violation des présentes conditions, de signalements multiples ou de comportement frauduleux.</p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">9. Propriété intellectuelle</h2>
-            <p>Tout le contenu de la plateforme (logos, design, textes) est la propriété d'APEX. Les vendeurs conservent les droits sur leurs propres contenus mais accordent à APEX une licence pour les afficher sur la plateforme.</p>
+            <p>Tout le contenu de la plateforme (logos, design, textes) est la propriété d'APEXL. Les vendeurs conservent les droits sur leurs propres contenus mais accordent à APEXL une licence pour les afficher sur la plateforme.</p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">10. Limitation de responsabilité</h2>
-            <p>APEX agit en tant qu'intermédiaire et ne peut être tenu responsable des litiges entre utilisateurs, de la qualité des produits vendus par des tiers, ou des retards de livraison indépendants de notre volonté.</p>
+            <p>APEXL agit en tant qu'intermédiaire et ne peut être tenu responsable des litiges entre utilisateurs, de la qualité des produits vendus par des tiers, ou des retards de livraison indépendants de notre volonté.</p>
           </section>
 
           <section className="space-y-3">

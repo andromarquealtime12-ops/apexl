@@ -24,7 +24,7 @@
   "featured": { "title": "Pwodwi vedèt", "subtitle": "Pi bon pwodwi yo pou ou", "viewAll": "Wè tout", "empty": "Poko gen pwodwi vedèt. Tounen byento!" },
   "userTypes": {
     "title": "Rantre nan kominote mondyal nou an",
-    "subtitle": "Kit ou achte, vann oswa livre, APEX ba ou tout zouti pou reyisi.",
+    "subtitle": "Kit ou achte, vann oswa livre, APEXL ba ou tout zouti pou reyisi.",
     "buyer": { "title": "Achtè", "description": "Dekouvri tout sa w bezwen nan yon mache mondyal", "f1": "Plizyè milye pwodwi chwazi", "f2": "Livrezon rapid lakay", "f3": "Peman sekirize", "f4": "Sipò 24/7", "cta": "Kòmanse achte" },
     "seller": { "title": "Vandè", "description": "Devlope biznis ou epi jwenn plis kliyan", "f1": "Kreye boutik anliy ou", "f2": "Jesyon senp pou kòmand", "f3": "Zouti maketing", "f4": "Rapò detaye", "cta": "Vin yon vandè" },
     "driver": { "title": "Livrè", "description": "Fè lajan pandan w ap livre nan zòn ou", "f1": "Orè fleksib", "f2": "Peman atirab", "f3": "GPS entegre", "f4": "Peman chak semèn", "cta": "Vin yon livrè" }
@@ -41,7 +41,7 @@
     "multi": { "title": "Milti-lang", "description": "Entèfas nan 9+ lang.", "badge": "Global" }
   },
   "cta": {
-    "title": "Ou pare pou rantre nan mouvman an?", "description": "Telechaje app APEX epi kòmanse achte, vann oswa livre jodi a. Mache mondyal la ap tann ou.",
+    "title": "Ou pare pou rantre nan mouvman an?", "description": "Telechaje app APEXL epi kòmanse achte, vann oswa livre jodi a. Mache mondyal la ap tann ou.",
     "download": "Telechaje app la", "web": "Vèsyon web",
     "fast": "Lansman rapid", "fastDesc": "Anliy nan mwens ke 5 minit",
     "commission": "Komisyon ba", "commissionDesc": "Tarif preferansyèl pou kominote a",
@@ -52,14 +52,14 @@
     "quickLinks": "Lyen rapid", "aboutLink": "Konsènan", "howItWorks": "Kijan sa mache", "terms": "Kondisyon itilizasyon", "privacy": "Konfidansyalite", "help": "Èd ak sipò",
     "business": "Pou biznis", "becomeSeller": "Vin vandè", "seeProducts": "Wè pwodwi", "restaurants": "Restoran", "solutions": "Solisyon biznis", "affiliate": "Pwogram afilye",
     "connected": "Rete konekte", "newsletter": "Resevwa dènye nouvèl nou yo", "emailPlaceholder": "Imel ou",
-    "rights": "© 2026 APEX. Tout dwa rezève.", "legal": "Nòt legal", "cookies": "Cookies", "sitemap": "Plan sit la"
+    "rights": "© 2026 APEXL. Tout dwa rezève.", "legal": "Nòt legal", "cookies": "Cookies", "sitemap": "Plan sit la"
   },
   "auth": {
-    "title": "APEX", "subtitle": "Konekte pou aksede kont ou", "signin": "Konekte", "signup": "Enskri",
+    "title": "APEXL", "subtitle": "Konekte pou aksede kont ou", "signin": "Konekte", "signup": "Enskri",
     "email": "Imel", "password": "Modpas", "fullName": "Non konplè", "namePlaceholder": "Jan Pyè", "forgot": "Bliye modpas?",
     "signInBtn": "Konekte", "signUpBtn": "Kreye kont mwen", "sellOrDeliver": "Ou vle vann oswa livre?",
     "seller": "Vandè", "driver": "Livrè", "createFirst": "Kreye yon kont anvan pou aplike",
-    "signInSuccess": "Koneksyon reyisi!", "signUpSuccess": "Kont kreye! Byenveni sou APEX."
+    "signInSuccess": "Koneksyon reyisi!", "signUpSuccess": "Kont kreye! Byenveni sou APEXL."
   },
   "product": {
     "addToCart": "Ajoute nan panye", "inCart": "Nan panye", "added": "Ajoute!", "chooseVariant": "Chwazi koulè / gwosè",
@@ -74,7 +74,7 @@
     "internationalAddress": "Adrès entènasyonal (Printful)",
     "internationalIntro": "Pwodwi Printful ou yo voye soti aletranje. Tanpri mete yon adrès konplè.",
     "address1": "Adrès liy 1", "address2": "Adrès liy 2 (opsyonèl)", "state": "Eta / Pwovens", "zip": "Kòd postal", "country": "Peyi",
-    "paymentMethod": "Metòd peman", "wallet": "Bous APEX", "balance": "Balans",
+    "paymentMethod": "Metòd peman", "wallet": "Bous APEXL", "balance": "Balans",
     "cash": "Peman kach", "cashDesc": "Peye livrè a an kach lè livrezon",
     "summary": "Rezime kòmand la", "subtotal": "Sou-total", "delivery": "Livrezon", "total": "Total",
     "confirm": "Konfime kòmand", "confirmCash": "Kòmande (kach)",

@@ -24,7 +24,7 @@
   "featured": { "title": "Produtos em destaque", "subtitle": "As melhores escolhas para você", "viewAll": "Ver tudo", "empty": "Nenhum produto em destaque ainda. Volte em breve!" },
   "userTypes": {
     "title": "Junte-se à nossa comunidade global",
-    "subtitle": "Comprando, vendendo ou entregando, o APEX te dá todas as ferramentas para prosperar.",
+    "subtitle": "Comprando, vendendo ou entregando, o APEXL te dá todas as ferramentas para prosperar.",
     "buyer": { "title": "Comprador", "description": "Descubra tudo o que precisa em uma marketplace mundial", "f1": "Milhares de produtos selecionados", "f2": "Entrega rápida em casa", "f3": "Pagamentos seguros", "f4": "Suporte 24/7", "cta": "Começar a comprar" },
     "seller": { "title": "Vendedor", "description": "Cresça seu negócio e alcance mais clientes", "f1": "Crie sua loja online", "f2": "Gestão simples de pedidos", "f3": "Ferramentas de marketing", "f4": "Analytics detalhados", "cta": "Ser vendedor" },
     "driver": { "title": "Entregador", "description": "Ganhe dinheiro entregando na sua região", "f1": "Horários flexíveis", "f2": "Remuneração atrativa", "f3": "GPS integrado", "f4": "Pagamentos semanais", "cta": "Ser entregador" }
@@ -41,7 +41,7 @@
     "multi": { "title": "Multi-idioma", "description": "Interface em 9+ idiomas.", "badge": "Global" }
   },
   "cta": {
-    "title": "Pronto para entrar no movimento?", "description": "Baixe o app APEX e comece a comprar, vender ou entregar hoje. A marketplace mundial te espera.",
+    "title": "Pronto para entrar no movimento?", "description": "Baixe o app APEXL e comece a comprar, vender ou entregar hoje. A marketplace mundial te espera.",
     "download": "Baixar o app", "web": "Versão web",
     "fast": "Lançamento rápido", "fastDesc": "No ar em menos de 5 minutos",
     "commission": "Comissão baixa", "commissionDesc": "Tarifas preferenciais para a comunidade",
@@ -52,14 +52,14 @@
     "quickLinks": "Links rápidos", "aboutLink": "Sobre", "howItWorks": "Como funciona", "terms": "Termos de uso", "privacy": "Política de privacidade", "help": "Ajuda e suporte",
     "business": "Para empresas", "becomeSeller": "Ser vendedor", "seeProducts": "Ver produtos", "restaurants": "Restaurantes", "solutions": "Soluções empresariais", "affiliate": "Programa de afiliados",
     "connected": "Fique conectado", "newsletter": "Receba nossas novidades", "emailPlaceholder": "Seu email",
-    "rights": "© 2026 APEX. Todos os direitos reservados.", "legal": "Aviso legal", "cookies": "Cookies", "sitemap": "Mapa do site"
+    "rights": "© 2026 APEXL. Todos os direitos reservados.", "legal": "Aviso legal", "cookies": "Cookies", "sitemap": "Mapa do site"
   },
   "auth": {
-    "title": "APEX", "subtitle": "Entre para acessar sua conta", "signin": "Entrar", "signup": "Cadastrar",
+    "title": "APEXL", "subtitle": "Entre para acessar sua conta", "signin": "Entrar", "signup": "Cadastrar",
     "email": "Email", "password": "Senha", "fullName": "Nome completo", "namePlaceholder": "João Silva", "forgot": "Esqueceu a senha?",
     "signInBtn": "Entrar", "signUpBtn": "Criar minha conta", "sellOrDeliver": "Quer vender ou entregar?",
     "seller": "Vendedor", "driver": "Entregador", "createFirst": "Crie uma conta primeiro para se candidatar",
-    "signInSuccess": "Login realizado!", "signUpSuccess": "Conta criada! Bem-vindo ao APEX."
+    "signInSuccess": "Login realizado!", "signUpSuccess": "Conta criada! Bem-vindo ao APEXL."
   },
   "product": {
     "addToCart": "Adicionar ao carrinho", "inCart": "No carrinho", "added": "Adicionado!", "chooseVariant": "Escolher cor / tamanho",
@@ -74,7 +74,7 @@
     "internationalAddress": "Endereço internacional (Printful)",
     "internationalIntro": "Seus produtos Printful são enviados do exterior. Por favor informe um endereço completo.",
     "address1": "Endereço linha 1", "address2": "Endereço linha 2 (opcional)", "state": "Estado / Província", "zip": "CEP", "country": "País",
-    "paymentMethod": "Forma de pagamento", "wallet": "Carteira APEX", "balance": "Saldo",
+    "paymentMethod": "Forma de pagamento", "wallet": "Carteira APEXL", "balance": "Saldo",
     "cash": "Pagamento em dinheiro", "cashDesc": "Pague em dinheiro ao entregador",
     "summary": "Resumo do pedido", "subtotal": "Subtotal", "delivery": "Entrega", "total": "Total",
     "confirm": "Confirmar pedido", "confirmCash": "Pedir (dinheiro)",

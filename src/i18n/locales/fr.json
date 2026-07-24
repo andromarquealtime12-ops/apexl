@@ -43,7 +43,7 @@
   },
   "userTypes": {
     "title": "Rejoignez notre communauté mondiale",
-    "subtitle": "Que vous achetiez, vendiez ou livriez, APEX vous offre tous les outils pour réussir.",
+    "subtitle": "Que vous achetiez, vendiez ou livriez, APEXL vous offre tous les outils pour réussir.",
     "buyer": { "title": "Acheteur", "description": "Trouvez tout ce dont vous avez besoin dans notre marketplace mondiale", "f1": "Des milliers de produits sélectionnés", "f2": "Livraison rapide à domicile", "f3": "Paiements sécurisés multiples", "f4": "Support client 24/7", "cta": "Commencer à acheter" },
     "seller": { "title": "Vendeur", "description": "Développez votre business et atteignez plus de clients", "f1": "Créez votre boutique en ligne", "f2": "Gestion simple des commandes", "f3": "Outils marketing intégrés", "f4": "Analytics et rapports détaillés", "cta": "Devenir vendeur" },
     "driver": { "title": "Livreur", "description": "Gagnez de l'argent en livrant dans votre région", "f1": "Horaires flexibles", "f2": "Rémunération attractive", "f3": "GPS intégré pour optimiser", "f4": "Paiements hebdomadaires", "cta": "Devenir livreur" }
@@ -61,7 +61,7 @@
   },
   "cta": {
     "title": "Prêt à rejoindre le mouvement ?",
-    "description": "Téléchargez l'app APEX et commencez à acheter, vendre ou livrer dès aujourd'hui. La marketplace mondiale vous attend !",
+    "description": "Téléchargez l'app APEXL et commencez à acheter, vendre ou livrer dès aujourd'hui. La marketplace mondiale vous attend !",
     "download": "Télécharger l'app", "web": "Version web",
     "fast": "Lancement rapide", "fastDesc": "En ligne en moins de 5 minutes",
     "commission": "Commission réduite", "commissionDesc": "Tarifs préférentiels pour la communauté",
@@ -75,16 +75,16 @@
     "business": "Pour les entreprises", "becomeSeller": "Devenir vendeur", "seeProducts": "Voir les produits",
     "restaurants": "Restaurants", "solutions": "Solutions entreprises", "affiliate": "Programme d'affiliation",
     "connected": "Restez connecté", "newsletter": "Recevez nos dernières nouvelles", "emailPlaceholder": "Votre email",
-    "rights": "© 2026 APEX. Tous droits réservés.", "legal": "Mentions légales", "cookies": "Cookies", "sitemap": "Plan du site"
+    "rights": "© 2026 APEXL. Tous droits réservés.", "legal": "Mentions légales", "cookies": "Cookies", "sitemap": "Plan du site"
   },
   "auth": {
-    "title": "APEX", "subtitle": "Connectez-vous pour accéder à votre compte",
+    "title": "APEXL", "subtitle": "Connectez-vous pour accéder à votre compte",
     "signin": "Connexion", "signup": "Inscription", "email": "Email", "password": "Mot de passe",
     "fullName": "Nom complet", "namePlaceholder": "Jean Pierre", "forgot": "Mot de passe oublié ?",
     "signInBtn": "Se connecter", "signUpBtn": "Créer mon compte",
     "sellOrDeliver": "Vous souhaitez vendre ou livrer ?", "seller": "Vendeur", "driver": "Livreur",
     "createFirst": "Créez d'abord un compte pour postuler",
-    "signInSuccess": "Connexion réussie !", "signUpSuccess": "Compte créé avec succès ! Bienvenue sur APEX."
+    "signInSuccess": "Connexion réussie !", "signUpSuccess": "Compte créé avec succès ! Bienvenue sur APEXL."
   },
   "product": {
     "addToCart": "Ajouter au panier", "inCart": "Dans le panier", "added": "Ajouté !",
@@ -100,7 +100,7 @@
     "internationalAddress": "Adresse internationale (Printful)",
     "internationalIntro": "Vos produits Printful sont expédiés depuis l'étranger. Merci de saisir une adresse complète.",
     "address1": "Adresse ligne 1", "address2": "Adresse ligne 2 (optionnel)", "state": "État / Province", "zip": "Code postal", "country": "Pays",
-    "paymentMethod": "Mode de paiement", "wallet": "Portefeuille APEX", "balance": "Solde",
+    "paymentMethod": "Mode de paiement", "wallet": "Portefeuille APEXL", "balance": "Solde",
     "cash": "Paiement en cash", "cashDesc": "Payez en espèces au livreur à la réception",
     "summary": "Résumé de la commande", "subtotal": "Sous-total", "delivery": "Livraison", "total": "Total",
     "confirm": "Confirmer la commande", "confirmCash": "Commander (paiement cash)",

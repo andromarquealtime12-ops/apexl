@@ -81,7 +81,7 @@ const Admin = () => {
               SuperAdmin Dashboard
               <Badge className="text-xs">Accès restreint</Badge>
             </h1>
-            <p className="text-muted-foreground">Gestion avancée de APEX RD</p>
+            <p className="text-muted-foreground">Gestion avancée de APEXL RD</p>
           </div>
         </div>
 

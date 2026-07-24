@@ -25,7 +25,7 @@ const Footer = () => {
                 <ShoppingBag className="h-6 w-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">APEX</h3>
+                <h3 className="text-xl font-bold">APEXL</h3>
                 <p className="text-sm text-background/70 uppercase tracking-[0.2em] text-[10px]">
                   {t("footer.tagline")}
                 </p>
@@ -45,7 +45,7 @@ const Footer = () => {
                   <Instagram className="h-4 w-4" />
                 </Button>
               </a>
-              <a href="https://x.com/APEX" target="_blank" rel="noopener noreferrer">
+              <a href="https://x.com/APEXL" target="_blank" rel="noopener noreferrer">
                 <Button size="icon" variant="outline" className="h-8 w-8 border-background/30 bg-transparent text-background hover:bg-background hover:text-foreground">
                   <Twitter className="h-4 w-4" />
                 </Button>

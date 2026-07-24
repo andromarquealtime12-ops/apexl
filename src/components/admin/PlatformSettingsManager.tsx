@@ -92,7 +92,7 @@
         label: "Nom du compte Wise",
         description: "Nom affiché pour le bénéficiaire Wise",
         icon: DollarSign,
-        placeholder: "APEX"
+        placeholder: "APEXL"
       },
       {
         key: "banreservas_account",

@@ -24,7 +24,7 @@
   "featured": { "title": "精选商品", "subtitle": "为您精心挑选", "viewAll": "查看全部", "empty": "暂无精选商品,请稍后再来!" },
   "userTypes": {
     "title": "加入我们的全球社区",
-    "subtitle": "无论购买、销售还是配送,APEX 都为您提供所需的一切工具。",
+    "subtitle": "无论购买、销售还是配送,APEXL 都为您提供所需的一切工具。",
     "buyer": { "title": "买家", "description": "在全球市场发现所需的一切", "f1": "数千款精选商品", "f2": "快速送货上门", "f3": "多种安全支付方式", "f4": "24/7 客户支持", "cta": "开始购物" },
     "seller": { "title": "卖家", "description": "发展您的业务,触达更多客户", "f1": "开设您的网店", "f2": "简单的订单管理", "f3": "内置营销工具", "f4": "详细的分析报告", "cta": "成为卖家" },
     "driver": { "title": "配送员", "description": "在您的地区送货赚钱", "f1": "灵活的时间", "f2": "有吸引力的收入", "f3": "内置 GPS", "f4": "每周结算", "cta": "成为配送员" }
@@ -41,7 +41,7 @@
     "multi": { "title": "多语言", "description": "界面支持 9+ 种语言。", "badge": "全球" }
   },
   "cta": {
-    "title": "准备好加入这场变革了吗?", "description": "下载 APEX 应用,今天就开始购买、销售或配送。全球市场正在等您。",
+    "title": "准备好加入这场变革了吗?", "description": "下载 APEXL 应用,今天就开始购买、销售或配送。全球市场正在等您。",
     "download": "下载应用", "web": "网页版",
     "fast": "快速启动", "fastDesc": "5 分钟内上线",
     "commission": "低佣金", "commissionDesc": "社区优惠价",
@@ -52,14 +52,14 @@
     "quickLinks": "快速链接", "aboutLink": "关于我们", "howItWorks": "使用方法", "terms": "使用条款", "privacy": "隐私政策", "help": "帮助与支持",
     "business": "面向企业", "becomeSeller": "成为卖家", "seeProducts": "浏览商品", "restaurants": "餐厅", "solutions": "企业解决方案", "affiliate": "联盟计划",
     "connected": "保持联系", "newsletter": "接收最新消息", "emailPlaceholder": "您的邮箱",
-    "rights": "© 2026 APEX. 版权所有。", "legal": "法律声明", "cookies": "Cookies", "sitemap": "网站地图"
+    "rights": "© 2026 APEXL. 版权所有。", "legal": "法律声明", "cookies": "Cookies", "sitemap": "网站地图"
   },
   "auth": {
-    "title": "APEX", "subtitle": "登录以访问您的账户", "signin": "登录", "signup": "注册",
+    "title": "APEXL", "subtitle": "登录以访问您的账户", "signin": "登录", "signup": "注册",
     "email": "邮箱", "password": "密码", "fullName": "全名", "namePlaceholder": "张三", "forgot": "忘记密码?",
     "signInBtn": "登录", "signUpBtn": "创建账户", "sellOrDeliver": "想要销售或配送?",
     "seller": "卖家", "driver": "配送员", "createFirst": "先创建账户再申请",
-    "signInSuccess": "登录成功!", "signUpSuccess": "账户已创建!欢迎加入 APEX。"
+    "signInSuccess": "登录成功!", "signUpSuccess": "账户已创建!欢迎加入 APEXL。"
   },
   "product": {
     "addToCart": "加入购物车", "inCart": "在购物车中", "added": "已添加!", "chooseVariant": "选择颜色 / 尺寸",
@@ -74,7 +74,7 @@
     "internationalAddress": "国际地址 (Printful)",
     "internationalIntro": "您的 Printful 商品从国外发货。请填写完整地址。",
     "address1": "地址第 1 行", "address2": "地址第 2 行(可选)", "state": "州 / 省", "zip": "邮编", "country": "国家",
-    "paymentMethod": "支付方式", "wallet": "APEX 钱包", "balance": "余额",
+    "paymentMethod": "支付方式", "wallet": "APEXL 钱包", "balance": "余额",
     "cash": "货到付款", "cashDesc": "收货时向配送员付现金",
     "summary": "订单摘要", "subtotal": "小计", "delivery": "配送", "total": "总计",
     "confirm": "确认订单", "confirmCash": "下单(现金)",

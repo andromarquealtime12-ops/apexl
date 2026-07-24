@@ -1,7 +1,7 @@
 {
-  "name": "APEX",
-  "short_name": "APEX",
-  "description": "APEX — the global marketplace. Shop the world, delivered to you.",
+  "name": "APEXL",
+  "short_name": "APEXL",
+  "description": "APEXL — the global marketplace. Shop the world, delivered to you.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

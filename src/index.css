@@ -17,8 +17,8 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* APEX — palette minimale noir & blanc */
-    --primary: 0 0% 9%; /* Noir APEX */
+    /* APEXL — palette minimale noir & blanc */
+    --primary: 0 0% 9%; /* Noir APEXL */
     --primary-foreground: 0 0% 98%;
     --primary-glow: 0 0% 20%;
 

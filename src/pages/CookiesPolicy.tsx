@@ -18,7 +18,7 @@ const CookiesPolicy = () => {
             <h2 className="text-xl font-semibold text-foreground">Cookies utilisés</h2>
             <p><strong>Cookies essentiels :</strong> Nécessaires au fonctionnement du site (authentification, session, panier).</p>
             <p><strong>Cookies de préférence :</strong> Mémorisation de vos choix (langue, thème sombre/clair).</p>
-            <p>APEX n'utilise aucun cookie publicitaire ni de traçage tiers.</p>
+            <p>APEXL n'utilise aucun cookie publicitaire ni de traçage tiers.</p>
           </section>
 
           <section className="space-y-3">
