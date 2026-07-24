@@ -37,6 +37,7 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalProps) {
+  const { t } = useTranslation();
   const { signIn, signUp, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
