@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, X, MapPinned, Navigation, Loader2 } from "lucide-react";
+import { Search, Filter, X, MapPinned, Navigation, Loader2, Globe } from "lucide-react";
 import {
   Select,
   SelectContent,
