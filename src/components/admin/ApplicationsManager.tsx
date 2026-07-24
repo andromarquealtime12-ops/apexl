@@ -28,9 +28,22 @@ import {
   useApproveDriverApplication,
   useRejectApplication,
 } from "@/hooks/useApplications";
-import { Store, Truck, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Store, Truck, CheckCircle, XCircle, Loader2, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+
+function DocPhoto({ url, label }: { url?: string | null; label: string }) {
+  if (!url) return <div className="text-xs text-muted-foreground">{label}: manquant</div>;
+  return (
+    <div className="space-y-1">
+      <p className="text-xs font-medium">{label}</p>
+      <a href={url} target="_blank" rel="noreferrer">
+        <img src={url} alt={label} className="h-40 w-full object-cover rounded border hover:opacity-80 transition" />
+      </a>
+    </div>
+  );
+}
 
 const VEHICLE_TYPES: Record<string, string> = {
   motorcycle: "Moto",
