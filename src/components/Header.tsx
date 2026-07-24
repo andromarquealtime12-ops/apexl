@@ -52,12 +52,12 @@ const Header = () => {
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="bg-gradient-hero p-2 rounded-lg">
-                <ShoppingBag className="h-6 w-6 text-primary-foreground" />
+              <div className="bg-foreground p-2 rounded-none">
+                <ShoppingBag className="h-6 w-6 text-background" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl font-bold text-primary">Mantalite Kominote</h1>
-                <p className="text-xs text-muted-foreground">Konekte nan RD</p>
+                <h1 className="text-xl font-bold tracking-tight text-foreground">APEX</h1>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Shop the world</p>
               </div>
             </Link>
           </div>

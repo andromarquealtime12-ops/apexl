@@ -114,7 +114,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
         toast.error("Échec de l'inscription : " + (error.message || "Essayez avec un autre email."));
       }
     } else {
-      toast.success("Compte créé avec succès ! Bienvenue sur Mantalite Kominote.");
+      toast.success("Compte créé avec succès ! Bienvenue sur APEX.");
       onClose();
     }
   };
@@ -124,7 +124,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-center">Mantalite Kominote</DialogTitle>
+            <DialogTitle className="text-2xl text-center">APEX</DialogTitle>
             <DialogDescription className="text-center">
               Connectez-vous pour accéder à votre compte
             </DialogDescription>
