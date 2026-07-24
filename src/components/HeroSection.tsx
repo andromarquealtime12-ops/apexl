@@ -3,14 +3,25 @@ import { ArrowRight, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import heroImage from "@/assets/hero-global.jpg";
+import bgLogo from "@/assets/apexl-hero-bg.png.asset.json";
 
 const HeroSection = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   return (
-    <section className="relative bg-background border-b border-border">
-      <div className="container mx-auto px-4 py-12 md:py-20">
+    <section className="relative bg-background border-b border-border overflow-hidden">
+      {/* Decorative logo background — attractive, not too dark */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.06] bg-repeat"
+        style={{
+          backgroundImage: `url(${bgLogo.url})`,
+          backgroundSize: "120px 120px",
+        }}
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-background/40 via-transparent to-background/60" />
+      <div className="container mx-auto px-4 py-12 md:py-20 relative">
         <div className="grid md:grid-cols-2 gap-10 items-center">
           {/* Copy */}
           <div className="space-y-6 text-center md:text-start">
