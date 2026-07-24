@@ -92,7 +92,7 @@
         label: "Nom du compte Wise",
         description: "Nom affiché pour le bénéficiaire Wise",
         icon: DollarSign,
-        placeholder: "Mantalite Kominote"
+        placeholder: "APEX"
       },
       {
         key: "banreservas_account",

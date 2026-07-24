@@ -26,8 +26,8 @@
    const handleShare = () => {
      if (referralCode && navigator.share) {
        navigator.share({
-         title: "Rejoins Mantalite Kominote RD",
-         text: `Utilise mon code ${referralCode} pour obtenir des avantages sur Mantalite Kominote RD !`,
+         title: "Rejoins APEX RD",
+         text: `Utilise mon code ${referralCode} pour obtenir des avantages sur APEX RD !`,
          url: window.location.origin
        });
      }

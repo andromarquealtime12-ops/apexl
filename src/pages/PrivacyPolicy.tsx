@@ -12,7 +12,7 @@ const PrivacyPolicy = () => {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">1. Collecte des données</h2>
-            <p>Nous collectons les données suivantes lors de votre utilisation d'Mantalite Kominote :</p>
+            <p>Nous collectons les données suivantes lors de votre utilisation d'APEX :</p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Informations d'inscription : nom complet, email, téléphone</li>
               <li>Données de profil : adresse, ville, photo de profil</li>
@@ -68,12 +68,12 @@ const PrivacyPolicy = () => {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">7. Cookies</h2>
-            <p>Mantalite Kominote utilise des cookies essentiels pour le fonctionnement de la plateforme (session, authentification). Aucun cookie publicitaire n'est utilisé.</p>
+            <p>APEX utilise des cookies essentiels pour le fonctionnement de la plateforme (session, authentification). Aucun cookie publicitaire n'est utilisé.</p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">8. Contact</h2>
-            <p>Pour toute question relative à la protection de vos données, contactez-nous à contact@mantalitekominote.com ou au +1 (829) 699-9294.</p>
+            <p>Pour toute question relative à la protection de vos données, contactez-nous à contact@apex.com ou au +1 (829) 699-9294.</p>
           </section>
         </div>
       </div>
