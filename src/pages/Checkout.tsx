@@ -71,11 +71,23 @@ const Checkout = () => {
   const [deliveryCountry, setDeliveryCountry] = useState(savedAddress?.country || profile?.country || "DO");
 
   const hasPrintfulItem = items.some((it) => (it.product as any).is_printful === true);
+  const userCountry = useUserCountry();
+  const hasInternationalItem = items.some((it) => {
+    const p: any = it.product;
+    if (p.is_printful || p.is_shopify) return true;
+    return !!p.seller_country && p.seller_country !== userCountry;
+  });
+
+  // International orders (Printful, Shopify, or foreign seller) must be paid by wallet
+  useEffect(() => {
+    if (hasInternationalItem && paymentMethod === "cash") setPaymentMethod("wallet");
+  }, [hasInternationalItem, paymentMethod]);
 
   // Printful orders are billed in USD only — force currency
   useEffect(() => {
     if (hasPrintfulItem && currency !== "USD") setCurrency("USD");
   }, [hasPrintfulItem, currency]);
+
 
   // Buyer GPS (restore from saved address so distance/fees compute immediately)
   const [buyerLat, setBuyerLat] = useState<number | null>(savedAddress?.lat ?? null);
