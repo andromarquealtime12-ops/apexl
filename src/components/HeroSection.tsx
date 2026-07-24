@@ -53,6 +53,15 @@ const HeroSection = () => {
               >
                 {t("hero.exploreShops")}
               </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base px-8 h-12 rounded-none"
+                onClick={() => navigate("/restaurants")}
+              >
+                <UtensilsCrossed className="h-4 w-4 mr-2" />
+                Trouver un restaurant
+              </Button>
             </div>
 
             <div className="grid grid-cols-3 gap-4 pt-8 max-w-md mx-auto md:mx-0">
