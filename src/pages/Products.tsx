@@ -31,8 +31,10 @@ const Products = () => {
 
   const categoryId = searchParams.get("category") || undefined;
   const nearMe = searchParams.get("near") === "1";
+  const international = searchParams.get("intl") === "1";
   const urlLat = searchParams.get("lat") ? parseFloat(searchParams.get("lat")!) : null;
   const urlLng = searchParams.get("lng") ? parseFloat(searchParams.get("lng")!) : null;
+
 
   const [userLat, setUserLat] = useState<number | null>(urlLat);
   const [userLng, setUserLng] = useState<number | null>(urlLng);
