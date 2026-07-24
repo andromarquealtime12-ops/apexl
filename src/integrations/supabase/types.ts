@@ -1051,6 +1051,9 @@ export type Database = {
           referred_by: string | null
           report_count: number | null
           selfie_photo: string | null
+          shop_address: string | null
+          shop_latitude: number | null
+          shop_longitude: number | null
           suspension_reason: string | null
           suspension_until: string | null
           total_earned: number | null
@@ -1092,6 +1095,9 @@ export type Database = {
           referred_by?: string | null
           report_count?: number | null
           selfie_photo?: string | null
+          shop_address?: string | null
+          shop_latitude?: number | null
+          shop_longitude?: number | null
           suspension_reason?: string | null
           suspension_until?: string | null
           total_earned?: number | null
@@ -1133,6 +1139,9 @@ export type Database = {
           referred_by?: string | null
           report_count?: number | null
           selfie_photo?: string | null
+          shop_address?: string | null
+          shop_latitude?: number | null
+          shop_longitude?: number | null
           suspension_reason?: string | null
           suspension_until?: string | null
           total_earned?: number | null
@@ -1848,6 +1857,9 @@ export type Database = {
           referred_by: string | null
           report_count: number | null
           selfie_photo: string | null
+          shop_address: string | null
+          shop_latitude: number | null
+          shop_longitude: number | null
           suspension_reason: string | null
           suspension_until: string | null
           total_earned: number | null
@@ -1898,6 +1910,9 @@ export type Database = {
           referred_by: string | null
           report_count: number | null
           selfie_photo: string | null
+          shop_address: string | null
+          shop_latitude: number | null
+          shop_longitude: number | null
           suspension_reason: string | null
           suspension_until: string | null
           total_earned: number | null
@@ -2069,6 +2084,9 @@ export type Database = {
           referred_by: string | null
           report_count: number | null
           selfie_photo: string | null
+          shop_address: string | null
+          shop_latitude: number | null
+          shop_longitude: number | null
           suspension_reason: string | null
           suspension_until: string | null
           total_earned: number | null
@@ -2137,6 +2155,9 @@ export type Database = {
           referred_by: string | null
           report_count: number | null
           selfie_photo: string | null
+          shop_address: string | null
+          shop_latitude: number | null
+          shop_longitude: number | null
           suspension_reason: string | null
           suspension_until: string | null
           total_earned: number | null
