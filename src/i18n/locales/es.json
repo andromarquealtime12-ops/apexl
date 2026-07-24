@@ -3,23 +3,93 @@
     "home": "Inicio", "products": "Productos", "shops": "Tiendas", "restaurants": "Restaurantes",
     "sell": "Vender", "deliver": "Entregar", "menu": "Menú", "search": "Buscar productos...",
     "account": "Mi cuenta", "signin": "Iniciar sesión", "signup": "Registrarse", "profile": "Mi perfil",
-    "wallet": "Mi billetera", "orders": "Mis pedidos", "settings": "Configuración", "logout": "Cerrar sesión", "language": "Idioma"
+    "wallet": "Mi billetera", "orders": "Mis pedidos", "settings": "Configuración", "logout": "Cerrar sesión", "language": "Idioma",
+    "searchOrder": "Buscar pedido", "sellerDashboard": "Panel vendedor", "driverDashboard": "Panel repartidor", "agentDashboard": "Panel agente"
   },
   "hero": {
     "eyebrow": "Nueva temporada · Mundial",
-    "title1": "Compra el mundo.",
-    "title2": "Entregado a ti.",
+    "title1": "Compra el mundo.", "title2": "Entregado a ti.",
     "description": "Miles de productos tendencia en una sola marketplace global. Moda, tecnología, hogar y más — envío rápido, en cualquier idioma, a cualquier país.",
-    "shopNow": "Comprar ahora",
-    "exploreShops": "Explorar tiendas",
+    "shopNow": "Comprar ahora", "exploreShops": "Explorar tiendas",
     "countries": "Países", "products": "Productos", "support": "Soporte"
   },
+  "categories": {
+    "title": "Explora nuestras categorías", "subtitle": "Encuentra todo lo que necesitas", "heading": "Categorías",
+    "filterAll": "Todas las categorías", "filterPlaceholder": "Categoría", "activeFilters": "Filtros activos:",
+    "items": {
+      "utensils": "Alimentos y Bebidas", "smartphone": "Electrónica y Teléfonos", "shirt": "Ropa y Moda",
+      "chef-hat": "Restaurante", "home": "Hogar y Jardín", "heart": "Belleza y Salud",
+      "dumbbell": "Deportes y Ocio", "book": "Libros y Medios", "car": "Automóvil", "briefcase": "Servicios"
+    }
+  },
+  "featured": { "title": "Productos destacados", "subtitle": "Las mejores selecciones para ti", "viewAll": "Ver todo", "empty": "Aún no hay productos destacados. ¡Vuelve pronto!" },
+  "userTypes": {
+    "title": "Únete a nuestra comunidad global",
+    "subtitle": "Ya sea comprando, vendiendo o entregando, APEX te da todas las herramientas para triunfar.",
+    "buyer": { "title": "Comprador", "description": "Descubre todo lo que necesitas en una marketplace mundial", "f1": "Miles de productos seleccionados", "f2": "Entrega rápida a domicilio", "f3": "Pagos seguros múltiples", "f4": "Soporte 24/7", "cta": "Empezar a comprar" },
+    "seller": { "title": "Vendedor", "description": "Haz crecer tu negocio y llega a más clientes", "f1": "Crea tu tienda online", "f2": "Gestión sencilla de pedidos", "f3": "Herramientas de marketing", "f4": "Analítica detallada", "cta": "Ser vendedor" },
+    "driver": { "title": "Repartidor", "description": "Gana dinero entregando en tu zona", "f1": "Horarios flexibles", "f2": "Buenos ingresos", "f3": "GPS integrado", "f4": "Pagos semanales", "cta": "Ser repartidor" }
+  },
+  "features": {
+    "badge": "Funciones", "title": "Todo lo que necesitas", "subtitle": "Una plataforma completa con todas las funciones modernas para una experiencia excepcional.",
+    "payments": { "title": "Pagos Seguros", "description": "Acepta todos los métodos: tarjetas, transferencias y billeteras digitales.", "badge": "Seguro" },
+    "geo": { "title": "Geolocalización", "description": "Seguimiento en tiempo real con GPS integrado.", "badge": "GPS" },
+    "protection": { "title": "Transacciones Protegidas", "description": "Sistema avanzado para asegurar cada transacción.", "badge": "Protección" },
+    "express": { "title": "Entrega Exprés", "description": "Envío rápido en todo el mundo con seguimiento en vivo.", "badge": "Rápido" },
+    "chat": { "title": "Chat Integrado", "description": "Comunicación directa entre compradores, vendedores y repartidores.", "badge": "Chat" },
+    "analytics": { "title": "Analítica Avanzada", "description": "Paneles completos para ventas, rendimiento y tendencias.", "badge": "Analítica" },
+    "mobile": { "title": "App Móvil", "description": "App móvil intuitiva en iOS y Android.", "badge": "Móvil" },
+    "multi": { "title": "Multi-idioma", "description": "Interfaz en 9+ idiomas en todo el mundo.", "badge": "Global" }
+  },
+  "cta": {
+    "title": "¿Listo para unirte al movimiento?", "description": "Descarga la app APEX y empieza a comprar, vender o repartir hoy. La marketplace mundial te espera.",
+    "download": "Descargar la app", "web": "Versión web",
+    "fast": "Lanzamiento rápido", "fastDesc": "En línea en menos de 5 minutos",
+    "commission": "Comisión reducida", "commissionDesc": "Tarifas preferentes para la comunidad",
+    "support": "Soporte dedicado", "supportDesc": "Asistencia en tu idioma"
+  },
+  "footer": {
+    "tagline": "Shop the world", "about": "La marketplace mundial que conecta compradores, vendedores y repartidores en todos los países.",
+    "quickLinks": "Enlaces rápidos", "aboutLink": "Acerca de", "howItWorks": "Cómo funciona", "terms": "Términos de uso", "privacy": "Política de privacidad", "help": "Ayuda y soporte",
+    "business": "Para empresas", "becomeSeller": "Ser vendedor", "seeProducts": "Ver productos", "restaurants": "Restaurantes", "solutions": "Soluciones empresa", "affiliate": "Programa de afiliados",
+    "connected": "Mantente conectado", "newsletter": "Recibe nuestras novedades", "emailPlaceholder": "Tu email",
+    "rights": "© 2026 APEX. Todos los derechos reservados.", "legal": "Aviso legal", "cookies": "Cookies", "sitemap": "Mapa del sitio"
+  },
+  "auth": {
+    "title": "APEX", "subtitle": "Inicia sesión para acceder a tu cuenta", "signin": "Iniciar sesión", "signup": "Registrarse",
+    "email": "Email", "password": "Contraseña", "fullName": "Nombre completo", "namePlaceholder": "Juan Pérez", "forgot": "¿Olvidaste tu contraseña?",
+    "signInBtn": "Entrar", "signUpBtn": "Crear mi cuenta", "sellOrDeliver": "¿Quieres vender o repartir?",
+    "seller": "Vendedor", "driver": "Repartidor", "createFirst": "Crea primero una cuenta para postular",
+    "signInSuccess": "¡Sesión iniciada!", "signUpSuccess": "¡Cuenta creada! Bienvenido a APEX."
+  },
   "product": {
-    "addToCart": "Añadir al carrito", "inCart": "En el carrito", "added": "¡Añadido!",
-    "chooseVariant": "Elegir color / talla", "outOfStock": "Agotado",
-    "outOfCountry": "No disponible en su país", "featured": "Destacado",
+    "addToCart": "Añadir al carrito", "inCart": "En el carrito", "added": "¡Añadido!", "chooseVariant": "Elegir color / talla",
+    "outOfStock": "Agotado", "outOfCountry": "No disponible en su país", "featured": "Destacado",
     "worldwide": "Mundial · USD", "localOnly": "Local",
     "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "Facturado en {{currency}}"
+  },
+  "checkout": {
+    "title": "Finalizar pedido", "deliveryAddress": "Dirección de entrega", "city": "Ciudad", "currency": "Moneda",
+    "fullAddress": "Dirección completa", "addressPlaceholder": "Calle, número, barrio...",
+    "notes": "Instrucciones de entrega (opcional)", "notesPlaceholder": "Información adicional para el repartidor...",
+    "internationalAddress": "Dirección internacional (Printful)",
+    "internationalIntro": "Tus productos Printful se envían desde el extranjero. Por favor ingresa una dirección completa.",
+    "address1": "Dirección línea 1", "address2": "Dirección línea 2 (opcional)", "state": "Estado / Provincia", "zip": "Código postal", "country": "País",
+    "paymentMethod": "Método de pago", "wallet": "Billetera APEX", "balance": "Saldo",
+    "cash": "Pago en efectivo", "cashDesc": "Paga al repartidor al recibir",
+    "summary": "Resumen del pedido", "subtotal": "Subtotal", "delivery": "Envío", "total": "Total",
+    "confirm": "Confirmar pedido", "confirmCash": "Pedir (efectivo)",
+    "insufficientBalance": "Saldo insuficiente", "topUp": "Recargar",
+    "successTitle": "¡Pedido confirmado!", "successDesc": "Tu pedido se ha realizado. Recibirás una notificación cuando esté en camino.",
+    "backHome": "Volver al inicio", "viewOrders": "Ver mis pedidos"
+  },
+  "sellerDash": {
+    "title": "Panel del vendedor", "subtitle": "Gestiona tus productos y sigue tus ventas", "badge": "Vendedor",
+    "tabs": { "products": "Productos", "restaurant": "Restaurante", "orders": "Pedidos", "analytics": "Estadísticas" },
+    "myProducts": "Mis productos", "myProductsDesc": "Gestiona tu catálogo de productos",
+    "myOrders": "Mis pedidos", "myOrdersDesc": "Marca los pedidos como listos — los repartidores cercanos serán notificados automáticamente",
+    "notSeller": { "title": "Ser vendedor", "desc": "Aún no estás registrado como vendedor. Contacta con el administrador para obtener acceso.", "footer": "Una vez aprobado, podrás añadir productos y gestionar tus ventas desde este panel." },
+    "analytics": { "title": "Estadísticas de venta", "desc": "Analiza tu rendimiento", "summary": "Resumen", "sold": "Productos vendidos", "conversion": "Tasa de conversión", "avg": "Ticket medio", "chartsComing": "Gráficos detallados próximamente" }
   },
   "common": { "loading": "Cargando...", "save": "Guardar", "cancel": "Cancelar", "close": "Cerrar", "error": "Error" }
 }

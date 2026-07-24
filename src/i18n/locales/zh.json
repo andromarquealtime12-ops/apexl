@@ -3,23 +3,92 @@
     "home": "首页", "products": "商品", "shops": "店铺", "restaurants": "餐厅",
     "sell": "出售", "deliver": "配送", "menu": "菜单", "search": "搜索商品...",
     "account": "我的账户", "signin": "登录", "signup": "注册", "profile": "我的资料",
-    "wallet": "我的钱包", "orders": "我的订单", "settings": "设置", "logout": "退出", "language": "语言"
+    "wallet": "我的钱包", "orders": "我的订单", "settings": "设置", "logout": "退出", "language": "语言",
+    "searchOrder": "查询订单", "sellerDashboard": "卖家面板", "driverDashboard": "配送员面板", "agentDashboard": "代理面板"
   },
   "hero": {
-    "eyebrow": "新季 · 全球",
-    "title1": "购遍全球。",
-    "title2": "送达你手中。",
-    "description": "数千款潮流商品,一个全球市场。时尚、科技、家居等等 —— 快速发货,任何语言,任何国家。",
-    "shopNow": "立即购买",
-    "exploreShops": "探索店铺",
-    "countries": "国家", "products": "商品", "support": "客服"
+    "eyebrow": "新季节 · 全球", "title1": "购遍全球。", "title2": "送达身边。",
+    "description": "数千款潮流商品,一个全球市场。时尚、科技、家居等 — 快速发货,支持多种语言,配送至任何国家。",
+    "shopNow": "立即购物", "exploreShops": "浏览店铺",
+    "countries": "国家", "products": "商品", "support": "支持"
+  },
+  "categories": {
+    "title": "探索我们的分类", "subtitle": "找到您需要的一切", "heading": "分类",
+    "filterAll": "全部分类", "filterPlaceholder": "分类", "activeFilters": "激活的筛选:",
+    "items": {
+      "utensils": "食品与饮料", "smartphone": "电子产品与手机", "shirt": "服装与时尚",
+      "chef-hat": "餐厅", "home": "家居与园艺", "heart": "美容与健康",
+      "dumbbell": "运动与休闲", "book": "书籍与媒体", "car": "汽车", "briefcase": "服务"
+    }
+  },
+  "featured": { "title": "精选商品", "subtitle": "为您精心挑选", "viewAll": "查看全部", "empty": "暂无精选商品,请稍后再来!" },
+  "userTypes": {
+    "title": "加入我们的全球社区",
+    "subtitle": "无论购买、销售还是配送,APEX 都为您提供所需的一切工具。",
+    "buyer": { "title": "买家", "description": "在全球市场发现所需的一切", "f1": "数千款精选商品", "f2": "快速送货上门", "f3": "多种安全支付方式", "f4": "24/7 客户支持", "cta": "开始购物" },
+    "seller": { "title": "卖家", "description": "发展您的业务,触达更多客户", "f1": "开设您的网店", "f2": "简单的订单管理", "f3": "内置营销工具", "f4": "详细的分析报告", "cta": "成为卖家" },
+    "driver": { "title": "配送员", "description": "在您的地区送货赚钱", "f1": "灵活的时间", "f2": "有吸引力的收入", "f3": "内置 GPS", "f4": "每周结算", "cta": "成为配送员" }
+  },
+  "features": {
+    "badge": "功能", "title": "您所需的一切", "subtitle": "一个完整的平台,拥有所有现代功能。",
+    "payments": { "title": "安全支付", "description": "接受所有支付方式:卡、转账和数字钱包。", "badge": "安全" },
+    "geo": { "title": "地理定位", "description": "内置 GPS 实时跟踪。", "badge": "GPS" },
+    "protection": { "title": "受保护交易", "description": "先进的系统保护每笔交易。", "badge": "保护" },
+    "express": { "title": "快速配送", "description": "全球快速送达,实时追踪。", "badge": "快速" },
+    "chat": { "title": "内置聊天", "description": "买家、卖家和配送员之间的直接沟通。", "badge": "聊天" },
+    "analytics": { "title": "高级分析", "description": "完整的销售、绩效和趋势仪表板。", "badge": "分析" },
+    "mobile": { "title": "移动应用", "description": "iOS 和 Android 上的直观应用。", "badge": "移动" },
+    "multi": { "title": "多语言", "description": "界面支持 9+ 种语言。", "badge": "全球" }
+  },
+  "cta": {
+    "title": "准备好加入这场变革了吗?", "description": "下载 APEX 应用,今天就开始购买、销售或配送。全球市场正在等您。",
+    "download": "下载应用", "web": "网页版",
+    "fast": "快速启动", "fastDesc": "5 分钟内上线",
+    "commission": "低佣金", "commissionDesc": "社区优惠价",
+    "support": "专属支持", "supportDesc": "您的语言提供的支持"
+  },
+  "footer": {
+    "tagline": "Shop the world", "about": "连接所有国家买家、卖家和配送员的全球市场。",
+    "quickLinks": "快速链接", "aboutLink": "关于我们", "howItWorks": "使用方法", "terms": "使用条款", "privacy": "隐私政策", "help": "帮助与支持",
+    "business": "面向企业", "becomeSeller": "成为卖家", "seeProducts": "浏览商品", "restaurants": "餐厅", "solutions": "企业解决方案", "affiliate": "联盟计划",
+    "connected": "保持联系", "newsletter": "接收最新消息", "emailPlaceholder": "您的邮箱",
+    "rights": "© 2026 APEX. 版权所有。", "legal": "法律声明", "cookies": "Cookies", "sitemap": "网站地图"
+  },
+  "auth": {
+    "title": "APEX", "subtitle": "登录以访问您的账户", "signin": "登录", "signup": "注册",
+    "email": "邮箱", "password": "密码", "fullName": "全名", "namePlaceholder": "张三", "forgot": "忘记密码?",
+    "signInBtn": "登录", "signUpBtn": "创建账户", "sellOrDeliver": "想要销售或配送?",
+    "seller": "卖家", "driver": "配送员", "createFirst": "先创建账户再申请",
+    "signInSuccess": "登录成功!", "signUpSuccess": "账户已创建!欢迎加入 APEX。"
   },
   "product": {
-    "addToCart": "加入购物车", "inCart": "已加入", "added": "已添加!",
-    "chooseVariant": "选择颜色 / 尺码", "outOfStock": "缺货",
-    "outOfCountry": "您所在的国家不可用", "featured": "精选",
+    "addToCart": "加入购物车", "inCart": "在购物车中", "added": "已添加!", "chooseVariant": "选择颜色 / 尺寸",
+    "outOfStock": "缺货", "outOfCountry": "您所在国家不可用", "featured": "推荐",
     "worldwide": "全球 · USD", "localOnly": "本地",
     "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "以 {{currency}} 结算"
+  },
+  "checkout": {
+    "title": "完成订单", "deliveryAddress": "配送地址", "city": "城市", "currency": "货币",
+    "fullAddress": "完整地址", "addressPlaceholder": "街道、门牌号、社区...",
+    "notes": "配送说明(可选)", "notesPlaceholder": "给配送员的额外信息...",
+    "internationalAddress": "国际地址 (Printful)",
+    "internationalIntro": "您的 Printful 商品从国外发货。请填写完整地址。",
+    "address1": "地址第 1 行", "address2": "地址第 2 行(可选)", "state": "州 / 省", "zip": "邮编", "country": "国家",
+    "paymentMethod": "支付方式", "wallet": "APEX 钱包", "balance": "余额",
+    "cash": "货到付款", "cashDesc": "收货时向配送员付现金",
+    "summary": "订单摘要", "subtotal": "小计", "delivery": "配送", "total": "总计",
+    "confirm": "确认订单", "confirmCash": "下单(现金)",
+    "insufficientBalance": "余额不足", "topUp": "充值",
+    "successTitle": "订单已确认!", "successDesc": "您的订单已下达。配送启动时您将收到通知。",
+    "backHome": "返回首页", "viewOrders": "查看我的订单"
+  },
+  "sellerDash": {
+    "title": "卖家仪表板", "subtitle": "管理您的商品并跟踪您的销售", "badge": "卖家",
+    "tabs": { "products": "商品", "restaurant": "餐厅", "orders": "订单", "analytics": "统计" },
+    "myProducts": "我的商品", "myProductsDesc": "管理您的商品目录",
+    "myOrders": "我的订单", "myOrdersDesc": "标记订单为就绪 — 附近配送员将自动收到通知",
+    "notSeller": { "title": "成为卖家", "desc": "您尚未注册为卖家。请联系管理员以获得卖家访问权限。", "footer": "获得批准后,您可以在此仪表板中添加商品并管理销售。" },
+    "analytics": { "title": "销售统计", "desc": "分析您的表现", "summary": "摘要", "sold": "已售商品", "conversion": "转化率", "avg": "平均购物车", "chartsComing": "详细图表即将推出" }
   },
   "common": { "loading": "加载中...", "save": "保存", "cancel": "取消", "close": "关闭", "error": "错误" }
 }

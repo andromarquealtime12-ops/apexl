@@ -13,8 +13,10 @@ import { ShoppingCart, Store, ArrowLeft, Plus, Minus, Check } from "lucide-react
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 export default function ProductDetail() {
+  const { t } = useTranslation();
   const { productId } = useParams<{ productId: string }>();
   const { data: product, isLoading } = useProduct(productId || "");
   const { addItem, items } = useCart();
@@ -153,7 +155,7 @@ export default function ProductDetail() {
           {/* Info */}
           <div className="space-y-6">
             <div>
-              {product.category && <Badge variant="secondary" className="mb-2">{product.category.name}</Badge>}
+              {product.category && <Badge variant="secondary" className="mb-2">{t(`categories.items.${product.category.icon}`, { defaultValue: product.category.name })}</Badge>}
               <h1 className="text-2xl font-bold">{product.name}</h1>
               <p className="text-3xl font-bold text-primary mt-2">{currencySymbol} {product.price.toLocaleString()}</p>
             </div>

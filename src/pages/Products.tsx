@@ -20,8 +20,10 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { calculateDistance } from "@/hooks/useGeolocation";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 const Products = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -207,7 +209,7 @@ const Products = () => {
                 <SelectItem value="all">Toutes les catégories</SelectItem>
                 {categories?.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
-                    {category.name}
+                    {t(`categories.items.${category.icon}`, { defaultValue: category.name })}
                   </SelectItem>
                 ))}
               </SelectContent>

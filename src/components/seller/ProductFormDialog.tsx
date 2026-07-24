@@ -25,6 +25,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Loader2, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface ProductFormDialogProps {
   open: boolean;
@@ -33,6 +34,7 @@ interface ProductFormDialogProps {
 }
 
 export default function ProductFormDialog({ open, onOpenChange, product }: ProductFormDialogProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { data: categories } = useCategories();
   const createProduct = useCreateProduct();
@@ -208,7 +210,7 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
               <SelectContent>
                 {categories?.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
+                    {t(`categories.items.${cat.icon}`, { defaultValue: cat.name })}
                   </SelectItem>
                 ))}
               </SelectContent>

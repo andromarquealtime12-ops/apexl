@@ -132,7 +132,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </h3>
         </Link>
         {product.category && (
-          <p className="text-xs text-muted-foreground mt-1">{product.category.name}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t(`categories.items.${product.category.icon}`, { defaultValue: product.category.name })}</p>
         )}
         <div className="mt-2">
           <p className="text-lg font-bold text-primary">

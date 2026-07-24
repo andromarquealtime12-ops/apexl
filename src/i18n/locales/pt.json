@@ -3,23 +3,92 @@
     "home": "Início", "products": "Produtos", "shops": "Lojas", "restaurants": "Restaurantes",
     "sell": "Vender", "deliver": "Entregar", "menu": "Menu", "search": "Buscar produtos...",
     "account": "Minha conta", "signin": "Entrar", "signup": "Cadastrar", "profile": "Meu perfil",
-    "wallet": "Minha carteira", "orders": "Meus pedidos", "settings": "Configurações", "logout": "Sair", "language": "Idioma"
+    "wallet": "Minha carteira", "orders": "Meus pedidos", "settings": "Configurações", "logout": "Sair", "language": "Idioma",
+    "searchOrder": "Buscar pedido", "sellerDashboard": "Painel vendedor", "driverDashboard": "Painel entregador", "agentDashboard": "Painel agente"
   },
   "hero": {
-    "eyebrow": "Nova temporada · Mundial",
-    "title1": "Compre o mundo.",
-    "title2": "Entregue até você.",
-    "description": "Milhares de produtos em alta, um único marketplace global. Moda, tecnologia, casa e muito mais — enviado rápido, em qualquer idioma, para qualquer país.",
-    "shopNow": "Comprar agora",
-    "exploreShops": "Explorar lojas",
+    "eyebrow": "Nova temporada · Mundial", "title1": "Compre o mundo.", "title2": "Entregue até você.",
+    "description": "Milhares de produtos em uma marketplace global. Moda, tecnologia, casa e mais — envio rápido, em qualquer idioma, para qualquer país.",
+    "shopNow": "Comprar agora", "exploreShops": "Explorar lojas",
     "countries": "Países", "products": "Produtos", "support": "Suporte"
   },
+  "categories": {
+    "title": "Explore nossas categorias", "subtitle": "Encontre tudo o que precisa", "heading": "Categorias",
+    "filterAll": "Todas as categorias", "filterPlaceholder": "Categoria", "activeFilters": "Filtros ativos:",
+    "items": {
+      "utensils": "Alimentos e Bebidas", "smartphone": "Eletrônicos e Celulares", "shirt": "Roupas e Moda",
+      "chef-hat": "Restaurante", "home": "Casa e Jardim", "heart": "Beleza e Saúde",
+      "dumbbell": "Esportes e Lazer", "book": "Livros e Mídia", "car": "Automotivo", "briefcase": "Serviços"
+    }
+  },
+  "featured": { "title": "Produtos em destaque", "subtitle": "As melhores escolhas para você", "viewAll": "Ver tudo", "empty": "Nenhum produto em destaque ainda. Volte em breve!" },
+  "userTypes": {
+    "title": "Junte-se à nossa comunidade global",
+    "subtitle": "Comprando, vendendo ou entregando, o APEX te dá todas as ferramentas para prosperar.",
+    "buyer": { "title": "Comprador", "description": "Descubra tudo o que precisa em uma marketplace mundial", "f1": "Milhares de produtos selecionados", "f2": "Entrega rápida em casa", "f3": "Pagamentos seguros", "f4": "Suporte 24/7", "cta": "Começar a comprar" },
+    "seller": { "title": "Vendedor", "description": "Cresça seu negócio e alcance mais clientes", "f1": "Crie sua loja online", "f2": "Gestão simples de pedidos", "f3": "Ferramentas de marketing", "f4": "Analytics detalhados", "cta": "Ser vendedor" },
+    "driver": { "title": "Entregador", "description": "Ganhe dinheiro entregando na sua região", "f1": "Horários flexíveis", "f2": "Remuneração atrativa", "f3": "GPS integrado", "f4": "Pagamentos semanais", "cta": "Ser entregador" }
+  },
+  "features": {
+    "badge": "Recursos", "title": "Tudo o que você precisa", "subtitle": "Uma plataforma completa com todos os recursos modernos.",
+    "payments": { "title": "Pagamentos Seguros", "description": "Aceite todos os métodos: cartões, transferências e carteiras digitais.", "badge": "Seguro" },
+    "geo": { "title": "Geolocalização", "description": "Rastreamento em tempo real com GPS integrado.", "badge": "GPS" },
+    "protection": { "title": "Transações Protegidas", "description": "Sistema avançado para proteger cada transação.", "badge": "Proteção" },
+    "express": { "title": "Entrega Expressa", "description": "Envio rápido em todo o mundo com rastreamento em tempo real.", "badge": "Rápido" },
+    "chat": { "title": "Chat Integrado", "description": "Comunicação direta entre compradores, vendedores e entregadores.", "badge": "Chat" },
+    "analytics": { "title": "Analytics Avançados", "description": "Dashboards para acompanhar vendas, desempenho e tendências.", "badge": "Analytics" },
+    "mobile": { "title": "App Mobile", "description": "App intuitivo no iOS e Android.", "badge": "Mobile" },
+    "multi": { "title": "Multi-idioma", "description": "Interface em 9+ idiomas.", "badge": "Global" }
+  },
+  "cta": {
+    "title": "Pronto para entrar no movimento?", "description": "Baixe o app APEX e comece a comprar, vender ou entregar hoje. A marketplace mundial te espera.",
+    "download": "Baixar o app", "web": "Versão web",
+    "fast": "Lançamento rápido", "fastDesc": "No ar em menos de 5 minutos",
+    "commission": "Comissão baixa", "commissionDesc": "Tarifas preferenciais para a comunidade",
+    "support": "Suporte dedicado", "supportDesc": "Assistência no seu idioma"
+  },
+  "footer": {
+    "tagline": "Shop the world", "about": "A marketplace global que conecta compradores, vendedores e entregadores em todos os países.",
+    "quickLinks": "Links rápidos", "aboutLink": "Sobre", "howItWorks": "Como funciona", "terms": "Termos de uso", "privacy": "Política de privacidade", "help": "Ajuda e suporte",
+    "business": "Para empresas", "becomeSeller": "Ser vendedor", "seeProducts": "Ver produtos", "restaurants": "Restaurantes", "solutions": "Soluções empresariais", "affiliate": "Programa de afiliados",
+    "connected": "Fique conectado", "newsletter": "Receba nossas novidades", "emailPlaceholder": "Seu email",
+    "rights": "© 2026 APEX. Todos os direitos reservados.", "legal": "Aviso legal", "cookies": "Cookies", "sitemap": "Mapa do site"
+  },
+  "auth": {
+    "title": "APEX", "subtitle": "Entre para acessar sua conta", "signin": "Entrar", "signup": "Cadastrar",
+    "email": "Email", "password": "Senha", "fullName": "Nome completo", "namePlaceholder": "João Silva", "forgot": "Esqueceu a senha?",
+    "signInBtn": "Entrar", "signUpBtn": "Criar minha conta", "sellOrDeliver": "Quer vender ou entregar?",
+    "seller": "Vendedor", "driver": "Entregador", "createFirst": "Crie uma conta primeiro para se candidatar",
+    "signInSuccess": "Login realizado!", "signUpSuccess": "Conta criada! Bem-vindo ao APEX."
+  },
   "product": {
-    "addToCart": "Adicionar ao carrinho", "inCart": "No carrinho", "added": "Adicionado!",
-    "chooseVariant": "Escolher cor / tamanho", "outOfStock": "Esgotado",
-    "outOfCountry": "Indisponível no seu país", "featured": "Destaque",
+    "addToCart": "Adicionar ao carrinho", "inCart": "No carrinho", "added": "Adicionado!", "chooseVariant": "Escolher cor / tamanho",
+    "outOfStock": "Esgotado", "outOfCountry": "Indisponível no seu país", "featured": "Destaque",
     "worldwide": "Mundial · USD", "localOnly": "Local",
-    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "Cobrado em {{currency}}"
+    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "Faturado em {{currency}}"
+  },
+  "checkout": {
+    "title": "Finalizar pedido", "deliveryAddress": "Endereço de entrega", "city": "Cidade", "currency": "Moeda",
+    "fullAddress": "Endereço completo", "addressPlaceholder": "Rua, número, bairro...",
+    "notes": "Instruções de entrega (opcional)", "notesPlaceholder": "Informações extras para o entregador...",
+    "internationalAddress": "Endereço internacional (Printful)",
+    "internationalIntro": "Seus produtos Printful são enviados do exterior. Por favor informe um endereço completo.",
+    "address1": "Endereço linha 1", "address2": "Endereço linha 2 (opcional)", "state": "Estado / Província", "zip": "CEP", "country": "País",
+    "paymentMethod": "Forma de pagamento", "wallet": "Carteira APEX", "balance": "Saldo",
+    "cash": "Pagamento em dinheiro", "cashDesc": "Pague em dinheiro ao entregador",
+    "summary": "Resumo do pedido", "subtotal": "Subtotal", "delivery": "Entrega", "total": "Total",
+    "confirm": "Confirmar pedido", "confirmCash": "Pedir (dinheiro)",
+    "insufficientBalance": "Saldo insuficiente", "topUp": "Recarregar",
+    "successTitle": "Pedido confirmado!", "successDesc": "Seu pedido foi feito. Você receberá uma notificação quando estiver a caminho.",
+    "backHome": "Voltar ao início", "viewOrders": "Ver meus pedidos"
+  },
+  "sellerDash": {
+    "title": "Painel do vendedor", "subtitle": "Gerencie seus produtos e acompanhe suas vendas", "badge": "Vendedor",
+    "tabs": { "products": "Produtos", "restaurant": "Restaurante", "orders": "Pedidos", "analytics": "Stats" },
+    "myProducts": "Meus produtos", "myProductsDesc": "Gerencie seu catálogo de produtos",
+    "myOrders": "Meus pedidos", "myOrdersDesc": "Marque pedidos como prontos — entregadores próximos serão notificados automaticamente",
+    "notSeller": { "title": "Ser vendedor", "desc": "Você ainda não está registrado como vendedor. Fale com o administrador para obter acesso.", "footer": "Após aprovado, você poderá adicionar produtos e gerenciar vendas neste painel." },
+    "analytics": { "title": "Estatísticas de venda", "desc": "Analise seu desempenho", "summary": "Resumo", "sold": "Produtos vendidos", "conversion": "Taxa de conversão", "avg": "Ticket médio", "chartsComing": "Gráficos detalhados em breve" }
   },
   "common": { "loading": "Carregando...", "save": "Salvar", "cancel": "Cancelar", "close": "Fechar", "error": "Erro" }
 }
