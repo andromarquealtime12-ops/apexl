@@ -308,7 +308,9 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
             />
           </div>
 
-          <DialogFooter>
+          </div>
+
+          <DialogFooter className="p-4 border-t bg-background shrink-0 sticky bottom-0 flex-row justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Annuler
             </Button>
