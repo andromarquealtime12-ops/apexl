@@ -71,8 +71,9 @@ const SellerDashboard = () => {
           </div>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-6 space-y-4">
           <IdentityRequiredBanner role="seller" />
+          <ShopLocationCard />
         </div>
 
         <div className="mb-8">
