@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { calculateDistance } from "@/hooks/useGeolocation";
 
-const MAX_MOVE_KM = 3;
+const MAX_MOVE_KM = 5;
 
 export default function ShopLocationCard() {
   const { user } = useAuth();
