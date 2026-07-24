@@ -13,6 +13,30 @@ interface ReturnChatProps {
   returnId: string;
 }
 
+function SignedImage({ value }: { value: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    // Legacy messages may already contain a full URL — render it as-is.
+    if (/^https?:\/\//i.test(value)) {
+      setUrl(value);
+      return;
+    }
+    const path = value.replace(/^storage:\/\/return-photos\//, "");
+    supabase.storage
+      .from("return-photos")
+      .createSignedUrl(path, 3600)
+      .then(({ data }) => {
+        if (!cancelled && data?.signedUrl) setUrl(data.signedUrl);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [value]);
+  if (!url) return null;
+  return <img src={url} alt="Photo" className="rounded mb-1 max-h-32 w-auto" />;
+}
+
 export default function ReturnChat({ returnId }: ReturnChatProps) {
   const { user } = useAuth();
   const { data: messages, isLoading } = useReturnMessages(returnId);
@@ -45,7 +69,7 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
       const { error: uploadError } = await supabase.storage.from("return-photos").upload(path, file);
       if (uploadError) throw uploadError;
 
-      // Store the storage path (bucket is private) — signed URLs are generated at render time
+      // Store the storage path only — bucket is private, signed URLs generated at render.
       await sendMessage.mutateAsync({ returnId, imageUrl: path, message: "📷 Photo envoyée" });
     } catch (err) {
       console.error("Upload error:", err);
@@ -55,55 +79,12 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
     }
   };
 
-  return <ReturnChatView
-    messages={messages}
-    isLoading={isLoading}
-    user={user}
-    text={text}
-    setText={setText}
-    handleSend={handleSend}
-    handleImageUpload={handleImageUpload}
-    uploading={uploading}
-    fileInputRef={fileInputRef}
-    sendMessagePending={sendMessage.isPending}
-    scrollRef={scrollRef}
-  />;
-}
-
-function SignedImage({ path }: { path: string }) {
-  const [url, setUrl] = useState<string | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    // Legacy messages may already contain a full URL — render it as-is.
-    if (/^https?:\/\//i.test(path)) {
-      setUrl(path);
-      return;
-    }
-    const clean = path.replace(/^storage:\/\/return-photos\//, "");
-    supabase.storage.from("return-photos").createSignedUrl(clean, 3600).then(({ data }) => {
-      if (!cancelled && data?.signedUrl) setUrl(data.signedUrl);
-    });
-    return () => { cancelled = true; };
-  }, [path]);
-  if (!url) return null;
-  return <img src={url} alt="Photo" className="rounded mb-1 max-h-32 w-auto" />;
-}
-
-function ReturnChatView(props: {
-  messages: any; isLoading: boolean; user: any;
-  text: string; setText: (v: string) => void;
-  handleSend: () => void; handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  uploading: boolean; fileInputRef: React.RefObject<HTMLInputElement>;
-  sendMessagePending: boolean; scrollRef: React.RefObject<HTMLDivElement>;
-}) {
-  const { messages, isLoading, user, text, setText, handleSend, handleImageUpload, uploading, fileInputRef, sendMessagePending, scrollRef } = props;
-
   return (
     <div className="border rounded-lg overflow-hidden">
       <div className="bg-muted/50 px-3 py-2 text-sm font-medium">
         💬 Communication retour
       </div>
-      
+
       <ScrollArea className="h-48 p-3" ref={scrollRef}>
         {isLoading ? (
           <p className="text-xs text-muted-foreground text-center">Chargement...</p>
@@ -123,9 +104,7 @@ function ReturnChatView(props: {
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted"
                 }`}>
-                  {msg.image_url && (
-                    <img src={msg.image_url} alt="Photo" className="rounded mb-1 max-h-32 w-auto" />
-                  )}
+                  {msg.image_url && <SignedImage value={msg.image_url} />}
                   {msg.message && <p>{msg.message}</p>}
                   <p className="text-[10px] opacity-60 mt-1">
                     {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true, locale: fr })}
