@@ -23,7 +23,7 @@ const Footer = () => {
                 <ShoppingBag className="h-6 w-6 text-secondary-foreground" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">Ayiti Market</h3>
+                <h3 className="text-xl font-bold">Mantalite Kominote</h3>
                 <p className="text-sm text-primary-foreground/80">Konekte nan RD</p>
               </div>
             </div>
@@ -33,17 +33,17 @@ const Footer = () => {
               pour une économie digitale prospère.
             </p>
             <div className="flex gap-2">
-              <a href="https://www.facebook.com/AyitiMarketRD" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.facebook.com/MantaliteKominoteRD" target="_blank" rel="noopener noreferrer">
                 <Button size="icon" variant="secondary" className="h-8 w-8">
                   <Facebook className="h-4 w-4" />
                 </Button>
               </a>
-              <a href="https://www.instagram.com/ayitimarket" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.instagram.com/mantalitekominote" target="_blank" rel="noopener noreferrer">
                 <Button size="icon" variant="secondary" className="h-8 w-8">
                   <Instagram className="h-4 w-4" />
                 </Button>
               </a>
-              <a href="https://x.com/AyitiMarket" target="_blank" rel="noopener noreferrer">
+              <a href="https://x.com/MantaliteKominote" target="_blank" rel="noopener noreferrer">
                 <Button size="icon" variant="secondary" className="h-8 w-8">
                   <Twitter className="h-4 w-4" />
                 </Button>
@@ -96,9 +96,9 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">Restez connecté</h4>
             <div className="space-y-3">
-              <a href="mailto:contact@ayitimarket.com" className="flex items-center gap-2 text-sm hover:text-primary-foreground/100 text-primary-foreground/80">
+              <a href="mailto:contact@mantalitekominote.com" className="flex items-center gap-2 text-sm hover:text-primary-foreground/100 text-primary-foreground/80">
                 <Mail className="h-4 w-4" />
-                <span>contact@ayitimarket.com</span>
+                <span>contact@mantalitekominote.com</span>
               </a>
               <a href="tel:+18296999294" className="flex items-center gap-2 text-sm hover:text-primary-foreground/100 text-primary-foreground/80">
                 <Phone className="h-4 w-4" />
@@ -132,7 +132,7 @@ const Footer = () => {
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/80">
           <p>
-            © 2026 Ayiti Market. Tous droits réservés.
+            © 2026 Mantalite Kominote. Tous droits réservés.
           </p>
           <div className="flex gap-6">
             <Link to="/legal" className="hover:text-primary-foreground transition-smooth">

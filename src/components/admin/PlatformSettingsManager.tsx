@@ -92,7 +92,7 @@
         label: "Nom du compte Wise",
         description: "Nom affiché pour le bénéficiaire Wise",
         icon: DollarSign,
-        placeholder: "Ayiti Market"
+        placeholder: "Mantalite Kominote"
       },
       {
         key: "banreservas_account",

@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
         shipping_address,
         billing_address: shipping_address,
         financial_status: 'paid',
-        note: `Ayiti Market order #${order.id}`,
+        note: `Mantalite Kominote order #${order.id}`,
         tags: 'ayiti-market',
       },
     };

@@ -243,7 +243,7 @@ Fournis: risque de fraude (0-100), score fiabilité, recommandation, drapeaux ro
 
     // ============ CHAT ASSISTANTS ============
     } else if (userType === "acheteur") {
-      systemPrompt = `Tu es un assistant amical et serviable pour Ayiti Marché RD, un marketplace pour la communauté haïtienne en République Dominicaine.
+      systemPrompt = `Tu es un assistant amical et serviable pour Mantalite Kominote RD, un marketplace pour la communauté haïtienne en République Dominicaine.
 
 Tu parles français et créole selon la langue de l'utilisateur.
 Tu es chaleureux, patient et toujours prêt à aider.
@@ -257,7 +257,7 @@ IMPORTANT: Utilise les données réelles ci-dessus pour donner des réponses per
 Utilise "nou" pour inclure l'utilisateur dans tes réponses. Sois encourageant et positif. Garde les réponses courtes et utiles.`;
       userPrompt = message;
     } else if (userType === "vendeur") {
-      systemPrompt = `Tu es un assistant spécialisé pour les vendeurs sur Ayiti Marché RD.
+      systemPrompt = `Tu es un assistant spécialisé pour les vendeurs sur Mantalite Kominote RD.
 
 ${dbContext}
 
@@ -268,7 +268,7 @@ IMPORTANT: Utilise les données réelles ci-dessus. Si le vendeur demande ses st
 Donne des conseils pratiques et précis. Explique les procédures étape par étape. Sois encourageant et professionnel. Garde les réponses courtes.`;
       userPrompt = message;
     } else if (userType === "livreur") {
-      systemPrompt = `Tu es un assistant pour les livreurs de Ayiti Marché RD.
+      systemPrompt = `Tu es un assistant pour les livreurs de Mantalite Kominote RD.
 
 ${dbContext}
 
@@ -279,7 +279,7 @@ IMPORTANT: Utilise les données réelles ci-dessus. Informe le livreur de ses st
 Réponds de manière simple et directe. Priorise la sécurité et l'efficacité. Garde les réponses courtes.`;
       userPrompt = message;
     } else if (userType === "admin") {
-      systemPrompt = `Tu es un assistant expert pour l'administrateur de Ayiti Marché RD.
+      systemPrompt = `Tu es un assistant expert pour l'administrateur de Mantalite Kominote RD.
 
 ${dbContext}
 
@@ -290,7 +290,7 @@ IMPORTANT: Utilise les données réelles ci-dessus pour donner des analyses pré
 Sois précis, factuel et professionnel. Donne des recommandations actionnables.`;
       userPrompt = message;
     } else {
-      systemPrompt = `Tu es un assistant expert pour Ayiti Marché RD, un marketplace. Réponds de manière utile et précise en français.${dbContext}`;
+      systemPrompt = `Tu es un assistant expert pour Mantalite Kominote RD, un marketplace. Réponds de manière utile et précise en français.${dbContext}`;
       userPrompt = message || data?.prompt || "Bonjour";
     }
 

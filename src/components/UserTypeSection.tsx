@@ -59,7 +59,7 @@ const UserTypeSection = () => {
             Rejwenn Kominote a
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Que vous souhaitiez acheter, vendre ou livrer, Ayiti Market vous offre 
+            Que vous souhaitiez acheter, vendre ou livrer, Mantalite Kominote vous offre 
             les outils parfaits pour réussir dans l'économie digitale
           </p>
         </div>

@@ -18,7 +18,7 @@ const CookiesPolicy = () => {
             <h2 className="text-xl font-semibold text-foreground">Cookies utilisés</h2>
             <p><strong>Cookies essentiels :</strong> Nécessaires au fonctionnement du site (authentification, session, panier).</p>
             <p><strong>Cookies de préférence :</strong> Mémorisation de vos choix (langue, thème sombre/clair).</p>
-            <p>Ayiti Market n'utilise aucun cookie publicitaire ni de traçage tiers.</p>
+            <p>Mantalite Kominote n'utilise aucun cookie publicitaire ni de traçage tiers.</p>
           </section>
 
           <section className="space-y-3">
@@ -28,7 +28,7 @@ const CookiesPolicy = () => {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">Contact</h2>
-            <p>Pour toute question, contactez-nous à contact@ayitimarket.com ou au +1 (829) 699-9294.</p>
+            <p>Pour toute question, contactez-nous à contact@mantalitekominote.com ou au +1 (829) 699-9294.</p>
           </section>
         </div>
       </div>

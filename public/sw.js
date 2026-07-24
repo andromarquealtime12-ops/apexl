@@ -37,7 +37,7 @@ self.addEventListener('fetch', (event) => {
 
 // Web Push handler - shows notification on lock screen / home screen
 self.addEventListener('push', (event) => {
-  let data = { title: 'Ayiti Marché', body: '', url: '/', tag: 'ayiti-marche' };
+  let data = { title: 'Mantalite Kominote', body: '', url: '/', tag: 'ayiti-marche' };
   
   try {
     if (event.data) {

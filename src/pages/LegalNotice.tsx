@@ -12,11 +12,11 @@ const LegalNotice = () => {
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">Éditeur du site</h2>
             <p>
-              <strong>Ayiti Market</strong><br />
+              <strong>Mantalite Kominote</strong><br />
               Plateforme de commerce en ligne<br />
               Santo Domingo, République Dominicaine<br />
               Téléphone : +1 (829) 699-9294<br />
-              Email : contact@ayitimarket.com
+              Email : contact@mantalitekominote.com
             </p>
           </section>
 
@@ -31,7 +31,7 @@ const LegalNotice = () => {
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">Propriété intellectuelle</h2>
             <p>
-              L'ensemble du contenu du site Ayiti Market (textes, images, logos, graphismes, 
+              L'ensemble du contenu du site Mantalite Kominote (textes, images, logos, graphismes, 
               icônes, sons, logiciels) est protégé par les lois relatives à la propriété 
               intellectuelle. Toute reproduction, représentation, modification ou adaptation 
               de tout ou partie du site est interdite sans autorisation préalable.
@@ -41,9 +41,9 @@ const LegalNotice = () => {
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">Responsabilité</h2>
             <p>
-              Ayiti Market s'efforce d'assurer l'exactitude des informations diffusées sur 
+              Mantalite Kominote s'efforce d'assurer l'exactitude des informations diffusées sur 
               le site. Toutefois, elle ne peut garantir l'exactitude, la complétude et 
-              l'actualité des informations. Ayiti Market agit en tant qu'intermédiaire entre 
+              l'actualité des informations. Mantalite Kominote agit en tant qu'intermédiaire entre 
               vendeurs et acheteurs et décline toute responsabilité quant aux produits vendus 
               par des tiers sur la plateforme.
             </p>

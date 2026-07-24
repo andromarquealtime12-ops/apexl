@@ -15,7 +15,7 @@ const CTASection = () => {
               Prêt à rejoindre la révolution ?
             </h2>
             <p className="text-xl text-primary-foreground/90 max-w-2xl mx-auto">
-              Téléchargez l'app Ayiti Market et commencez à acheter, vendre ou livrer 
+              Téléchargez l'app Mantalite Kominote et commencez à acheter, vendre ou livrer 
               dès aujourd'hui. L'économie digitale vous attend !
             </p>
           </div>
