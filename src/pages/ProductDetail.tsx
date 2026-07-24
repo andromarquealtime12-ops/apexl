@@ -238,7 +238,7 @@ export default function ProductDetail() {
             {/* Seller info */}
             {(shop || seller) && (
               <Card>
-                <CardContent className="p-4">
+                <CardContent className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="bg-primary/10 p-2 rounded-full">
@@ -247,11 +247,40 @@ export default function ProductDetail() {
                       <div>
                         <p className="font-medium">{shop?.shop_name || seller?.full_name}</p>
                         <p className="text-sm text-muted-foreground">{shop?.shop_city || seller?.city}</p>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          {[1,2,3,4,5].map(s => (
+                            <Star key={s} className={`h-3.5 w-3.5 ${s <= Math.round(sellerRating?.average || 0) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`} />
+                          ))}
+                          <span className="text-xs text-muted-foreground ml-1">
+                            {sellerRating?.count ? `${sellerRating.average} (${sellerRating.count})` : "Aucun avis"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <Button variant="outline" size="sm" asChild>
                       <Link to={`/shop/${product.seller_id}`}>Voir la boutique</Link>
                     </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Reviews */}
+            {sellerReviews && sellerReviews.length > 0 && (
+              <Card>
+                <CardContent className="p-4 space-y-3">
+                  <h3 className="font-semibold text-sm">Témoignages sur la boutique</h3>
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {sellerReviews.slice(0, 6).map((r) => (
+                      <div key={r.id} className="border-b pb-2 last:border-0">
+                        <div className="flex items-center gap-1">
+                          {[1,2,3,4,5].map(s => (
+                            <Star key={s} className={`h-3 w-3 ${s <= r.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`} />
+                          ))}
+                        </div>
+                        {r.comment && <p className="text-sm text-muted-foreground mt-1">{r.comment}</p>}
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
