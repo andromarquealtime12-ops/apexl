@@ -21,6 +21,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { calculateDistance } from "@/hooks/useGeolocation";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
+import { useUserCountry, compareByLocalThenDistance } from "@/utils/userCountry";
+
 
 const Products = () => {
   const { t } = useTranslation();
@@ -113,18 +115,24 @@ const Products = () => {
     setSearchParams(searchParams);
   };
 
-  // Sort + annotate with distance when near-me active
+  const userCountry = useUserCountry();
+
+  // Country-first + distance sort. When `nearMe` active also filter by radius.
   const displayedProducts = useMemo(() => {
-    if (!nearMe || !userLat || !userLng || !products) return products || [];
-    return products
-      .map((p) => {
-        const coords = sellerCoords[p.seller_id];
-        const distance = coords ? calculateDistance(userLat, userLng, coords.lat, coords.lng) : Infinity;
-        return { ...p, _distance: distance, _shopName: coords?.shopName };
-      })
-      .filter((p: any) => p._distance <= maxRadius)
-      .sort((a: any, b: any) => a._distance - b._distance);
-  }, [nearMe, userLat, userLng, products, sellerCoords, maxRadius]);
+    if (!products) return [];
+    const annotated = products.map((p: any) => {
+      const coords = sellerCoords[p.seller_id];
+      const distance = (nearMe && userLat && userLng && coords)
+        ? calculateDistance(userLat, userLng, coords.lat, coords.lng)
+        : Infinity;
+      return { ...p, _distance: distance, _shopName: coords?.shopName };
+    });
+    const filtered = nearMe && userLat && userLng
+      ? annotated.filter((p: any) => p._distance <= maxRadius)
+      : annotated;
+    return filtered.sort(compareByLocalThenDistance(userCountry));
+  }, [nearMe, userLat, userLng, products, sellerCoords, maxRadius, userCountry]);
+
 
   const handleCategoryChange = (value: string) => {
     if (value === "all") {

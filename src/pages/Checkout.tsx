@@ -34,6 +34,9 @@ import { GpsAddressField } from "@/components/ui/GpsAddressField";
 import { useDeliveryZones } from "@/hooks/useDeliveryZones";
 import { getZoneForPoint, calculateFee } from "@/utils/deliveryPricing";
 import { getRoute } from "@/utils/osrmRouting";
+import { reverseGeocode } from "@/utils/reverseGeocode";
+import { Checkbox } from "@/components/ui/checkbox";
+
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -72,6 +75,11 @@ const Checkout = () => {
   const [buyerLng, setBuyerLng] = useState<number | null>(null);
   const [gettingLocation, setGettingLocation] = useState(false);
   const [shopDistances, setShopDistances] = useState<Record<string, { distance: number; shopName: string; fee: number }>>({});
+  // Auto-address confirmation
+  const [addressAutoFilled, setAddressAutoFilled] = useState(false);
+  const [addressConfirmed, setAddressConfirmed] = useState(false);
+  const [reverseLoading, setReverseLoading] = useState(false);
+
 
   // Get current position (one-shot, high accuracy)
   const handleGetLocation = useCallback(() => {
@@ -172,10 +180,35 @@ const Checkout = () => {
   }, [buyerLat, buyerLng, items, zones]);
 
 
+  // Reverse-geocode buyer GPS → autofill address (only if the user has not typed anything)
+  useEffect(() => {
+    if (!buyerLat || !buyerLng) return;
+    if (deliveryAddress.trim().length > 0 && !addressAutoFilled) return; // don't overwrite user input
+    let cancelled = false;
+    setReverseLoading(true);
+    (async () => {
+      const r = await reverseGeocode(buyerLat, buyerLng);
+      if (cancelled || !r) { setReverseLoading(false); return; }
+      // Prefer street; fall back to full display name shortened
+      const shortAddress = r.street || r.address.split(",").slice(0, 2).join(",");
+      setDeliveryAddress(shortAddress);
+      if (r.city) setDeliveryCity(r.city);
+      if (r.state) setDeliveryState(r.state);
+      if (r.postcode) setDeliveryZip(r.postcode);
+      if (r.countryCode) setDeliveryCountry(r.countryCode);
+      setAddressAutoFilled(true);
+      setAddressConfirmed(false); // require explicit confirmation
+      setReverseLoading(false);
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buyerLat, buyerLng]);
+
   // Prefill phone from profile
   useEffect(() => {
     if (profile?.phone && !buyerPhone) setBuyerPhone(profile.phone);
   }, [profile?.phone, buyerPhone]);
+
 
   const subtotal = getSubtotal();
   // Calculate total delivery fee from all shops
@@ -226,6 +259,15 @@ const Checkout = () => {
       return;
     }
 
+    if (!addressConfirmed) {
+      toast({
+        title: "Confirmez votre adresse",
+        description: "Cochez la case pour confirmer que l'adresse de livraison est correcte.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const params = {
         deliveryAddress,
@@ -253,6 +295,7 @@ const Checkout = () => {
       toast({ title: "Erreur", description: error.message || "Une erreur est survenue", variant: "destructive" });
     }
   };
+
 
   if (!user) {
     return (
@@ -466,7 +509,11 @@ const Checkout = () => {
                     <GpsAddressField
                       id="address"
                       value={deliveryAddress}
-                      onChange={setDeliveryAddress}
+                      onChange={(v) => {
+                        setDeliveryAddress(v);
+                        // User edited the auto-filled value → force re-confirmation
+                        if (addressAutoFilled) setAddressConfirmed(false);
+                      }}
                       coords={{ lat: buyerLat, lng: buyerLng }}
                       onCoords={(la, lo) => {
                         setBuyerLat(la);
@@ -477,11 +524,44 @@ const Checkout = () => {
                         if (s.city) setDeliveryCity(s.city);
                         if (s.state) setDeliveryState(s.state);
                         if (s.postcode) setDeliveryZip(s.postcode);
+                        setAddressConfirmed(false);
                       }}
                       placeholder="Ex: Av. 27 de Febrero, Santo Domingo…"
                       countryCodes={deliveryCountry === "HT" ? "ht" : deliveryCountry === "DO" ? "do" : "do,ht"}
                     />
+                    {reverseLoading && (
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Récupération de votre adresse depuis votre position…
+                      </p>
+                    )}
+                    {addressAutoFilled && !reverseLoading && (
+                      <p className="text-xs text-emerald-600">
+                        ✓ Adresse remplie automatiquement depuis votre position GPS. Modifiez-la si nécessaire.
+                      </p>
+                    )}
                   </div>
+
+                  {/* Address confirmation checkbox */}
+                  {deliveryAddress && (
+                    <div className={`flex items-start gap-3 p-3 rounded-lg border ${addressConfirmed ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20" : "border-amber-400 bg-amber-50 dark:bg-amber-950/20"}`}>
+                      <Checkbox
+                        id="confirm-address"
+                        checked={addressConfirmed}
+                        onCheckedChange={(v) => setAddressConfirmed(v === true)}
+                        className="mt-0.5"
+                      />
+                      <Label htmlFor="confirm-address" className="text-sm cursor-pointer leading-snug">
+                        Je confirme que <strong>{deliveryAddress}</strong>{deliveryCity ? `, ${deliveryCity}` : ""} est bien mon adresse de livraison.
+                        {!addressAutoFilled && buyerLat && buyerLng && (
+                          <span className="block text-xs text-amber-700 dark:text-amber-400 mt-1">
+                            ⚠️ Cette adresse ne correspond pas exactement à votre position GPS — assurez-vous qu'elle est correcte.
+                          </span>
+                        )}
+                      </Label>
+                    </div>
+                  )}
+
 
                   <div className="space-y-2">
                     <Label htmlFor="address2">Adresse ligne 2 (optionnel)</Label>

@@ -2,7 +2,7 @@ import { Product, CURRENCY_SYMBOLS } from "@/types/database";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Check, Globe, MapPin, Truck } from "lucide-react";
+import { ShoppingCart, Heart, Check, Globe, MapPin, Truck, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useState, useMemo } from "react";
@@ -13,6 +13,7 @@ import { useShopLocations } from "@/hooks/useShopLocations";
 import { useDeliveryZones } from "@/hooks/useDeliveryZones";
 import { calculateDistance } from "@/hooks/useGeolocation";
 import { getZoneForPoint, calculateFee } from "@/utils/deliveryPricing";
+import { useUserCountry } from "@/utils/userCountry";
 
 
 interface ProductCardProps {
@@ -36,9 +37,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const sellerCountry: string | undefined = (product as any).seller_country;
   const availableCountries: string[] = (product as any).available_countries || [];
 
-  // Detect buyer country: profile.country > navigator
-  const userCountry: string = profile?.country
-    ?? (typeof navigator !== "undefined" && navigator.language?.includes("HT") ? "HT" : "DO");
+  // Detect buyer country: GPS reverse-geocode > profile.country > navigator
+  const userCountry = useUserCountry();
+  const isLocal = !!sellerCountry && sellerCountry === userCountry && !isShopify && !isPrintful;
 
   // Country availability rules:
   // - Printful: worldwide (always available)
@@ -52,6 +53,7 @@ export function ProductCard({ product }: ProductCardProps) {
   } else if (sellerCountry) {
     outOfCountry = sellerCountry !== userCountry;
   }
+
 
   // Converted display price for Printful (USD → user currency)
   const userCurrency = userCountry === "HT" ? "HTG" : userCountry === "DO" ? "DOP" : "USD";
@@ -110,6 +112,13 @@ export function ProductCard({ product }: ProductCardProps) {
               {sellerCountry ? `${sellerCountry}` : "Hors pays"}
             </Badge>
           )}
+          {isLocal && (
+            <Badge className="absolute bottom-2 left-2 bg-emerald-600 hover:bg-emerald-700 gap-1">
+              <Home className="h-3 w-3" />
+              Local
+            </Badge>
+          )}
+
           {product.stock_quantity === 0 && (
             <Badge variant="destructive" className="absolute top-2 right-2">
               {t("product.outOfStock")}

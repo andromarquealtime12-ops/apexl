@@ -1,122 +1,66 @@
 
-# Géolocalisation ouverte — plan d'intégration
+## 1. Email de confirmation postulation vendeur/livreur
 
-Aucune clé API ni compte externe. Tout basé sur OSM/Nominatim/OSRM (déjà utilisés partiellement).
+**Problème actuel** : quand l'utilisateur clique "Envoyer le lien", `resend({ type: "signup" })` renvoie un lien vers `EMAIL_CONFIRMATION_URL` par défaut qui pointe sur la racine, l'utilisateur ne comprend pas où atterrit le lien.
 
-## 1. Autocomplete d'adresse Nominatim
+**Correctif** :
+- Passer `emailRedirectTo: ${window.location.origin}/profile?verified=1` dans `resend()` et `updateUser({ email })` (fichier `useEmailVerification.tsx`).
+- Sur `/profile`, si `?verified=1` est présent, afficher un toast succès + rafraîchir le profil.
+- Dans les formulaires vendeur/livreur, afficher un message explicite après envoi : "Vérifie ta boîte + spams. Le lien te ramène ici".
 
-**Nouveau composant** `src/components/ui/address-autocomplete.tsx`
-- Input contrôlé + dropdown de suggestions
-- Debounce 400ms sur `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&countrycodes=do,ht&q=...`
-- Header `Accept-Language: fr` + User-Agent respectueux (usage policy Nominatim)
-- Retourne `{ address, lat, lng, city }` au parent
-- Cache local (Map) pour éviter les requêtes répétées
+## 2. Prioriser les produits du même pays
 
-**Intégration dans :**
-- `src/pages/Checkout.tsx` — remplace le champ adresse manuel, sauvegarde lat/lng dans `orders.delivery_lat/delivery_lng`
-- `src/pages/Profile.tsx` (LocationCard) — permet de fixer l'adresse principale
-- `src/components/auth/SellerApplicationForm.tsx` — géocode la boutique à l'inscription
+**Détection pays** (GPS prioritaire, profil fallback) :
+- Ajouter helper `src/utils/userCountry.ts` : lit `persistentLocation` → reverse-geocode Nominatim → code pays ISO ("DO", "HT", "US"…). Cache 24h dans localStorage. Fallback sur `profiles.country`.
 
-**Migration légère :**
-- Ajouter `delivery_lat float8`, `delivery_lng float8` sur `orders` (si absent)
+**Données** :
+- Colonne `seller_country` déjà présente sur `products` (mémoire "Country Visibility"). Vérifier + backfill si vide via trigger sur `profiles.country`.
 
-## 2. Itinéraires OSRM tracés
+**Affichage** :
+- `Products.tsx` et `Shops.tsx` / `Restaurants.tsx` : tri à 2 clés → (1) `seller_country === userCountry` d'abord, (2) puis distance croissante.
+- Badge "🇭🇹 Local" ou drapeau pays sur chaque `ProductCard` quand pays match.
 
-**Nouveau util** `src/utils/osrmRouting.ts`
-- `getRoute(from, to)` → `https://router.project-osrm.org/route/v1/driving/{lng1},{lat1};{lng2},{lat2}?overview=full&geometries=geojson`
-- Retourne `{ coordinates: [[lat,lng]…], distanceKm, durationMin }`
-- Fallback ligne droite + Haversine si OSRM down
+## 3. Adresse auto au checkout (GPS + confirmation)
 
-**Mise à jour composants existants :**
-- `DeliveryMapPreview.tsx` — remplace polyline droite par tracé OSRM
-- `LiveOrderTracking.tsx` — trace la route restante du livreur → acheteur
-- Affichage distance/ETA réels sur la carte
+Dans `src/pages/Checkout.tsx` :
+- Au montage, si permission GPS accordée (ou déjà en localStorage via `persistentLocation`) → reverse-geocode Nominatim → pré-remplir `deliveryAddress`, `deliveryCity`, `deliveryState`, `deliveryZip`, `deliveryCountry`.
+- Bouton "📍 Utiliser ma position actuelle" toujours visible pour re-déclencher.
+- Case à cocher "✅ Confirmer que je suis à cette adresse" (obligatoire pour valider). Si l'utilisateur modifie manuellement, la case se décoche et un message "Adresse différente de ta position — assure-toi qu'elle est correcte" apparaît.
+- Recalcul auto des frais de livraison quand adresse ou GPS change.
 
-## 3. Zones de livraison avec tarifs
+## 4. Distance routière réelle pour le livreur (pas ligne droite)
 
-**Nouvelle table** `delivery_zones`
-- `name`, `country` (DO/HT), `city`, `base_fee` numeric, `fee_per_km` numeric, `active` bool
-- Optionnel: `center_lat/lng` + `radius_km` (pas de PostGIS pour rester simple)
-- RLS: lecture publique (anon/auth), écriture admin
-- Seed avec Santo Domingo, Santiago, Port-au-Prince (defaults actuels 30 RD$/km)
+Dans `src/components/driver/AvailableDeliveriesTable.tsx` + `DeliveryMapPreview.tsx` :
+- Utiliser `osrmRouting.ts` (déjà présent) pour calculer 2 segments :
+  - **Segment 1** : position live du livreur → boutique du vendeur.
+  - **Segment 2** : boutique vendeur → adresse acheteur.
+- Afficher : "🚗 Toi → Vendeur : X km · Vendeur → Client : Y km · Total : Z km".
+- Cache 5 min par (order_id, driver_pos_rounded) pour éviter de spammer OSRM.
+- `DeliveryMapPreview` trace les 2 polylines routières (bleu = pickup, vert = delivery).
 
-**Nouveau util** `src/utils/deliveryPricing.ts`
-- `getZoneForPoint(lat, lng, zones)` → matche la zone (distance au centre ≤ radius)
-- `calculateFee(distanceKm, zone)` → `base_fee + distanceKm * fee_per_km`
-- Fallback tarif global (30 RD$/km) si aucune zone
+## 5. Tarifs par km selon pays (14 RD$ / 75 HTG / 1 USD)
 
-**Manager admin** `src/components/admin/DeliveryZonesManager.tsx`
-- CRUD table + toggle active
-- Ajouté à `src/pages/Admin.tsx` (onglet "Zones")
+**Migration** :
+- Nettoyer/insérer les zones dans `delivery_zones` :
+  - `DO` : base_fee 50, fee_per_km **14**, currency DOP.
+  - `HT` : base_fee 200, fee_per_km **75**, currency HTG.
+  - `US` : base_fee 5, fee_per_km **1**, currency USD.
+  - `DEFAULT` (fallback global) : base_fee 5, fee_per_km 1, currency USD.
+- Le fallback dur dans `deliveryPricing.ts` reste 14 DOP pour DO (conforme aux tests existants).
 
-**Refactor** `src/pages/Checkout.tsx` — utilise le nouveau util au lieu du calcul hardcodé.
+**Code** :
+- `Checkout.tsx` : la devise de la commande = celle de la zone détectée (plus de force DOP). Wallet débité dans la devise correspondante (conversion via `currency_rates` si le wallet source diffère).
+- `ProductCard.tsx` : afficher frais estimés dans la devise de la zone du vendeur.
 
-## 4. Vue admin live des livreurs
+## Fichiers modifiés
 
-**Nouveau composant** `src/components/admin/LiveDriversMap.tsx`
-- Charge `driver_locations WHERE is_online = true` avec profil (nom, téléphone)
-- Abonnement realtime `postgres_changes` sur `driver_locations`
-- Marqueur par livreur (icône moto), popup avec info + livraisons en cours
-- Auto-refresh toutes les 3s via realtime (pas de polling)
-- Filtre par ville / statut
+- `supabase/migrations/*.sql` (nouvelle migration : zones + trigger backfill `seller_country`).
+- `src/utils/userCountry.ts` (nouveau).
+- `src/hooks/useEmailVerification.tsx`.
+- `src/components/auth/SellerApplicationForm.tsx`, `DriverApplicationForm.tsx`.
+- `src/pages/Profile.tsx`, `Checkout.tsx`, `Products.tsx`, `Shops.tsx`, `Restaurants.tsx`.
+- `src/components/ProductCard.tsx`.
+- `src/components/driver/AvailableDeliveriesTable.tsx`, `DeliveryMapPreview.tsx`.
+- `src/utils/deliveryPricing.ts` (helpers pays → zone).
 
-**Ajouté à `src/pages/Admin.tsx`** dans un nouvel onglet "Carte livreurs".
-
-## Détails techniques
-
-### Contraintes Nominatim/OSRM
-- Nominatim: max 1 req/sec — géré par debounce
-- OSRM public: usage raisonnable, cache côté client des routes calculées
-- Aucun secret nécessaire — endpoints publics
-
-### Migration DB
-```sql
--- orders: coords de livraison
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_lat float8;
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_lng float8;
-
--- delivery_zones
-CREATE TABLE delivery_zones (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text NOT NULL,
-  country text NOT NULL,        -- 'DO' | 'HT'
-  city text,
-  center_lat float8,
-  center_lng float8,
-  radius_km numeric DEFAULT 15,
-  base_fee numeric NOT NULL DEFAULT 50,
-  fee_per_km numeric NOT NULL DEFAULT 30,
-  active bool NOT NULL DEFAULT true,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-GRANT SELECT ON delivery_zones TO anon, authenticated;
-GRANT ALL ON delivery_zones TO service_role;
-ALTER TABLE delivery_zones ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "public read zones" ON delivery_zones FOR SELECT USING (active = true OR has_role(auth.uid(),'admin'));
-CREATE POLICY "admin manage zones" ON delivery_zones FOR ALL
-  USING (has_role(auth.uid(),'admin')) WITH CHECK (has_role(auth.uid(),'admin'));
-```
-
-### Ce qui **n'est pas** créé
-- Tables `positions` / `deliveries` — remplacées par `driver_locations` + `orders` existantes
-- WebSocket custom — Supabase Realtime déjà en place
-- Edge function `update-location` — le client update directement `driver_locations` (RLS déjà OK)
-
-## Fichiers modifiés / créés
-
-**Créés**
-- `src/components/ui/address-autocomplete.tsx`
-- `src/utils/osrmRouting.ts`
-- `src/utils/deliveryPricing.ts`
-- `src/components/admin/DeliveryZonesManager.tsx`
-- `src/components/admin/LiveDriversMap.tsx`
-- 1 migration SQL
-
-**Modifiés**
-- `src/pages/Checkout.tsx`, `src/pages/Profile.tsx`, `src/pages/Admin.tsx`
-- `src/components/auth/SellerApplicationForm.tsx`
-- `src/components/driver/DeliveryMapPreview.tsx`
-- `src/components/tracking/LiveOrderTracking.tsx`
-
-Confirme et je lance l'implémentation.
+Réponds "go" pour que je lance tout d'un coup.

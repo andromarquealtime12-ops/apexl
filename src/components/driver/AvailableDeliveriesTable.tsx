@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Clock, Check, Navigation, Loader2, Map, Store, ArrowRight } from "lucide-react";
+import { MapPin, Package, Clock, Check, Navigation, Loader2, Map, Store, ArrowRight, Route } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import DeliveryMapPreview from "./DeliveryMapPreview";
+import { getMultiLegRoute } from "@/utils/osrmRouting";
+
 
 interface SellerInfo {
   shop_name: string;
@@ -96,7 +98,7 @@ export default function AvailableDeliveriesTable() {
         });
       }
 
-      const result: EnrichedDelivery[] = deliveries.map(d => {
+      const baseResults: EnrichedDelivery[] = deliveries.map(d => {
         let distance_km: number | undefined;
         if (position && d.buyer_latitude && d.buyer_longitude) {
           distance_km = calculateDistance(position.latitude, position.longitude, d.buyer_latitude, d.buyer_longitude);
@@ -106,58 +108,88 @@ export default function AvailableDeliveriesTable() {
           .map((id) => sellerMap[id])
           .filter((s) => s && s.latitude != null && s.longitude != null) as SellerInfo[];
 
-        // Chain nearest-next: driver → s1 → s2 → ... → buyer
-        let total_route_km: number | undefined;
-        const steps: RouteStep[] = [];
-        if (position) {
-          const remaining = [...sellerStops];
-          let curLat = position.latitude;
-          let curLng = position.longitude;
-          let total = 0;
-          while (remaining.length) {
-            let bestIdx = 0;
-            let bestD = Infinity;
-            remaining.forEach((s, i) => {
-              const dd = calculateDistance(curLat, curLng, s.latitude!, s.longitude!);
-              if (dd < bestD) { bestD = dd; bestIdx = i; }
-            });
-            total += bestD;
-            const next = remaining.splice(bestIdx, 1)[0];
-            steps.push({
-              label: next.shop_name,
-              sublabel: `${next.shop_address}, ${next.shop_city}`,
-              distance_from_prev: bestD,
-              type: "seller",
-            });
-            curLat = next.latitude!;
-            curLng = next.longitude!;
-          }
-          if (d.buyer_latitude && d.buyer_longitude) {
-            const dB = calculateDistance(curLat, curLng, d.buyer_latitude, d.buyer_longitude);
-            total += dB;
-            steps.push({
-              label: d.delivery_city || "Client",
-              sublabel: d.delivery_address || undefined,
-              distance_from_prev: dB,
-              type: "buyer",
-            });
-          }
-          total_route_km = total;
+        // Nearest-next ordering (haversine, fast) — pick the visit order
+        const ordered: SellerInfo[] = [];
+        const remaining = [...sellerStops];
+        let curLat = position?.latitude;
+        let curLng = position?.longitude;
+        while (remaining.length && curLat != null && curLng != null) {
+          let bestIdx = 0;
+          let bestD = Infinity;
+          remaining.forEach((s, i) => {
+            const dd = calculateDistance(curLat!, curLng!, s.latitude!, s.longitude!);
+            if (dd < bestD) { bestD = dd; bestIdx = i; }
+          });
+          const next = remaining.splice(bestIdx, 1)[0];
+          ordered.push(next);
+          curLat = next.latitude!;
+          curLng = next.longitude!;
         }
 
         return {
           ...d,
           distance_km,
-          total_route_km,
           itemCount: itemCounts[d.id] || 0,
           seller: sellerIds[0] ? sellerMap[sellerIds[0]] : undefined,
           sellerCount: sellerIds.length,
-          steps,
-        };
+          _orderedStops: ordered,
+        } as any;
       });
 
-      // Sort by total chained route distance
-      result.sort((a, b) => {
+      // Enrich each delivery with REAL road distance (OSRM) — chained
+      // Driver → seller₁ → seller₂ → … → buyer. Falls back to haversine on error.
+      const result: EnrichedDelivery[] = await Promise.all(
+        baseResults.map(async (d: any) => {
+          const points: Array<{ lat: number; lng: number }> = [];
+          if (position) points.push({ lat: position.latitude, lng: position.longitude });
+          d._orderedStops.forEach((s: SellerInfo) =>
+            points.push({ lat: s.latitude!, lng: s.longitude! })
+          );
+          if (d.buyer_latitude && d.buyer_longitude) {
+            points.push({ lat: d.buyer_latitude, lng: d.buyer_longitude });
+          }
+
+          if (points.length < 2) return d;
+
+          const chained = await getMultiLegRoute(points);
+          // Build per-step distances from OSRM legs
+          const steps: RouteStep[] = [];
+          const legDistances: number[] = [];
+          for (let i = 0; i < points.length - 1; i++) {
+            const leg = await import("@/utils/osrmRouting").then(m =>
+              m.getRoute(points[i], points[i + 1])
+            );
+            legDistances.push(leg.distanceKm);
+          }
+          d._orderedStops.forEach((s: SellerInfo, idx: number) => {
+            steps.push({
+              label: s.shop_name,
+              sublabel: `${s.shop_address}, ${s.shop_city}`,
+              distance_from_prev: legDistances[idx] ?? 0,
+              type: "seller",
+            });
+          });
+          if (d.buyer_latitude && d.buyer_longitude) {
+            steps.push({
+              label: d.delivery_city || "Client",
+              sublabel: d.delivery_address || undefined,
+              distance_from_prev: legDistances[legDistances.length - 1] ?? 0,
+              type: "buyer",
+            });
+          }
+
+          return {
+            ...d,
+            total_route_km: chained.distanceKm,
+            steps,
+            _routeDurationMin: chained.durationMin,
+            _routeIsFallback: chained.isFallback,
+          } as any;
+        })
+      );
+
+      // Sort by total road distance (fallback to straight-line if OSRM failed)
+      result.sort((a: any, b: any) => {
         const ka = a.total_route_km ?? a.distance_km ?? Infinity;
         const kb = b.total_route_km ?? b.distance_km ?? Infinity;
         return ka - kb;
@@ -165,6 +197,7 @@ export default function AvailableDeliveriesTable() {
 
       setEnriched(result);
     };
+
 
     enrich();
   }, [deliveries, position]);
