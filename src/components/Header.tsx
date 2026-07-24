@@ -52,8 +52,11 @@ const Header = () => {
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="bg-foreground p-2 rounded-none">
+              <div className="relative bg-foreground p-2 rounded-none">
                 <ShoppingBag className="h-6 w-6 text-background" />
+                <span className="absolute -bottom-0.5 -right-0.5 bg-background text-foreground text-[10px] font-black leading-none px-1 py-0.5 border border-foreground">
+                  L
+                </span>
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold tracking-tight text-foreground">APEXL</h1>

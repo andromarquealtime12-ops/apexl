@@ -21,8 +21,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="bg-background p-2 rounded-none">
+              <div className="relative bg-background p-2 rounded-none">
                 <ShoppingBag className="h-6 w-6 text-foreground" />
+                <span className="absolute -bottom-0.5 -right-0.5 bg-foreground text-background text-[10px] font-black leading-none px-1 py-0.5 border border-background">
+                  L
+                </span>
               </div>
               <div>
                 <h3 className="text-xl font-bold">APEXL</h3>
