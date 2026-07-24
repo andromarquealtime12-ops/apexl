@@ -96,23 +96,56 @@ export default function DeliveryMapPreview({
     markers.push({ lat: buyerLat, lng: buyerLng, color: "green" as const, popup: "🏠 Livraison" });
   }
 
-  // Build chained routes: driver → s1 → s2 → ... → buyer
+  // Build chained points: driver → s1 → s2 → ... → buyer
   const chain: Array<{ lat: number; lng: number }> = [];
   if (driverLat && driverLng) chain.push({ lat: driverLat, lng: driverLng });
   orderedStops.forEach((s) => chain.push({ lat: s.latitude, lng: s.longitude }));
   if (buyerLat && buyerLng) chain.push({ lat: buyerLat, lng: buyerLng });
 
+  // Fetch real OSRM polylines for each leg (parallel, cached 5 min)
+  const [legs, setLegs] = useState<Array<{ path: Array<{ lat: number; lng: number }>; distanceKm: number; isFallback: boolean }>>([]);
+  const [loadingRoute, setLoadingRoute] = useState(false);
+  useEffect(() => {
+    if (chain.length < 2) return;
+    let cancelled = false;
+    setLoadingRoute(true);
+    (async () => {
+      const out: Array<{ path: Array<{ lat: number; lng: number }>; distanceKm: number; isFallback: boolean }> = [];
+      for (let i = 0; i < chain.length - 1; i++) {
+        const r = await getRoute(chain[i], chain[i + 1]);
+        out.push({ path: r.coordinates, distanceKm: r.distanceKm, isFallback: r.isFallback });
+        if (cancelled) return;
+      }
+      if (!cancelled) {
+        setLegs(out);
+        setLoadingRoute(false);
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chain.map((c) => `${c.lat.toFixed(4)},${c.lng.toFixed(4)}`).join("|")]);
+
   let totalDist = 0;
-  for (let i = 0; i < chain.length - 1; i++) {
-    const a = chain[i], b = chain[i + 1];
-    const isLast = i === chain.length - 2 && buyerLat && buyerLng;
+  legs.forEach((leg, i) => {
+    const isLast = i === legs.length - 1 && buyerLat && buyerLng;
     routes.push({
-      from: a, to: b,
+      path: leg.path,
       color: isLast ? "#16a34a" : "#f97316",
-      dashed: true,
+      dashed: leg.isFallback,
+      weight: 4,
     });
-    totalDist += calculateDistance(a.lat, a.lng, b.lat, b.lng);
+    totalDist += leg.distanceKm;
+  });
+  // Fallback straight lines while OSRM resolves
+  if (legs.length === 0) {
+    for (let i = 0; i < chain.length - 1; i++) {
+      const a = chain[i], b = chain[i + 1];
+      const isLast = i === chain.length - 2 && buyerLat && buyerLng;
+      routes.push({ from: a, to: b, color: isLast ? "#16a34a" : "#f97316", dashed: true });
+      totalDist += calculateDistance(a.lat, a.lng, b.lat, b.lng);
+    }
   }
+
 
   const allLats = markers.map((m) => m.lat);
   const allLngs = markers.map((m) => m.lng);
