@@ -111,7 +111,7 @@ const Header = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="gap-2">
                     <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">Mon compte</span>
+                    <span className="hidden sm:inline">{t("nav.account")}</span>
                     <ChevronDown className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -119,40 +119,40 @@ const Header = () => {
                   <DropdownMenuLabel>
                     {user.email}
                     {isAdmin && <Badge className="ml-2 text-xs">Admin</Badge>}
-                    {isSeller && <Badge variant="secondary" className="ml-2 text-xs">Vendeur</Badge>}
-                    {isDriver && <Badge variant="outline" className="ml-2 text-xs">Livreur</Badge>}
+                    {isSeller && <Badge variant="secondary" className="ml-2 text-xs">{t("auth.seller")}</Badge>}
+                    {isDriver && <Badge variant="outline" className="ml-2 text-xs">{t("auth.driver")}</Badge>}
                     {isAgent && <Badge variant="outline" className="ml-2 text-xs">Agent</Badge>}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
-                      Mon profil
+                      {t("nav.profile")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/wallet" className="cursor-pointer">
                       <Wallet className="mr-2 h-4 w-4" />
-                      Mon portefeuille
+                      {t("nav.wallet")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/orders" className="cursor-pointer">
                       <Package className="mr-2 h-4 w-4" />
-                      Mes commandes
+                      {t("nav.orders")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/search-order" className="cursor-pointer">
                       <Search className="mr-2 h-4 w-4" />
-                      Rechercher commande
+                      {t("nav.searchOrder")}
                     </Link>
                   </DropdownMenuItem>
                   {isSeller && (
                     <DropdownMenuItem asChild>
                       <Link to="/seller" className="cursor-pointer text-primary">
                         <Store className="mr-2 h-4 w-4" />
-                        Dashboard vendeur
+                        {t("nav.sellerDashboard")}
                       </Link>
                     </DropdownMenuItem>
                   )}
@@ -160,7 +160,7 @@ const Header = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/driver" className="cursor-pointer text-primary">
                         <Truck className="mr-2 h-4 w-4" />
-                        Dashboard livreur
+                        {t("nav.driverDashboard")}
                       </Link>
                     </DropdownMenuItem>
                   )}
@@ -168,20 +168,20 @@ const Header = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/agent" className="cursor-pointer text-primary">
                         <Building2 className="mr-2 h-4 w-4" />
-                        Dashboard agent
+                        {t("nav.agentDashboard")}
                       </Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem asChild>
                     <Link to="/settings" className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
-                      Paramètres
+                      {t("nav.settings")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()} className="text-destructive cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
-                    Déconnexion
+                    {t("nav.logout")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -206,21 +206,21 @@ const Header = () => {
               </SheetTrigger>
               <SheetContent side="right">
                 <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
+                  <SheetTitle>{t("nav.menu")}</SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-4 mt-6">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Rechercher..." className="pl-10" />
+                    <Input placeholder={t("nav.search")} className="pl-10" />
                   </div>
-                  <Link to="/" className="text-lg font-medium py-2 border-b">Accueil</Link>
-                  <Link to="/products" className="text-lg font-medium py-2 border-b">Produits</Link>
-                  <Link to="/shops" className="text-lg font-medium py-2 border-b">Boutiques</Link>
+                  <Link to="/" className="text-lg font-medium py-2 border-b">{t("nav.home")}</Link>
+                  <Link to="/products" className="text-lg font-medium py-2 border-b">{t("nav.products")}</Link>
+                  <Link to="/shops" className="text-lg font-medium py-2 border-b">{t("nav.shops")}</Link>
                   <Link to="/restaurants" className="text-lg font-medium py-2 border-b flex items-center gap-2">
-                    <UtensilsCrossed className="h-4 w-4" /> Restaurants
+                    <UtensilsCrossed className="h-4 w-4" /> {t("nav.restaurants")}
                   </Link>
-                  <Link to="/seller" className="text-lg font-medium py-2 border-b">Vendre</Link>
-                  <Link to="/driver" className="text-lg font-medium py-2 border-b">Livrer</Link>
+                  <Link to="/seller" className="text-lg font-medium py-2 border-b">{t("nav.sell")}</Link>
+                  <Link to="/driver" className="text-lg font-medium py-2 border-b">{t("nav.deliver")}</Link>
                   {isAgent && (
                     <Link to="/agent" className="text-lg font-medium py-2 border-b flex items-center gap-2 text-primary">
                       <Building2 className="h-4 w-4" /> Agent
@@ -228,8 +228,8 @@ const Header = () => {
                   )}
                   {!user && (
                     <div className="flex flex-col gap-2 pt-4">
-                      <Button onClick={openSignIn}>Connexion</Button>
-                      <Button variant="outline" onClick={openSignUp}>S'inscrire</Button>
+                      <Button onClick={openSignIn}>{t("nav.signin")}</Button>
+                      <Button variant="outline" onClick={openSignUp}>{t("nav.signup")}</Button>
                     </div>
                   )}
                 </div>

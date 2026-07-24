@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +37,7 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalProps) {
+  const { t } = useTranslation();
   const { signIn, signUp, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -81,7 +83,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
       return;
     }
     
-    toast.success("Connexion réussie !");
+    toast.success(t("auth.signInSuccess"));
     setLoading(false);
     onClose();
   };
@@ -114,7 +116,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
         toast.error("Échec de l'inscription : " + (error.message || "Essayez avec un autre email."));
       }
     } else {
-      toast.success("Compte créé avec succès ! Bienvenue sur APEX.");
+      toast.success(t("auth.signUpSuccess"));
       onClose();
     }
   };
@@ -124,26 +126,26 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-center">APEX</DialogTitle>
+            <DialogTitle className="text-2xl text-center">{t("auth.title")}</DialogTitle>
             <DialogDescription className="text-center">
-              Connectez-vous pour accéder à votre compte
+              {t("auth.subtitle")}
             </DialogDescription>
           </DialogHeader>
 
           <Tabs defaultValue={defaultTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Connexion</TabsTrigger>
-              <TabsTrigger value="signup">Inscription</TabsTrigger>
+              <TabsTrigger value="signin">{t("auth.signin")}</TabsTrigger>
+              <TabsTrigger value="signup">{t("auth.signup")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="signin" className="space-y-4 mt-4">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
+                  <Label htmlFor="signin-email">{t("auth.email")}</Label>
                   <Input
                     id="signin-email"
                     type="email"
-                    placeholder="votre@email.com"
+                    placeholder="you@email.com"
                     value={signInEmail}
                     onChange={(e) => setSignInEmail(e.target.value)}
                     required
@@ -151,7 +153,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="signin-password">Mot de passe</Label>
+                  <Label htmlFor="signin-password">{t("auth.password")}</Label>
                   <div className="relative">
                     <Input
                       id="signin-password"
@@ -180,11 +182,11 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                   onClick={() => setShowForgotPassword(true)}
                 >
                   <KeyRound className="h-3 w-3 mr-1" />
-                  Mot de passe oublié ?
+                  {t("auth.forgot")}
                 </Button>
 
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Se connecter"}
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("auth.signInBtn")}
                 </Button>
               </form>
             </TabsContent>
@@ -192,11 +194,11 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
             <TabsContent value="signup" className="space-y-4 mt-4">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name">Nom complet</Label>
+                  <Label htmlFor="signup-name">{t("auth.fullName")}</Label>
                   <Input
                     id="signup-name"
                     type="text"
-                    placeholder="Jean Pierre"
+                    placeholder={t("auth.namePlaceholder")}
                     value={signUpName}
                     onChange={(e) => setSignUpName(e.target.value)}
                     required
@@ -204,11 +206,11 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
+                  <Label htmlFor="signup-email">{t("auth.email")}</Label>
                   <Input
                     id="signup-email"
                     type="email"
-                    placeholder="votre@email.com"
+                    placeholder="you@email.com"
                     value={signUpEmail}
                     onChange={(e) => setSignUpEmail(e.target.value)}
                     required
@@ -216,7 +218,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Mot de passe</Label>
+                  <Label htmlFor="signup-password">{t("auth.password")}</Label>
                   <div className="relative">
                     <Input
                       id="signup-password"
@@ -238,13 +240,13 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                   </div>
                 </div>
 
-                <Button type="submit" variant="hero" className="w-full" disabled={loading}>
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Créer mon compte"}
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("auth.signUpBtn")}
                 </Button>
                 
                 <div className="pt-4 border-t">
                   <p className="text-sm text-muted-foreground text-center mb-3">
-                    Vous souhaitez vendre ou livrer ?
+                    {t("auth.sellOrDeliver")}
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     <Button
@@ -252,7 +254,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                       variant="outline"
                       onClick={() => {
                         if (!user) {
-                          toast.error("Créez d'abord un compte pour postuler");
+                          toast.error(t("auth.createFirst"));
                           return;
                         }
                         setShowSellerForm(true);
@@ -260,14 +262,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                       className="flex items-center gap-2"
                     >
                       <Store className="h-4 w-4" />
-                      Vendeur
+                      {t("auth.seller")}
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => {
                         if (!user) {
-                          toast.error("Créez d'abord un compte pour postuler");
+                          toast.error(t("auth.createFirst"));
                           return;
                         }
                         setShowDriverForm(true);
@@ -275,7 +277,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
                       className="flex items-center gap-2"
                     >
                       <Truck className="h-4 w-4" />
-                      Livreur
+                      {t("auth.driver")}
                     </Button>
                   </div>
                 </div>

@@ -1,22 +1,10 @@
 {
   "nav": {
-    "home": "Accueil",
-    "products": "Produits",
-    "shops": "Boutiques",
-    "restaurants": "Restaurants",
-    "sell": "Vendre",
-    "deliver": "Livrer",
-    "menu": "Menu",
-    "search": "Rechercher des produits...",
-    "account": "Mon compte",
-    "signin": "Connexion",
-    "signup": "S'inscrire",
-    "profile": "Mon profil",
-    "wallet": "Mon portefeuille",
-    "orders": "Mes commandes",
-    "settings": "Paramètres",
-    "logout": "Déconnexion",
-    "language": "Langue"
+    "home": "Accueil", "products": "Produits", "shops": "Boutiques", "restaurants": "Restaurants",
+    "sell": "Vendre", "deliver": "Livrer", "menu": "Menu", "search": "Rechercher des produits...",
+    "account": "Mon compte", "signin": "Connexion", "signup": "S'inscrire", "profile": "Mon profil",
+    "wallet": "Mon portefeuille", "orders": "Mes commandes", "settings": "Paramètres", "logout": "Déconnexion", "language": "Langue",
+    "searchOrder": "Rechercher commande", "sellerDashboard": "Dashboard vendeur", "driverDashboard": "Dashboard livreur", "agentDashboard": "Dashboard agent"
   },
   "hero": {
     "eyebrow": "Nouvelle saison · Monde entier",
@@ -25,22 +13,123 @@
     "description": "Des milliers de produits tendance sur une seule marketplace mondiale. Mode, tech, maison et plus — expédié rapidement, dans toutes les langues, vers tous les pays.",
     "shopNow": "Acheter maintenant",
     "exploreShops": "Explorer les boutiques",
-    "countries": "Pays",
-    "products": "Produits",
-    "support": "Support"
+    "countries": "Pays", "products": "Produits", "support": "Support"
+  },
+  "categories": {
+    "title": "Explorez nos catégories",
+    "subtitle": "Trouvez tout ce dont vous avez besoin",
+    "heading": "Catégories"
+  },
+  "featured": {
+    "title": "Produits en vedette",
+    "subtitle": "Les meilleurs produits sélectionnés pour vous",
+    "viewAll": "Voir tout",
+    "empty": "Aucun produit en vedette pour le moment. Revenez bientôt !"
+  },
+  "userTypes": {
+    "title": "Rejoignez notre communauté mondiale",
+    "subtitle": "Que vous achetiez, vendiez ou livriez, APEX vous offre tous les outils pour réussir.",
+    "buyer": {
+      "title": "Acheteur",
+      "description": "Trouvez tout ce dont vous avez besoin dans notre marketplace mondiale",
+      "f1": "Des milliers de produits sélectionnés",
+      "f2": "Livraison rapide à domicile",
+      "f3": "Paiements sécurisés multiples",
+      "f4": "Support client 24/7",
+      "cta": "Commencer à acheter"
+    },
+    "seller": {
+      "title": "Vendeur",
+      "description": "Développez votre business et atteignez plus de clients",
+      "f1": "Créez votre boutique en ligne",
+      "f2": "Gestion simple des commandes",
+      "f3": "Outils marketing intégrés",
+      "f4": "Analytics et rapports détaillés",
+      "cta": "Devenir vendeur"
+    },
+    "driver": {
+      "title": "Livreur",
+      "description": "Gagnez de l'argent en livrant dans votre région",
+      "f1": "Horaires flexibles",
+      "f2": "Rémunération attractive",
+      "f3": "GPS intégré pour optimiser",
+      "f4": "Paiements hebdomadaires",
+      "cta": "Devenir livreur"
+    }
+  },
+  "features": {
+    "badge": "Fonctionnalités",
+    "title": "Tout ce dont vous avez besoin",
+    "subtitle": "Une plateforme complète avec toutes les fonctionnalités modernes pour une expérience marketplace exceptionnelle.",
+    "payments": { "title": "Paiements Sécurisés", "description": "Acceptez tous les modes de paiement : cartes, virements et portefeuilles digitaux.", "badge": "Sécurisé" },
+    "geo": { "title": "Géolocalisation", "description": "Suivi en temps réel des livraisons avec GPS intégré pour une expérience optimale.", "badge": "GPS" },
+    "protection": { "title": "Transactions Protégées", "description": "Système de protection avancé pour sécuriser toutes vos transactions.", "badge": "Protection" },
+    "express": { "title": "Livraison Express", "description": "Livraison rapide dans le monde entier avec suivi en temps réel.", "badge": "Rapide" },
+    "chat": { "title": "Chat Intégré", "description": "Communication directe entre acheteurs, vendeurs et livreurs via chat sécurisé.", "badge": "Communication" },
+    "analytics": { "title": "Analytics Avancés", "description": "Tableaux de bord complets pour suivre vos ventes, performances et tendances.", "badge": "Analytics" },
+    "mobile": { "title": "App Mobile", "description": "Application mobile intuitive disponible sur iOS et Android.", "badge": "Mobile" },
+    "multi": { "title": "Multi-langues", "description": "Interface disponible en 9+ langues à travers le monde.", "badge": "Global" }
+  },
+  "cta": {
+    "title": "Prêt à rejoindre le mouvement ?",
+    "description": "Téléchargez l'app APEX et commencez à acheter, vendre ou livrer dès aujourd'hui. La marketplace mondiale vous attend !",
+    "download": "Télécharger l'app",
+    "web": "Version web",
+    "fast": "Lancement rapide",
+    "fastDesc": "En ligne en moins de 5 minutes",
+    "commission": "Commission réduite",
+    "commissionDesc": "Tarifs préférentiels pour la communauté",
+    "support": "Support dédié",
+    "supportDesc": "Assistance dans votre langue"
+  },
+  "footer": {
+    "tagline": "Shop the world",
+    "about": "La marketplace mondiale qui connecte acheteurs, vendeurs et livreurs dans tous les pays.",
+    "quickLinks": "Liens rapides",
+    "aboutLink": "À propos",
+    "howItWorks": "Comment ça marche",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité",
+    "help": "Aide et support",
+    "business": "Pour les entreprises",
+    "becomeSeller": "Devenir vendeur",
+    "seeProducts": "Voir les produits",
+    "restaurants": "Restaurants",
+    "solutions": "Solutions entreprises",
+    "affiliate": "Programme d'affiliation",
+    "connected": "Restez connecté",
+    "newsletter": "Recevez nos dernières nouvelles",
+    "emailPlaceholder": "Votre email",
+    "rights": "© 2026 APEX. Tous droits réservés.",
+    "legal": "Mentions légales",
+    "cookies": "Cookies",
+    "sitemap": "Plan du site"
+  },
+  "auth": {
+    "title": "APEX",
+    "subtitle": "Connectez-vous pour accéder à votre compte",
+    "signin": "Connexion",
+    "signup": "Inscription",
+    "email": "Email",
+    "password": "Mot de passe",
+    "fullName": "Nom complet",
+    "namePlaceholder": "Jean Pierre",
+    "forgot": "Mot de passe oublié ?",
+    "signInBtn": "Se connecter",
+    "signUpBtn": "Créer mon compte",
+    "sellOrDeliver": "Vous souhaitez vendre ou livrer ?",
+    "seller": "Vendeur",
+    "driver": "Livreur",
+    "createFirst": "Créez d'abord un compte pour postuler",
+    "signInSuccess": "Connexion réussie !",
+    "signUpSuccess": "Compte créé avec succès ! Bienvenue sur APEX."
   },
   "product": {
-    "addToCart": "Ajouter au panier",
-    "inCart": "Dans le panier",
-    "added": "Ajouté !",
-    "chooseVariant": "Choisir couleur / taille",
-    "outOfStock": "Épuisé",
-    "outOfCountry": "Indisponible dans votre pays",
-    "featured": "Vedette",
-    "worldwide": "Mondial · USD",
-    "localOnly": "Local",
-    "approxPrice": "≈ {{symbol}} {{amount}}",
-    "billedIn": "Facturé en {{currency}}"
+    "addToCart": "Ajouter au panier", "inCart": "Dans le panier", "added": "Ajouté !",
+    "chooseVariant": "Choisir couleur / taille", "outOfStock": "Épuisé",
+    "outOfCountry": "Indisponible dans votre pays", "featured": "Vedette",
+    "worldwide": "Mondial · USD", "localOnly": "Local",
+    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "Facturé en {{currency}}"
   },
   "checkout": {
     "title": "Finaliser la commande",
@@ -76,11 +165,5 @@
     "backHome": "Retour à l'accueil",
     "viewOrders": "Voir mes commandes"
   },
-  "common": {
-    "loading": "Chargement...",
-    "save": "Enregistrer",
-    "cancel": "Annuler",
-    "close": "Fermer",
-    "error": "Erreur"
-  }
+  "common": { "loading": "Chargement...", "save": "Enregistrer", "cancel": "Annuler", "close": "Fermer", "error": "Erreur" }
 }

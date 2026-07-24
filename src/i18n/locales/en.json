@@ -3,7 +3,8 @@
     "home": "Home", "products": "Products", "shops": "Shops", "restaurants": "Restaurants",
     "sell": "Sell", "deliver": "Deliver", "menu": "Menu", "search": "Search products...",
     "account": "My account", "signin": "Sign in", "signup": "Sign up", "profile": "My profile",
-    "wallet": "My wallet", "orders": "My orders", "settings": "Settings", "logout": "Logout", "language": "Language"
+    "wallet": "My wallet", "orders": "My orders", "settings": "Settings", "logout": "Logout", "language": "Language",
+    "searchOrder": "Find an order", "sellerDashboard": "Seller dashboard", "driverDashboard": "Driver dashboard", "agentDashboard": "Agent dashboard"
   },
   "hero": {
     "eyebrow": "New season · Worldwide",
@@ -13,6 +14,115 @@
     "shopNow": "Shop now",
     "exploreShops": "Explore shops",
     "countries": "Countries", "products": "Products", "support": "Support"
+  },
+  "categories": {
+    "title": "Explore our categories",
+    "subtitle": "Find everything you need",
+    "heading": "Categories"
+  },
+  "featured": {
+    "title": "Featured products",
+    "subtitle": "The best picks curated for you",
+    "viewAll": "View all",
+    "empty": "No featured products yet. Check back soon!"
+  },
+  "userTypes": {
+    "title": "Join our global community",
+    "subtitle": "Whether you shop, sell or deliver, APEX gives you every tool you need to thrive.",
+    "buyer": {
+      "title": "Buyer",
+      "description": "Discover everything you need in one worldwide marketplace",
+      "f1": "Thousands of curated products",
+      "f2": "Fast door-to-door delivery",
+      "f3": "Multiple secure payment options",
+      "f4": "24/7 customer support",
+      "cta": "Start shopping"
+    },
+    "seller": {
+      "title": "Seller",
+      "description": "Grow your business and reach millions of new customers",
+      "f1": "Launch your online store",
+      "f2": "Effortless order management",
+      "f3": "Built-in marketing tools",
+      "f4": "Detailed analytics and reports",
+      "cta": "Become a seller"
+    },
+    "driver": {
+      "title": "Driver",
+      "description": "Earn on your own schedule delivering in your area",
+      "f1": "Flexible hours",
+      "f2": "Attractive earnings",
+      "f3": "Built-in GPS routing",
+      "f4": "Weekly payouts",
+      "cta": "Become a driver"
+    }
+  },
+  "features": {
+    "badge": "Features",
+    "title": "Everything you need",
+    "subtitle": "A complete platform with every modern feature for an exceptional marketplace experience.",
+    "payments": { "title": "Secure Payments", "description": "Accept every payment method: cards, transfers and digital wallets.", "badge": "Secure" },
+    "geo": { "title": "Geolocation", "description": "Real-time delivery tracking with built-in GPS for a seamless experience.", "badge": "GPS" },
+    "protection": { "title": "Protected Transactions", "description": "Advanced protection system securing every transaction.", "badge": "Protection" },
+    "express": { "title": "Express Delivery", "description": "Fast worldwide delivery with real-time tracking.", "badge": "Fast" },
+    "chat": { "title": "Built-in Chat", "description": "Direct messaging between buyers, sellers and drivers over secure chat.", "badge": "Chat" },
+    "analytics": { "title": "Advanced Analytics", "description": "Full dashboards to track sales, performance and trends.", "badge": "Analytics" },
+    "mobile": { "title": "Mobile App", "description": "Intuitive mobile experience available on iOS and Android.", "badge": "Mobile" },
+    "multi": { "title": "Multi-language", "description": "Interface available in 9+ languages worldwide.", "badge": "Global" }
+  },
+  "cta": {
+    "title": "Ready to join the movement?",
+    "description": "Download the APEX app and start buying, selling or delivering today. The global marketplace is waiting for you.",
+    "download": "Download the app",
+    "web": "Web version",
+    "fast": "Fast launch",
+    "fastDesc": "Live in under 5 minutes",
+    "commission": "Low commission",
+    "commissionDesc": "Preferred rates for the community",
+    "support": "Dedicated support",
+    "supportDesc": "Assistance in your language"
+  },
+  "footer": {
+    "tagline": "Shop the world",
+    "about": "The global marketplace connecting buyers, sellers and drivers across every country.",
+    "quickLinks": "Quick links",
+    "aboutLink": "About",
+    "howItWorks": "How it works",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy",
+    "help": "Help and support",
+    "business": "For businesses",
+    "becomeSeller": "Become a seller",
+    "seeProducts": "Browse products",
+    "restaurants": "Restaurants",
+    "solutions": "Business solutions",
+    "affiliate": "Affiliate program",
+    "connected": "Stay connected",
+    "newsletter": "Get our latest updates",
+    "emailPlaceholder": "Your email",
+    "rights": "© 2026 APEX. All rights reserved.",
+    "legal": "Legal notice",
+    "cookies": "Cookies",
+    "sitemap": "Sitemap"
+  },
+  "auth": {
+    "title": "APEX",
+    "subtitle": "Sign in to access your account",
+    "signin": "Sign in",
+    "signup": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "namePlaceholder": "John Doe",
+    "forgot": "Forgot password?",
+    "signInBtn": "Sign in",
+    "signUpBtn": "Create my account",
+    "sellOrDeliver": "Want to sell or deliver?",
+    "seller": "Seller",
+    "driver": "Driver",
+    "createFirst": "Create an account first to apply",
+    "signInSuccess": "Successfully signed in!",
+    "signUpSuccess": "Account created! Welcome to APEX."
   },
   "product": {
     "addToCart": "Add to cart", "inCart": "In cart", "added": "Added!",
