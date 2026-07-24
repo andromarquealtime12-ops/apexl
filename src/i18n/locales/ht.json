@@ -3,23 +3,92 @@
     "home": "Akèy", "products": "Pwodwi", "shops": "Boutik", "restaurants": "Restoran",
     "sell": "Vann", "deliver": "Livre", "menu": "Meni", "search": "Chèche pwodwi...",
     "account": "Kont mwen", "signin": "Konekte", "signup": "Enskri", "profile": "Pwofil mwen",
-    "wallet": "Pòtmonè mwen", "orders": "Kòmand mwen yo", "settings": "Paramèt", "logout": "Dekonekte", "language": "Lang"
+    "wallet": "Bous mwen", "orders": "Kòmand mwen yo", "settings": "Paramèt", "logout": "Dekonekte", "language": "Lang",
+    "searchOrder": "Jwenn yon kòmand", "sellerDashboard": "Dashboard vandè", "driverDashboard": "Dashboard livrè", "agentDashboard": "Dashboard ajan"
   },
   "hero": {
-    "eyebrow": "Nouvo sezon · Toupatou",
-    "title1": "Achte mond lan.",
-    "title2": "Livre lakay ou.",
-    "description": "Dè milye pwodwi popilè, yon sèl mache mondyal. Mòd, teknoloji, kay ak plis — livre rapid, nan nenpòt lang, nan nenpòt peyi.",
-    "shopNow": "Achte kounye a",
-    "exploreShops": "Eksplore boutik",
+    "eyebrow": "Nouvo sezon · Toupatou nan mond lan", "title1": "Achte mond lan.", "title2": "Livre lakay ou.",
+    "description": "Plizyè milye pwodwi tandans, yon sèl mache mondyal. Mòd, teknoloji, kay ak plis — livrezon rapid, nan tout lang, nan tout peyi.",
+    "shopNow": "Achte kounye a", "exploreShops": "Eksplore boutik yo",
     "countries": "Peyi", "products": "Pwodwi", "support": "Sipò"
   },
-  "product": {
-    "addToCart": "Mete nan panye", "inCart": "Nan panye", "added": "Ajoute !",
-    "chooseVariant": "Chwazi koulè / gwosè", "outOfStock": "Fini",
-    "outOfCountry": "Pa disponib nan peyi w", "featured": "Vedèt",
-    "worldwide": "Toupatou · USD", "localOnly": "Lokal",
-    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "Faktire an {{currency}}"
+  "categories": {
+    "title": "Eksplore kategori nou yo", "subtitle": "Jwenn tout sa w bezwen", "heading": "Kategori",
+    "filterAll": "Tout kategori", "filterPlaceholder": "Kategori", "activeFilters": "Filtè aktif:",
+    "items": {
+      "utensils": "Manje ak Bwason", "smartphone": "Elektwonik ak Telefòn", "shirt": "Rad ak Mòd",
+      "chef-hat": "Restoran", "home": "Kay ak Jaden", "heart": "Bote ak Sante",
+      "dumbbell": "Espò ak Plezi", "book": "Liv ak Medya", "car": "Machin", "briefcase": "Sèvis"
+    }
   },
-  "common": { "loading": "Ap chaje...", "save": "Anrejistre", "cancel": "Anile", "close": "Fèmen", "error": "Erè" }
+  "featured": { "title": "Pwodwi vedèt", "subtitle": "Pi bon pwodwi yo pou ou", "viewAll": "Wè tout", "empty": "Poko gen pwodwi vedèt. Tounen byento!" },
+  "userTypes": {
+    "title": "Rantre nan kominote mondyal nou an",
+    "subtitle": "Kit ou achte, vann oswa livre, APEX ba ou tout zouti pou reyisi.",
+    "buyer": { "title": "Achtè", "description": "Dekouvri tout sa w bezwen nan yon mache mondyal", "f1": "Plizyè milye pwodwi chwazi", "f2": "Livrezon rapid lakay", "f3": "Peman sekirize", "f4": "Sipò 24/7", "cta": "Kòmanse achte" },
+    "seller": { "title": "Vandè", "description": "Devlope biznis ou epi jwenn plis kliyan", "f1": "Kreye boutik anliy ou", "f2": "Jesyon senp pou kòmand", "f3": "Zouti maketing", "f4": "Rapò detaye", "cta": "Vin yon vandè" },
+    "driver": { "title": "Livrè", "description": "Fè lajan pandan w ap livre nan zòn ou", "f1": "Orè fleksib", "f2": "Peman atirab", "f3": "GPS entegre", "f4": "Peman chak semèn", "cta": "Vin yon livrè" }
+  },
+  "features": {
+    "badge": "Fonksyon", "title": "Tout sa w bezwen", "subtitle": "Yon platfòm konplè ak tout fonksyon modèn yo.",
+    "payments": { "title": "Peman Sekirize", "description": "Aksepte tout metòd: kat, transfè ak bous dijital.", "badge": "Sekirize" },
+    "geo": { "title": "Jewolokalizasyon", "description": "Swivi an tan reyèl ak GPS entegre.", "badge": "GPS" },
+    "protection": { "title": "Tranzaksyon Pwoteje", "description": "Sistèm avanse pou pwoteje chak tranzaksyon.", "badge": "Pwoteksyon" },
+    "express": { "title": "Livrezon Express", "description": "Livrezon rapid nan mond lan ak swivi an dirèk.", "badge": "Rapid" },
+    "chat": { "title": "Chat Entegre", "description": "Kominikasyon dirèk ant achtè, vandè ak livrè.", "badge": "Chat" },
+    "analytics": { "title": "Analiz Avanse", "description": "Dashboard konplè pou vant ak pèfòmans.", "badge": "Analytics" },
+    "mobile": { "title": "App Mobil", "description": "App entwitif sou iOS ak Android.", "badge": "Mobil" },
+    "multi": { "title": "Milti-lang", "description": "Entèfas nan 9+ lang.", "badge": "Global" }
+  },
+  "cta": {
+    "title": "Ou pare pou rantre nan mouvman an?", "description": "Telechaje app APEX epi kòmanse achte, vann oswa livre jodi a. Mache mondyal la ap tann ou.",
+    "download": "Telechaje app la", "web": "Vèsyon web",
+    "fast": "Lansman rapid", "fastDesc": "Anliy nan mwens ke 5 minit",
+    "commission": "Komisyon ba", "commissionDesc": "Tarif preferansyèl pou kominote a",
+    "support": "Sipò dedye", "supportDesc": "Èd nan lang ou"
+  },
+  "footer": {
+    "tagline": "Shop the world", "about": "Mache mondyal ki konekte achtè, vandè ak livrè nan tout peyi.",
+    "quickLinks": "Lyen rapid", "aboutLink": "Konsènan", "howItWorks": "Kijan sa mache", "terms": "Kondisyon itilizasyon", "privacy": "Konfidansyalite", "help": "Èd ak sipò",
+    "business": "Pou biznis", "becomeSeller": "Vin vandè", "seeProducts": "Wè pwodwi", "restaurants": "Restoran", "solutions": "Solisyon biznis", "affiliate": "Pwogram afilye",
+    "connected": "Rete konekte", "newsletter": "Resevwa dènye nouvèl nou yo", "emailPlaceholder": "Imel ou",
+    "rights": "© 2026 APEX. Tout dwa rezève.", "legal": "Nòt legal", "cookies": "Cookies", "sitemap": "Plan sit la"
+  },
+  "auth": {
+    "title": "APEX", "subtitle": "Konekte pou aksede kont ou", "signin": "Konekte", "signup": "Enskri",
+    "email": "Imel", "password": "Modpas", "fullName": "Non konplè", "namePlaceholder": "Jan Pyè", "forgot": "Bliye modpas?",
+    "signInBtn": "Konekte", "signUpBtn": "Kreye kont mwen", "sellOrDeliver": "Ou vle vann oswa livre?",
+    "seller": "Vandè", "driver": "Livrè", "createFirst": "Kreye yon kont anvan pou aplike",
+    "signInSuccess": "Koneksyon reyisi!", "signUpSuccess": "Kont kreye! Byenveni sou APEX."
+  },
+  "product": {
+    "addToCart": "Ajoute nan panye", "inCart": "Nan panye", "added": "Ajoute!", "chooseVariant": "Chwazi koulè / gwosè",
+    "outOfStock": "Fini", "outOfCountry": "Pa disponib nan peyi ou", "featured": "Vedèt",
+    "worldwide": "Mondyal · USD", "localOnly": "Lokal",
+    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "Fakture nan {{currency}}"
+  },
+  "checkout": {
+    "title": "Finalize kòmand la", "deliveryAddress": "Adrès livrezon", "city": "Vil", "currency": "Deviz",
+    "fullAddress": "Adrès konplè", "addressPlaceholder": "Ri, nimewo, katye...",
+    "notes": "Enstriksyon livrezon (opsyonèl)", "notesPlaceholder": "Enfòmasyon adisyonèl pou livrè...",
+    "internationalAddress": "Adrès entènasyonal (Printful)",
+    "internationalIntro": "Pwodwi Printful ou yo voye soti aletranje. Tanpri mete yon adrès konplè.",
+    "address1": "Adrès liy 1", "address2": "Adrès liy 2 (opsyonèl)", "state": "Eta / Pwovens", "zip": "Kòd postal", "country": "Peyi",
+    "paymentMethod": "Metòd peman", "wallet": "Bous APEX", "balance": "Balans",
+    "cash": "Peman kach", "cashDesc": "Peye livrè a an kach lè livrezon",
+    "summary": "Rezime kòmand la", "subtotal": "Sou-total", "delivery": "Livrezon", "total": "Total",
+    "confirm": "Konfime kòmand", "confirmCash": "Kòmande (kach)",
+    "insufficientBalance": "Balans ensifizan", "topUp": "Rechaje",
+    "successTitle": "Kòmand konfime!", "successDesc": "Kòmand ou an fèt. W ap resevwa yon notifikasyon lè li nan wout.",
+    "backHome": "Retounen akèy", "viewOrders": "Wè kòmand mwen yo"
+  },
+  "sellerDash": {
+    "title": "Dashboard vandè", "subtitle": "Jere pwodwi w yo epi swiv vant ou yo", "badge": "Vandè",
+    "tabs": { "products": "Pwodwi", "restaurant": "Restoran", "orders": "Kòmand", "analytics": "Estatistik" },
+    "myProducts": "Pwodwi mwen yo", "myProductsDesc": "Jere katalòg pwodwi w",
+    "myOrders": "Kòmand mwen yo", "myOrdersDesc": "Make kòmand yo kòm pare — livrè ki tou pre yo pral resevwa notifikasyon otomatikman",
+    "notSeller": { "title": "Vin yon vandè", "desc": "Ou poko enskri kòm vandè. Kontakte administrasyon an pou jwenn aksè vandè.", "footer": "Yon fwa apwouve, ou ka ajoute pwodwi epi jere vant ou soti nan dashboard sa a." },
+    "analytics": { "title": "Estatistik vant", "desc": "Analize pèfòmans ou", "summary": "Rezime", "sold": "Pwodwi vandi", "conversion": "To konvèsyon", "avg": "Panye mwayèn", "chartsComing": "Grafik detaye ap vini talè" }
+  },
+  "common": { "loading": "Chajman...", "save": "Anrejistre", "cancel": "Anile", "close": "Fèmen", "error": "Erè" }
 }

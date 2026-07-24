@@ -1,25 +1,94 @@
 {
   "nav": {
     "home": "الرئيسية", "products": "المنتجات", "shops": "المتاجر", "restaurants": "المطاعم",
-    "sell": "بيع", "deliver": "توصيل", "menu": "القائمة", "search": "ابحث عن المنتجات...",
+    "sell": "بيع", "deliver": "توصيل", "menu": "القائمة", "search": "ابحث عن منتجات...",
     "account": "حسابي", "signin": "تسجيل الدخول", "signup": "إنشاء حساب", "profile": "ملفي",
-    "wallet": "محفظتي", "orders": "طلباتي", "settings": "الإعدادات", "logout": "تسجيل الخروج", "language": "اللغة"
+    "wallet": "محفظتي", "orders": "طلباتي", "settings": "الإعدادات", "logout": "تسجيل الخروج", "language": "اللغة",
+    "searchOrder": "البحث عن طلب", "sellerDashboard": "لوحة البائع", "driverDashboard": "لوحة السائق", "agentDashboard": "لوحة الوكيل"
   },
   "hero": {
-    "eyebrow": "موسم جديد · حول العالم",
-    "title1": "تسوّق العالم.",
-    "title2": "يصل إليك.",
-    "description": "آلاف المنتجات الرائجة في سوق عالمي واحد. أزياء، تقنية، منزل والمزيد — شحن سريع، بأي لغة، إلى أي بلد.",
-    "shopNow": "تسوّق الآن",
-    "exploreShops": "استكشف المتاجر",
-    "countries": "دولة", "products": "منتج", "support": "دعم"
+    "eyebrow": "موسم جديد · حول العالم", "title1": "تسوّق من العالم.", "title2": "يصلك إلى الباب.",
+    "description": "آلاف المنتجات الرائجة في سوق عالمي واحد. الموضة والتكنولوجيا والمنزل والمزيد — شحن سريع بأي لغة إلى أي بلد.",
+    "shopNow": "تسوّق الآن", "exploreShops": "استكشف المتاجر",
+    "countries": "الدول", "products": "المنتجات", "support": "الدعم"
+  },
+  "categories": {
+    "title": "استكشف فئاتنا", "subtitle": "اعثر على كل ما تحتاجه", "heading": "الفئات",
+    "filterAll": "كل الفئات", "filterPlaceholder": "الفئة", "activeFilters": "المرشحات النشطة:",
+    "items": {
+      "utensils": "المأكولات والمشروبات", "smartphone": "الإلكترونيات والهواتف", "shirt": "الملابس والأزياء",
+      "chef-hat": "مطعم", "home": "المنزل والحديقة", "heart": "الجمال والصحة",
+      "dumbbell": "الرياضة والترفيه", "book": "الكتب والوسائط", "car": "السيارات", "briefcase": "الخدمات"
+    }
+  },
+  "featured": { "title": "منتجات مميزة", "subtitle": "أفضل الاختيارات لك", "viewAll": "عرض الكل", "empty": "لا توجد منتجات مميزة بعد. عد قريباً!" },
+  "userTypes": {
+    "title": "انضم إلى مجتمعنا العالمي",
+    "subtitle": "سواء اشتريت أو بعت أو وصّلت، APEX يمنحك كل الأدوات لتنجح.",
+    "buyer": { "title": "مشترٍ", "description": "اكتشف كل ما تحتاجه في سوق عالمي", "f1": "آلاف المنتجات المختارة", "f2": "توصيل سريع", "f3": "طرق دفع آمنة متعددة", "f4": "دعم على مدار الساعة", "cta": "ابدأ التسوق" },
+    "seller": { "title": "بائع", "description": "نمِّ عملك وصل إلى عملاء جدد", "f1": "أنشئ متجرك عبر الإنترنت", "f2": "إدارة سهلة للطلبات", "f3": "أدوات تسويق مدمجة", "f4": "تحليلات مفصلة", "cta": "كن بائعاً" },
+    "driver": { "title": "سائق", "description": "اكسب مالاً بالتوصيل في منطقتك", "f1": "ساعات مرنة", "f2": "دخل جذاب", "f3": "GPS مدمج", "f4": "دفع أسبوعي", "cta": "كن سائقاً" }
+  },
+  "features": {
+    "badge": "الميزات", "title": "كل ما تحتاجه", "subtitle": "منصة كاملة بكل الميزات الحديثة.",
+    "payments": { "title": "مدفوعات آمنة", "description": "اقبل كل طرق الدفع: البطاقات والتحويلات والمحافظ الرقمية.", "badge": "آمن" },
+    "geo": { "title": "الموقع الجغرافي", "description": "تتبع مباشر مع GPS مدمج.", "badge": "GPS" },
+    "protection": { "title": "معاملات محمية", "description": "نظام متقدم لحماية كل معاملة.", "badge": "حماية" },
+    "express": { "title": "توصيل سريع", "description": "شحن سريع حول العالم مع تتبع مباشر.", "badge": "سريع" },
+    "chat": { "title": "دردشة مدمجة", "description": "تواصل مباشر بين المشترين والبائعين والسائقين.", "badge": "دردشة" },
+    "analytics": { "title": "تحليلات متقدمة", "description": "لوحات كاملة لتتبع المبيعات والأداء.", "badge": "تحليلات" },
+    "mobile": { "title": "تطبيق الجوال", "description": "تطبيق سهل على iOS و Android.", "badge": "جوال" },
+    "multi": { "title": "متعدد اللغات", "description": "الواجهة متاحة بأكثر من 9 لغات.", "badge": "عالمي" }
+  },
+  "cta": {
+    "title": "مستعد للانضمام إلى الحركة؟", "description": "حمّل تطبيق APEX وابدأ الشراء أو البيع أو التوصيل اليوم. السوق العالمي بانتظارك.",
+    "download": "حمّل التطبيق", "web": "نسخة الويب",
+    "fast": "إطلاق سريع", "fastDesc": "على الإنترنت في أقل من 5 دقائق",
+    "commission": "عمولة منخفضة", "commissionDesc": "أسعار مفضلة للمجتمع",
+    "support": "دعم مخصص", "supportDesc": "مساعدة بلغتك"
+  },
+  "footer": {
+    "tagline": "Shop the world", "about": "السوق العالمي الذي يربط المشترين والبائعين والسائقين في كل الدول.",
+    "quickLinks": "روابط سريعة", "aboutLink": "من نحن", "howItWorks": "كيف يعمل", "terms": "شروط الاستخدام", "privacy": "سياسة الخصوصية", "help": "المساعدة والدعم",
+    "business": "للشركات", "becomeSeller": "كن بائعاً", "seeProducts": "تصفح المنتجات", "restaurants": "المطاعم", "solutions": "حلول الأعمال", "affiliate": "برنامج الشركاء",
+    "connected": "ابقَ على تواصل", "newsletter": "احصل على آخر أخبارنا", "emailPlaceholder": "بريدك الإلكتروني",
+    "rights": "© 2026 APEX. جميع الحقوق محفوظة.", "legal": "إشعار قانوني", "cookies": "Cookies", "sitemap": "خريطة الموقع"
+  },
+  "auth": {
+    "title": "APEX", "subtitle": "سجّل الدخول للوصول إلى حسابك", "signin": "تسجيل الدخول", "signup": "إنشاء حساب",
+    "email": "البريد الإلكتروني", "password": "كلمة المرور", "fullName": "الاسم الكامل", "namePlaceholder": "أحمد محمد", "forgot": "نسيت كلمة المرور؟",
+    "signInBtn": "دخول", "signUpBtn": "إنشاء حسابي", "sellOrDeliver": "تريد البيع أو التوصيل؟",
+    "seller": "بائع", "driver": "سائق", "createFirst": "أنشئ حساباً أولاً لتقديم الطلب",
+    "signInSuccess": "تم تسجيل الدخول بنجاح!", "signUpSuccess": "تم إنشاء الحساب! مرحباً بك في APEX."
   },
   "product": {
-    "addToCart": "أضف إلى السلة", "inCart": "في السلة", "added": "تمت الإضافة!",
-    "chooseVariant": "اختر اللون / المقاس", "outOfStock": "نفدت الكمية",
-    "outOfCountry": "غير متوفر في بلدك", "featured": "مميز",
+    "addToCart": "أضف إلى السلة", "inCart": "في السلة", "added": "تمت الإضافة!", "chooseVariant": "اختر اللون / المقاس",
+    "outOfStock": "نفد", "outOfCountry": "غير متوفر في بلدك", "featured": "مميز",
     "worldwide": "عالمي · USD", "localOnly": "محلي",
-    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "الفوترة بـ {{currency}}"
+    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "الفواتير بـ {{currency}}"
   },
-  "common": { "loading": "جار التحميل...", "save": "حفظ", "cancel": "إلغاء", "close": "إغلاق", "error": "خطأ" }
+  "checkout": {
+    "title": "إتمام الطلب", "deliveryAddress": "عنوان التوصيل", "city": "المدينة", "currency": "العملة",
+    "fullAddress": "العنوان الكامل", "addressPlaceholder": "الشارع، الرقم، الحي...",
+    "notes": "تعليمات التوصيل (اختياري)", "notesPlaceholder": "معلومات إضافية للسائق...",
+    "internationalAddress": "عنوان دولي (Printful)",
+    "internationalIntro": "منتجات Printful تُشحن من الخارج. الرجاء إدخال عنوان كامل.",
+    "address1": "العنوان السطر 1", "address2": "العنوان السطر 2 (اختياري)", "state": "الولاية / المقاطعة", "zip": "الرمز البريدي", "country": "البلد",
+    "paymentMethod": "طريقة الدفع", "wallet": "محفظة APEX", "balance": "الرصيد",
+    "cash": "الدفع نقداً", "cashDesc": "ادفع للسائق نقداً عند الاستلام",
+    "summary": "ملخص الطلب", "subtotal": "المجموع الفرعي", "delivery": "التوصيل", "total": "الإجمالي",
+    "confirm": "تأكيد الطلب", "confirmCash": "اطلب (نقداً)",
+    "insufficientBalance": "الرصيد غير كافٍ", "topUp": "شحن",
+    "successTitle": "تم تأكيد الطلب!", "successDesc": "تم تقديم طلبك. ستتلقى إشعاراً عندما يكون في الطريق.",
+    "backHome": "العودة إلى الرئيسية", "viewOrders": "عرض طلباتي"
+  },
+  "sellerDash": {
+    "title": "لوحة البائع", "subtitle": "أدر منتجاتك وتابع مبيعاتك", "badge": "بائع",
+    "tabs": { "products": "المنتجات", "restaurant": "المطعم", "orders": "الطلبات", "analytics": "إحصائيات" },
+    "myProducts": "منتجاتي", "myProductsDesc": "أدر كتالوج منتجاتك",
+    "myOrders": "طلباتي", "myOrdersDesc": "حدد الطلبات جاهزة — سيتم إعلام السائقين القريبين تلقائياً",
+    "notSeller": { "title": "كن بائعاً", "desc": "لست مسجلاً كبائع بعد. تواصل مع الإدارة للحصول على وصول البائع.", "footer": "بعد الموافقة، يمكنك إضافة المنتجات وإدارة مبيعاتك من هذه اللوحة." },
+    "analytics": { "title": "إحصائيات المبيعات", "desc": "حلّل أداءك", "summary": "الملخص", "sold": "المنتجات المباعة", "conversion": "معدل التحويل", "avg": "متوسط السلة", "chartsComing": "الرسوم البيانية المفصلة قريباً" }
+  },
+  "common": { "loading": "جارٍ التحميل...", "save": "حفظ", "cancel": "إلغاء", "close": "إغلاق", "error": "خطأ" }
 }
