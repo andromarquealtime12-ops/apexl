@@ -1,22 +1,15 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ALL_CITIES } from "@/utils/cities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { useSubmitDriverApplication, useMyDriverApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
@@ -28,25 +21,18 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadApplicationDocument } from "@/utils/applicationUploads";
 
-
 interface DriverApplicationFormProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const VEHICLE_TYPES = {
-  motorcycle: "Moto",
-  car: "Voiture",
-  bicycle: "Vélo",
-  truck: "Camion",
-};
-
 export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationFormProps) {
+  const { t } = useTranslation();
   const { data: existingApplication, isLoading: loadingApplication } = useMyDriverApplication();
   const submitApplication = useSubmitDriverApplication();
   const { isVerified: isEmailVerified } = useIsEmailVerified();
   const sendVerification = useSendVerificationCode();
-  
+
   const [verifyEmail, setVerifyEmail] = useState("");
   const [formData, setFormData] = useState({
     vehicle_type: "" as "motorcycle" | "car" | "bicycle" | "truck" | "",
@@ -73,14 +59,14 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
     e.preventDefault();
     if (!formData.vehicle_type) return;
     if (!docsReady) {
-      toast.error("Veuillez joindre tous les documents requis (permis recto/verso, carte grise si moto, selfie).");
+      toast.error(t("driverApp.docsMissing"));
       return;
     }
 
     try {
       setUploading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Non authentifié");
+      if (!user) throw new Error("Not authenticated");
 
       const [frontUrl, backUrl, regUrl, selfieUrl] = await Promise.all([
         uploadApplicationDocument(user.id, "driver-license-front", licenseFront!),
@@ -107,7 +93,6 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-
   if (loadingApplication) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -120,7 +105,6 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
     );
   }
 
-  // Show existing application status
   if (existingApplication) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -128,14 +112,14 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Truck className="h-5 w-5" />
-              Statut de votre demande
+              {t("driverApp.statusTitle")}
             </DialogTitle>
           </DialogHeader>
-          
+
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">
-                {VEHICLE_TYPES[existingApplication.vehicle_type]} - {existingApplication.vehicle_brand}
+                {t(`driverApp.vt.${existingApplication.vehicle_type}`)} - {existingApplication.vehicle_brand}
               </CardTitle>
               <CardDescription>{existingApplication.city}</CardDescription>
             </CardHeader>
@@ -144,19 +128,17 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
                 {existingApplication.status === "pending" && (
                   <>
                     <Clock className="h-5 w-5 text-yellow-500" />
-                    <span className="text-yellow-600 font-medium">En attente de validation</span>
+                    <span className="text-yellow-600 font-medium">{t("driverApp.pending")}</span>
                   </>
                 )}
                 {existingApplication.status === "approved" && (
                   <>
                     <CheckCircle className="h-5 w-5 text-green-500" />
-                    <span className="text-green-600 font-medium">Approuvée ! Vous êtes maintenant livreur</span>
+                    <span className="text-green-600 font-medium">{t("driverApp.approvedMsg")}</span>
                   </>
                 )}
                 {existingApplication.status === "rejected" && (
-                  <>
-                    <span className="text-red-600 font-medium">Demande rejetée</span>
-                  </>
+                  <span className="text-red-600 font-medium">{t("driverApp.rejectedMsg")}</span>
                 )}
               </div>
             </CardContent>
@@ -172,11 +154,9 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5" />
-            Devenir Livreur
+            {t("driverApp.title")}
           </DialogTitle>
-          <DialogDescription>
-            Remplissez les informations de votre véhicule pour commencer à livrer
-          </DialogDescription>
+          <DialogDescription>{t("driverApp.description")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -184,11 +164,11 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
             <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
               <Mail className="h-4 w-4 text-amber-600" />
               <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm space-y-2">
-                <p>Vérifiez votre email pour renforcer la confiance sur votre compte livreur. Le lien sera envoyé à l'adresse ci-dessous.</p>
+                <p>{t("driverApp.emailAlert")}</p>
                 <div className="flex items-center gap-2">
                   <Input
                     type="email"
-                    placeholder="votre@email.com"
+                    placeholder="you@email.com"
                     value={verifyEmail}
                     onChange={(e) => setVerifyEmail(e.target.value)}
                     className="h-8 text-sm bg-background"
@@ -200,113 +180,63 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
                     onClick={() => sendVerification.mutate(verifyEmail || undefined)}
                     disabled={sendVerification.isPending}
                   >
-                    {sendVerification.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Envoyer le lien"}
+                    {sendVerification.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : t("driverApp.sendLink")}
                   </Button>
                 </div>
               </AlertDescription>
             </Alert>
           )}
           <div className="space-y-2">
-            <Label htmlFor="vehicle_type">Type de véhicule *</Label>
-            <Select
-              value={formData.vehicle_type}
-              onValueChange={(value) => handleChange("vehicle_type", value)}
-              required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionnez le type" />
-              </SelectTrigger>
+            <Label htmlFor="vehicle_type">{t("driverApp.vehicleType")} *</Label>
+            <Select value={formData.vehicle_type} onValueChange={(value) => handleChange("vehicle_type", value)} required>
+              <SelectTrigger><SelectValue placeholder={t("driverApp.selectType")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="motorcycle">Moto</SelectItem>
-                <SelectItem value="car">Voiture</SelectItem>
-                <SelectItem value="bicycle">Vélo</SelectItem>
-                <SelectItem value="truck">Camion</SelectItem>
+                <SelectItem value="motorcycle">{t("driverApp.vt.motorcycle")}</SelectItem>
+                <SelectItem value="car">{t("driverApp.vt.car")}</SelectItem>
+                <SelectItem value="bicycle">{t("driverApp.vt.bicycle")}</SelectItem>
+                <SelectItem value="truck">{t("driverApp.vt.truck")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="vehicle_brand">Marque *</Label>
-              <Input
-                id="vehicle_brand"
-                placeholder="Toyota, Honda..."
-                value={formData.vehicle_brand}
-                onChange={(e) => handleChange("vehicle_brand", e.target.value)}
-                required
-              />
+              <Label htmlFor="vehicle_brand">{t("driverApp.brand")} *</Label>
+              <Input id="vehicle_brand" placeholder={t("driverApp.brandPlaceholder")} value={formData.vehicle_brand} onChange={(e) => handleChange("vehicle_brand", e.target.value)} required />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="vehicle_model">Modèle</Label>
-              <Input
-                id="vehicle_model"
-                placeholder="Corolla, Civic..."
-                value={formData.vehicle_model}
-                onChange={(e) => handleChange("vehicle_model", e.target.value)}
-              />
+              <Label htmlFor="vehicle_model">{t("driverApp.model")}</Label>
+              <Input id="vehicle_model" placeholder={t("driverApp.modelPlaceholder")} value={formData.vehicle_model} onChange={(e) => handleChange("vehicle_model", e.target.value)} />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="vehicle_year">Année</Label>
-              <Input
-                id="vehicle_year"
-                placeholder="2020"
-                value={formData.vehicle_year}
-                onChange={(e) => handleChange("vehicle_year", e.target.value)}
-              />
+              <Label htmlFor="vehicle_year">{t("driverApp.year")}</Label>
+              <Input id="vehicle_year" placeholder="2020" value={formData.vehicle_year} onChange={(e) => handleChange("vehicle_year", e.target.value)} />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="license_plate">Plaque d'immatriculation *</Label>
-              <Input
-                id="license_plate"
-                placeholder="AA-00000"
-                value={formData.license_plate}
-                onChange={(e) => handleChange("license_plate", e.target.value)}
-                required
-              />
+              <Label htmlFor="license_plate">{t("driverApp.plate")} *</Label>
+              <Input id="license_plate" placeholder="AA-00000" value={formData.license_plate} onChange={(e) => handleChange("license_plate", e.target.value)} required />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="driver_license_number">Numéro de permis *</Label>
-            <Input
-              id="driver_license_number"
-              placeholder="Votre numéro de permis de conduire"
-              value={formData.driver_license_number}
-              onChange={(e) => handleChange("driver_license_number", e.target.value)}
-              required
-            />
+            <Label htmlFor="driver_license_number">{t("driverApp.licenseNum")} *</Label>
+            <Input id="driver_license_number" placeholder={t("driverApp.licensePlaceholder")} value={formData.driver_license_number} onChange={(e) => handleChange("driver_license_number", e.target.value)} required />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Téléphone *</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+509 00 00 0000"
-                value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                required
-              />
+              <Label htmlFor="phone">{t("driverApp.phone")} *</Label>
+              <Input id="phone" type="tel" placeholder="+509 00 00 0000" value={formData.phone} onChange={(e) => handleChange("phone", e.target.value)} required />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="city">Ville *</Label>
-              <Select
-                value={formData.city}
-                onValueChange={(value) => handleChange("city", value)}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Ville" />
-                </SelectTrigger>
+              <Label htmlFor="city">{t("driverApp.city")} *</Label>
+              <Select value={formData.city} onValueChange={(value) => handleChange("city", value)} required>
+                <SelectTrigger><SelectValue placeholder={t("driverApp.city")} /></SelectTrigger>
                 <SelectContent className="max-h-60">
-                  <SelectItem value="__do" disabled>🇩🇴 République Dominicaine</SelectItem>
+                  <SelectItem value="__do" disabled>🇩🇴 República Dominicana</SelectItem>
                   {ALL_CITIES.DO.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                   <SelectItem value="__ht" disabled>🇭🇹 Haïti</SelectItem>
                   {ALL_CITIES.HT.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -316,57 +246,42 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="availability">Disponibilité</Label>
-            <Textarea
-              id="availability"
-              placeholder="Ex: Lundi-Vendredi 8h-18h, Week-ends disponible..."
-              value={formData.availability}
-              onChange={(e) => handleChange("availability", e.target.value)}
-              rows={2}
-            />
+            <Label htmlFor="availability">{t("driverApp.availability")}</Label>
+            <Textarea id="availability" placeholder={t("driverApp.availPlaceholder")} value={formData.availability} onChange={(e) => handleChange("availability", e.target.value)} rows={2} />
           </div>
 
           <div className="rounded-lg border p-3 space-y-3 bg-muted/30">
             <p className="text-sm font-medium flex items-center gap-2">
-              <Upload className="h-4 w-4" /> Documents d'identité (obligatoires)
+              <Upload className="h-4 w-4" /> {t("driverApp.docs")}
             </p>
-            <p className="text-xs text-muted-foreground">
-              Toutes les photos sont vérifiées par notre équipe. Compte en mode limité tant que la vérification n'est pas approuvée.
-            </p>
+            <p className="text-xs text-muted-foreground">{t("driverApp.docsHint")}</p>
 
             <div className="grid gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">Permis de conduire — recto *</Label>
+                <Label className="text-xs">{t("driverApp.licFront")} *</Label>
                 <Input type="file" accept="image/*" onChange={(e) => setLicenseFront(e.target.files?.[0] || null)} />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Permis de conduire — verso *</Label>
+                <Label className="text-xs">{t("driverApp.licBack")} *</Label>
                 <Input type="file" accept="image/*" onChange={(e) => setLicenseBack(e.target.files?.[0] || null)} />
               </div>
               {isMoto && (
                 <div className="space-y-1">
-                  <Label className="text-xs">Carte grise / immatriculation moto *</Label>
+                  <Label className="text-xs">{t("driverApp.vehReg")} *</Label>
                   <Input type="file" accept="image/*" onChange={(e) => setVehicleReg(e.target.files?.[0] || null)} />
                 </div>
               )}
               <div className="space-y-1">
-                <Label className="text-xs">Selfie tenant votre pièce d'identité *</Label>
+                <Label className="text-xs">{t("driverApp.selfie")} *</Label>
                 <Input type="file" accept="image/*" onChange={(e) => setSelfie(e.target.files?.[0] || null)} />
               </div>
             </div>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={submitApplication.isPending || uploading || !formData.vehicle_type || !docsReady}
-          >
-            {(submitApplication.isPending || uploading) ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : null}
-            {uploading ? "Envoi des documents…" : "Soumettre ma demande"}
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !formData.vehicle_type || !docsReady}>
+            {(submitApplication.isPending || uploading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            {uploading ? t("driverApp.submitting") : t("driverApp.submit")}
           </Button>
-
         </form>
       </DialogContent>
     </Dialog>

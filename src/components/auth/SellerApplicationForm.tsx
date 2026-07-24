@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { ALL_CITIES } from "@/utils/cities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,7 @@ import {
 import { useSubmitSellerApplication, useMySellerApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
 import { useSendVerificationCode } from "@/hooks/useEmailVerification";
-import { Loader2, Store, CheckCircle, Clock, MapPin, Navigation, Mail, Upload } from "lucide-react";
+import { Loader2, Store, CheckCircle, Clock, Mail, Upload } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
@@ -21,18 +22,18 @@ import { GpsAddressField } from "@/components/ui/GpsAddressField";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadApplicationDocument } from "@/utils/applicationUploads";
 
-
 interface SellerApplicationFormProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
 export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationFormProps) {
+  const { t } = useTranslation();
   const { data: existingApplication, isLoading: loadingApplication } = useMySellerApplication();
   const submitApplication = useSubmitSellerApplication();
   const { isVerified: isEmailVerified } = useIsEmailVerified();
   const sendVerification = useSendVerificationCode();
-  
+
   const [verifyEmail, setVerifyEmail] = useState("");
   const [formData, setFormData] = useState({
     shop_name: "",
@@ -45,7 +46,6 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
 
   const [shopLat, setShopLat] = useState<number | null>(null);
   const [shopLng, setShopLng] = useState<number | null>(null);
-  const [gettingLocation, setGettingLocation] = useState(false);
 
   const [idFront, setIdFront] = useState<File | null>(null);
   const [idBack, setIdBack] = useState<File | null>(null);
@@ -53,37 +53,16 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
   const [uploading, setUploading] = useState(false);
   const docsReady = !!(idFront && idBack && selfie);
 
-  const handleGetLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      toast.error("Géolocalisation non supportée");
-      return;
-    }
-    setGettingLocation(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setShopLat(pos.coords.latitude);
-        setShopLng(pos.coords.longitude);
-        setGettingLocation(false);
-        toast.success("Position de la boutique enregistrée ✓");
-      },
-      () => {
-        setGettingLocation(false);
-        toast.error("Impossible d'obtenir la position");
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!docsReady) {
-      toast.error("Veuillez joindre votre pièce d'identité (recto/verso) et un selfie.");
+      toast.error(t("sellerApp.docsMissing"));
       return;
     }
     try {
       setUploading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Non authentifié");
+      if (!user) throw new Error("Not authenticated");
       const [frontUrl, backUrl, selfieUrl] = await Promise.all([
         uploadApplicationDocument(user.id, "seller-id-front", idFront!),
         uploadApplicationDocument(user.id, "seller-id-back", idBack!),
@@ -102,7 +81,6 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
       setUploading(false);
     }
   };
-
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -127,7 +105,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Store className="h-5 w-5" />
-              Statut de votre demande
+              {t("sellerApp.statusTitle")}
             </DialogTitle>
           </DialogHeader>
           <Card>
@@ -140,17 +118,17 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
                 {existingApplication.status === "pending" && (
                   <>
                     <Clock className="h-5 w-5 text-yellow-500" />
-                    <span className="text-yellow-600 font-medium">En attente de validation</span>
+                    <span className="text-yellow-600 font-medium">{t("sellerApp.pending")}</span>
                   </>
                 )}
                 {existingApplication.status === "approved" && (
                   <>
                     <CheckCircle className="h-5 w-5 text-green-500" />
-                    <span className="text-green-600 font-medium">Approuvée ! Vous êtes maintenant vendeur</span>
+                    <span className="text-green-600 font-medium">{t("sellerApp.approvedMsg")}</span>
                   </>
                 )}
                 {existingApplication.status === "rejected" && (
-                  <span className="text-red-600 font-medium">Demande rejetée</span>
+                  <span className="text-red-600 font-medium">{t("sellerApp.rejectedMsg")}</span>
                 )}
               </div>
             </CardContent>
@@ -166,11 +144,9 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Store className="h-5 w-5" />
-            Devenir Vendeur
+            {t("sellerApp.title")}
           </DialogTitle>
-          <DialogDescription>
-            Remplissez les informations de votre boutique pour commencer à vendre
-          </DialogDescription>
+          <DialogDescription>{t("sellerApp.description")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -178,11 +154,11 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
               <Mail className="h-4 w-4 text-amber-600" />
               <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm space-y-2">
-                <p>Vérifiez votre email pour renforcer la confiance de votre boutique. Le lien sera envoyé à l'adresse ci-dessous.</p>
+                <p>{t("sellerApp.emailAlert")}</p>
                 <div className="flex items-center gap-2">
                   <Input
                     type="email"
-                    placeholder="votre@email.com"
+                    placeholder="you@email.com"
                     value={verifyEmail}
                     onChange={(e) => setVerifyEmail(e.target.value)}
                     className="h-8 text-sm bg-background"
@@ -194,69 +170,62 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
                     onClick={() => sendVerification.mutate(verifyEmail || undefined)}
                     disabled={sendVerification.isPending}
                   >
-                    {sendVerification.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Envoyer le lien"}
+                    {sendVerification.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : t("sellerApp.sendLink")}
                   </Button>
                 </div>
               </AlertDescription>
             </Alert>
           )}
           <div className="space-y-2">
-            <Label htmlFor="shop_name">Nom de la boutique *</Label>
-            <Input id="shop_name" placeholder="Ma Super Boutique" value={formData.shop_name} onChange={(e) => handleChange("shop_name", e.target.value)} required />
+            <Label htmlFor="shop_name">{t("sellerApp.shopName")} *</Label>
+            <Input id="shop_name" placeholder={t("sellerApp.shopNamePlaceholder")} value={formData.shop_name} onChange={(e) => handleChange("shop_name", e.target.value)} required />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="business_type">Type de commerce</Label>
+            <Label htmlFor="business_type">{t("sellerApp.businessType")}</Label>
             <Select value={formData.business_type} onValueChange={(value) => handleChange("business_type", value)}>
-              <SelectTrigger><SelectValue placeholder="Sélectionnez le type" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t("sellerApp.selectType")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="food">Alimentation</SelectItem>
-                <SelectItem value="electronics">Électronique</SelectItem>
-                <SelectItem value="clothing">Vêtements</SelectItem>
-                <SelectItem value="restaurant">Restaurant</SelectItem>
-                <SelectItem value="beauty">Beauté & Santé</SelectItem>
-                <SelectItem value="home">Maison & Jardin</SelectItem>
-                <SelectItem value="other">Autre</SelectItem>
+                <SelectItem value="food">{t("sellerApp.type.food")}</SelectItem>
+                <SelectItem value="electronics">{t("sellerApp.type.electronics")}</SelectItem>
+                <SelectItem value="clothing">{t("sellerApp.type.clothing")}</SelectItem>
+                <SelectItem value="restaurant">{t("sellerApp.type.restaurant")}</SelectItem>
+                <SelectItem value="beauty">{t("sellerApp.type.beauty")}</SelectItem>
+                <SelectItem value="home">{t("sellerApp.type.home")}</SelectItem>
+                <SelectItem value="other">{t("sellerApp.type.other")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="shop_description">Description</Label>
-            <Textarea id="shop_description" placeholder="Décrivez votre boutique..." value={formData.shop_description} onChange={(e) => handleChange("shop_description", e.target.value)} rows={3} />
+            <Label htmlFor="shop_description">{t("sellerApp.desc")}</Label>
+            <Textarea id="shop_description" placeholder={t("sellerApp.descPlaceholder")} value={formData.shop_description} onChange={(e) => handleChange("shop_description", e.target.value)} rows={3} />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="shop_address">Adresse exacte de la boutique *</Label>
+            <Label htmlFor="shop_address">{t("sellerApp.address")} *</Label>
             <GpsAddressField
               id="shop_address"
               value={formData.shop_address}
               onChange={(v) => handleChange("shop_address", v)}
               coords={{ lat: shopLat, lng: shopLng }}
-              onCoords={(la, lo) => {
-                setShopLat(la);
-                setShopLng(lo);
-              }}
+              onCoords={(la, lo) => { setShopLat(la); setShopLng(lo); }}
               onSelect={(s) => {
                 handleChange("shop_address", s.address);
                 if (s.city) handleChange("shop_city", s.city);
               }}
-              placeholder="Ex: Calle El Conde 100, Zona Colonial…"
+              placeholder={t("sellerApp.addressPlaceholder")}
             />
-            <p className="text-[11px] text-muted-foreground">
-              Utilisez « Ma position » depuis la boutique pour des coordonnées exactes que les
-              livreurs pourront suivre.
-            </p>
+            <p className="text-[11px] text-muted-foreground">{t("sellerApp.addressHint")}</p>
           </div>
-
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="shop_city">Ville *</Label>
+              <Label htmlFor="shop_city">{t("sellerApp.city")} *</Label>
               <Select value={formData.shop_city} onValueChange={(value) => handleChange("shop_city", value)} required>
-                <SelectTrigger><SelectValue placeholder="Ville" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t("sellerApp.cityPlaceholder")} /></SelectTrigger>
                 <SelectContent className="max-h-60">
-                  <SelectItem value="__do" disabled>🇩🇴 République Dominicaine</SelectItem>
+                  <SelectItem value="__do" disabled>🇩🇴 República Dominicana</SelectItem>
                   {ALL_CITIES.DO.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                   <SelectItem value="__ht" disabled>🇭🇹 Haïti</SelectItem>
                   {ALL_CITIES.HT.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -264,29 +233,27 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="shop_phone">Téléphone *</Label>
+              <Label htmlFor="shop_phone">{t("sellerApp.phone")} *</Label>
               <Input id="shop_phone" type="tel" placeholder="+509 00 00 0000" value={formData.shop_phone} onChange={(e) => handleChange("shop_phone", e.target.value)} required />
             </div>
           </div>
 
           <div className="rounded-lg border p-3 space-y-3 bg-muted/30">
             <p className="text-sm font-medium flex items-center gap-2">
-              <Upload className="h-4 w-4" /> Vérification d'identité (obligatoire)
+              <Upload className="h-4 w-4" /> {t("sellerApp.idVerification")}
             </p>
-            <p className="text-xs text-muted-foreground">
-              CIN + selfie. Compte en mode limité tant que la vérification n'est pas approuvée.
-            </p>
+            <p className="text-xs text-muted-foreground">{t("sellerApp.idHint")}</p>
             <div className="grid gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">Pièce d'identité — recto *</Label>
+                <Label className="text-xs">{t("sellerApp.idFront")} *</Label>
                 <Input type="file" accept="image/*" onChange={(e) => setIdFront(e.target.files?.[0] || null)} />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Pièce d'identité — verso *</Label>
+                <Label className="text-xs">{t("sellerApp.idBack")} *</Label>
                 <Input type="file" accept="image/*" onChange={(e) => setIdBack(e.target.files?.[0] || null)} />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Selfie tenant votre pièce d'identité *</Label>
+                <Label className="text-xs">{t("sellerApp.selfie")} *</Label>
                 <Input type="file" accept="image/*" onChange={(e) => setSelfie(e.target.files?.[0] || null)} />
               </div>
             </div>
@@ -294,9 +261,8 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
 
           <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !docsReady}>
             {(submitApplication.isPending || uploading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-            {uploading ? "Envoi des documents…" : "Soumettre ma demande"}
+            {uploading ? t("sellerApp.submitting") : t("sellerApp.submit")}
           </Button>
-
         </form>
       </DialogContent>
     </Dialog>
