@@ -1,77 +1,77 @@
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, ArrowRight, Star } from "lucide-react";
+import { ArrowRight, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import heroImage from "@/assets/hero-marketplace.jpg";
+import heroImage from "@/assets/hero-global.jpg";
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center bg-gradient-hero overflow-hidden">
-      {/* Background Image - more visible */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60"
-        style={{ backgroundImage: `url(${heroImage})` }} />
-      
-      {/* Gradient Overlay - lighter */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/70 via-primary/60 to-secondary/70" />
-
-      <div className="relative z-10 container mx-auto px-4 text-center">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Badge */}
-          <div className="flex justify-center">
-            <Badge variant="secondary" className="px-4 py-2 text-sm font-medium">
-              <Star className="h-4 w-4 mr-2" />
-              Marketplace #1 pour la communauté haïtienne en RD
-            </Badge>
-          </div>
-
-          {/* Main Heading */}
-          <div className="space-y-4">
-            <h1 className="text-3xl md:text-5xl font-bold text-primary-foreground">
-              La meilleure plateforme pour acheter en ligne
+    <section className="relative bg-background border-b border-border">
+      <div className="container mx-auto px-4 py-12 md:py-20">
+        <div className="grid md:grid-cols-2 gap-10 items-center">
+          {/* Copy */}
+          <div className="space-y-6 text-center md:text-left">
+            <span className="inline-block text-xs tracking-[0.2em] uppercase text-muted-foreground">
+              New season · Worldwide
+            </span>
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.05]">
+              Shop the world.<br />
+              <span className="text-muted-foreground">Delivered to you.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/90 font-medium">
-              Pi bon platfòm pou achte sou entènèt
+            <p className="text-base md:text-lg text-muted-foreground max-w-md mx-auto md:mx-0">
+              Thousands of trending products, one global marketplace. Fashion, tech, home and more — shipped fast, in any language, to any country.
             </p>
-            <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
-              Découvrez des milliers de produits de la communauté haïtienne en République dominicaine. 
-              Achetez en toute simplicité avec des paiements sécurisés et une livraison rapide.
-            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+              <Button
+                size="lg"
+                className="text-base px-8 h-12 rounded-none bg-foreground text-background hover:bg-foreground/90"
+                onClick={() => navigate("/products")}
+              >
+                <ShoppingBag className="h-4 w-4 mr-2" />
+                Shop now
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base px-8 h-12 rounded-none"
+                onClick={() => navigate("/shops")}
+              >
+                Explore shops
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 pt-8 max-w-md mx-auto md:mx-0">
+              <div>
+                <div className="text-2xl font-bold text-foreground">30+</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider">Countries</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-foreground">10k+</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider">Products</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-foreground">24/7</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider">Support</div>
+              </div>
+            </div>
           </div>
 
-          {/* CTA Button - only "Commencer à acheter" */}
-          <div className="flex justify-center">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-4 h-auto" onClick={() => navigate("/products")}>
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Commencer à acheter
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Button>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary-foreground">1000+</div>
-              <div className="text-primary-foreground/80">Vendeurs actifs</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary-foreground">15k+</div>
-              <div className="text-primary-foreground/80">Commandes livrées</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary-foreground">50+</div>
-              <div className="text-primary-foreground/80">Livreurs partenaires</div>
-            </div>
+          {/* Image */}
+          <div className="relative aspect-square md:aspect-[4/5] overflow-hidden bg-muted">
+            <img
+              src={heroImage}
+              alt="Global marketplace"
+              width={1024}
+              height={1024}
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       </div>
-
-      {/* Decorative Elements */}
-      <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent" />
-    </section>);
-
+    </section>
+  );
 };
 
 export default HeroSection;
