@@ -88,10 +88,16 @@ const SellerDashboard = () => {
               <UtensilsCrossed className="h-4 w-4" />
               <span className="hidden sm:inline">{t("sellerDash.tabs.restaurant")}</span>
             </TabsTrigger>
-            <TabsTrigger value="orders" className="gap-2">
+            <TabsTrigger value="orders" className="gap-2 relative">
               <ShoppingCart className="h-4 w-4" />
               <span className="hidden sm:inline">{t("sellerDash.tabs.orders")}</span>
+              {stats && stats.pendingOrders > 0 && (
+                <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 min-w-5 px-1 flex items-center justify-center text-xs">
+                  {stats.pendingOrders}
+                </Badge>
+              )}
             </TabsTrigger>
+
             <TabsTrigger value="analytics" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">{t("sellerDash.tabs.analytics")}</span>
