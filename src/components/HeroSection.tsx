@@ -3,7 +3,7 @@ import { ArrowRight, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import heroImage from "@/assets/hero-global.jpg";
-import bgLogo from "@/assets/apexl-icon.png.asset.json";
+import bgLogo from "@/assets/apexl-logo.png.asset.json";
 
 const HeroSection = () => {
   const navigate = useNavigate();

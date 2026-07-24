@@ -8,6 +8,7 @@ import {
   LogOut, ChevronDown, Settings, Package, Search,
   Store, Truck, UtensilsCrossed, Building2
 } from "lucide-react";
+import apexlLogo from "@/assets/apexl-logo.png.asset.json";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { CartSheet } from "@/components/cart/CartSheet";
@@ -52,13 +53,14 @@ const Header = () => {
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="bg-foreground p-2 rounded-none">
-                <ShoppingBag className="h-6 w-6 text-background" />
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="text-xl font-bold tracking-tight text-foreground">APEXL</h1>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Shop the world</p>
-              </div>
+              <img
+                src={apexlLogo.url}
+                alt="APEXL"
+                width={120}
+                height={36}
+                className="h-8 md:h-9 w-auto object-contain"
+              />
+              <span className="sr-only">APEXL</span>
             </Link>
           </div>
 

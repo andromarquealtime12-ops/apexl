@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import apexlLogo from "@/assets/apexl-logo.png.asset.json";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -20,16 +21,19 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div className="bg-background p-2 rounded-none">
-                <ShoppingBag className="h-6 w-6 text-foreground" />
+                <img
+                  src={apexlLogo.url}
+                  alt="APEXL"
+                  width={120}
+                  height={32}
+                  className="h-7 w-auto object-contain"
+                />
               </div>
-              <div>
-                <h3 className="text-xl font-bold">APEXL</h3>
-                <p className="text-sm text-background/70 uppercase tracking-[0.2em] text-[10px]">
-                  {t("footer.tagline")}
-                </p>
-              </div>
+              <p className="text-sm text-background/70 uppercase tracking-[0.2em] text-[10px]">
+                {t("footer.tagline")}
+              </p>
             </div>
             <p className="text-background/80 text-sm leading-relaxed">
               {t("footer.about")}
