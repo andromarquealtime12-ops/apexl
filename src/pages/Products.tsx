@@ -120,6 +120,7 @@ const Products = () => {
   const userCountry = useUserCountry();
 
   // Country-first + distance sort. When `nearMe` active also filter by radius.
+  // When `international` active, only show products from OTHER countries (Printful/Shopify/foreign sellers).
   const displayedProducts = useMemo(() => {
     if (!products) return [];
     const annotated = products.map((p: any) => {
@@ -129,11 +130,18 @@ const Products = () => {
         : Infinity;
       return { ...p, _distance: distance, _shopName: coords?.shopName };
     });
-    const filtered = nearMe && userLat && userLng
-      ? annotated.filter((p: any) => p._distance <= maxRadius)
-      : annotated;
+    let filtered = annotated;
+    if (nearMe && userLat && userLng) {
+      filtered = filtered.filter((p: any) => p._distance <= maxRadius);
+    }
+    if (international) {
+      filtered = filtered.filter((p: any) =>
+        p.is_printful || p.is_shopify || (p.seller_country && p.seller_country !== userCountry)
+      );
+    }
     return filtered.sort(compareByLocalThenDistance(userCountry));
-  }, [nearMe, userLat, userLng, products, sellerCoords, maxRadius, userCountry]);
+  }, [nearMe, international, userLat, userLng, products, sellerCoords, maxRadius, userCountry]);
+
 
 
   const handleCategoryChange = (value: string) => {
