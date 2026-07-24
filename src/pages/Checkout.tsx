@@ -49,8 +49,13 @@ const Checkout = () => {
   const cashCheckout = useCashCheckout();
   const { data: zones } = useDeliveryZones(false);
 
-  const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [deliveryCity, setDeliveryCity] = useState("");
+  // Restore saved confirmed address from localStorage
+  const savedAddress = (() => {
+    try { return JSON.parse(localStorage.getItem("apex_confirmed_address") || "null"); } catch { return null; }
+  })();
+
+  const [deliveryAddress, setDeliveryAddress] = useState(savedAddress?.address || "");
+  const [deliveryCity, setDeliveryCity] = useState(savedAddress?.city || "");
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [buyerPhone, setBuyerPhone] = useState("");
   const [currency, setCurrency] = useState<Currency>("DOP");
@@ -58,10 +63,10 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState<"wallet" | "cash">("wallet");
 
   // Printful international address
-  const [deliveryAddress2, setDeliveryAddress2] = useState("");
-  const [deliveryState, setDeliveryState] = useState("");
-  const [deliveryZip, setDeliveryZip] = useState("");
-  const [deliveryCountry, setDeliveryCountry] = useState(profile?.country || "DO");
+  const [deliveryAddress2, setDeliveryAddress2] = useState(savedAddress?.address2 || "");
+  const [deliveryState, setDeliveryState] = useState(savedAddress?.state || "");
+  const [deliveryZip, setDeliveryZip] = useState(savedAddress?.zip || "");
+  const [deliveryCountry, setDeliveryCountry] = useState(savedAddress?.country || profile?.country || "DO");
 
   const hasPrintfulItem = items.some((it) => (it.product as any).is_printful === true);
 
@@ -70,14 +75,15 @@ const Checkout = () => {
     if (hasPrintfulItem && currency !== "USD") setCurrency("USD");
   }, [hasPrintfulItem, currency]);
 
-  // Buyer GPS
-  const [buyerLat, setBuyerLat] = useState<number | null>(null);
-  const [buyerLng, setBuyerLng] = useState<number | null>(null);
+  // Buyer GPS (restore from saved address so distance/fees compute immediately)
+  const [buyerLat, setBuyerLat] = useState<number | null>(savedAddress?.lat ?? null);
+  const [buyerLng, setBuyerLng] = useState<number | null>(savedAddress?.lng ?? null);
   const [gettingLocation, setGettingLocation] = useState(false);
   const [shopDistances, setShopDistances] = useState<Record<string, { distance: number; shopName: string; fee: number }>>({});
-  // Auto-address confirmation
-  const [addressAutoFilled, setAddressAutoFilled] = useState(false);
-  const [addressConfirmed, setAddressConfirmed] = useState(false);
+  // Auto-address confirmation — pre-confirmed if restored from a previous checkout
+  const [addressAutoFilled, setAddressAutoFilled] = useState(!!savedAddress);
+  const [addressConfirmed, setAddressConfirmed] = useState(!!savedAddress);
+
   const [reverseLoading, setReverseLoading] = useState(false);
 
 
