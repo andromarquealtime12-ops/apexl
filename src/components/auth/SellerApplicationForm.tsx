@@ -33,6 +33,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
   const { isVerified: isEmailVerified } = useIsEmailVerified();
   const sendVerification = useSendVerificationCode();
   
+  const [verifyEmail, setVerifyEmail] = useState("");
   const [formData, setFormData] = useState({
     shop_name: "",
     shop_description: "",
@@ -176,17 +177,26 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
           {!isEmailVerified && (
             <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-900/20">
               <Mail className="h-4 w-4 text-amber-600" />
-              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm flex items-center justify-between gap-3">
-                <span>Vérifiez votre email pour renforcer la confiance de votre boutique.</span>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => sendVerification.mutate()}
-                  disabled={sendVerification.isPending}
-                >
-                  {sendVerification.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Envoyer le lien"}
-                </Button>
+              <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm space-y-2">
+                <p>Vérifiez votre email pour renforcer la confiance de votre boutique. Le lien sera envoyé à l'adresse ci-dessous.</p>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="email"
+                    placeholder="votre@email.com"
+                    value={verifyEmail}
+                    onChange={(e) => setVerifyEmail(e.target.value)}
+                    className="h-8 text-sm bg-background"
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => sendVerification.mutate(verifyEmail || undefined)}
+                    disabled={sendVerification.isPending}
+                  >
+                    {sendVerification.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Envoyer le lien"}
+                  </Button>
+                </div>
               </AlertDescription>
             </Alert>
           )}

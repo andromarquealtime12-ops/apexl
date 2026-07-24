@@ -38,7 +38,7 @@ export function EmailVerificationCard() {
   const isVerified = profile?.email_verified || !!user?.email_confirmed_at;
 
   const handleSendCode = async () => {
-    await sendCode.mutateAsync();
+    await sendCode.mutateAsync(undefined);
     setShowOtpInput(true);
   };
 

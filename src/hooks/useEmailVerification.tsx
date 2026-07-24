@@ -7,24 +7,31 @@ export function useSendVerificationCode() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async () => {
-      if (!user?.email) throw new Error("No email found");
+    mutationFn: async (targetEmail?: string) => {
+      const email = (targetEmail && targetEmail.trim()) || user?.email;
+      if (!email) throw new Error("No email provided");
 
-      // Use Supabase Auth's built-in email resend
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: user.email,
-      });
+      // If the target email differs from the account email, trigger an email
+      // change — Supabase sends the confirmation link to the NEW address.
+      if (
+        user?.email &&
+        targetEmail &&
+        targetEmail.trim().toLowerCase() !== user.email.toLowerCase()
+      ) {
+        const { error } = await supabase.auth.updateUser({ email: targetEmail.trim() });
+        if (error) throw error;
+        return { email: targetEmail.trim(), mode: "change" as const };
+      }
 
+      const { error } = await supabase.auth.resend({ type: "signup", email });
       if (error) throw error;
-      
-      return { email: user.email };
+      return { email, mode: "resend" as const };
     },
-    onSuccess: () => {
-      toast.success("Email de vérification envoyé ! Vérifiez votre boîte de réception.");
+    onSuccess: (res) => {
+      toast.success(`Lien de vérification envoyé à ${res.email}.`);
     },
     onError: (error: any) => {
-      toast.error("Erreur lors de l'envoi. Réessayez dans quelques minutes.");
+      toast.error(error?.message || "Erreur lors de l'envoi. Réessayez dans quelques minutes.");
       console.error(error);
     },
   });
