@@ -13,6 +13,30 @@ interface ReturnChatProps {
   returnId: string;
 }
 
+function SignedImage({ value }: { value: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    // Legacy messages may already contain a full URL — render it as-is.
+    if (/^https?:\/\//i.test(value)) {
+      setUrl(value);
+      return;
+    }
+    const path = value.replace(/^storage:\/\/return-photos\//, "");
+    supabase.storage
+      .from("return-photos")
+      .createSignedUrl(path, 3600)
+      .then(({ data }) => {
+        if (!cancelled && data?.signedUrl) setUrl(data.signedUrl);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [value]);
+  if (!url) return null;
+  return <img src={url} alt="Photo" className="rounded mb-1 max-h-32 w-auto" />;
+}
+
 export default function ReturnChat({ returnId }: ReturnChatProps) {
   const { user } = useAuth();
   const { data: messages, isLoading } = useReturnMessages(returnId);
@@ -45,8 +69,8 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
       const { error: uploadError } = await supabase.storage.from("return-photos").upload(path, file);
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage.from("return-photos").getPublicUrl(path);
-      await sendMessage.mutateAsync({ returnId, imageUrl: publicUrl, message: "📷 Photo envoyée" });
+      // Store the storage path only — bucket is private, signed URLs generated at render.
+      await sendMessage.mutateAsync({ returnId, imageUrl: path, message: "📷 Photo envoyée" });
     } catch (err) {
       console.error("Upload error:", err);
     } finally {
@@ -60,7 +84,7 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
       <div className="bg-muted/50 px-3 py-2 text-sm font-medium">
         💬 Communication retour
       </div>
-      
+
       <ScrollArea className="h-48 p-3" ref={scrollRef}>
         {isLoading ? (
           <p className="text-xs text-muted-foreground text-center">Chargement...</p>
@@ -80,9 +104,7 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted"
                 }`}>
-                  {msg.image_url && (
-                    <img src={msg.image_url} alt="Photo" className="rounded mb-1 max-h-32 w-auto" />
-                  )}
+                  {msg.image_url && <SignedImage value={msg.image_url} />}
                   {msg.message && <p>{msg.message}</p>}
                   <p className="text-[10px] opacity-60 mt-1">
                     {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true, locale: fr })}
