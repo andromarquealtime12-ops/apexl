@@ -10,15 +10,15 @@ import RestaurantManager from "@/components/seller/RestaurantManager";
 import SellerReturnManager from "@/components/returns/SellerReturnManager";
 import SellerStatsCards from "@/components/seller/SellerStatsCards";
 import ProductsManager from "@/components/seller/ProductsManager";
-
 import SellerOrdersTable from "@/components/seller/SellerOrdersTable";
 import { useSellerStats } from "@/hooks/useSellerStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 import { IdentityRequiredBanner } from "@/components/identity/IdentityRequiredBanner";
-
+import { useTranslation } from "react-i18next";
 
 const SellerDashboard = () => {
   useRealtimeOrders();
+  const { t } = useTranslation();
   const { user, isSeller, loading } = useAuth();
   const { data: stats, isLoading: statsLoading } = useSellerStats();
 
@@ -43,15 +43,11 @@ const SellerDashboard = () => {
           <Card className="max-w-2xl mx-auto">
             <CardHeader className="text-center">
               <Store className="h-16 w-16 mx-auto text-primary mb-4" />
-              <CardTitle className="text-2xl">Devenir Vendeur</CardTitle>
-              <CardDescription>
-                Vous n'êtes pas encore enregistré comme vendeur. Contactez l'administration pour obtenir l'accès vendeur.
-              </CardDescription>
+              <CardTitle className="text-2xl">{t("sellerDash.notSeller.title")}</CardTitle>
+              <CardDescription>{t("sellerDash.notSeller.desc")}</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="text-muted-foreground">
-                Une fois approuvé, vous pourrez ajouter vos produits et gérer vos ventes depuis ce tableau de bord.
-              </p>
+              <p className="text-muted-foreground">{t("sellerDash.notSeller.footer")}</p>
             </CardContent>
           </Card>
         </div>
@@ -62,24 +58,21 @@ const SellerDashboard = () => {
   return (
     <main className="min-h-screen bg-background">
       <Header />
-
       <div className="container px-4 py-8">
         <div className="flex items-center gap-3 mb-6">
           <Store className="h-8 w-8 text-primary" />
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
-              Tableau de bord vendeur
-              <Badge variant="secondary" className="text-xs">Vendeur</Badge>
+              {t("sellerDash.title")}
+              <Badge variant="secondary" className="text-xs">{t("sellerDash.badge")}</Badge>
             </h1>
-            <p className="text-muted-foreground">Gérez vos produits et suivez vos ventes</p>
+            <p className="text-muted-foreground">{t("sellerDash.subtitle")}</p>
           </div>
         </div>
 
         <div className="mb-6">
           <IdentityRequiredBanner role="seller" />
         </div>
-
-
 
         <div className="mb-8">
           <SellerStatsCards stats={stats} isLoading={statsLoading} />
@@ -89,31 +82,30 @@ const SellerDashboard = () => {
           <TabsList className="grid grid-cols-4 w-full max-w-xl">
             <TabsTrigger value="products" className="gap-2">
               <Package className="h-4 w-4" />
-              <span className="hidden sm:inline">Produits</span>
+              <span className="hidden sm:inline">{t("sellerDash.tabs.products")}</span>
             </TabsTrigger>
             <TabsTrigger value="restaurant" className="gap-2">
               <UtensilsCrossed className="h-4 w-4" />
-              <span className="hidden sm:inline">Restaurant</span>
+              <span className="hidden sm:inline">{t("sellerDash.tabs.restaurant")}</span>
             </TabsTrigger>
             <TabsTrigger value="orders" className="gap-2">
               <ShoppingCart className="h-4 w-4" />
-              <span className="hidden sm:inline">Commandes</span>
+              <span className="hidden sm:inline">{t("sellerDash.tabs.orders")}</span>
             </TabsTrigger>
             <TabsTrigger value="analytics" className="gap-2">
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Stats</span>
+              <span className="hidden sm:inline">{t("sellerDash.tabs.analytics")}</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
-            
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="h-5 w-5" />
-                  Mes produits
+                  {t("sellerDash.myProducts")}
                 </CardTitle>
-                <CardDescription>Gérez votre catalogue de produits</CardDescription>
+                <CardDescription>{t("sellerDash.myProductsDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <ProductsManager />
@@ -131,11 +123,9 @@ const SellerDashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
-                  Mes commandes
+                  {t("sellerDash.myOrders")}
                 </CardTitle>
-                <CardDescription>
-                  Marquez vos commandes comme prêtes — les livreurs à proximité seront notifiés automatiquement
-                </CardDescription>
+                <CardDescription>{t("sellerDash.myOrdersDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <SellerOrdersTable />
@@ -148,34 +138,34 @@ const SellerDashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Statistiques de vente
+                  {t("sellerDash.analytics.title")}
                 </CardTitle>
-                <CardDescription>Analysez vos performances</CardDescription>
+                <CardDescription>{t("sellerDash.analytics.desc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <h4 className="font-medium">Résumé</h4>
+                    <h4 className="font-medium">{t("sellerDash.analytics.summary")}</h4>
                     <div className="space-y-2">
                       <div className="flex justify-between py-2 border-b">
-                        <span className="text-muted-foreground">Produits vendus</span>
+                        <span className="text-muted-foreground">{t("sellerDash.analytics.sold")}</span>
                         <span className="font-medium">{stats?.totalOrders || 0}</span>
                       </div>
                       <div className="flex justify-between py-2 border-b">
-                        <span className="text-muted-foreground">Taux de conversion</span>
+                        <span className="text-muted-foreground">{t("sellerDash.analytics.conversion")}</span>
                         <span className="font-medium">--%</span>
                       </div>
                       <div className="flex justify-between py-2 border-b">
-                        <span className="text-muted-foreground">Panier moyen</span>
+                        <span className="text-muted-foreground">{t("sellerDash.analytics.avg")}</span>
                         <span className="font-medium">--</span>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-center text-center p-8 bg-muted/30 rounded-lg">
                     <div>
                       <BarChart3 className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-                      <p className="text-muted-foreground">Graphiques détaillés bientôt disponibles</p>
+                      <p className="text-muted-foreground">{t("sellerDash.analytics.chartsComing")}</p>
                     </div>
                   </div>
                 </div>
