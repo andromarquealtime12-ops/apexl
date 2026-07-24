@@ -172,28 +172,46 @@ const Wallet = () => {
       return;
     }
     try {
-      await withdrawalMutation.mutateAsync({
-        amount,
-        currency: withdrawCurrency,
-        paymentMethod: withdrawMethod,
-        accountDetails: withdrawAccount.trim(),
-      });
-      toast.success("Demande de retrait soumise ! Elle sera traitée sous 24-48h.");
+      if (withdrawMethod === "moncash") {
+        // Auto MonCash withdrawal via Bazik.io
+        if (withdrawCurrency !== "HTG") {
+          toast.error("Les retraits MonCash automatiques sont uniquement en HTG");
+          return;
+        }
+        const { data, error } = await supabase.functions.invoke("bazik-withdraw", {
+          body: { amount, phoneNumber: withdrawAccount.trim() },
+        });
+        if (error) throw error;
+        if ((data as any)?.error) throw new Error((data as any).error);
+        toast.success("Retrait MonCash envoyé ! Vous recevrez le montant sous quelques minutes.");
+      } else {
+        await withdrawalMutation.mutateAsync({
+          amount,
+          currency: withdrawCurrency,
+          paymentMethod: withdrawMethod,
+          accountDetails: withdrawAccount.trim(),
+        });
+        toast.success("Demande de retrait soumise ! Elle sera traitée sous 24-48h.");
+      }
       setWithdrawOpen(false);
       setWithdrawAmount("");
       setWithdrawAccount("");
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
     } catch (error: any) {
       toast.error(error.message || "Erreur lors du retrait");
     }
   };
 
-  // Use dynamic deposit methods from database
+  // Use dynamic deposit methods from database — hide manual MonCash (auto via Bazik.io now)
   const filteredDepositMethods = (depositMethodsData || []).filter(
-    m => m.country === "both" || m.country === (depositCurrency === "HTG" ? "HT" : "DO")
+    m => (m.country === "both" || m.country === (depositCurrency === "HTG" ? "HT" : "DO"))
+      && m.method_key !== "moncash"
   );
 
   const currentMethod = filteredDepositMethods.find(m => m.method_key === depositMethod);
   const isManualMethod = !!currentMethod;
+  const isBazikWithdraw = withdrawMethod === "moncash";
 
   return (
     <main className="min-h-screen bg-background">
