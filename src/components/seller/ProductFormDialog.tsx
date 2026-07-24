@@ -208,7 +208,7 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
               <SelectContent>
                 {categories?.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
+                    {t(`categories.items.${cat.icon}`, { defaultValue: cat.name })}
                   </SelectItem>
                 ))}
               </SelectContent>

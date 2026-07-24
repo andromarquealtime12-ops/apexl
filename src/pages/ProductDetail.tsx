@@ -153,7 +153,7 @@ export default function ProductDetail() {
           {/* Info */}
           <div className="space-y-6">
             <div>
-              {product.category && <Badge variant="secondary" className="mb-2">{product.category.name}</Badge>}
+              {product.category && <Badge variant="secondary" className="mb-2">{t(`categories.items.${product.category.icon}`, { defaultValue: product.category.name })}</Badge>}
               <h1 className="text-2xl font-bold">{product.name}</h1>
               <p className="text-3xl font-bold text-primary mt-2">{currencySymbol} {product.price.toLocaleString()}</p>
             </div>

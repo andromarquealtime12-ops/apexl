@@ -207,7 +207,7 @@ const Products = () => {
                 <SelectItem value="all">Toutes les catégories</SelectItem>
                 {categories?.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
-                    {category.name}
+                    {t(`categories.items.${category.icon}`, { defaultValue: category.name })}
                   </SelectItem>
                 ))}
               </SelectContent>
