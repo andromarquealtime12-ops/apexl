@@ -274,7 +274,22 @@ const Checkout = () => {
       return;
     }
 
+    // Persist the confirmed address so the next checkout is pre-filled and pre-confirmed
     try {
+      localStorage.setItem("apex_confirmed_address", JSON.stringify({
+        address: deliveryAddress,
+        city: deliveryCity,
+        address2: deliveryAddress2,
+        state: deliveryState,
+        zip: deliveryZip,
+        country: deliveryCountry,
+        lat: buyerLat,
+        lng: buyerLng,
+      }));
+    } catch {}
+
+    try {
+
       const params = {
         deliveryAddress,
         deliveryCity,
