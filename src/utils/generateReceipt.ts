@@ -119,7 +119,7 @@ function drawHeader(doc: jsPDF, title: string, subtitle?: string) {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("APEX", 14, 12);
+  doc.text("APEXL", 14, 12);
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.text(title, 14, 19);
@@ -133,7 +133,7 @@ function drawFooter(doc: jsPDF) {
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setTextColor(120, 120, 120);
-    doc.text(`APEX — marketayiti.shop  •  Page ${i}/${pages}`, 105, 290, { align: "center" });
+    doc.text(`APEXL — marketayiti.shop  •  Page ${i}/${pages}`, 105, 290, { align: "center" });
   }
 }
 

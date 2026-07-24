@@ -690,7 +690,7 @@ const Checkout = () => {
                         <Wallet className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium">Portefeuille APEX</p>
+                        <p className="font-medium">Portefeuille APEXL</p>
                         <p className="text-sm text-muted-foreground">
                           Solde: {CURRENCY_SYMBOLS[currency]} {currentBalance.toLocaleString()}
                         </p>

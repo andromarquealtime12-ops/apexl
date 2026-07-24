@@ -7,13 +7,13 @@ const About = () => {
     <main className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold text-foreground mb-8 text-center">À propos d'APEX</h1>
+        <h1 className="text-4xl font-bold text-foreground mb-8 text-center">À propos d'APEXL</h1>
         
         <div className="max-w-3xl mx-auto space-y-8">
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold text-foreground">Notre Mission</h2>
             <p className="text-muted-foreground leading-relaxed">
-              APEX est la première plateforme marketplace dédiée à la communauté haïtienne 
+              APEXL est la première plateforme marketplace dédiée à la communauté haïtienne 
               en République dominicaine. Notre mission est de connecter vendeurs, acheteurs et livreurs 
               pour créer une économie digitale prospère et inclusive.
             </p>
@@ -57,7 +57,7 @@ const About = () => {
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold text-foreground">Notre Histoire</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Fondé en 2024, APEX est né du constat que la communauté haïtienne en République 
+              Fondé en 2024, APEXL est né du constat que la communauté haïtienne en République 
               dominicaine avait besoin d'une plateforme de commerce en ligne adaptée à ses besoins. 
               Nous avons créé un espace où chacun peut vendre, acheter et se faire livrer en toute confiance.
             </p>

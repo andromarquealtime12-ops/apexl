@@ -25,7 +25,7 @@
   "featured": { "title": "Featured products", "subtitle": "The best picks curated for you", "viewAll": "View all", "empty": "No featured products yet. Check back soon!" },
   "userTypes": {
     "title": "Join our global community",
-    "subtitle": "Whether you shop, sell or deliver, APEX gives you every tool you need to thrive.",
+    "subtitle": "Whether you shop, sell or deliver, APEXL gives you every tool you need to thrive.",
     "buyer": { "title": "Buyer", "description": "Discover everything you need in one worldwide marketplace", "f1": "Thousands of curated products", "f2": "Fast door-to-door delivery", "f3": "Multiple secure payment options", "f4": "24/7 customer support", "cta": "Start shopping" },
     "seller": { "title": "Seller", "description": "Grow your business and reach millions of new customers", "f1": "Launch your online store", "f2": "Effortless order management", "f3": "Built-in marketing tools", "f4": "Detailed analytics and reports", "cta": "Become a seller" },
     "driver": { "title": "Driver", "description": "Earn on your own schedule delivering in your area", "f1": "Flexible hours", "f2": "Attractive earnings", "f3": "Built-in GPS routing", "f4": "Weekly payouts", "cta": "Become a driver" }
@@ -42,7 +42,7 @@
     "multi": { "title": "Multi-language", "description": "Interface available in 9+ languages worldwide.", "badge": "Global" }
   },
   "cta": {
-    "title": "Ready to join the movement?", "description": "Download the APEX app and start buying, selling or delivering today. The global marketplace is waiting for you.",
+    "title": "Ready to join the movement?", "description": "Download the APEXL app and start buying, selling or delivering today. The global marketplace is waiting for you.",
     "download": "Download the app", "web": "Web version",
     "fast": "Fast launch", "fastDesc": "Live in under 5 minutes",
     "commission": "Low commission", "commissionDesc": "Preferred rates for the community",
@@ -53,14 +53,14 @@
     "quickLinks": "Quick links", "aboutLink": "About", "howItWorks": "How it works", "terms": "Terms of use", "privacy": "Privacy policy", "help": "Help and support",
     "business": "For businesses", "becomeSeller": "Become a seller", "seeProducts": "Browse products", "restaurants": "Restaurants", "solutions": "Business solutions", "affiliate": "Affiliate program",
     "connected": "Stay connected", "newsletter": "Get our latest updates", "emailPlaceholder": "Your email",
-    "rights": "© 2026 APEX. All rights reserved.", "legal": "Legal notice", "cookies": "Cookies", "sitemap": "Sitemap"
+    "rights": "© 2026 APEXL. All rights reserved.", "legal": "Legal notice", "cookies": "Cookies", "sitemap": "Sitemap"
   },
   "auth": {
-    "title": "APEX", "subtitle": "Sign in to access your account", "signin": "Sign in", "signup": "Sign up",
+    "title": "APEXL", "subtitle": "Sign in to access your account", "signin": "Sign in", "signup": "Sign up",
     "email": "Email", "password": "Password", "fullName": "Full name", "namePlaceholder": "John Doe", "forgot": "Forgot password?",
     "signInBtn": "Sign in", "signUpBtn": "Create my account", "sellOrDeliver": "Want to sell or deliver?",
     "seller": "Seller", "driver": "Driver", "createFirst": "Create an account first to apply",
-    "signInSuccess": "Successfully signed in!", "signUpSuccess": "Account created! Welcome to APEX."
+    "signInSuccess": "Successfully signed in!", "signUpSuccess": "Account created! Welcome to APEXL."
   },
   "product": {
     "addToCart": "Add to cart", "inCart": "In cart", "added": "Added!", "chooseVariant": "Choose color / size",
@@ -75,7 +75,7 @@
     "internationalAddress": "International address (Printful)",
     "internationalIntro": "Your Printful products ship from abroad. Please enter a full address.",
     "address1": "Address line 1", "address2": "Address line 2 (optional)", "state": "State / Province", "zip": "ZIP code", "country": "Country",
-    "paymentMethod": "Payment method", "wallet": "APEX Wallet", "balance": "Balance",
+    "paymentMethod": "Payment method", "wallet": "APEXL Wallet", "balance": "Balance",
     "cash": "Cash payment", "cashDesc": "Pay the driver in cash on delivery",
     "summary": "Order summary", "subtotal": "Subtotal", "delivery": "Delivery", "total": "Total",
     "confirm": "Confirm order", "confirmCash": "Place order (cash)",

@@ -56,7 +56,7 @@ const Header = () => {
                 <ShoppingBag className="h-6 w-6 text-background" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl font-bold tracking-tight text-foreground">APEX</h1>
+                <h1 className="text-xl font-bold tracking-tight text-foreground">APEXL</h1>
                 <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Shop the world</p>
               </div>
             </Link>
