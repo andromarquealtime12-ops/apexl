@@ -12,7 +12,7 @@ export function FeaturedProducts() {
   const products = featured?.length ? featured : recent;
   const { t } = useTranslation();
 
-  if (isLoading) {
+  if (isLoading || loadingRecent) {
     return (
       <section className="py-12">
         <div className="container px-4">
