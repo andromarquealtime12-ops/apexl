@@ -163,7 +163,18 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
     }
   }, [order?.status]);
 
+  // Fetch OSRM route from driver to buyer whenever driver moves significantly
+  useEffect(() => {
+    if (!driverPosition || !order?.buyer_latitude || !order?.buyer_longitude) return;
+    let cancelled = false;
+    getRoute(driverPosition, { lat: order.buyer_latitude, lng: order.buyer_longitude }).then((r) => {
+      if (!cancelled) setRemainingRoute(r.coordinates);
+    });
+    return () => { cancelled = true; };
+  }, [driverPosition?.lat, driverPosition?.lng, order?.buyer_latitude, order?.buyer_longitude]);
+
   if (!order) return null;
+
 
   const currentStepIndex = STATUS_INDEX[order.status || "pending"] ?? -1;
   const currencySymbol = CURRENCY_SYMBOLS[order.currency as keyof typeof CURRENCY_SYMBOLS] || "$";
@@ -208,15 +219,8 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
     });
   }
   
-  // Fetch OSRM route from driver to buyer whenever driver moves significantly
-  useEffect(() => {
-    if (!driverPosition || !order?.buyer_latitude || !order?.buyer_longitude) return;
-    let cancelled = false;
-    getRoute(driverPosition, { lat: order.buyer_latitude, lng: order.buyer_longitude }).then((r) => {
-      if (!cancelled) setRemainingRoute(r.coordinates);
-    });
-    return () => { cancelled = true; };
-  }, [driverPosition?.lat, driverPosition?.lng, order?.buyer_latitude, order?.buyer_longitude]);
+
+
 
   // Dashed OSRM route from driver to destination
   if (driverPosition && order.buyer_latitude && order.buyer_longitude) {
