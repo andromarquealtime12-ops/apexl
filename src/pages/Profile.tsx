@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,11 +17,6 @@ import ReferralCard from "@/components/referral/ReferralCard";
 import { useMySellerApplication, useMyDriverApplication } from "@/hooks/useApplications";
 import { toast } from "sonner";
 
-const STATUS_CONFIG = {
-  pending: { icon: Clock, color: "text-yellow-500", label: "En attente" },
-  approved: { icon: CheckCircle, color: "text-green-500", label: "Approuvée" },
-  rejected: { icon: XCircle, color: "text-red-500", label: "Rejetée" },
-};
 
 const Profile = () => {
   const { user, loading, isSeller, isDriver, isAdmin } = useAuth();
