@@ -48,7 +48,7 @@ export default function RestaurantManager() {
           <DialogTrigger asChild>
             <Button className="gap-2"><Plus className="h-4 w-4" /> Créer un restaurant</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Nouveau restaurant</DialogTitle>
             </DialogHeader>
