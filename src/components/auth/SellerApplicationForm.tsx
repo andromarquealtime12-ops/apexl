@@ -233,6 +233,23 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             <p className="text-[11px] text-muted-foreground">{t("sellerApp.addressHint")}</p>
           </div>
 
+          {shopLat != null && shopLng != null && (
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 flex items-start gap-2 animate-fade-in">
+              <MapPin className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+              <label className="flex items-start gap-2 text-sm cursor-pointer">
+                <Checkbox
+                  checked={pickupConfirmed}
+                  onCheckedChange={(v) => setPickupConfirmed(v === true)}
+                  className="mt-0.5"
+                />
+                <span>
+                  Je confirme que <strong>les livreurs viendront chercher les colis à cette position</strong>.
+                  Cette adresse sera enregistrée comme point de retrait de ma boutique (modifiable plus tard).
+                </span>
+              </label>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="shop_city">{t("sellerApp.city")} *</Label>
