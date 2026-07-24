@@ -34,6 +34,9 @@ import { GpsAddressField } from "@/components/ui/GpsAddressField";
 import { useDeliveryZones } from "@/hooks/useDeliveryZones";
 import { getZoneForPoint, calculateFee } from "@/utils/deliveryPricing";
 import { getRoute } from "@/utils/osrmRouting";
+import { reverseGeocode } from "@/utils/reverseGeocode";
+import { Checkbox } from "@/components/ui/checkbox";
+
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -72,6 +75,11 @@ const Checkout = () => {
   const [buyerLng, setBuyerLng] = useState<number | null>(null);
   const [gettingLocation, setGettingLocation] = useState(false);
   const [shopDistances, setShopDistances] = useState<Record<string, { distance: number; shopName: string; fee: number }>>({});
+  // Auto-address confirmation
+  const [addressAutoFilled, setAddressAutoFilled] = useState(false);
+  const [addressConfirmed, setAddressConfirmed] = useState(false);
+  const [reverseLoading, setReverseLoading] = useState(false);
+
 
   // Get current position (one-shot, high accuracy)
   const handleGetLocation = useCallback(() => {
