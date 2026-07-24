@@ -180,10 +180,35 @@ const Checkout = () => {
   }, [buyerLat, buyerLng, items, zones]);
 
 
+  // Reverse-geocode buyer GPS → autofill address (only if the user has not typed anything)
+  useEffect(() => {
+    if (!buyerLat || !buyerLng) return;
+    if (deliveryAddress.trim().length > 0 && !addressAutoFilled) return; // don't overwrite user input
+    let cancelled = false;
+    setReverseLoading(true);
+    (async () => {
+      const r = await reverseGeocode(buyerLat, buyerLng);
+      if (cancelled || !r) { setReverseLoading(false); return; }
+      // Prefer street; fall back to full display name shortened
+      const shortAddress = r.street || r.address.split(",").slice(0, 2).join(",");
+      setDeliveryAddress(shortAddress);
+      if (r.city) setDeliveryCity(r.city);
+      if (r.state) setDeliveryState(r.state);
+      if (r.postcode) setDeliveryZip(r.postcode);
+      if (r.countryCode) setDeliveryCountry(r.countryCode);
+      setAddressAutoFilled(true);
+      setAddressConfirmed(false); // require explicit confirmation
+      setReverseLoading(false);
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buyerLat, buyerLng]);
+
   // Prefill phone from profile
   useEffect(() => {
     if (profile?.phone && !buyerPhone) setBuyerPhone(profile.phone);
   }, [profile?.phone, buyerPhone]);
+
 
   const subtotal = getSubtotal();
   // Calculate total delivery fee from all shops
@@ -234,6 +259,15 @@ const Checkout = () => {
       return;
     }
 
+    if (!addressConfirmed) {
+      toast({
+        title: "Confirmez votre adresse",
+        description: "Cochez la case pour confirmer que l'adresse de livraison est correcte.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const params = {
         deliveryAddress,
@@ -261,6 +295,7 @@ const Checkout = () => {
       toast({ title: "Erreur", description: error.message || "Une erreur est survenue", variant: "destructive" });
     }
   };
+
 
   if (!user) {
     return (
