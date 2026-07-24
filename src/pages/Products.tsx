@@ -197,7 +197,32 @@ const Products = () => {
                 Produits près de moi
               </Button>
             )}
+            <Button
+              variant={international ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                if (international) {
+                  searchParams.delete("intl");
+                } else {
+                  searchParams.set("intl", "1");
+                }
+                setSearchParams(searchParams);
+              }}
+            >
+              <Globe className="h-4 w-4 mr-1" />
+              {international ? "Achat international ✓" : "Acheter à l'international"}
+            </Button>
           </div>
+
+          {international && (
+            <Alert className="bg-primary/5 border-primary/20">
+              <Globe className="h-4 w-4" />
+              <AlertDescription>
+                Vous consultez les produits des vendeurs situés hors de votre pays ({userCountry}). Le paiement se fait uniquement par <strong>portefeuille APEXL</strong> et les frais de livraison sont inclus jusqu'à votre domicile.
+              </AlertDescription>
+            </Alert>
+          )}
+
 
           {nearMe && userLat && userLng && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground p-2 bg-muted/30 rounded-md">
