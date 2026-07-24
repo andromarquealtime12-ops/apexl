@@ -130,7 +130,11 @@ const SellerDashboard = () => {
                 <CardTitle className="flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
                   {t("sellerDash.myOrders")}
+                  {stats && stats.pendingOrders > 0 && (
+                    <Badge variant="destructive">{stats.pendingOrders}</Badge>
+                  )}
                 </CardTitle>
+
                 <CardDescription>{t("sellerDash.myOrdersDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
