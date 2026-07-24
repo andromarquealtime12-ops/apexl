@@ -45,8 +45,8 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
       const { error: uploadError } = await supabase.storage.from("return-photos").upload(path, file);
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage.from("return-photos").getPublicUrl(path);
-      await sendMessage.mutateAsync({ returnId, imageUrl: publicUrl, message: "📷 Photo envoyée" });
+      // Store the storage path (bucket is private) — signed URLs are generated at render time
+      await sendMessage.mutateAsync({ returnId, imageUrl: path, message: "📷 Photo envoyée" });
     } catch (err) {
       console.error("Upload error:", err);
     } finally {
@@ -54,6 +54,49 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
+
+  return <ReturnChatView
+    messages={messages}
+    isLoading={isLoading}
+    user={user}
+    text={text}
+    setText={setText}
+    handleSend={handleSend}
+    handleImageUpload={handleImageUpload}
+    uploading={uploading}
+    fileInputRef={fileInputRef}
+    sendMessagePending={sendMessage.isPending}
+    scrollRef={scrollRef}
+  />;
+}
+
+function SignedImage({ path }: { path: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    // Legacy messages may already contain a full URL — render it as-is.
+    if (/^https?:\/\//i.test(path)) {
+      setUrl(path);
+      return;
+    }
+    const clean = path.replace(/^storage:\/\/return-photos\//, "");
+    supabase.storage.from("return-photos").createSignedUrl(clean, 3600).then(({ data }) => {
+      if (!cancelled && data?.signedUrl) setUrl(data.signedUrl);
+    });
+    return () => { cancelled = true; };
+  }, [path]);
+  if (!url) return null;
+  return <img src={url} alt="Photo" className="rounded mb-1 max-h-32 w-auto" />;
+}
+
+function ReturnChatView(props: {
+  messages: any; isLoading: boolean; user: any;
+  text: string; setText: (v: string) => void;
+  handleSend: () => void; handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  uploading: boolean; fileInputRef: React.RefObject<HTMLInputElement>;
+  sendMessagePending: boolean; scrollRef: React.RefObject<HTMLDivElement>;
+}) {
+  const { messages, isLoading, user, text, setText, handleSend, handleImageUpload, uploading, fileInputRef, sendMessagePending, scrollRef } = props;
 
   return (
     <div className="border rounded-lg overflow-hidden">
