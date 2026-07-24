@@ -206,21 +206,21 @@ const Header = () => {
               </SheetTrigger>
               <SheetContent side="right">
                 <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
+                  <SheetTitle>{t("nav.menu")}</SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-4 mt-6">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Rechercher..." className="pl-10" />
+                    <Input placeholder={t("nav.search")} className="pl-10" />
                   </div>
-                  <Link to="/" className="text-lg font-medium py-2 border-b">Accueil</Link>
-                  <Link to="/products" className="text-lg font-medium py-2 border-b">Produits</Link>
-                  <Link to="/shops" className="text-lg font-medium py-2 border-b">Boutiques</Link>
+                  <Link to="/" className="text-lg font-medium py-2 border-b">{t("nav.home")}</Link>
+                  <Link to="/products" className="text-lg font-medium py-2 border-b">{t("nav.products")}</Link>
+                  <Link to="/shops" className="text-lg font-medium py-2 border-b">{t("nav.shops")}</Link>
                   <Link to="/restaurants" className="text-lg font-medium py-2 border-b flex items-center gap-2">
-                    <UtensilsCrossed className="h-4 w-4" /> Restaurants
+                    <UtensilsCrossed className="h-4 w-4" /> {t("nav.restaurants")}
                   </Link>
-                  <Link to="/seller" className="text-lg font-medium py-2 border-b">Vendre</Link>
-                  <Link to="/driver" className="text-lg font-medium py-2 border-b">Livrer</Link>
+                  <Link to="/seller" className="text-lg font-medium py-2 border-b">{t("nav.sell")}</Link>
+                  <Link to="/driver" className="text-lg font-medium py-2 border-b">{t("nav.deliver")}</Link>
                   {isAgent && (
                     <Link to="/agent" className="text-lg font-medium py-2 border-b flex items-center gap-2 text-primary">
                       <Building2 className="h-4 w-4" /> Agent
@@ -228,8 +228,8 @@ const Header = () => {
                   )}
                   {!user && (
                     <div className="flex flex-col gap-2 pt-4">
-                      <Button onClick={openSignIn}>Connexion</Button>
-                      <Button variant="outline" onClick={openSignUp}>S'inscrire</Button>
+                      <Button onClick={openSignIn}>{t("nav.signin")}</Button>
+                      <Button variant="outline" onClick={openSignUp}>{t("nav.signup")}</Button>
                     </div>
                   )}
                 </div>
