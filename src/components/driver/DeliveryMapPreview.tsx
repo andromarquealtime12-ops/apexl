@@ -1,11 +1,14 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Store, Navigation, X } from "lucide-react";
+import { MapPin, Store, Navigation, X, Loader2 } from "lucide-react";
 import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { calculateDistance } from "@/hooks/useGeolocation";
+import { getRoute } from "@/utils/osrmRouting";
+
 
 interface DeliveryMapPreviewProps {
   orderId: string;
