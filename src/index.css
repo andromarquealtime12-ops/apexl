@@ -52,20 +52,20 @@ All colors MUST be HSL.
     --gradient-card: linear-gradient(145deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
 
     /* Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.3);
-    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.4);
+    --shadow-elegant: 0 10px 30px -10px hsl(0 0% 0% / 0.15);
+    --shadow-glow: 0 0 40px hsl(0 0% 0% / 0.1);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 220 85% 57%;
+    --sidebar-foreground: 0 0% 20%;
+    --sidebar-primary: 0 0% 9%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 220 85% 57%;
+    --sidebar-accent: 0 0% 95%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 0 0% 9%;
   }
 
   .dark {
