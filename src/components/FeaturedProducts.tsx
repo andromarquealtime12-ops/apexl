@@ -7,10 +7,12 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 export function FeaturedProducts() {
-  const { data: products, isLoading } = useProducts({ featured: true, limit: 8 });
+  const { data: featured, isLoading } = useProducts({ featured: true, limit: 8 });
+  const { data: recent, isLoading: loadingRecent } = useProducts({ limit: 8 });
+  const products = featured?.length ? featured : recent;
   const { t } = useTranslation();
 
-  if (isLoading) {
+  if (isLoading || loadingRecent) {
     return (
       <section className="py-12">
         <div className="container px-4">

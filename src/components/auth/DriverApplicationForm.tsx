@@ -259,21 +259,25 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
             <div className="grid gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">{t("driverApp.licFront")} *</Label>
-                <Input type="file" accept="image/*" onChange={(e) => setLicenseFront(e.target.files?.[0] || null)} />
+                <Input type="file" accept="image/*" capture="environment" onChange={(e) => setLicenseFront(e.target.files?.[0] || null)} />
+                {licenseFront && <img src={URL.createObjectURL(licenseFront)} alt="license front" className="mt-1 h-24 rounded border object-cover" />}
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">{t("driverApp.licBack")} *</Label>
-                <Input type="file" accept="image/*" onChange={(e) => setLicenseBack(e.target.files?.[0] || null)} />
+                <Input type="file" accept="image/*" capture="environment" onChange={(e) => setLicenseBack(e.target.files?.[0] || null)} />
+                {licenseBack && <img src={URL.createObjectURL(licenseBack)} alt="license back" className="mt-1 h-24 rounded border object-cover" />}
               </div>
               {isMoto && (
                 <div className="space-y-1">
                   <Label className="text-xs">{t("driverApp.vehReg")} *</Label>
-                  <Input type="file" accept="image/*" onChange={(e) => setVehicleReg(e.target.files?.[0] || null)} />
+                  <Input type="file" accept="image/*" capture="environment" onChange={(e) => setVehicleReg(e.target.files?.[0] || null)} />
+                  {vehicleReg && <img src={URL.createObjectURL(vehicleReg)} alt="vehicle reg" className="mt-1 h-24 rounded border object-cover" />}
                 </div>
               )}
               <div className="space-y-1">
-                <Label className="text-xs">{t("driverApp.selfie")} *</Label>
-                <Input type="file" accept="image/*" onChange={(e) => setSelfie(e.target.files?.[0] || null)} />
+                <Label className="text-xs">{t("driverApp.selfie")} * — Prenez-vous avec votre permis en main</Label>
+                <Input type="file" accept="image/*" capture="user" onChange={(e) => setSelfie(e.target.files?.[0] || null)} />
+                {selfie && <img src={URL.createObjectURL(selfie)} alt="selfie" className="mt-1 h-24 rounded border object-cover" />}
               </div>
             </div>
           </div>
