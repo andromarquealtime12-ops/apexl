@@ -62,6 +62,10 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
       toast.error(t("sellerApp.docsMissing"));
       return;
     }
+    if (!locationReady) {
+      toast.error("Confirmez la position de retrait des colis");
+      return;
+    }
     try {
       setUploading(true);
       const { data: { user } } = await supabase.auth.getUser();
@@ -79,6 +83,13 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
         id_document_back_url: backUrl,
         selfie_url: selfieUrl,
       });
+      // Persist the confirmed pickup point on the profile so the app always
+      // knows where drivers should collect packages, even if the seller moves.
+      await supabase.from("profiles").update({
+        shop_latitude: shopLat,
+        shop_longitude: shopLng,
+        shop_address: formData.shop_address,
+      }).eq("user_id", user.id);
       onClose();
     } finally {
       setUploading(false);
