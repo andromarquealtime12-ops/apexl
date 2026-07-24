@@ -17,19 +17,19 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Couleurs inspirées d'Haïti et République dominicaine */
-    --primary: 220 85% 57%; /* Bleu haïtien moderne */
+    /* APEX — palette minimale noir & blanc */
+    --primary: 0 0% 9%; /* Noir APEX */
     --primary-foreground: 0 0% 98%;
-    --primary-glow: 220 85% 67%;
+    --primary-glow: 0 0% 20%;
 
-    --secondary: 0 85% 67%; /* Rouge chaleureux */
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%; /* Gris très clair */
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 45 96% 89%; /* Jaune doré */
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 0 0% 92%;
+    --accent-foreground: 0 0% 9%;
 
     --success: 142 76% 36%; /* Vert tropical */
     --success-foreground: 0 0% 98%;
