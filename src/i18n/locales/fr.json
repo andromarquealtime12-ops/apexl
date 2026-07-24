@@ -18,6 +18,17 @@
     "logout": "Déconnexion",
     "language": "Langue"
   },
+  "hero": {
+    "eyebrow": "Nouvelle saison · Monde entier",
+    "title1": "Achetez le monde.",
+    "title2": "Livré chez vous.",
+    "description": "Des milliers de produits tendance sur une seule marketplace mondiale. Mode, tech, maison et plus — expédié rapidement, dans toutes les langues, vers tous les pays.",
+    "shopNow": "Acheter maintenant",
+    "exploreShops": "Explorer les boutiques",
+    "countries": "Pays",
+    "products": "Produits",
+    "support": "Support"
+  },
   "product": {
     "addToCart": "Ajouter au panier",
     "inCart": "Dans le panier",

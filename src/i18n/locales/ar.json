@@ -1,0 +1,25 @@
+{
+  "nav": {
+    "home": "الرئيسية", "products": "المنتجات", "shops": "المتاجر", "restaurants": "المطاعم",
+    "sell": "بيع", "deliver": "توصيل", "menu": "القائمة", "search": "ابحث عن المنتجات...",
+    "account": "حسابي", "signin": "تسجيل الدخول", "signup": "إنشاء حساب", "profile": "ملفي",
+    "wallet": "محفظتي", "orders": "طلباتي", "settings": "الإعدادات", "logout": "تسجيل الخروج", "language": "اللغة"
+  },
+  "hero": {
+    "eyebrow": "موسم جديد · حول العالم",
+    "title1": "تسوّق العالم.",
+    "title2": "يصل إليك.",
+    "description": "آلاف المنتجات الرائجة في سوق عالمي واحد. أزياء، تقنية، منزل والمزيد — شحن سريع، بأي لغة، إلى أي بلد.",
+    "shopNow": "تسوّق الآن",
+    "exploreShops": "استكشف المتاجر",
+    "countries": "دولة", "products": "منتج", "support": "دعم"
+  },
+  "product": {
+    "addToCart": "أضف إلى السلة", "inCart": "في السلة", "added": "تمت الإضافة!",
+    "chooseVariant": "اختر اللون / المقاس", "outOfStock": "نفدت الكمية",
+    "outOfCountry": "غير متوفر في بلدك", "featured": "مميز",
+    "worldwide": "عالمي · USD", "localOnly": "محلي",
+    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "الفوترة بـ {{currency}}"
+  },
+  "common": { "loading": "جار التحميل...", "save": "حفظ", "cancel": "إلغاء", "close": "إغلاق", "error": "خطأ" }
+}

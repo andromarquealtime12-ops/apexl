@@ -1,0 +1,25 @@
+{
+  "nav": {
+    "home": "Home", "products": "Prodotti", "shops": "Negozi", "restaurants": "Ristoranti",
+    "sell": "Vendi", "deliver": "Consegna", "menu": "Menu", "search": "Cerca prodotti...",
+    "account": "Il mio account", "signin": "Accedi", "signup": "Registrati", "profile": "Il mio profilo",
+    "wallet": "Il mio portafoglio", "orders": "I miei ordini", "settings": "Impostazioni", "logout": "Esci", "language": "Lingua"
+  },
+  "hero": {
+    "eyebrow": "Nuova stagione · Mondiale",
+    "title1": "Compra il mondo.",
+    "title2": "Consegnato a te.",
+    "description": "Migliaia di prodotti di tendenza, un unico marketplace globale. Moda, tech, casa e altro — spedizione veloce, in qualsiasi lingua, in qualsiasi paese.",
+    "shopNow": "Acquista ora",
+    "exploreShops": "Esplora negozi",
+    "countries": "Paesi", "products": "Prodotti", "support": "Supporto"
+  },
+  "product": {
+    "addToCart": "Aggiungi al carrello", "inCart": "Nel carrello", "added": "Aggiunto!",
+    "chooseVariant": "Scegli colore / taglia", "outOfStock": "Esaurito",
+    "outOfCountry": "Non disponibile nel tuo paese", "featured": "In evidenza",
+    "worldwide": "Mondiale · USD", "localOnly": "Locale",
+    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "Fatturato in {{currency}}"
+  },
+  "common": { "loading": "Caricamento...", "save": "Salva", "cancel": "Annulla", "close": "Chiudi", "error": "Errore" }
+}

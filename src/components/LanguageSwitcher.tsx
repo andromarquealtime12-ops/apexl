@@ -4,34 +4,56 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SUPPORTED_LANGUAGES } from "@/i18n";
-import { Globe } from "lucide-react";
+import { Globe, Check } from "lucide-react";
 
 export function LanguageSwitcher() {
-  const { i18n } = useTranslation();
-  const current = SUPPORTED_LANGUAGES.find((l) => l.code === i18n.language?.split("-")[0]) ?? SUPPORTED_LANGUAGES[0];
+  const { i18n, t } = useTranslation();
+  const active = i18n.language?.split("-")[0] ?? "en";
+  const current = SUPPORTED_LANGUAGES.find((l) => l.code === active) ?? SUPPORTED_LANGUAGES[0];
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-1 px-2" aria-label="Language">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1.5 px-2 rounded-none"
+          aria-label={t("nav.language", "Language")}
+        >
           <Globe className="h-4 w-4" />
-          <span className="hidden sm:inline text-sm">{current.flag}</span>
+          <span className="hidden sm:inline text-xs uppercase tracking-wider font-medium">
+            {current.code}
+          </span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
-        {SUPPORTED_LANGUAGES.map((l) => (
-          <DropdownMenuItem
-            key={l.code}
-            onClick={() => i18n.changeLanguage(l.code)}
-            className={current.code === l.code ? "bg-accent" : ""}
-          >
-            <span className="mr-2">{l.flag}</span>
-            {l.label}
-          </DropdownMenuItem>
-        ))}
+      <DropdownMenuContent align="end" className="w-56 rounded-none">
+        <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-normal">
+          {t("nav.language", "Language")}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {SUPPORTED_LANGUAGES.map((l) => {
+          const selected = active === l.code;
+          return (
+            <DropdownMenuItem
+              key={l.code}
+              onClick={() => i18n.changeLanguage(l.code)}
+              className={`cursor-pointer flex items-center justify-between ${
+                selected ? "bg-accent" : ""
+              }`}
+            >
+              <span className="flex items-center gap-2.5">
+                <span className="text-base leading-none">{l.flag}</span>
+                <span className="text-sm">{l.label}</span>
+              </span>
+              {selected && <Check className="h-3.5 w-3.5" />}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );
