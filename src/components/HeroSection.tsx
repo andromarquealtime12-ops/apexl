@@ -24,7 +24,7 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 py-12 md:py-20 relative">
         <div className="grid md:grid-cols-2 gap-10 items-center">
           {/* Copy */}
-          <div className="space-y-6 text-center md:text-start">
+          <div className="space-y-6 text-center md:text-start animate-fade-in">
             <span className="inline-block text-xs tracking-[0.2em] uppercase text-muted-foreground">
               {t("hero.eyebrow")}
             </span>
@@ -38,7 +38,7 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
               <Button
                 size="lg"
-                className="text-base px-8 h-12 rounded-none bg-foreground text-background hover:bg-foreground/90"
+                className="text-base px-8 h-12 rounded-none bg-foreground text-background hover:bg-foreground/90 transition-transform hover:scale-[1.03]"
                 onClick={() => navigate("/products")}
               >
                 <ShoppingBag className="h-4 w-4 mr-2" />
@@ -48,7 +48,7 @@ const HeroSection = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="text-base px-8 h-12 rounded-none"
+                className="text-base px-8 h-12 rounded-none transition-transform hover:scale-[1.03]"
                 onClick={() => navigate("/shops")}
               >
                 {t("hero.exploreShops")}
@@ -56,7 +56,7 @@ const HeroSection = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="text-base px-8 h-12 rounded-none"
+                className="text-base px-8 h-12 rounded-none transition-transform hover:scale-[1.03]"
                 onClick={() => navigate("/restaurants")}
               >
                 <UtensilsCrossed className="h-4 w-4 mr-2" />
@@ -65,29 +65,34 @@ const HeroSection = () => {
             </div>
 
             <div className="grid grid-cols-3 gap-4 pt-8 max-w-md mx-auto md:mx-0">
-              <div>
-                <div className="text-2xl font-bold text-foreground">30+</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wider">{t("hero.countries")}</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-foreground">10k+</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wider">{t("hero.products")}</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-foreground">24/7</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wider">{t("hero.support")}</div>
-              </div>
+              {[
+                { v: "30+", k: "hero.countries" },
+                { v: "10k+", k: "hero.products" },
+                { v: "24/7", k: "hero.support" },
+              ].map((s, i) => (
+                <div
+                  key={s.k}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${150 + i * 120}ms`, animationFillMode: "both" }}
+                >
+                  <div className="text-2xl font-bold text-foreground">{s.v}</div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wider">{t(s.k)}</div>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Image */}
-          <div className="relative aspect-square md:aspect-[4/5] overflow-hidden bg-muted">
+          <div
+            className="relative aspect-square md:aspect-[4/5] overflow-hidden bg-muted animate-scale-in"
+            style={{ animationDuration: "0.6s" }}
+          >
             <img
               src={heroImage}
               alt={t("hero.title1")}
               width={1024}
               height={1024}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-[6000ms] hover:scale-105"
             />
           </div>
         </div>
