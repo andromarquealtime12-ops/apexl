@@ -13,8 +13,10 @@ import { ShoppingCart, Store, ArrowLeft, Plus, Minus, Check } from "lucide-react
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 export default function ProductDetail() {
+  const { t } = useTranslation();
   const { productId } = useParams<{ productId: string }>();
   const { data: product, isLoading } = useProduct(productId || "");
   const { addItem, items } = useCart();

@@ -25,6 +25,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Loader2, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface ProductFormDialogProps {
   open: boolean;
