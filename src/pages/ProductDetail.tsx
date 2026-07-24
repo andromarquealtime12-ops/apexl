@@ -82,9 +82,16 @@ export default function ProductDetail() {
   const canAddToCart = (!requiresColor || !!selectedColor) && (!requiresSize || !!selectedSize);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [productId]);
+
+  useEffect(() => {
     setSelectedColor(colorOptions[0] || "");
     setSelectedSize(sizeOptions[0] || "");
   }, [product?.id]);
+
+  const { data: sellerRating } = useAverageRating(product?.seller_id || "");
+  const { data: sellerReviews } = useUserReviews(product?.seller_id || "");
 
   const handleAddToCart = () => {
     if (!product || !canAddToCart) return;
