@@ -188,9 +188,16 @@ export default function AvailableDeliveriesTable() {
         })
       );
 
+      // Sort by total road distance (fallback to straight-line if OSRM failed)
+      result.sort((a: any, b: any) => {
+        const ka = a.total_route_km ?? a.distance_km ?? Infinity;
+        const kb = b.total_route_km ?? b.distance_km ?? Infinity;
+        return ka - kb;
+      });
 
       setEnriched(result);
     };
+
 
     enrich();
   }, [deliveries, position]);
