@@ -172,28 +172,46 @@ const Wallet = () => {
       return;
     }
     try {
-      await withdrawalMutation.mutateAsync({
-        amount,
-        currency: withdrawCurrency,
-        paymentMethod: withdrawMethod,
-        accountDetails: withdrawAccount.trim(),
-      });
-      toast.success("Demande de retrait soumise ! Elle sera traitée sous 24-48h.");
+      if (withdrawMethod === "moncash") {
+        // Auto MonCash withdrawal via Bazik.io
+        if (withdrawCurrency !== "HTG") {
+          toast.error("Les retraits MonCash automatiques sont uniquement en HTG");
+          return;
+        }
+        const { data, error } = await supabase.functions.invoke("bazik-withdraw", {
+          body: { amount, phoneNumber: withdrawAccount.trim() },
+        });
+        if (error) throw error;
+        if ((data as any)?.error) throw new Error((data as any).error);
+        toast.success("Retrait MonCash envoyé ! Vous recevrez le montant sous quelques minutes.");
+      } else {
+        await withdrawalMutation.mutateAsync({
+          amount,
+          currency: withdrawCurrency,
+          paymentMethod: withdrawMethod,
+          accountDetails: withdrawAccount.trim(),
+        });
+        toast.success("Demande de retrait soumise ! Elle sera traitée sous 24-48h.");
+      }
       setWithdrawOpen(false);
       setWithdrawAmount("");
       setWithdrawAccount("");
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
     } catch (error: any) {
       toast.error(error.message || "Erreur lors du retrait");
     }
   };
 
-  // Use dynamic deposit methods from database
+  // Use dynamic deposit methods from database — hide manual MonCash (auto via Bazik.io now)
   const filteredDepositMethods = (depositMethodsData || []).filter(
-    m => m.country === "both" || m.country === (depositCurrency === "HTG" ? "HT" : "DO")
+    m => (m.country === "both" || m.country === (depositCurrency === "HTG" ? "HT" : "DO"))
+      && m.method_key !== "moncash"
   );
 
   const currentMethod = filteredDepositMethods.find(m => m.method_key === depositMethod);
   const isManualMethod = !!currentMethod;
+  const isBazikWithdraw = withdrawMethod === "moncash";
 
   return (
     <main className="min-h-screen bg-background">
@@ -333,8 +351,9 @@ const Wallet = () => {
                 <Alert>
                   <Info className="h-4 w-4" />
                   <AlertDescription>
-                    Le montant sera déduit immédiatement et le virement traité sous 24-48h. 
-                    Si la demande est refusée, le montant sera remboursé.
+                    {isBazikWithdraw
+                      ? "Retrait MonCash automatique via Bazik.io — le montant sera envoyé directement sur votre numéro MonCash sous quelques minutes (HTG uniquement, max 75 000 HTG). En cas d'échec, remboursement automatique."
+                      : "Le montant sera déduit immédiatement et le virement traité sous 24-48h. Si la demande est refusée, le montant sera remboursé."}
                   </AlertDescription>
                 </Alert>
 
@@ -438,6 +457,47 @@ const Wallet = () => {
                     <CreditCard className="h-4 w-4 mr-2" />
                     Payer par carte bancaire
                   </Button>
+
+                  {depositCurrency === "HTG" && (
+                    <Button
+                      variant="default"
+                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+                      onClick={async () => {
+                        const amount = parseFloat(depositAmount);
+                        if (isNaN(amount) || amount <= 0) {
+                          toast.error("Montant invalide");
+                          return;
+                        }
+                        if (amount > 75000) {
+                          toast.error("Maximum 75 000 HTG par transaction MonCash");
+                          return;
+                        }
+                        try {
+                          toast.loading("Préparation MonCash...");
+                          const { data, error } = await supabase.functions.invoke("bazik-deposit", {
+                            body: { amount, description: `Recharge portefeuille APEXL ${amount} HTG` },
+                          });
+                          toast.dismiss();
+                          if (error) throw error;
+                          const d = data as any;
+                          if (d?.error) throw new Error(d.error);
+                          if (d?.redirectUrl) {
+                            window.location.assign(d.redirectUrl);
+                            setDepositOpen(false);
+                            resetDepositForm();
+                          } else {
+                            throw new Error("URL MonCash manquante");
+                          }
+                        } catch (e: any) {
+                          toast.dismiss();
+                          toast.error(e.message || "Erreur MonCash");
+                        }
+                      }}
+                    >
+                      <Smartphone className="h-4 w-4 mr-2" />
+                      Payer avec MonCash (auto)
+                    </Button>
+                  )}
 
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
