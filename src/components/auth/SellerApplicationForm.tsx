@@ -47,12 +47,14 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
 
   const [shopLat, setShopLat] = useState<number | null>(null);
   const [shopLng, setShopLng] = useState<number | null>(null);
+  const [pickupConfirmed, setPickupConfirmed] = useState(false);
 
   const [idFront, setIdFront] = useState<File | null>(null);
   const [idBack, setIdBack] = useState<File | null>(null);
   const [selfie, setSelfie] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const docsReady = !!(idFront && idBack && selfie);
+  const locationReady = shopLat != null && shopLng != null && pickupConfirmed;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
