@@ -290,7 +290,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !docsReady}>
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !docsReady || !locationReady}>
             {(submitApplication.isPending || uploading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             {uploading ? t("sellerApp.submitting") : t("sellerApp.submit")}
           </Button>
