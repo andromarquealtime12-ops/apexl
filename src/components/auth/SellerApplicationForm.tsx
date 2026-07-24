@@ -14,7 +14,8 @@ import {
 import { useSubmitSellerApplication, useMySellerApplication } from "@/hooks/useApplications";
 import { useIsEmailVerified } from "@/hooks/useProfile";
 import { useSendVerificationCode } from "@/hooks/useEmailVerification";
-import { Loader2, Store, CheckCircle, Clock, Mail, Upload } from "lucide-react";
+import { Loader2, Store, CheckCircle, Clock, Mail, Upload, MapPin } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
