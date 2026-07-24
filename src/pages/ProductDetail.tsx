@@ -14,6 +14,8 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
+import { useAverageRating, useUserReviews } from "@/hooks/useReviews";
+import { Star } from "lucide-react";
 
 export default function ProductDetail() {
   const { t } = useTranslation();
