@@ -158,7 +158,7 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
             Confirmer & marquer prête
           </Button>
           <Button asChild variant="outline" className="flex-1">
-            <Link to="/seller-dashboard">Modifier l'adresse</Link>
+            <Link to="/seller">Modifier l'adresse</Link>
           </Button>
         </div>
       </DialogContent>
