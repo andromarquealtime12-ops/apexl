@@ -121,6 +121,24 @@ export function ApplicationsManager() {
                         {format(new Date(app.created_at), "dd MMM yyyy", { locale: fr })}
                       </TableCell>
                       <TableCell className="text-right space-x-2">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button size="sm" variant="secondary">
+                              <Eye className="h-4 w-4 mr-1" /> Documents
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>Documents - {app.shop_name}</DialogTitle>
+                            </DialogHeader>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <DocPhoto url={app.id_document_front_url} label="Pièce d'identité (recto)" />
+                              <DocPhoto url={app.id_document_back_url} label="Pièce d'identité (verso)" />
+                              <DocPhoto url={app.selfie_url} label="Selfie avec pièce" />
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+
                         <Button
                           size="sm"
                           onClick={() => approveSeller.mutate(app.id)}

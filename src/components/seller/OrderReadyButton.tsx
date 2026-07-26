@@ -250,19 +250,19 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     <>
       <Button
         size="sm"
-        onClick={openAddressConfirm}
-        disabled={loadingAddress || createVerification.isPending || markReady.isPending}
+        onClick={() => handleConfirmAndMarkReady()}
+        disabled={createVerification.isPending || markReady.isPending}
         className="gap-1"
       >
-        {(loadingAddress || createVerification.isPending || markReady.isPending) ? (
+        {(createVerification.isPending || markReady.isPending) ? (
           <Loader2 className="h-3 w-3 animate-spin" />
         ) : (
           <Package className="h-3 w-3" />
         )}
         Marquer prête
       </Button>
-      {addressConfirmDialog}
       {pinDialog}
     </>
   );
 }
+
