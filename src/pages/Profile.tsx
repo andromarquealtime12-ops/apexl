@@ -12,7 +12,7 @@ import { SellerApplicationForm } from "@/components/auth/SellerApplicationForm";
 import { DriverApplicationForm } from "@/components/auth/DriverApplicationForm";
 import { EmailVerificationCard } from "@/components/profile/EmailVerificationCard";
 import { LocationCard } from "@/components/profile/LocationCard";
-import { ShopLocationCard } from "@/components/seller/ShopLocationCard";
+import ShopLocationCard from "@/components/seller/ShopLocationCard";
 import IdentityVerificationForm from "@/components/identity/IdentityVerificationForm";
 
 import ReferralCard from "@/components/referral/ReferralCard";
@@ -122,9 +122,16 @@ const Profile = () => {
         </Card>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <IdentityVerificationForm />
+          {!(isSeller || isDriver) && <IdentityVerificationForm />}
           <ReferralCard />
         </div>
+
+        {isSeller && (
+          <div className="mt-6">
+            <ShopLocationCard />
+          </div>
+        )}
+
 
         <div className="grid gap-6 md:grid-cols-2 mt-6">
           <Card>
