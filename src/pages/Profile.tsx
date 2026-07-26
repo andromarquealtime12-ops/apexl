@@ -12,7 +12,9 @@ import { SellerApplicationForm } from "@/components/auth/SellerApplicationForm";
 import { DriverApplicationForm } from "@/components/auth/DriverApplicationForm";
 import { EmailVerificationCard } from "@/components/profile/EmailVerificationCard";
 import { LocationCard } from "@/components/profile/LocationCard";
+import { ShopLocationCard } from "@/components/seller/ShopLocationCard";
 import IdentityVerificationForm from "@/components/identity/IdentityVerificationForm";
+
 import ReferralCard from "@/components/referral/ReferralCard";
 import { useMySellerApplication, useMyDriverApplication } from "@/hooks/useApplications";
 import { useQueryClient } from "@tanstack/react-query";
