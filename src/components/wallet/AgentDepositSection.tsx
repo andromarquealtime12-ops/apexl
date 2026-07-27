@@ -22,16 +22,12 @@ function useActiveAgents() {
   return useQuery({
     queryKey: ["active-deposit-agents"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("deposit_agents")
-        .select("*")
-        .eq("is_active", true)
-        .eq("is_verified", true)
-        .order("city");
+      const { data, error } = await supabase.rpc("get_active_deposit_agents_public" as any);
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
+
 }
 
 export default function AgentDepositSection() {
