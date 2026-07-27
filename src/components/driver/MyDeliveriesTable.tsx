@@ -328,6 +328,42 @@ export default function MyDeliveriesTable() {
                           </div>
                         )}
 
+                        {/* CASH PAYMENT — exact amount handling */}
+                        {delivery.payment_method === "cash" && (
+                          <div className="rounded-lg border-2 border-amber-500 bg-amber-50 dark:bg-amber-950/30 p-3 space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Banknote className="h-5 w-5 text-amber-600" />
+                              <p className="font-bold text-amber-700 dark:text-amber-400 uppercase text-sm">
+                                Paiement en espèces
+                              </p>
+                            </div>
+                            <div className="grid gap-1.5 text-sm">
+                              <div className="flex justify-between items-center bg-background/60 rounded px-2 py-1.5">
+                                <span className="text-muted-foreground">💵 À encaisser de l'acheteur :</span>
+                                <span className="font-bold text-green-700">
+                                  {formatCurrency(Number(delivery.total_amount || 0))}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center bg-background/60 rounded px-2 py-1.5">
+                                <span className="text-muted-foreground">📤 À remettre au vendeur (montant exact) :</span>
+                                <span className="font-bold text-orange-700">
+                                  {formatCurrency(Number(delivery.total_amount || 0) - Number(delivery.delivery_fee || 0))}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center bg-background/60 rounded px-2 py-1.5">
+                                <span className="text-muted-foreground">💰 Votre commission (livraison) :</span>
+                                <span className="font-bold text-primary">
+                                  {formatCurrency(Number(delivery.delivery_fee || 0))}
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-xs text-amber-700 dark:text-amber-400 flex items-start gap-1">
+                              <AlertCircle className="h-3 w-3 mt-0.5 shrink-0" />
+                              Remettez le montant exact au vendeur. 5% de commission sera automatiquement prélevé de votre wallet.
+                            </p>
+                          </div>
+                        )}
+
                         {delivery.delivery_notes && pickupDone && (
                           <p className="text-sm bg-muted/50 p-2 rounded italic">
                             "{delivery.delivery_notes}"
