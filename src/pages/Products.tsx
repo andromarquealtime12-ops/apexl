@@ -42,7 +42,7 @@ const Products = () => {
   const [userLng, setUserLng] = useState<number | null>(urlLng);
   const [loadingGeo, setLoadingGeo] = useState(false);
   const [sellerCoords, setSellerCoords] = useState<Record<string, { lat: number; lng: number; shopName: string }>>({});
-  const [maxRadius, setMaxRadius] = useState<number>(50); // km
+  const [maxRadius, setMaxRadius] = useState<number>(60); // km — default local radius
 
   const { data: products, isLoading } = useProducts({
     categoryId,
@@ -184,7 +184,7 @@ const Products = () => {
                     <SelectItem value="5">≤ 5 km</SelectItem>
                     <SelectItem value="10">≤ 10 km</SelectItem>
                     <SelectItem value="25">≤ 25 km</SelectItem>
-                    <SelectItem value="50">≤ 50 km</SelectItem>
+                    <SelectItem value="60">≤ 60 km (local)</SelectItem>
                     <SelectItem value="100">≤ 100 km</SelectItem>
                     <SelectItem value="500">≤ 500 km</SelectItem>
                   </SelectContent>
