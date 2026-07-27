@@ -103,17 +103,17 @@ export default function DeliveryMapPreview({
   if (buyerLat && buyerLng) chain.push({ lat: buyerLat, lng: buyerLng });
 
   // Fetch real OSRM polylines for each leg (parallel, cached 5 min)
-  const [legs, setLegs] = useState<Array<{ path: Array<{ lat: number; lng: number }>; distanceKm: number; isFallback: boolean }>>([]);
+  const [legs, setLegs] = useState<Array<{ path: Array<{ lat: number; lng: number }>; distanceKm: number; durationMin: number; isFallback: boolean }>>([]);
   const [loadingRoute, setLoadingRoute] = useState(false);
   useEffect(() => {
     if (chain.length < 2) return;
     let cancelled = false;
     setLoadingRoute(true);
     (async () => {
-      const out: Array<{ path: Array<{ lat: number; lng: number }>; distanceKm: number; isFallback: boolean }> = [];
+      const out: Array<{ path: Array<{ lat: number; lng: number }>; distanceKm: number; durationMin: number; isFallback: boolean }> = [];
       for (let i = 0; i < chain.length - 1; i++) {
         const r = await getRoute(chain[i], chain[i + 1]);
-        out.push({ path: r.coordinates, distanceKm: r.distanceKm, isFallback: r.isFallback });
+        out.push({ path: r.coordinates, distanceKm: r.distanceKm, durationMin: r.durationMin, isFallback: r.isFallback });
         if (cancelled) return;
       }
       if (!cancelled) {
