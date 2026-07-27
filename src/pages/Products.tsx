@@ -42,7 +42,7 @@ const Products = () => {
   const [userLng, setUserLng] = useState<number | null>(urlLng);
   const [loadingGeo, setLoadingGeo] = useState(false);
   const [sellerCoords, setSellerCoords] = useState<Record<string, { lat: number; lng: number; shopName: string }>>({});
-  const [maxRadius, setMaxRadius] = useState<number>(50); // km
+  const [maxRadius, setMaxRadius] = useState<number>(60); // km — default local radius
 
   const { data: products, isLoading } = useProducts({
     categoryId,
