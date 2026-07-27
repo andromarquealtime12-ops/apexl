@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { OrderReadyButton } from "./OrderReadyButton";
 import OrderChat from "@/components/chat/OrderChat";
-import { Package, Clock, CheckCircle, Truck, XCircle, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Package, Clock, CheckCircle, Truck, XCircle, MessageCircle, ChevronDown, ChevronUp, Banknote } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
