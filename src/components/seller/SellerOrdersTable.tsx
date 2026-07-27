@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { OrderReadyButton } from "./OrderReadyButton";
 import OrderChat from "@/components/chat/OrderChat";
-import { Package, Clock, CheckCircle, Truck, XCircle, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Package, Clock, CheckCircle, Truck, XCircle, MessageCircle, ChevronDown, ChevronUp, Banknote } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -113,7 +113,15 @@ export default function SellerOrdersTable() {
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">
-                    {formatCurrency(orderTotal)}
+                    <div className="space-y-1">
+                      <div>{formatCurrency(orderTotal)}</div>
+                      {order.payment_method === "cash" && (
+                        <Badge variant="outline" className="gap-1 border-amber-500 text-amber-700 bg-amber-50 dark:bg-amber-950/30">
+                          <Banknote className="h-3 w-3" />
+                          Cash — recevoir {formatCurrency(orderTotal)} du livreur
+                        </Badge>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant={status.variant} className="gap-1">

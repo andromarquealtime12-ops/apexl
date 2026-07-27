@@ -103,17 +103,17 @@ export default function DeliveryMapPreview({
   if (buyerLat && buyerLng) chain.push({ lat: buyerLat, lng: buyerLng });
 
   // Fetch real OSRM polylines for each leg (parallel, cached 5 min)
-  const [legs, setLegs] = useState<Array<{ path: Array<{ lat: number; lng: number }>; distanceKm: number; isFallback: boolean }>>([]);
+  const [legs, setLegs] = useState<Array<{ path: Array<{ lat: number; lng: number }>; distanceKm: number; durationMin: number; isFallback: boolean }>>([]);
   const [loadingRoute, setLoadingRoute] = useState(false);
   useEffect(() => {
     if (chain.length < 2) return;
     let cancelled = false;
     setLoadingRoute(true);
     (async () => {
-      const out: Array<{ path: Array<{ lat: number; lng: number }>; distanceKm: number; isFallback: boolean }> = [];
+      const out: Array<{ path: Array<{ lat: number; lng: number }>; distanceKm: number; durationMin: number; isFallback: boolean }> = [];
       for (let i = 0; i < chain.length - 1; i++) {
         const r = await getRoute(chain[i], chain[i + 1]);
-        out.push({ path: r.coordinates, distanceKm: r.distanceKm, isFallback: r.isFallback });
+        out.push({ path: r.coordinates, distanceKm: r.distanceKm, durationMin: r.durationMin, isFallback: r.isFallback });
         if (cancelled) return;
       }
       if (!cancelled) {
@@ -126,6 +126,7 @@ export default function DeliveryMapPreview({
   }, [chain.map((c) => `${c.lat.toFixed(4)},${c.lng.toFixed(4)}`).join("|")]);
 
   let totalDist = 0;
+  let totalMin = 0;
   legs.forEach((leg, i) => {
     const isLast = i === legs.length - 1 && buyerLat && buyerLng;
     routes.push({
@@ -135,6 +136,7 @@ export default function DeliveryMapPreview({
       weight: 4,
     });
     totalDist += leg.distanceKm;
+    totalMin += leg.durationMin;
   });
   // Fallback straight lines while OSRM resolves
   if (legs.length === 0) {
@@ -142,7 +144,9 @@ export default function DeliveryMapPreview({
       const a = chain[i], b = chain[i + 1];
       const isLast = i === chain.length - 2 && buyerLat && buyerLng;
       routes.push({ from: a, to: b, color: isLast ? "#16a34a" : "#f97316", dashed: true });
-      totalDist += calculateDistance(a.lat, a.lng, b.lat, b.lng);
+      const km = calculateDistance(a.lat, a.lng, b.lat, b.lng);
+      totalDist += km;
+      totalMin += Math.max(1, Math.round(km * 2));
     }
   }
 
@@ -156,6 +160,7 @@ export default function DeliveryMapPreview({
   if (!center) return null;
 
   const pickupCount = orderedStops.length;
+  const etaLabel = totalMin >= 60 ? `${Math.floor(totalMin / 60)}h${String(totalMin % 60).padStart(2, "0")}` : `${totalMin} min`;
 
   return (
     <Card className="border-primary/30 overflow-hidden">
@@ -189,6 +194,11 @@ export default function DeliveryMapPreview({
               <Badge className="bg-primary/90 text-primary-foreground gap-1">
                 <Navigation className="h-3 w-3" />
                 Total: {totalDist.toFixed(1)} km
+              </Badge>
+            )}
+            {totalMin > 0 && (
+              <Badge className="bg-blue-600/90 text-white gap-1">
+                ⏱ ≈ {etaLabel}
               </Badge>
             )}
           </div>

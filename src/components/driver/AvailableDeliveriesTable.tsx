@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Clock, Check, Navigation, Loader2, Map, Store, ArrowRight, Route } from "lucide-react";
+import { MapPin, Package, Clock, Check, Navigation, Loader2, Map, Store, ArrowRight, Route, Banknote } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
@@ -301,11 +301,31 @@ export default function AvailableDeliveriesTable() {
                         <span className="font-medium text-primary">Parcours total : {delivery.total_route_km.toFixed(1)} km</span>
                       </span>
                     )}
+                    {(delivery as any)._routeDurationMin !== undefined && (
+                      <Badge variant="secondary" className="text-xs">
+                        ⏱ ≈ {(delivery as any)._routeDurationMin >= 60
+                          ? `${Math.floor((delivery as any)._routeDurationMin / 60)}h${String((delivery as any)._routeDurationMin % 60).padStart(2, "0")}`
+                          : `${(delivery as any)._routeDurationMin} min`}
+                      </Badge>
+                    )}
                     {delivery.distance_km !== undefined && (
                       <span className="text-xs text-muted-foreground">
                         (client à {delivery.distance_km.toFixed(1)} km de vous)
                       </span>
                     )}
+                  </div>
+                )}
+                {/* Cash payment alert on available list */}
+                {(delivery as any).payment_method === "cash" && (
+                  <div className="flex items-start gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-950/30 p-2">
+                    <Banknote className="h-4 w-4 text-amber-600 mt-0.5" />
+                    <div className="text-xs">
+                      <p className="font-bold text-amber-700 dark:text-amber-400">Paiement en espèces</p>
+                      <p className="text-muted-foreground">
+                        Encaisser <span className="font-semibold text-foreground">{formatCurrency(Number(delivery.total_amount || 0))}</span> de l'acheteur,
+                        remettre <span className="font-semibold text-foreground">{formatCurrency(Number(delivery.total_amount || 0) - Number(delivery.delivery_fee || 0))}</span> au vendeur (montant exact).
+                      </p>
+                    </div>
                   </div>
                 )}
 
