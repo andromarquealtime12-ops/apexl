@@ -132,12 +132,8 @@ export default function AgentDepositSection() {
               <p className="flex items-center gap-1 text-muted-foreground">
                 <MapPin className="h-3 w-3" /> {agent.address}, {agent.city}
               </p>
-              {agent.phone && (
-                <p className="flex items-center gap-1 text-muted-foreground">
-                  <Phone className="h-3 w-3" /> {agent.phone}
-                </p>
-              )}
               <Badge variant="outline" className="text-xs">Vérifié</Badge>
+
             </div>
           ))}
         </div>
