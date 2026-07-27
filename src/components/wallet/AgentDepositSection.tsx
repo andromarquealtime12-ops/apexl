@@ -176,12 +176,11 @@ export default function AgentDepositSection() {
                   <Info className="h-4 w-4" />
                   <AlertDescription>
                     <strong>{selectedAgentData.name}</strong><br />
-                    {selectedAgentData.address}, {selectedAgentData.city}<br />
-                    {selectedAgentData.phone && <>Tél: {selectedAgentData.phone}<br /></>}
-                    {selectedAgentData.whatsapp && <>WhatsApp: {selectedAgentData.whatsapp}</>}
+                    {selectedAgentData.address}, {selectedAgentData.city}
                   </AlertDescription>
                 </Alert>
               )}
+
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
