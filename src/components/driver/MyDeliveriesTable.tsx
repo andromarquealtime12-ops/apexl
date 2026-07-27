@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Navigation, Key, ExternalLink, MessageSquare, Phone, ShoppingBag } from "lucide-react";
+import { MapPin, Package, Navigation, Key, ExternalLink, MessageSquare, Phone, ShoppingBag, Banknote, AlertCircle } from "lucide-react";
 import { DeliveryCodeVerification } from "./DeliveryCodeVerification";
 import OrderChat from "@/components/chat/OrderChat";
 import CancelOrderButton from "@/components/orders/CancelOrderButton";
