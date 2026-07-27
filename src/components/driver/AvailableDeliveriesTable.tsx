@@ -98,10 +98,13 @@ export default function AvailableDeliveriesTable() {
         });
       }
 
-      const baseResults: EnrichedDelivery[] = deliveries.map(d => {
+      const baseResults: EnrichedDelivery[] = deliveries.map((d: any) => {
+        // Buyer coordinate fallback: prefer explicit buyer position, else delivery pin
+        const bLat = d.buyer_latitude ?? d.delivery_lat ?? null;
+        const bLng = d.buyer_longitude ?? d.delivery_lng ?? null;
         let distance_km: number | undefined;
-        if (position && d.buyer_latitude && d.buyer_longitude) {
-          distance_km = calculateDistance(position.latitude, position.longitude, d.buyer_latitude, d.buyer_longitude);
+        if (position && bLat && bLng) {
+          distance_km = calculateDistance(position.latitude, position.longitude, bLat, bLng);
         }
         const sellerIds = orderSellerIds[d.id] || [];
         const sellerStops = sellerIds
@@ -128,6 +131,8 @@ export default function AvailableDeliveriesTable() {
 
         return {
           ...d,
+          buyer_latitude: bLat,
+          buyer_longitude: bLng,
           distance_km,
           itemCount: itemCounts[d.id] || 0,
           seller: sellerIds[0] ? sellerMap[sellerIds[0]] : undefined,
