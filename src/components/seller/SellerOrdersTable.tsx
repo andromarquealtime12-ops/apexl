@@ -113,7 +113,15 @@ export default function SellerOrdersTable() {
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">
-                    {formatCurrency(orderTotal)}
+                    <div className="space-y-1">
+                      <div>{formatCurrency(orderTotal)}</div>
+                      {order.payment_method === "cash" && (
+                        <Badge variant="outline" className="gap-1 border-amber-500 text-amber-700 bg-amber-50 dark:bg-amber-950/30">
+                          <Banknote className="h-3 w-3" />
+                          Cash — recevoir {formatCurrency(orderTotal)} du livreur
+                        </Badge>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant={status.variant} className="gap-1">
