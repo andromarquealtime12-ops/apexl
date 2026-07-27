@@ -196,6 +196,11 @@ export default function DeliveryMapPreview({
                 Total: {totalDist.toFixed(1)} km
               </Badge>
             )}
+            {totalMin > 0 && (
+              <Badge className="bg-blue-600/90 text-white gap-1">
+                ⏱ ≈ {etaLabel}
+              </Badge>
+            )}
           </div>
         </div>
 
