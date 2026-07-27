@@ -2029,6 +2029,18 @@ export type Database = {
       }
       generate_pin_code: { Args: never; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
+      get_active_deposit_agents_public: {
+        Args: never
+        Returns: {
+          address: string
+          city: string
+          id: string
+          is_active: boolean
+          is_verified: boolean
+          name: string
+          opening_hours: string
+        }[]
+      }
       get_active_deposit_methods: {
         Args: never
         Returns: {

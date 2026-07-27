@@ -22,16 +22,12 @@ function useActiveAgents() {
   return useQuery({
     queryKey: ["active-deposit-agents"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("deposit_agents")
-        .select("*")
-        .eq("is_active", true)
-        .eq("is_verified", true)
-        .order("city");
+      const { data, error } = await supabase.rpc("get_active_deposit_agents_public" as any);
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
+
 }
 
 export default function AgentDepositSection() {
@@ -136,12 +132,8 @@ export default function AgentDepositSection() {
               <p className="flex items-center gap-1 text-muted-foreground">
                 <MapPin className="h-3 w-3" /> {agent.address}, {agent.city}
               </p>
-              {agent.phone && (
-                <p className="flex items-center gap-1 text-muted-foreground">
-                  <Phone className="h-3 w-3" /> {agent.phone}
-                </p>
-              )}
               <Badge variant="outline" className="text-xs">Vérifié</Badge>
+
             </div>
           ))}
         </div>
@@ -180,12 +172,11 @@ export default function AgentDepositSection() {
                   <Info className="h-4 w-4" />
                   <AlertDescription>
                     <strong>{selectedAgentData.name}</strong><br />
-                    {selectedAgentData.address}, {selectedAgentData.city}<br />
-                    {selectedAgentData.phone && <>Tél: {selectedAgentData.phone}<br /></>}
-                    {selectedAgentData.whatsapp && <>WhatsApp: {selectedAgentData.whatsapp}</>}
+                    {selectedAgentData.address}, {selectedAgentData.city}
                   </AlertDescription>
                 </Alert>
               )}
+
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
