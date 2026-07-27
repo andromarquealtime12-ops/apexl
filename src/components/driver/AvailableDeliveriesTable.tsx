@@ -200,7 +200,15 @@ export default function AvailableDeliveriesTable() {
         return ka - kb;
       });
 
-      setEnriched(result);
+      // Only keep deliveries within 60 km road distance from driver
+      const within60 = position
+        ? result.filter((d: any) => {
+            const km = d.total_route_km ?? d.distance_km ?? Infinity;
+            return km <= 60;
+          })
+        : result;
+
+      setEnriched(within60);
     };
 
 
