@@ -126,6 +126,7 @@ export default function DeliveryMapPreview({
   }, [chain.map((c) => `${c.lat.toFixed(4)},${c.lng.toFixed(4)}`).join("|")]);
 
   let totalDist = 0;
+  let totalMin = 0;
   legs.forEach((leg, i) => {
     const isLast = i === legs.length - 1 && buyerLat && buyerLng;
     routes.push({
@@ -135,6 +136,7 @@ export default function DeliveryMapPreview({
       weight: 4,
     });
     totalDist += leg.distanceKm;
+    totalMin += leg.durationMin;
   });
   // Fallback straight lines while OSRM resolves
   if (legs.length === 0) {
@@ -142,7 +144,9 @@ export default function DeliveryMapPreview({
       const a = chain[i], b = chain[i + 1];
       const isLast = i === chain.length - 2 && buyerLat && buyerLng;
       routes.push({ from: a, to: b, color: isLast ? "#16a34a" : "#f97316", dashed: true });
-      totalDist += calculateDistance(a.lat, a.lng, b.lat, b.lng);
+      const km = calculateDistance(a.lat, a.lng, b.lat, b.lng);
+      totalDist += km;
+      totalMin += Math.max(1, Math.round(km * 2));
     }
   }
 
@@ -156,6 +160,7 @@ export default function DeliveryMapPreview({
   if (!center) return null;
 
   const pickupCount = orderedStops.length;
+  const etaLabel = totalMin >= 60 ? `${Math.floor(totalMin / 60)}h${String(totalMin % 60).padStart(2, "0")}` : `${totalMin} min`;
 
   return (
     <Card className="border-primary/30 overflow-hidden">
