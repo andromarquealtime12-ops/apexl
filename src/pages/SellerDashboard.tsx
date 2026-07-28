@@ -14,7 +14,7 @@ import SellerOrdersTable from "@/components/seller/SellerOrdersTable";
 import { useSellerStats } from "@/hooks/useSellerStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 import { IdentityRequiredBanner } from "@/components/identity/IdentityRequiredBanner";
-import ShopLocationCard from "@/components/seller/ShopLocationCard";
+
 import { useTranslation } from "react-i18next";
 
 const SellerDashboard = () => {
@@ -73,7 +73,6 @@ const SellerDashboard = () => {
 
         <div className="mb-6 space-y-4">
           <IdentityRequiredBanner role="seller" />
-          <ShopLocationCard />
         </div>
 
         <div className="mb-8">

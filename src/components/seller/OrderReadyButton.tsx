@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { notifyOrderStatusChange } from "@/hooks/useOrderNotifications";
@@ -13,7 +12,7 @@ import {
 import { useCreateDeliveryVerification, useDeliveryVerification, useRegeneratePickupCode } from "@/hooks/useDeliveryVerification";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Package, Key, CheckCircle, RefreshCw, MapPin, AlertTriangle } from "lucide-react";
+import { Loader2, Package, Key, CheckCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 interface OrderReadyButtonProps {
@@ -24,9 +23,6 @@ interface OrderReadyButtonProps {
 export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonProps) {
   const [showCode, setShowCode] = useState(false);
   const [pickupCode, setPickupCode] = useState<string | null>(null);
-  const [showAddressConfirm, setShowAddressConfirm] = useState(false);
-  const [pickupAddress, setPickupAddress] = useState<{ address: string | null; lat: number | null; lng: number | null } | null>(null);
-  const [loadingAddress, setLoadingAddress] = useState(false);
   const { data: verification } = useDeliveryVerification(orderId);
   const createVerification = useCreateDeliveryVerification();
   const regenerateCode = useRegeneratePickupCode();
@@ -56,35 +52,8 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     }
   };
 
-  // Step 1: open the confirmation dialog with the registered pickup address
-  const openAddressConfirm = async () => {
+  const handleMarkReady = async () => {
     try {
-      setLoadingAddress(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("shop_address, shop_latitude, shop_longitude")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      if (error) throw error;
-      setPickupAddress({
-        address: data?.shop_address ?? null,
-        lat: data?.shop_latitude ?? null,
-        lng: data?.shop_longitude ?? null,
-      });
-      setShowAddressConfirm(true);
-    } catch (e: any) {
-      toast.error(e?.message || "Impossible de charger l'adresse de retrait");
-    } finally {
-      setLoadingAddress(false);
-    }
-  };
-
-  // Step 2: after seller confirms address, mark ready + issue PIN
-  const handleConfirmAndMarkReady = async () => {
-    try {
-      setShowAddressConfirm(false);
       const result = await markReady.mutateAsync();
       const verif = await createVerification.mutateAsync(orderId);
       setPickupCode(verif.pickup_code);
@@ -112,58 +81,7 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     }
   };
 
-  const hasAddress = !!(pickupAddress?.address && pickupAddress?.lat != null && pickupAddress?.lng != null);
 
-  const addressConfirmDialog = (
-    <Dialog open={showAddressConfirm} onOpenChange={setShowAddressConfirm}>
-      <DialogContent className="sm:max-w-[420px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-primary" />
-            Confirmer le point de retrait
-          </DialogTitle>
-          <DialogDescription>
-            Le livreur viendra chercher le colis à cette adresse enregistrée. Confirmez qu'elle est correcte.
-          </DialogDescription>
-        </DialogHeader>
-
-        {hasAddress ? (
-          <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
-            <p className="text-sm font-medium">{pickupAddress!.address}</p>
-            <p className="text-xs font-mono text-muted-foreground">
-              {pickupAddress!.lat!.toFixed(6)}, {pickupAddress!.lng!.toFixed(6)}
-            </p>
-          </div>
-        ) : (
-          <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 flex items-start gap-2 text-sm">
-            <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-            <span>
-              Aucune adresse de retrait enregistrée. Enregistrez-la dans votre tableau de bord vendeur
-              (« Emplacement de retrait des colis ») avant de marquer la commande prête.
-            </span>
-          </div>
-        )}
-
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button
-            onClick={handleConfirmAndMarkReady}
-            disabled={!hasAddress || markReady.isPending || createVerification.isPending}
-            className="flex-1 gap-1"
-          >
-            {(markReady.isPending || createVerification.isPending) ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
-            ) : (
-              <CheckCircle className="h-3 w-3" />
-            )}
-            Confirmer & marquer prête
-          </Button>
-          <Button asChild variant="outline" className="flex-1">
-            <Link to="/seller">Modifier l'adresse</Link>
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
 
   const pinDialog = (
     <Dialog open={showCode} onOpenChange={setShowCode}>
@@ -250,7 +168,7 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     <>
       <Button
         size="sm"
-        onClick={() => handleConfirmAndMarkReady()}
+        onClick={() => handleMarkReady()}
         disabled={createVerification.isPending || markReady.isPending}
         className="gap-1"
       >
