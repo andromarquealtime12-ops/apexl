@@ -168,7 +168,7 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     <>
       <Button
         size="sm"
-        onClick={() => handleConfirmAndMarkReady()}
+        onClick={() => handleMarkReady()}
         disabled={createVerification.isPending || markReady.isPending}
         className="gap-1"
       >
