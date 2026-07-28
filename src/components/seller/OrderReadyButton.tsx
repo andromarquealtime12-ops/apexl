@@ -82,56 +82,6 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
   };
 
 
-  const addressConfirmDialog = (
-    <Dialog open={showAddressConfirm} onOpenChange={setShowAddressConfirm}>
-      <DialogContent className="sm:max-w-[420px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-primary" />
-            Confirmer le point de retrait
-          </DialogTitle>
-          <DialogDescription>
-            Le livreur viendra chercher le colis à cette adresse enregistrée. Confirmez qu'elle est correcte.
-          </DialogDescription>
-        </DialogHeader>
-
-        {hasAddress ? (
-          <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
-            <p className="text-sm font-medium">{pickupAddress!.address}</p>
-            <p className="text-xs font-mono text-muted-foreground">
-              {pickupAddress!.lat!.toFixed(6)}, {pickupAddress!.lng!.toFixed(6)}
-            </p>
-          </div>
-        ) : (
-          <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 flex items-start gap-2 text-sm">
-            <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-            <span>
-              Aucune adresse de retrait enregistrée. Enregistrez-la dans votre tableau de bord vendeur
-              (« Emplacement de retrait des colis ») avant de marquer la commande prête.
-            </span>
-          </div>
-        )}
-
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button
-            onClick={handleConfirmAndMarkReady}
-            disabled={!hasAddress || markReady.isPending || createVerification.isPending}
-            className="flex-1 gap-1"
-          >
-            {(markReady.isPending || createVerification.isPending) ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
-            ) : (
-              <CheckCircle className="h-3 w-3" />
-            )}
-            Confirmer & marquer prête
-          </Button>
-          <Button asChild variant="outline" className="flex-1">
-            <Link to="/seller">Modifier l'adresse</Link>
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
 
   const pinDialog = (
     <Dialog open={showCode} onOpenChange={setShowCode}>
