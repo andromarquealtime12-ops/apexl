@@ -1033,6 +1033,7 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          date_of_birth: string | null
           email_verified: boolean | null
           full_name: string
           id: string
@@ -1077,6 +1078,7 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          date_of_birth?: string | null
           email_verified?: boolean | null
           full_name: string
           id?: string
@@ -1121,6 +1123,7 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          date_of_birth?: string | null
           email_verified?: boolean | null
           full_name?: string
           id?: string
@@ -1839,6 +1842,7 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          date_of_birth: string | null
           email_verified: boolean | null
           full_name: string
           id: string
@@ -1892,6 +1896,7 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          date_of_birth: string | null
           email_verified: boolean | null
           full_name: string
           id: string
@@ -2079,6 +2084,7 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          date_of_birth: string | null
           email_verified: boolean | null
           full_name: string
           id: string
@@ -2150,6 +2156,7 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          date_of_birth: string | null
           email_verified: boolean | null
           full_name: string
           id: string
