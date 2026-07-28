@@ -5,33 +5,37 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
+import { GpsAddressField } from "@/components/ui/GpsAddressField";
 import { toast } from "sonner";
-import { Settings as SettingsIcon, Save, Bell, BellOff, CheckCircle } from "lucide-react";
-import SensitiveInfoCard from "@/components/settings/SensitiveInfoCard";
+import { Settings as SettingsIcon, Save, Bell, BellOff, CheckCircle, MapPin } from "lucide-react";
 
 export default function Settings() {
-  const { user, loading } = useAuth();
+  const { user, loading, isSeller } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
   const { permission, isSupported, requestPermission } = usePushNotifications();
 
   const initial = useMemo(
     () => ({
-      whatsapp: (profile as any)?.whatsapp ?? "",
-      country: profile?.country ?? "",
-      city: profile?.city ?? "",
+      first_name: ((profile as any)?.full_name ?? "").split(" ")[0] ?? "",
+      last_name: ((profile as any)?.full_name ?? "").split(" ").slice(1).join(" ") ?? "",
+      phone: profile?.phone ?? "",
+      date_of_birth: (profile as any)?.date_of_birth ?? "",
       address: profile?.address ?? "",
+      lat: profile?.latitude ?? null as number | null,
+      lng: profile?.longitude ?? null as number | null,
     }),
     [profile]
   );
 
   const [form, setForm] = useState(initial);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setForm(initial);
@@ -51,16 +55,38 @@ export default function Settings() {
   if (!user) return <Navigate to="/" replace />;
 
   const onSave = async () => {
+    if (!form.first_name.trim()) return toast.error("Prénom requis");
+    if (form.lat == null || form.lng == null) return toast.error("Confirmez une adresse (position ou recherche)");
+
     try {
+      setSaving(true);
+      const full_name = `${form.first_name.trim()} ${form.last_name.trim()}`.trim();
       await updateProfile.mutateAsync({
-        whatsapp: form.whatsapp.trim() || null,
-        country: form.country.trim() || null,
-        city: form.city.trim() || null,
+        full_name,
+        phone: form.phone.trim() || null,
         address: form.address.trim() || null,
+        latitude: form.lat,
+        longitude: form.lng,
+        ...(form.date_of_birth ? { date_of_birth: form.date_of_birth } : {}),
       } as any);
-      toast.success("Paramètres enregistrés");
+
+      // For sellers, also mirror to shop location so buyers see accurate distance
+      if (isSeller) {
+        await supabase
+          .from("profiles")
+          .update({
+            shop_address: form.address.trim() || null,
+            shop_latitude: form.lat,
+            shop_longitude: form.lng,
+          })
+          .eq("user_id", user.id);
+      }
+
+      toast.success("Paramètres enregistrés ✓");
     } catch (e: any) {
       toast.error(e?.message || "Erreur lors de l'enregistrement");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -76,68 +102,90 @@ export default function Settings() {
           </div>
         </header>
 
-        {/* Sensitive info (name / email / phone) with identity verification for sellers/drivers */}
-        <div className="mb-6">
-          <SensitiveInfoCard />
-        </div>
-
         <Card>
           <CardHeader>
-            <CardTitle>Coordonnées de contact & adresse</CardTitle>
+            <CardTitle>Informations personnelles</CardTitle>
             <CardDescription>
-              WhatsApp, pays, ville et adresse. Ces informations peuvent être modifiées librement.
+              Nom, prénom, date de naissance et adresse. L'adresse enregistrée sert au calcul de la distance
+              {isSeller ? " entre votre boutique et les acheteurs." : " avec les vendeurs et livreurs."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
             {isLoading ? (
-              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-64 w-full" />
             ) : (
               <>
-                <div className="space-y-2">
-                  <Label htmlFor="whatsapp">Numéro WhatsApp</Label>
-                  <Input
-                    id="whatsapp"
-                    value={form.whatsapp}
-                    onChange={(e) => setForm((p) => ({ ...p, whatsapp: e.target.value }))}
-                    placeholder="+509 00 00 0000"
-                  />
-                  <p className="text-xs text-muted-foreground">Ce numéro sera utilisé pour que les vendeurs, acheteurs et livreurs puissent vous contacter.</p>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="first_name">Prénom *</Label>
+                    <Input
+                      id="first_name"
+                      value={form.first_name}
+                      onChange={(e) => setForm((p) => ({ ...p, first_name: e.target.value }))}
+                      maxLength={50}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="last_name">Nom</Label>
+                    <Input
+                      id="last_name"
+                      value={form.last_name}
+                      onChange={(e) => setForm((p) => ({ ...p, last_name: e.target.value }))}
+                      maxLength={50}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="country">Pays</Label>
+                    <Label htmlFor="dob">Date de naissance</Label>
                     <Input
-                      id="country"
-                      value={form.country}
-                      onChange={(e) => setForm((p) => ({ ...p, country: e.target.value }))}
-                      placeholder="HT / DO"
+                      id="dob"
+                      type="date"
+                      value={form.date_of_birth || ""}
+                      onChange={(e) => setForm((p) => ({ ...p, date_of_birth: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="city">Ville</Label>
+                    <Label htmlFor="phone">Téléphone</Label>
                     <Input
-                      id="city"
-                      value={form.city}
-                      onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
-                      placeholder="Port-au-Prince"
+                      id="phone"
+                      value={form.phone}
+                      onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                      placeholder="+509 ..."
+                      maxLength={30}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address">Adresse</Label>
-                  <Input
-                    id="address"
+                  <Label className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    Adresse
+                  </Label>
+                  <GpsAddressField
                     value={form.address}
-                    onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
-                    placeholder="Rue, quartier..."
+                    onChange={(v) => setForm((p) => ({ ...p, address: v }))}
+                    coords={{ lat: form.lat, lng: form.lng }}
+                    onCoords={(la, lo) =>
+                      setForm((p) => ({ ...p, lat: la, lng: lo }))
+                    }
+                    onSelect={(s) =>
+                      setForm((p) => ({ ...p, address: s.address, lat: s.lat, lng: s.lng }))
+                    }
+                    placeholder="Utiliser ma position ou rechercher une adresse…"
                   />
+                  {form.lat != null && form.lng != null && (
+                    <p className="text-xs text-green-600 flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3" />
+                      Position enregistrée : {form.lat.toFixed(5)}, {form.lng.toFixed(5)}
+                    </p>
+                  )}
                 </div>
 
-                <Button onClick={onSave} disabled={updateProfile.isPending} className="w-full gap-2">
+                <Button onClick={onSave} disabled={saving || updateProfile.isPending} className="w-full gap-2">
                   <Save className="h-4 w-4" />
-                  {updateProfile.isPending ? "Enregistrement..." : "Enregistrer"}
+                  {saving ? "Enregistrement..." : "Enregistrer"}
                 </Button>
               </>
             )}
