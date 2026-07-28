@@ -23,9 +23,6 @@ interface OrderReadyButtonProps {
 export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonProps) {
   const [showCode, setShowCode] = useState(false);
   const [pickupCode, setPickupCode] = useState<string | null>(null);
-  const [showAddressConfirm, setShowAddressConfirm] = useState(false);
-  const [pickupAddress, setPickupAddress] = useState<{ address: string | null; lat: number | null; lng: number | null } | null>(null);
-  const [loadingAddress, setLoadingAddress] = useState(false);
   const { data: verification } = useDeliveryVerification(orderId);
   const createVerification = useCreateDeliveryVerification();
   const regenerateCode = useRegeneratePickupCode();
@@ -55,35 +52,8 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     }
   };
 
-  // Step 1: open the confirmation dialog with the registered pickup address
-  const openAddressConfirm = async () => {
+  const handleMarkReady = async () => {
     try {
-      setLoadingAddress(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("shop_address, shop_latitude, shop_longitude")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      if (error) throw error;
-      setPickupAddress({
-        address: data?.shop_address ?? null,
-        lat: data?.shop_latitude ?? null,
-        lng: data?.shop_longitude ?? null,
-      });
-      setShowAddressConfirm(true);
-    } catch (e: any) {
-      toast.error(e?.message || "Impossible de charger l'adresse de retrait");
-    } finally {
-      setLoadingAddress(false);
-    }
-  };
-
-  // Step 2: after seller confirms address, mark ready + issue PIN
-  const handleConfirmAndMarkReady = async () => {
-    try {
-      setShowAddressConfirm(false);
       const result = await markReady.mutateAsync();
       const verif = await createVerification.mutateAsync(orderId);
       setPickupCode(verif.pickup_code);
@@ -111,7 +81,6 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
     }
   };
 
-  const hasAddress = !!(pickupAddress?.address && pickupAddress?.lat != null && pickupAddress?.lng != null);
 
   const addressConfirmDialog = (
     <Dialog open={showAddressConfirm} onOpenChange={setShowAddressConfirm}>
