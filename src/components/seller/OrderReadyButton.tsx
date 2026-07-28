@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { notifyOrderStatusChange } from "@/hooks/useOrderNotifications";
@@ -13,7 +12,7 @@ import {
 import { useCreateDeliveryVerification, useDeliveryVerification, useRegeneratePickupCode } from "@/hooks/useDeliveryVerification";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Package, Key, CheckCircle, RefreshCw, MapPin, AlertTriangle } from "lucide-react";
+import { Loader2, Package, Key, CheckCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 interface OrderReadyButtonProps {
