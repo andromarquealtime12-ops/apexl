@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDriverDeliveries } from "@/hooks/useDriverStats";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Navigation, Key, ExternalLink, MessageSquare, Phone, ShoppingBag, Banknote, AlertCircle } from "lucide-react";
+import { MapPin, Package, Navigation, Key, ExternalLink, MessageSquare, Phone, ShoppingBag, Banknote, AlertCircle, Map as MapIcon } from "lucide-react";
 import { DeliveryCodeVerification } from "./DeliveryCodeVerification";
+import DeliveryMapPreview from "./DeliveryMapPreview";
 import OrderChat from "@/components/chat/OrderChat";
 import CancelOrderButton from "@/components/orders/CancelOrderButton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentPosition, calculateDistance } from "@/hooks/useGeolocation";
+
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; action?: "pickup" | "delivery"; actionLabel?: string }> = {
   ready: { 
