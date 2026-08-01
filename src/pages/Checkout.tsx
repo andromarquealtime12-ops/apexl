@@ -262,6 +262,16 @@ const Checkout = () => {
       return;
     }
 
+    if (!deliveryAddress2.trim()) {
+      toast({ title: "Numéro de maison requis", description: "Indiquez le n° de maison, d'édifice ou d'appartement pour que le livreur vous trouve.", variant: "destructive" });
+      return;
+    }
+
+    if (deliveryNotes.trim().length < 10) {
+      toast({ title: "Instructions requises", description: "Décrivez comment vous trouver (point de repère, couleur, étage, résidence…) — 10 caractères minimum.", variant: "destructive" });
+      return;
+    }
+
     const phoneClean = buyerPhone.replace(/\s+/g, "");
     if (!phoneClean || phoneClean.length < 7) {
       toast({ title: "Téléphone requis", description: "Un numéro de téléphone valide est obligatoire pour que le livreur puisse vous contacter.", variant: "destructive" });
