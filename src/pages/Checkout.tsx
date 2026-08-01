@@ -671,14 +671,21 @@ const Checkout = () => {
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="notes">Instructions de livraison (optionnel)</Label>
+                    <Label htmlFor="notes">
+                      Instructions pour le livreur <span className="text-destructive">*</span>
+                    </Label>
                     <Textarea
                       id="notes"
-                      placeholder="Informations supplémentaires pour le livreur..."
+                      placeholder="Ex: Maison bleue à droite après la pharmacie, portail noir, appeler en arrivant, résidence sécurisée demander à la réception..."
                       value={deliveryNotes}
                       onChange={(e) => setDeliveryNotes(e.target.value)}
                       rows={3}
+                      required
+                      minLength={10}
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Obligatoire (10 caractères min.) — point de repère, couleur du portail, étage, résidence, code d'accès…
+                    </p>
                   </div>
                   {hasPrintfulItem && (
                     <Alert>
