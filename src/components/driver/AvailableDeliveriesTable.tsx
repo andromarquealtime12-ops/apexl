@@ -114,8 +114,8 @@ export default function AvailableDeliveriesTable() {
         // Nearest-next ordering (haversine, fast) — pick the visit order
         const ordered: SellerInfo[] = [];
         const remaining = [...sellerStops];
-        let curLat = position?.latitude;
-        let curLng = position?.longitude;
+        let curLat = position?.latitude ?? sellerStops[0]?.latitude ?? null;
+        let curLng = position?.longitude ?? sellerStops[0]?.longitude ?? null;
         while (remaining.length && curLat != null && curLng != null) {
           let bestIdx = 0;
           let bestD = Infinity;
@@ -128,12 +128,22 @@ export default function AvailableDeliveriesTable() {
           curLat = next.latitude!;
           curLng = next.longitude!;
         }
+        // Never drop stops (e.g. when driver position is unknown)
+        ordered.push(...remaining);
+
+        // Seller → buyer distance (independent of driver position)
+        let seller_buyer_km: number | undefined;
+        const lastStop = ordered[ordered.length - 1];
+        if (lastStop?.latitude != null && lastStop?.longitude != null && bLat && bLng) {
+          seller_buyer_km = calculateDistance(lastStop.latitude, lastStop.longitude, bLat, bLng);
+        }
 
         return {
           ...d,
           buyer_latitude: bLat,
           buyer_longitude: bLng,
           distance_km,
+          seller_buyer_km,
           itemCount: itemCounts[d.id] || 0,
           seller: sellerIds[0] ? sellerMap[sellerIds[0]] : undefined,
           sellerCount: sellerIds.length,
