@@ -604,13 +604,19 @@ const Checkout = () => {
 
 
                   <div className="space-y-2">
-                    <Label htmlFor="address2">Adresse ligne 2 (optionnel)</Label>
+                    <Label htmlFor="address2">
+                      N° de maison / édifice / appartement <span className="text-destructive">*</span>
+                    </Label>
                     <Input
                       id="address2"
-                      placeholder="Appartement, suite, étage, point de repère..."
+                      placeholder="Ex: Maison #24, Édifice Las Palmas, Apt 3B, 2e étage..."
                       value={deliveryAddress2}
                       onChange={(e) => setDeliveryAddress2(e.target.value)}
+                      required
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Obligatoire — OpenStreetMap donne la rue, mais le livreur a besoin du numéro exact.
+                    </p>
                   </div>
                   <div className="grid sm:grid-cols-3 gap-4">
                     <div className="space-y-2 sm:col-span-2">
