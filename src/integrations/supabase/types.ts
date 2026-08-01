@@ -2307,6 +2307,7 @@ export type Database = {
         Args: { p_verification_id: string }
         Returns: Json
       }
+      robot_caller_allowed: { Args: never; Returns: boolean }
       run_admin_robot: { Args: never; Returns: Json }
       suspend_user: {
         Args: { p_duration_days?: number; p_reason: string; p_user_id: string }
