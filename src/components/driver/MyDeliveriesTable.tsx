@@ -332,6 +332,49 @@ export default function MyDeliveriesTable() {
                           </div>
                         )}
 
+                        {/* Distances + carte */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {distToSeller != null && !pickupDone && (
+                            <Badge variant="outline" className="gap-1 border-orange-500 text-orange-600">
+                              <Navigation className="h-3 w-3" />
+                              Vous → vendeur : {distToSeller.toFixed(1)} km
+                            </Badge>
+                          )}
+                          {distToBuyer != null && (
+                            <Badge variant="outline" className="gap-1 border-green-600 text-green-700">
+                              <MapPin className="h-3 w-3" />
+                              Vous → acheteur : {distToBuyer.toFixed(1)} km
+                            </Badge>
+                          )}
+                          {distSellerBuyer != null && !pickupDone && (
+                            <Badge variant="outline" className="gap-1">
+                              Vendeur → acheteur : {distSellerBuyer.toFixed(1)} km
+                            </Badge>
+                          )}
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="gap-1"
+                            onClick={() => setOpenMapId(openMapId === delivery.id ? null : delivery.id)}
+                          >
+                            <MapIcon className="h-3 w-3" />
+                            {openMapId === delivery.id ? "Masquer la carte" : "Voir la carte"}
+                          </Button>
+                        </div>
+
+                        {openMapId === delivery.id && (
+                          <DeliveryMapPreview
+                            orderId={delivery.id}
+                            buyerLat={buyerLat}
+                            buyerLng={buyerLng}
+                            driverLat={position?.latitude}
+                            driverLng={position?.longitude}
+                            onClose={() => setOpenMapId(null)}
+                          />
+                        )}
+
+
+
                         {/* Product details */}
                         {orderProducts?.[delivery.id] && orderProducts[delivery.id].length > 0 && (
                           <div className="bg-muted/40 rounded-lg p-3 space-y-2">
