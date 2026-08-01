@@ -271,6 +271,25 @@ export default function MyDeliveriesTable() {
 
                 // Get seller_id from sellerLocations for WhatsApp
                 const sellerUserId = seller?.user_id;
+
+                // Buyer coordinates (explicit buyer position, else delivery pin)
+                const d: any = delivery;
+                const buyerLat = d.buyer_latitude ?? d.delivery_lat ?? null;
+                const buyerLng = d.buyer_longitude ?? d.delivery_lng ?? null;
+
+                const distToBuyer =
+                  position && buyerLat && buyerLng
+                    ? calculateDistance(position.latitude, position.longitude, buyerLat, buyerLng)
+                    : null;
+                const distToSeller =
+                  position && seller?.latitude && seller?.longitude
+                    ? calculateDistance(position.latitude, position.longitude, seller.latitude, seller.longitude)
+                    : null;
+                const distSellerBuyer =
+                  seller?.latitude && seller?.longitude && buyerLat && buyerLng
+                    ? calculateDistance(seller.latitude, seller.longitude, buyerLat, buyerLng)
+                    : null;
+
                 
                 return (
                   <Card key={delivery.id} className="border-primary/20 bg-primary/5">
