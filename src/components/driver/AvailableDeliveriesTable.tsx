@@ -317,7 +317,7 @@ export default function AvailableDeliveriesTable() {
                   </div>
                 </div>
 
-                {(delivery.total_route_km !== undefined || delivery.distance_km !== undefined) && (
+                {(delivery.total_route_km !== undefined || delivery.distance_km !== undefined || delivery.seller_buyer_km !== undefined) && (
                   <div className="flex items-center gap-2 text-sm flex-wrap">
                     {delivery.total_route_km !== undefined && (
                       <span className="flex items-center gap-1">
@@ -330,6 +330,12 @@ export default function AvailableDeliveriesTable() {
                         ⏱ ≈ {(delivery as any)._routeDurationMin >= 60
                           ? `${Math.floor((delivery as any)._routeDurationMin / 60)}h${String((delivery as any)._routeDurationMin % 60).padStart(2, "0")}`
                           : `${(delivery as any)._routeDurationMin} min`}
+                      </Badge>
+                    )}
+                    {delivery.seller_buyer_km !== undefined && (
+                      <Badge variant="outline" className="text-xs gap-1 border-green-600 text-green-700">
+                        <Route className="h-3 w-3" />
+                        Vendeur → acheteur : {delivery.seller_buyer_km.toFixed(1)} km
                       </Badge>
                     )}
                     {delivery.distance_km !== undefined && (
