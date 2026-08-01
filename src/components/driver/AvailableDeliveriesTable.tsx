@@ -41,6 +41,7 @@ interface EnrichedDelivery {
   buyer_longitude: number | null;
   total_amount: number;
   distance_km?: number;
+  seller_buyer_km?: number;
   total_route_km?: number;
   itemCount?: number;
   seller?: SellerInfo;
@@ -114,8 +115,8 @@ export default function AvailableDeliveriesTable() {
         // Nearest-next ordering (haversine, fast) — pick the visit order
         const ordered: SellerInfo[] = [];
         const remaining = [...sellerStops];
-        let curLat = position?.latitude;
-        let curLng = position?.longitude;
+        let curLat = position?.latitude ?? sellerStops[0]?.latitude ?? null;
+        let curLng = position?.longitude ?? sellerStops[0]?.longitude ?? null;
         while (remaining.length && curLat != null && curLng != null) {
           let bestIdx = 0;
           let bestD = Infinity;
@@ -128,12 +129,22 @@ export default function AvailableDeliveriesTable() {
           curLat = next.latitude!;
           curLng = next.longitude!;
         }
+        // Never drop stops (e.g. when driver position is unknown)
+        ordered.push(...remaining);
+
+        // Seller → buyer distance (independent of driver position)
+        let seller_buyer_km: number | undefined;
+        const lastStop = ordered[ordered.length - 1];
+        if (lastStop?.latitude != null && lastStop?.longitude != null && bLat && bLng) {
+          seller_buyer_km = calculateDistance(lastStop.latitude, lastStop.longitude, bLat, bLng);
+        }
 
         return {
           ...d,
           buyer_latitude: bLat,
           buyer_longitude: bLng,
           distance_km,
+          seller_buyer_km,
           itemCount: itemCounts[d.id] || 0,
           seller: sellerIds[0] ? sellerMap[sellerIds[0]] : undefined,
           sellerCount: sellerIds.length,
@@ -306,7 +317,7 @@ export default function AvailableDeliveriesTable() {
                   </div>
                 </div>
 
-                {(delivery.total_route_km !== undefined || delivery.distance_km !== undefined) && (
+                {(delivery.total_route_km !== undefined || delivery.distance_km !== undefined || delivery.seller_buyer_km !== undefined) && (
                   <div className="flex items-center gap-2 text-sm flex-wrap">
                     {delivery.total_route_km !== undefined && (
                       <span className="flex items-center gap-1">
@@ -319,6 +330,12 @@ export default function AvailableDeliveriesTable() {
                         ⏱ ≈ {(delivery as any)._routeDurationMin >= 60
                           ? `${Math.floor((delivery as any)._routeDurationMin / 60)}h${String((delivery as any)._routeDurationMin % 60).padStart(2, "0")}`
                           : `${(delivery as any)._routeDurationMin} min`}
+                      </Badge>
+                    )}
+                    {delivery.seller_buyer_km !== undefined && (
+                      <Badge variant="outline" className="text-xs gap-1 border-green-600 text-green-700">
+                        <Route className="h-3 w-3" />
+                        Vendeur → acheteur : {delivery.seller_buyer_km.toFixed(1)} km
                       </Badge>
                     )}
                     {delivery.distance_km !== undefined && (
@@ -380,8 +397,16 @@ export default function AvailableDeliveriesTable() {
                   </div>
                 )}
 
-                {delivery.delivery_notes && (
-                  <p className="text-sm text-muted-foreground italic">"{delivery.delivery_notes}"</p>
+                {(delivery.delivery_notes || (delivery as any).delivery_address2) && (
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-2 space-y-1 text-xs">
+                    <p className="font-bold text-primary">📍 Détails d'adresse</p>
+                    {(delivery as any).delivery_address2 && (
+                      <p><span className="text-muted-foreground">N° maison / édifice :</span> <span className="font-semibold">{(delivery as any).delivery_address2}</span></p>
+                    )}
+                    {delivery.delivery_notes && (
+                      <p className="italic">🗒️ "{delivery.delivery_notes}"</p>
+                    )}
+                  </div>
                 )}
               </div>
 

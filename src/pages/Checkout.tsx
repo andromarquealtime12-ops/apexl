@@ -262,6 +262,16 @@ const Checkout = () => {
       return;
     }
 
+    if (!deliveryAddress2.trim()) {
+      toast({ title: "Numéro de maison requis", description: "Indiquez le n° de maison, d'édifice ou d'appartement pour que le livreur vous trouve.", variant: "destructive" });
+      return;
+    }
+
+    if (deliveryNotes.trim().length < 10) {
+      toast({ title: "Instructions requises", description: "Décrivez comment vous trouver (point de repère, couleur, étage, résidence…) — 10 caractères minimum.", variant: "destructive" });
+      return;
+    }
+
     const phoneClean = buyerPhone.replace(/\s+/g, "");
     if (!phoneClean || phoneClean.length < 7) {
       toast({ title: "Téléphone requis", description: "Un numéro de téléphone valide est obligatoire pour que le livreur puisse vous contacter.", variant: "destructive" });
@@ -604,13 +614,19 @@ const Checkout = () => {
 
 
                   <div className="space-y-2">
-                    <Label htmlFor="address2">Adresse ligne 2 (optionnel)</Label>
+                    <Label htmlFor="address2">
+                      N° de maison / édifice / appartement <span className="text-destructive">*</span>
+                    </Label>
                     <Input
                       id="address2"
-                      placeholder="Appartement, suite, étage, point de repère..."
+                      placeholder="Ex: Maison #24, Édifice Las Palmas, Apt 3B, 2e étage..."
                       value={deliveryAddress2}
                       onChange={(e) => setDeliveryAddress2(e.target.value)}
+                      required
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Obligatoire — OpenStreetMap donne la rue, mais le livreur a besoin du numéro exact.
+                    </p>
                   </div>
                   <div className="grid sm:grid-cols-3 gap-4">
                     <div className="space-y-2 sm:col-span-2">
@@ -665,14 +681,21 @@ const Checkout = () => {
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="notes">Instructions de livraison (optionnel)</Label>
+                    <Label htmlFor="notes">
+                      Instructions pour le livreur <span className="text-destructive">*</span>
+                    </Label>
                     <Textarea
                       id="notes"
-                      placeholder="Informations supplémentaires pour le livreur..."
+                      placeholder="Ex: Maison bleue à droite après la pharmacie, portail noir, appeler en arrivant, résidence sécurisée demander à la réception..."
                       value={deliveryNotes}
                       onChange={(e) => setDeliveryNotes(e.target.value)}
                       rows={3}
+                      required
+                      minLength={10}
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Obligatoire (10 caractères min.) — point de repère, couleur du portail, étage, résidence, code d'accès…
+                    </p>
                   </div>
                   {hasPrintfulItem && (
                     <Alert>
