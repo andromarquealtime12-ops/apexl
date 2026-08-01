@@ -436,10 +436,21 @@ export default function MyDeliveriesTable() {
                           </div>
                         )}
 
-                        {delivery.delivery_notes && pickupDone && (
-                          <p className="text-sm bg-muted/50 p-2 rounded italic">
-                            "{delivery.delivery_notes}"
-                          </p>
+                        {pickupDone && (
+                          <div className="rounded-lg border border-primary/30 bg-primary/5 p-2 space-y-1 text-sm">
+                            <p className="text-xs font-bold text-primary">📍 Détails d'adresse</p>
+                            {(delivery as any).delivery_address2 && (
+                              <p><span className="text-muted-foreground">N° maison / édifice :</span> <span className="font-semibold">{(delivery as any).delivery_address2}</span></p>
+                            )}
+                            {((delivery as any).delivery_state || (delivery as any).delivery_zip) && (
+                              <p className="text-xs text-muted-foreground">
+                                {(delivery as any).delivery_state} {(delivery as any).delivery_zip}
+                              </p>
+                            )}
+                            {delivery.delivery_notes && (
+                              <p className="italic">🗒️ "{delivery.delivery_notes}"</p>
+                            )}
+                          </div>
                         )}
 
                         <div className="flex items-center justify-between pt-2 border-t flex-wrap gap-2">
