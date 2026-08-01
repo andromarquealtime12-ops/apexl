@@ -127,6 +127,13 @@ export default function MyDeliveriesTable() {
     type: "pickup" | "delivery";
   }>({ isOpen: false, orderId: "", type: "pickup" });
   const { data: deliveries, isLoading } = useDriverDeliveries();
+  const [openMapId, setOpenMapId] = useState<string | null>(null);
+  const { position, getCurrentPosition } = useCurrentPosition();
+
+  useEffect(() => {
+    getCurrentPosition();
+  }, [getCurrentPosition]);
+
 
   // Fetch seller locations for navigation to seller (not buyer) before pickup
   const { data: sellerLocations } = useQuery({
