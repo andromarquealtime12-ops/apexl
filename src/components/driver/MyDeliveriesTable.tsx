@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDriverDeliveries } from "@/hooks/useDriverStats";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Package, Navigation, Key, ExternalLink, MessageSquare, Phone, ShoppingBag, Banknote, AlertCircle } from "lucide-react";
+import { MapPin, Package, Navigation, Key, ExternalLink, MessageSquare, Phone, ShoppingBag, Banknote, AlertCircle, Map as MapIcon } from "lucide-react";
 import { DeliveryCodeVerification } from "./DeliveryCodeVerification";
+import DeliveryMapPreview from "./DeliveryMapPreview";
 import OrderChat from "@/components/chat/OrderChat";
 import CancelOrderButton from "@/components/orders/CancelOrderButton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentPosition, calculateDistance } from "@/hooks/useGeolocation";
+
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; action?: "pickup" | "delivery"; actionLabel?: string }> = {
   ready: { 
@@ -124,6 +127,13 @@ export default function MyDeliveriesTable() {
     type: "pickup" | "delivery";
   }>({ isOpen: false, orderId: "", type: "pickup" });
   const { data: deliveries, isLoading } = useDriverDeliveries();
+  const [openMapId, setOpenMapId] = useState<string | null>(null);
+  const { position, getCurrentPosition } = useCurrentPosition();
+
+  useEffect(() => {
+    getCurrentPosition();
+  }, [getCurrentPosition]);
+
 
   // Fetch seller locations for navigation to seller (not buyer) before pickup
   const { data: sellerLocations } = useQuery({
@@ -261,6 +271,25 @@ export default function MyDeliveriesTable() {
 
                 // Get seller_id from sellerLocations for WhatsApp
                 const sellerUserId = seller?.user_id;
+
+                // Buyer coordinates (explicit buyer position, else delivery pin)
+                const d: any = delivery;
+                const buyerLat = d.buyer_latitude ?? d.delivery_lat ?? null;
+                const buyerLng = d.buyer_longitude ?? d.delivery_lng ?? null;
+
+                const distToBuyer =
+                  position && buyerLat && buyerLng
+                    ? calculateDistance(position.latitude, position.longitude, buyerLat, buyerLng)
+                    : null;
+                const distToSeller =
+                  position && seller?.latitude && seller?.longitude
+                    ? calculateDistance(position.latitude, position.longitude, seller.latitude, seller.longitude)
+                    : null;
+                const distSellerBuyer =
+                  seller?.latitude && seller?.longitude && buyerLat && buyerLng
+                    ? calculateDistance(seller.latitude, seller.longitude, buyerLat, buyerLng)
+                    : null;
+
                 
                 return (
                   <Card key={delivery.id} className="border-primary/20 bg-primary/5">
@@ -302,6 +331,49 @@ export default function MyDeliveriesTable() {
                             </div>
                           </div>
                         )}
+
+                        {/* Distances + carte */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {distToSeller != null && !pickupDone && (
+                            <Badge variant="outline" className="gap-1 border-orange-500 text-orange-600">
+                              <Navigation className="h-3 w-3" />
+                              Vous → vendeur : {distToSeller.toFixed(1)} km
+                            </Badge>
+                          )}
+                          {distToBuyer != null && (
+                            <Badge variant="outline" className="gap-1 border-green-600 text-green-700">
+                              <MapPin className="h-3 w-3" />
+                              Vous → acheteur : {distToBuyer.toFixed(1)} km
+                            </Badge>
+                          )}
+                          {distSellerBuyer != null && !pickupDone && (
+                            <Badge variant="outline" className="gap-1">
+                              Vendeur → acheteur : {distSellerBuyer.toFixed(1)} km
+                            </Badge>
+                          )}
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="gap-1"
+                            onClick={() => setOpenMapId(openMapId === delivery.id ? null : delivery.id)}
+                          >
+                            <MapIcon className="h-3 w-3" />
+                            {openMapId === delivery.id ? "Masquer la carte" : "Voir la carte"}
+                          </Button>
+                        </div>
+
+                        {openMapId === delivery.id && (
+                          <DeliveryMapPreview
+                            orderId={delivery.id}
+                            buyerLat={buyerLat}
+                            buyerLng={buyerLng}
+                            driverLat={position?.latitude}
+                            driverLng={position?.longitude}
+                            onClose={() => setOpenMapId(null)}
+                          />
+                        )}
+
+
 
                         {/* Product details */}
                         {orderProducts?.[delivery.id] && orderProducts[delivery.id].length > 0 && (
