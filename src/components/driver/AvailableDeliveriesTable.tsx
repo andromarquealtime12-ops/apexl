@@ -41,6 +41,7 @@ interface EnrichedDelivery {
   buyer_longitude: number | null;
   total_amount: number;
   distance_km?: number;
+  seller_buyer_km?: number;
   total_route_km?: number;
   itemCount?: number;
   seller?: SellerInfo;
