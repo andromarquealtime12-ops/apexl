@@ -77,8 +77,8 @@ const SellerDashboard = () => {
           <IdentityRequiredBanner role="seller" />
         </div>
 
-        <div className="mb-8">
         <div className="mb-8 space-y-6">
+
           <SellerStatsCards stats={stats} isLoading={statsLoading} />
           <EarningsTransferCard />
         </div>
