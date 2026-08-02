@@ -17,6 +17,8 @@ import { useDriverOrderNotifications } from "@/hooks/usePushNotifications";
 import { useDriverStats, useAvailableDeliveries } from "@/hooks/useDriverStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 import { IdentityRequiredBanner } from "@/components/identity/IdentityRequiredBanner";
+import EarningsTransferCard from "@/components/wallet/EarningsTransferCard";
+
 
 const DriverDashboard = () => {
   const { t } = useTranslation();
