@@ -79,7 +79,9 @@ export default function EarningsTransferCard() {
         </CardTitle>
         <CardDescription>
           L'argent de vos ventes/livraisons est déposé ici (net de 5% de commission plateforme).
-          Transférez-le vers votre portefeuille principal — frais de transfert 1%.
+          Pour les commandes payées en cash, les 5% sont prélevés directement sur ce solde —
+          aussi bien sur les ventes (vendeur) que sur les frais de livraison (livreur).
+          Transférez vers votre portefeuille principal — frais de transfert 1%.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
