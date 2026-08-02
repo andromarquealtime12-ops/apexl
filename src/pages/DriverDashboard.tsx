@@ -17,6 +17,8 @@ import { useDriverOrderNotifications } from "@/hooks/usePushNotifications";
 import { useDriverStats, useAvailableDeliveries } from "@/hooks/useDriverStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 import { IdentityRequiredBanner } from "@/components/identity/IdentityRequiredBanner";
+import EarningsTransferCard from "@/components/wallet/EarningsTransferCard";
+
 
 const DriverDashboard = () => {
   const { t } = useTranslation();
@@ -143,8 +145,10 @@ const DriverDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="earnings">
+          <TabsContent value="earnings" className="space-y-6">
+            <EarningsTransferCard />
             <Card>
+
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <DollarSign className="h-5 w-5" />

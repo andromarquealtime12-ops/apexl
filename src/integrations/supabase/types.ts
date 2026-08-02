@@ -1781,6 +1781,9 @@ export type Database = {
           balance_htg: number | null
           balance_usd: number | null
           created_at: string
+          earnings_dop: number
+          earnings_htg: number
+          earnings_usd: number
           frozen_at: string | null
           frozen_by: string | null
           frozen_reason: string | null
@@ -1795,6 +1798,9 @@ export type Database = {
           balance_htg?: number | null
           balance_usd?: number | null
           created_at?: string
+          earnings_dop?: number
+          earnings_htg?: number
+          earnings_usd?: number
           frozen_at?: string | null
           frozen_by?: string | null
           frozen_reason?: string | null
@@ -1809,6 +1815,9 @@ export type Database = {
           balance_htg?: number | null
           balance_usd?: number | null
           created_at?: string
+          earnings_dop?: number
+          earnings_htg?: number
+          earnings_usd?: number
           frozen_at?: string | null
           frozen_by?: string | null
           frozen_reason?: string | null
@@ -2311,6 +2320,10 @@ export type Database = {
       run_admin_robot: { Args: never; Returns: Json }
       suspend_user: {
         Args: { p_duration_days?: number; p_reason: string; p_user_id: string }
+        Returns: Json
+      }
+      transfer_earnings_to_wallet: {
+        Args: { p_amount: number; p_currency: string }
         Returns: Json
       }
       unfreeze_wallet: { Args: { p_user_id: string }; Returns: Json }
