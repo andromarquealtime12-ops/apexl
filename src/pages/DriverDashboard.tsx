@@ -143,8 +143,10 @@ const DriverDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="earnings">
+          <TabsContent value="earnings" className="space-y-6">
+            <EarningsTransferCard />
             <Card>
+
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <DollarSign className="h-5 w-5" />
