@@ -78,8 +78,11 @@ const SellerDashboard = () => {
         </div>
 
         <div className="mb-8">
+        <div className="mb-8 space-y-6">
           <SellerStatsCards stats={stats} isLoading={statsLoading} />
+          <EarningsTransferCard />
         </div>
+
 
         <Tabs defaultValue="products" className="space-y-6">
           <TabsList className="grid grid-cols-4 w-full max-w-xl">
