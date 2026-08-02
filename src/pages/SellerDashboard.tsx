@@ -14,6 +14,8 @@ import SellerOrdersTable from "@/components/seller/SellerOrdersTable";
 import { useSellerStats } from "@/hooks/useSellerStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 import { IdentityRequiredBanner } from "@/components/identity/IdentityRequiredBanner";
+import EarningsTransferCard from "@/components/wallet/EarningsTransferCard";
+
 
 import { useTranslation } from "react-i18next";
 
