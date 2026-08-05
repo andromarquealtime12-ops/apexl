@@ -33,11 +33,10 @@ async function fetchOrderBundle(orderId: string) {
 
   let shopsMap: Record<string, any> = {};
   if (sellerIds.length) {
-    const { data: shops } = await supabase
-      .from("seller_applications")
-      .select("user_id, shop_name")
-      .in("user_id", sellerIds as string[]);
-    shopsMap = Object.fromEntries((shops || []).map((s: any) => [s.user_id, s]));
+    const { data: shops } = await supabase.rpc("get_shop_public_info" as any, {
+      p_seller_ids: sellerIds as string[],
+    });
+    shopsMap = Object.fromEntries(((shops as any[]) || []).map((s: any) => [s.user_id, s]));
   }
 
   return { order: order as any, items: (items || []) as any[], profilesMap, shopsMap, buyerId, driverId };
