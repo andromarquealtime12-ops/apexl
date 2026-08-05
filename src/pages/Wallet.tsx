@@ -327,14 +327,16 @@ const Wallet = () => {
 
                 <div className="space-y-2">
                   <Label>Méthode de retrait</Label>
-                  <Select value={withdrawMethod} onValueChange={(v) => setWithdrawMethod(v as PaymentMethodType)}>
+                  <Select value={withdrawMethod} onValueChange={(v) => setWithdrawMethod(v as PaymentMethodType | "busend")}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="busend">BUSEND — transfert instantané</SelectItem>
                       {(depositMethodsData || []).map(m => (
                         <SelectItem key={m.method_key} value={m.method_key}>{m.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+
                 </div>
 
                 <div className="space-y-2">
