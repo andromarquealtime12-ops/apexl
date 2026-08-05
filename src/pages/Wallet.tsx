@@ -172,7 +172,19 @@ const Wallet = () => {
       return;
     }
     try {
-      if (withdrawMethod === "moncash") {
+      if (withdrawMethod === "busend") {
+        // Automatic transfer to a BUSEND account (HTG / DOP / USD)
+        const { data, error } = await supabase.functions.invoke("busend-withdraw", {
+          body: {
+            amount,
+            currency: withdrawCurrency,
+            accountNumber: withdrawAccount.trim(),
+          },
+        });
+        if (error) throw error;
+        if ((data as any)?.error) throw new Error((data as any).error);
+        toast.success("Transfert BUSEND envoyé ! Les fonds arrivent sur votre compte BUSEND.");
+      } else if (withdrawMethod === "moncash") {
         // Auto MonCash withdrawal via Bazik.io
         if (withdrawCurrency !== "HTG") {
           toast.error("Les retraits MonCash automatiques sont uniquement en HTG");
@@ -193,6 +205,7 @@ const Wallet = () => {
         });
         toast.success("Demande de retrait soumise ! Elle sera traitée sous 24-48h.");
       }
+
       setWithdrawOpen(false);
       setWithdrawAmount("");
       setWithdrawAccount("");
