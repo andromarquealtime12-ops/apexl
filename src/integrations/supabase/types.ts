@@ -2222,6 +2222,18 @@ export type Database = {
         }[]
       }
       get_seller_order_ids: { Args: never; Returns: string[] }
+      get_shop_public_info: {
+        Args: { p_seller_ids: string[] }
+        Returns: {
+          latitude: number
+          longitude: number
+          shop_address: string
+          shop_city: string
+          shop_name: string
+          shop_phone: string
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
