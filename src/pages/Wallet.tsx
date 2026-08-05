@@ -200,7 +200,7 @@ const Wallet = () => {
         await withdrawalMutation.mutateAsync({
           amount,
           currency: withdrawCurrency,
-          paymentMethod: withdrawMethod,
+          paymentMethod: withdrawMethod as PaymentMethodType,
           accountDetails: withdrawAccount.trim(),
         });
         toast.success("Demande de retrait soumise ! Elle sera traitée sous 24-48h.");
