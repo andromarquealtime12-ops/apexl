@@ -77,7 +77,7 @@ const Wallet = () => {
   // Withdrawal state
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawCurrency, setWithdrawCurrency] = useState<Currency>("DOP");
-  const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType>("banreservas");
+  const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType | "busend">("banreservas");
   const [withdrawAccount, setWithdrawAccount] = useState("");
 
 
@@ -172,7 +172,19 @@ const Wallet = () => {
       return;
     }
     try {
-      if (withdrawMethod === "moncash") {
+      if (withdrawMethod === "busend") {
+        // Automatic transfer to a BUSEND account (HTG / DOP / USD)
+        const { data, error } = await supabase.functions.invoke("busend-withdraw", {
+          body: {
+            amount,
+            currency: withdrawCurrency,
+            accountNumber: withdrawAccount.trim(),
+          },
+        });
+        if (error) throw error;
+        if ((data as any)?.error) throw new Error((data as any).error);
+        toast.success("Transfert BUSEND envoyé ! Les fonds arrivent sur votre compte BUSEND.");
+      } else if (withdrawMethod === "moncash") {
         // Auto MonCash withdrawal via Bazik.io
         if (withdrawCurrency !== "HTG") {
           toast.error("Les retraits MonCash automatiques sont uniquement en HTG");
@@ -188,11 +200,12 @@ const Wallet = () => {
         await withdrawalMutation.mutateAsync({
           amount,
           currency: withdrawCurrency,
-          paymentMethod: withdrawMethod,
+          paymentMethod: withdrawMethod as PaymentMethodType,
           accountDetails: withdrawAccount.trim(),
         });
         toast.success("Demande de retrait soumise ! Elle sera traitée sous 24-48h.");
       }
+
       setWithdrawOpen(false);
       setWithdrawAmount("");
       setWithdrawAccount("");
@@ -314,19 +327,22 @@ const Wallet = () => {
 
                 <div className="space-y-2">
                   <Label>Méthode de retrait</Label>
-                  <Select value={withdrawMethod} onValueChange={(v) => setWithdrawMethod(v as PaymentMethodType)}>
+                  <Select value={withdrawMethod} onValueChange={(v) => setWithdrawMethod(v as PaymentMethodType | "busend")}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="busend">BUSEND — transfert instantané</SelectItem>
                       {(depositMethodsData || []).map(m => (
                         <SelectItem key={m.method_key} value={m.method_key}>{m.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+
                 </div>
 
                 <div className="space-y-2">
                   <Label>
-                    {withdrawMethod === "paypal" ? "Adresse email PayPal" :
+                    {withdrawMethod === "busend" ? "Numéro de compte BUSEND" :
+                     withdrawMethod === "paypal" ? "Adresse email PayPal" :
                      withdrawMethod === "wise" ? "Email ou numéro Wise" :
                      withdrawMethod === "moncash" ? "Numéro Moncash" :
                      withdrawMethod === "orange_money" ? "Numéro Orange Money" :
@@ -337,6 +353,7 @@ const Wallet = () => {
                   </Label>
                   <Input
                     placeholder={
+                      withdrawMethod === "busend" ? "NB123456789" :
                       withdrawMethod === "paypal" ? "votre@email.com" :
                       withdrawMethod === "wise" ? "votre@email.com ou numéro" :
                       withdrawMethod === "moncash" || withdrawMethod === "orange_money" ? "+509 XXXX XXXX" :
@@ -351,11 +368,14 @@ const Wallet = () => {
                 <Alert>
                   <Info className="h-4 w-4" />
                   <AlertDescription>
-                    {isBazikWithdraw
+                    {withdrawMethod === "busend"
+                      ? "Transfert instantané vers votre compte BUSEND (HTG, DOP ou USD). Le bénéficiaire est vérifié avant l'envoi ; en cas d'échec, le montant est automatiquement remboursé."
+                      : isBazikWithdraw
                       ? "Retrait MonCash automatique via Bazik.io — le montant sera envoyé directement sur votre numéro MonCash sous quelques minutes (HTG uniquement, max 75 000 HTG). En cas d'échec, remboursement automatique."
                       : "Le montant sera déduit immédiatement et le virement traité sous 24-48h. Si la demande est refusée, le montant sera remboursé."}
                   </AlertDescription>
                 </Alert>
+
 
                 <Button
                   className="w-full"
