@@ -77,7 +77,7 @@ const Wallet = () => {
   // Withdrawal state
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawCurrency, setWithdrawCurrency] = useState<Currency>("DOP");
-  const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType>("banreservas");
+  const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType | "busend">("banreservas");
   const [withdrawAccount, setWithdrawAccount] = useState("");
 
 
