@@ -121,13 +121,32 @@ Deno.serve(async (req) => {
         );
       }
       const transfer = JSON.parse(text || "{}");
+      // Auto-complete: no admin approval needed, BUSEND already sent the funds
       if (txId) {
         await admin
           .from("wallet_transactions")
-          .update({ transaction_reference: transfer?.transaction_id || null })
+          .update({
+            transaction_reference: transfer?.transaction_id || transfer?.id || null,
+            status: "completed",
+            description: `Retrait BUSEND automatique vers ${holderName} (${account})`,
+          })
           .eq("id", txId);
+
+        await admin.from("notifications").insert({
+          user_id: userId,
+          title: "Retrait BUSEND effectué ✓",
+          message: `Votre retrait de ${amount} ${currency} a été envoyé automatiquement à ${holderName} (compte ${account}).`,
+          type: "success",
+        });
       }
-      return json({ success: true, transfer, transaction_id: txId, beneficiary });
+      return json({
+        success: true,
+        transfer,
+        transaction_id: txId,
+        beneficiary,
+        holder_name: holderName,
+      });
+
     } catch (e: any) {
       if (txId) {
         await admin.rpc("reject_withdrawal" as any, {
