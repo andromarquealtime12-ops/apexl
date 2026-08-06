@@ -395,18 +395,47 @@ const Wallet = () => {
                       "Entrez vos coordonnées bancaires"
                     }
                     value={withdrawAccount}
-                    onChange={(e) => setWithdrawAccount(e.target.value)}
+                    onChange={(e) => {
+                      setWithdrawAccount(e.target.value);
+                      if (withdrawMethod === "busend") {
+                        setBusendHolder(null);
+                        setBusendError(null);
+                      }
+                    }}
                   />
+                  {withdrawMethod === "busend" && (
+                    <div className="space-y-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={checkBusendAccount}
+                        disabled={busendChecking || !withdrawAccount.trim()}
+                      >
+                        {busendChecking ? "Vérification..." : "Vérifier le compte"}
+                      </Button>
+                      {busendHolder && (
+                        <p className="text-sm font-medium text-green-600">
+                          Destinataire : {busendHolder}
+                        </p>
+                      )}
+                      {busendError && (
+                        <p className="text-sm text-destructive">{busendError}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <Alert>
                   <Info className="h-4 w-4" />
                   <AlertDescription>
                     {withdrawMethod === "busend"
-                      ? "Transfert instantané vers votre compte BUSEND (HTG, DOP ou USD). Le bénéficiaire est vérifié avant l'envoi ; en cas d'échec, le montant est automatiquement remboursé."
+                      ? "Retrait BUSEND 100 % automatique — aucune approbation admin. Vérifiez le numéro de compte, confirmez le nom du destinataire, puis les fonds partent immédiatement. En cas d'échec, remboursement automatique."
                       : isBazikWithdraw
                       ? "Retrait MonCash automatique via Bazik.io — le montant sera envoyé directement sur votre numéro MonCash sous quelques minutes (HTG uniquement, max 75 000 HTG). En cas d'échec, remboursement automatique."
                       : "Le montant sera déduit immédiatement et le virement traité sous 24-48h. Si la demande est refusée, le montant sera remboursé."}
+
                   </AlertDescription>
                 </Alert>
 
