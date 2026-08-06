@@ -200,9 +200,14 @@ const Wallet = () => {
     }
     try {
       if (withdrawMethod === "busend") {
-        // Automatic transfer to a BUSEND account (HTG / DOP / USD)
+        if (!busendHolder) {
+          toast.error("Vérifiez d'abord le numéro de compte BUSEND");
+          return;
+        }
+        // Automatic transfer to a BUSEND account (HTG / DOP / USD) — no admin approval
         const { data, error } = await supabase.functions.invoke("busend-withdraw", {
           body: {
+            mode: "transfer",
             amount,
             currency: withdrawCurrency,
             accountNumber: withdrawAccount.trim(),
@@ -210,7 +215,9 @@ const Wallet = () => {
         });
         if (error) throw error;
         if ((data as any)?.error) throw new Error((data as any).error);
-        toast.success("Transfert BUSEND envoyé ! Les fonds arrivent sur votre compte BUSEND.");
+        toast.success(`Retrait envoyé à ${busendHolder} — transfert BUSEND effectué automatiquement.`);
+        setBusendHolder(null);
+
       } else if (withdrawMethod === "moncash") {
         // Auto MonCash withdrawal via Bazik.io
         if (withdrawCurrency !== "HTG") {
