@@ -443,7 +443,7 @@ const Wallet = () => {
                 <Button
                   className="w-full"
                   onClick={handleWithdraw}
-                  disabled={withdrawalMutation.isPending || !withdrawAmount || !withdrawAccount}
+                  disabled={withdrawalMutation.isPending || !withdrawAmount || !withdrawAccount || (withdrawMethod === "busend" && !busendHolder)}
                 >
                   {withdrawalMutation.isPending ? (
                     <span>Envoi...</span>
