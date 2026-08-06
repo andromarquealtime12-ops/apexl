@@ -51,11 +51,13 @@ Deno.serve(async (req) => {
     const lookupBody = await lookupRes.text();
     if (!lookupRes.ok) {
       console.error(`BUSEND lookup failed [${lookupRes.status}]: ${lookupBody}`);
-      return json(
-        { error: "Bénéficiaire BUSEND introuvable", status: lookupRes.status, details: lookupBody },
-        lookupRes.status,
-      );
+      return json({
+        error: "Bénéficiaire BUSEND introuvable — vérifiez le numéro de compte",
+        status: lookupRes.status,
+        details: lookupBody.slice(0, 300),
+      });
     }
+
     const beneficiary = JSON.parse(lookupBody || "{}");
     const holderName =
       beneficiary?.holder || beneficiary?.name || beneficiary?.full_name ||
