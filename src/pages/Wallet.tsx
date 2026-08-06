@@ -79,6 +79,33 @@ const Wallet = () => {
   const [withdrawCurrency, setWithdrawCurrency] = useState<Currency>("DOP");
   const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType | "busend">("banreservas");
   const [withdrawAccount, setWithdrawAccount] = useState("");
+  const [busendHolder, setBusendHolder] = useState<string | null>(null);
+  const [busendChecking, setBusendChecking] = useState(false);
+  const [busendError, setBusendError] = useState<string | null>(null);
+
+  const checkBusendAccount = async () => {
+    const account = withdrawAccount.trim();
+    if (!account) return;
+    setBusendChecking(true);
+    setBusendError(null);
+    setBusendHolder(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("busend-withdraw", {
+        body: { mode: "lookup", accountNumber: account },
+      });
+      if (error) throw error;
+      const res = data as any;
+      if (res?.error) throw new Error(res.error);
+      if (!res?.holder_name) throw new Error("Nom du bénéficiaire introuvable");
+      setBusendHolder(res.holder_name);
+    } catch (e: any) {
+      setBusendError(e.message || "Compte BUSEND introuvable");
+    } finally {
+      setBusendChecking(false);
+    }
+  };
+
+
 
 
   if (authLoading) {
