@@ -31,17 +31,12 @@ Deno.serve(async (req) => {
     if (!userId) return json({ error: "Unauthorized" }, 401);
 
     const body = await req.json().catch(() => ({}));
+    const mode = String(body?.mode || "transfer");
     const amount = Number(body?.amount);
     const currency = String(body?.currency || "").toUpperCase();
     const account = String(body?.accountNumber || "").trim();
     const note = String(body?.note || "").slice(0, 120);
 
-    if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000) {
-      return json({ error: "Montant invalide" }, 400);
-    }
-    if (!CURRENCIES.includes(currency)) {
-      return json({ error: "Devise non supportée (HTG, DOP, USD)" }, 400);
-    }
     if (!/^[A-Za-z0-9]{6,32}$/.test(account)) {
       return json({ error: "Numéro de compte BUSEND invalide" }, 400);
     }
@@ -62,6 +57,25 @@ Deno.serve(async (req) => {
       );
     }
     const beneficiary = JSON.parse(lookupBody || "{}");
+    const holderName =
+      beneficiary?.holder || beneficiary?.name || beneficiary?.full_name ||
+      beneficiary?.account_name || beneficiary?.data?.name || null;
+
+    // Lookup-only mode: return the beneficiary name for confirmation
+    if (mode === "lookup") {
+      return json({ success: true, beneficiary, holder_name: holderName });
+    }
+
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000) {
+      return json({ error: "Montant invalide" }, 400);
+    }
+    if (!CURRENCIES.includes(currency)) {
+      return json({ error: "Devise non supportée (HTG, DOP, USD)" }, 400);
+    }
+    if (!holderName) {
+      return json({ error: "Nom du bénéficiaire introuvable — vérifiez le numéro de compte" }, 400);
+    }
+
 
     // 2. Debit the wallet (creates a pending withdrawal transaction)
     const { data: reqRes, error: reqErr } = await userClient.rpc("request_withdrawal" as any, {
