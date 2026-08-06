@@ -109,17 +109,26 @@ Deno.serve(async (req) => {
       const text = await res.text();
       if (!res.ok) {
         console.error(`BUSEND transfer failed [${res.status}]: ${text}`);
+        let refunded = false;
         if (txId) {
-          await admin.rpc("reject_withdrawal" as any, {
+          const { data: rej, error: rejErr } = await admin.rpc("reject_withdrawal" as any, {
             p_transaction_id: txId,
             p_reason: `BUSEND: ${text.slice(0, 200)}`,
           });
+          refunded = !rejErr && (rej as any)?.success === true;
+          if (!refunded) console.error("Refund failed:", rejErr || rej);
         }
-        return json(
-          { error: "Transfert BUSEND échoué", status: res.status, details: text },
-          res.status,
-        );
+        let msg = "Transfert BUSEND échoué";
+        if (text.includes("insufficient_funds")) {
+          msg = "Fonds insuffisants sur le compte BUSEND de la plateforme. Réessayez plus tard.";
+        } else if (text.includes("not_found") || res.status === 404) {
+          msg = "Compte destinataire BUSEND introuvable.";
+        }
+        if (refunded) msg += " Votre solde a été remboursé.";
+        // Return 200 so the client shows this message instead of a generic error
+        return json({ error: msg, refunded, status: res.status, details: text.slice(0, 300) });
       }
+
       const transfer = JSON.parse(text || "{}");
       // Auto-complete: no admin approval needed, BUSEND already sent the funds
       if (txId) {
