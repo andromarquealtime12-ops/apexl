@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
       p_amount: amount,
       p_currency: currency,
       p_payment_method: "bank_other",
-      p_account_details: `BUSEND ${account}${beneficiary?.holder ? ` (${beneficiary.holder})` : ""}`,
+      p_account_details: `BUSEND ${account} (${holderName})`,
     });
     if (reqErr) throw reqErr;
     const r = reqRes as any;
