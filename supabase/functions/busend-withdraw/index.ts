@@ -31,17 +31,12 @@ Deno.serve(async (req) => {
     if (!userId) return json({ error: "Unauthorized" }, 401);
 
     const body = await req.json().catch(() => ({}));
+    const mode = String(body?.mode || "transfer");
     const amount = Number(body?.amount);
     const currency = String(body?.currency || "").toUpperCase();
     const account = String(body?.accountNumber || "").trim();
     const note = String(body?.note || "").slice(0, 120);
 
-    if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000) {
-      return json({ error: "Montant invalide" }, 400);
-    }
-    if (!CURRENCIES.includes(currency)) {
-      return json({ error: "Devise non supportée (HTG, DOP, USD)" }, 400);
-    }
     if (!/^[A-Za-z0-9]{6,32}$/.test(account)) {
       return json({ error: "Numéro de compte BUSEND invalide" }, 400);
     }
@@ -62,13 +57,32 @@ Deno.serve(async (req) => {
       );
     }
     const beneficiary = JSON.parse(lookupBody || "{}");
+    const holderName =
+      beneficiary?.holder || beneficiary?.name || beneficiary?.full_name ||
+      beneficiary?.account_name || beneficiary?.data?.name || null;
+
+    // Lookup-only mode: return the beneficiary name for confirmation
+    if (mode === "lookup") {
+      return json({ success: true, beneficiary, holder_name: holderName });
+    }
+
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000) {
+      return json({ error: "Montant invalide" }, 400);
+    }
+    if (!CURRENCIES.includes(currency)) {
+      return json({ error: "Devise non supportée (HTG, DOP, USD)" }, 400);
+    }
+    if (!holderName) {
+      return json({ error: "Nom du bénéficiaire introuvable — vérifiez le numéro de compte" }, 400);
+    }
+
 
     // 2. Debit the wallet (creates a pending withdrawal transaction)
     const { data: reqRes, error: reqErr } = await userClient.rpc("request_withdrawal" as any, {
       p_amount: amount,
       p_currency: currency,
       p_payment_method: "bank_other",
-      p_account_details: `BUSEND ${account}${beneficiary?.holder ? ` (${beneficiary.holder})` : ""}`,
+      p_account_details: `BUSEND ${account} (${holderName})`,
     });
     if (reqErr) throw reqErr;
     const r = reqRes as any;
@@ -107,13 +121,32 @@ Deno.serve(async (req) => {
         );
       }
       const transfer = JSON.parse(text || "{}");
+      // Auto-complete: no admin approval needed, BUSEND already sent the funds
       if (txId) {
         await admin
           .from("wallet_transactions")
-          .update({ transaction_reference: transfer?.transaction_id || null })
+          .update({
+            transaction_reference: transfer?.transaction_id || transfer?.id || null,
+            status: "completed",
+            description: `Retrait BUSEND automatique vers ${holderName} (${account})`,
+          })
           .eq("id", txId);
+
+        await admin.from("notifications").insert({
+          user_id: userId,
+          title: "Retrait BUSEND effectué ✓",
+          message: `Votre retrait de ${amount} ${currency} a été envoyé automatiquement à ${holderName} (compte ${account}).`,
+          type: "success",
+        });
       }
-      return json({ success: true, transfer, transaction_id: txId, beneficiary });
+      return json({
+        success: true,
+        transfer,
+        transaction_id: txId,
+        beneficiary,
+        holder_name: holderName,
+      });
+
     } catch (e: any) {
       if (txId) {
         await admin.rpc("reject_withdrawal" as any, {

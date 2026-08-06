@@ -79,6 +79,33 @@ const Wallet = () => {
   const [withdrawCurrency, setWithdrawCurrency] = useState<Currency>("DOP");
   const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethodType | "busend">("banreservas");
   const [withdrawAccount, setWithdrawAccount] = useState("");
+  const [busendHolder, setBusendHolder] = useState<string | null>(null);
+  const [busendChecking, setBusendChecking] = useState(false);
+  const [busendError, setBusendError] = useState<string | null>(null);
+
+  const checkBusendAccount = async () => {
+    const account = withdrawAccount.trim();
+    if (!account) return;
+    setBusendChecking(true);
+    setBusendError(null);
+    setBusendHolder(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("busend-withdraw", {
+        body: { mode: "lookup", accountNumber: account },
+      });
+      if (error) throw error;
+      const res = data as any;
+      if (res?.error) throw new Error(res.error);
+      if (!res?.holder_name) throw new Error("Nom du bénéficiaire introuvable");
+      setBusendHolder(res.holder_name);
+    } catch (e: any) {
+      setBusendError(e.message || "Compte BUSEND introuvable");
+    } finally {
+      setBusendChecking(false);
+    }
+  };
+
+
 
 
   if (authLoading) {
@@ -173,9 +200,14 @@ const Wallet = () => {
     }
     try {
       if (withdrawMethod === "busend") {
-        // Automatic transfer to a BUSEND account (HTG / DOP / USD)
+        if (!busendHolder) {
+          toast.error("Vérifiez d'abord le numéro de compte BUSEND");
+          return;
+        }
+        // Automatic transfer to a BUSEND account (HTG / DOP / USD) — no admin approval
         const { data, error } = await supabase.functions.invoke("busend-withdraw", {
           body: {
+            mode: "transfer",
             amount,
             currency: withdrawCurrency,
             accountNumber: withdrawAccount.trim(),
@@ -183,7 +215,9 @@ const Wallet = () => {
         });
         if (error) throw error;
         if ((data as any)?.error) throw new Error((data as any).error);
-        toast.success("Transfert BUSEND envoyé ! Les fonds arrivent sur votre compte BUSEND.");
+        toast.success(`Retrait envoyé à ${busendHolder} — transfert BUSEND effectué automatiquement.`);
+        setBusendHolder(null);
+
       } else if (withdrawMethod === "moncash") {
         // Auto MonCash withdrawal via Bazik.io
         if (withdrawCurrency !== "HTG") {
@@ -361,18 +395,47 @@ const Wallet = () => {
                       "Entrez vos coordonnées bancaires"
                     }
                     value={withdrawAccount}
-                    onChange={(e) => setWithdrawAccount(e.target.value)}
+                    onChange={(e) => {
+                      setWithdrawAccount(e.target.value);
+                      if (withdrawMethod === "busend") {
+                        setBusendHolder(null);
+                        setBusendError(null);
+                      }
+                    }}
                   />
+                  {withdrawMethod === "busend" && (
+                    <div className="space-y-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={checkBusendAccount}
+                        disabled={busendChecking || !withdrawAccount.trim()}
+                      >
+                        {busendChecking ? "Vérification..." : "Vérifier le compte"}
+                      </Button>
+                      {busendHolder && (
+                        <p className="text-sm font-medium text-green-600">
+                          Destinataire : {busendHolder}
+                        </p>
+                      )}
+                      {busendError && (
+                        <p className="text-sm text-destructive">{busendError}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <Alert>
                   <Info className="h-4 w-4" />
                   <AlertDescription>
                     {withdrawMethod === "busend"
-                      ? "Transfert instantané vers votre compte BUSEND (HTG, DOP ou USD). Le bénéficiaire est vérifié avant l'envoi ; en cas d'échec, le montant est automatiquement remboursé."
+                      ? "Retrait BUSEND 100 % automatique — aucune approbation admin. Vérifiez le numéro de compte, confirmez le nom du destinataire, puis les fonds partent immédiatement. En cas d'échec, remboursement automatique."
                       : isBazikWithdraw
                       ? "Retrait MonCash automatique via Bazik.io — le montant sera envoyé directement sur votre numéro MonCash sous quelques minutes (HTG uniquement, max 75 000 HTG). En cas d'échec, remboursement automatique."
                       : "Le montant sera déduit immédiatement et le virement traité sous 24-48h. Si la demande est refusée, le montant sera remboursé."}
+
                   </AlertDescription>
                 </Alert>
 
@@ -380,7 +443,7 @@ const Wallet = () => {
                 <Button
                   className="w-full"
                   onClick={handleWithdraw}
-                  disabled={withdrawalMutation.isPending || !withdrawAmount || !withdrawAccount}
+                  disabled={withdrawalMutation.isPending || !withdrawAmount || !withdrawAccount || (withdrawMethod === "busend" && !busendHolder)}
                 >
                   {withdrawalMutation.isPending ? (
                     <span>Envoi...</span>
