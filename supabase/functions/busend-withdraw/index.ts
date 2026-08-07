@@ -88,7 +88,20 @@ Deno.serve(async (req) => {
     });
     if (reqErr) throw reqErr;
     const r = reqRes as any;
-    if (!r?.success) return json({ error: r?.error || "Retrait refusé" }, 400);
+    if (!r?.success) {
+      const raw = String(r?.error || "");
+      let msg = raw || "Retrait refusé";
+      if (raw.includes("Insufficient balance")) {
+        msg = `Solde ${currency} insuffisant dans votre portefeuille pour retirer ${amount} ${currency}.`;
+      } else if (raw.includes("frozen")) {
+        msg = "Votre portefeuille est gelé. Contactez le support.";
+      } else if (raw.includes("Wallet not found")) {
+        msg = "Portefeuille introuvable.";
+      }
+      // 200 so the client displays this message instead of a generic non-2xx error
+      return json({ error: msg });
+    }
+
     const txId = r.transaction_id || r.id;
 
     const admin = createClient(
