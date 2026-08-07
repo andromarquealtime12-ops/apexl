@@ -134,7 +134,10 @@ Deno.serve(async (req) => {
           if (!refunded) console.error("Refund failed:", rejErr || rej);
         }
         let msg = "Transfert BUSEND échoué";
-        if (text.includes("insufficient_funds")) {
+        if (text.includes("self_transfer")) {
+          msg =
+            "Ce numéro de compte BUSEND est celui de la plateforme APEXL. Entrez le numéro de VOTRE compte BUSEND personnel (différent du compte émetteur).";
+        } else if (text.includes("insufficient_funds")) {
           msg = "Fonds insuffisants sur le compte BUSEND de la plateforme. Réessayez plus tard.";
         } else if (text.includes("not_found") || res.status === 404) {
           msg = "Compte destinataire BUSEND introuvable.";
