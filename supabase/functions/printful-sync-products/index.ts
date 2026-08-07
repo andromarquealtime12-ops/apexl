@@ -81,12 +81,18 @@ Deno.serve(async (req) => {
       };
 
       const { data: existing } = await supabase
-        .from("products").select("id")
+        .from("products").select("id, seller_id")
         .eq("printful_product_id", String(syncProduct.id))
         .maybeSingle();
 
       if (existing) {
-        await supabase.from("products").update(payload).eq("id", existing.id);
+        // Never allow a seller to take over another seller's synced product
+        if (existing.seller_id && existing.seller_id !== user.id) {
+          console.warn("Skipping product owned by another seller:", existing.id);
+          continue;
+        }
+        const { seller_id: _omit, ...updatePayload } = payload;
+        await supabase.from("products").update(updatePayload).eq("id", existing.id).eq("seller_id", user.id);
       } else {
         await supabase.from("products").insert(payload);
       }
