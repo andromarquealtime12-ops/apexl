@@ -1,94 +1,276 @@
 {
   "nav": {
-    "home": "Home", "products": "Prodotti", "shops": "Negozi", "restaurants": "Ristoranti",
-    "sell": "Vendere", "deliver": "Consegnare", "menu": "Menu", "search": "Cerca prodotti...",
-    "account": "Il mio account", "signin": "Accedi", "signup": "Registrati", "profile": "Il mio profilo",
-    "wallet": "Il mio portafoglio", "orders": "I miei ordini", "settings": "Impostazioni", "logout": "Esci", "language": "Lingua",
-    "searchOrder": "Cerca ordine", "sellerDashboard": "Dashboard venditore", "driverDashboard": "Dashboard corriere", "agentDashboard": "Dashboard agente"
+    "home": "Home",
+    "products": "Prodotti",
+    "shops": "Negozi",
+    "restaurants": "Ristoranti",
+    "sell": "Vendere",
+    "deliver": "Consegnare",
+    "menu": "Menu",
+    "search": "Cerca prodotti...",
+    "account": "Il mio account",
+    "signin": "Accedi",
+    "signup": "Registrati",
+    "profile": "Il mio profilo",
+    "wallet": "Il mio portafoglio",
+    "orders": "I miei ordini",
+    "settings": "Impostazioni",
+    "logout": "Esci",
+    "language": "Lingua",
+    "searchOrder": "Cerca ordine",
+    "sellerDashboard": "Dashboard venditore",
+    "driverDashboard": "Dashboard corriere",
+    "agentDashboard": "Dashboard agente",
+    "loginToApply": "Accedi per candidarti come venditore o corriere."
   },
   "hero": {
-    "eyebrow": "Nuova stagione · Mondo intero", "title1": "Compra il mondo.", "title2": "Consegnato a te.",
+    "eyebrow": "Nuova stagione · Mondo intero",
+    "title1": "Compra il mondo.",
+    "title2": "Consegnato a te.",
     "description": "Migliaia di prodotti trendy, un marketplace globale. Moda, tech, casa e altro — spedizione veloce, in ogni lingua, in ogni paese.",
-    "shopNow": "Acquista ora", "exploreShops": "Esplora i negozi",
-    "countries": "Paesi", "products": "Prodotti", "support": "Supporto"
+    "shopNow": "Acquista ora",
+    "exploreShops": "Esplora i negozi",
+    "countries": "Paesi",
+    "products": "Prodotti",
+    "support": "Supporto"
   },
   "categories": {
-    "title": "Esplora le nostre categorie", "subtitle": "Trova tutto ciò di cui hai bisogno", "heading": "Categorie",
-    "filterAll": "Tutte le categorie", "filterPlaceholder": "Categoria", "activeFilters": "Filtri attivi:",
+    "title": "Esplora le nostre categorie",
+    "subtitle": "Trova tutto ciò di cui hai bisogno",
+    "heading": "Categorie",
+    "filterAll": "Tutte le categorie",
+    "filterPlaceholder": "Categoria",
+    "activeFilters": "Filtri attivi:",
     "items": {
-      "utensils": "Cibi e Bevande", "smartphone": "Elettronica e Telefoni", "shirt": "Abbigliamento e Moda",
-      "chef-hat": "Ristorante", "home": "Casa e Giardino", "heart": "Bellezza e Salute",
-      "dumbbell": "Sport e Tempo Libero", "book": "Libri e Media", "car": "Automobili", "briefcase": "Servizi"
+      "utensils": "Cibi e Bevande",
+      "smartphone": "Elettronica e Telefoni",
+      "shirt": "Abbigliamento e Moda",
+      "chef-hat": "Ristorante",
+      "home": "Casa e Giardino",
+      "heart": "Bellezza e Salute",
+      "dumbbell": "Sport e Tempo Libero",
+      "book": "Libri e Media",
+      "car": "Automobili",
+      "briefcase": "Servizi"
     }
   },
-  "featured": { "title": "Prodotti in evidenza", "subtitle": "Le migliori scelte per te", "viewAll": "Vedi tutti", "empty": "Ancora nessun prodotto in evidenza. Torna presto!" },
+  "featured": {
+    "title": "Prodotti in evidenza",
+    "subtitle": "Le migliori scelte per te",
+    "viewAll": "Vedi tutti",
+    "empty": "Ancora nessun prodotto in evidenza. Torna presto!"
+  },
   "userTypes": {
     "title": "Unisciti alla nostra comunità globale",
     "subtitle": "Che tu acquisti, venda o consegni, APEXL ti dà tutti gli strumenti per avere successo.",
-    "buyer": { "title": "Acquirente", "description": "Scopri tutto in un marketplace mondiale", "f1": "Migliaia di prodotti selezionati", "f2": "Consegna rapida a domicilio", "f3": "Pagamenti sicuri multipli", "f4": "Supporto 24/7", "cta": "Inizia a comprare" },
-    "seller": { "title": "Venditore", "description": "Fai crescere il tuo business", "f1": "Crea il tuo negozio online", "f2": "Gestione semplice degli ordini", "f3": "Strumenti di marketing", "f4": "Analytics dettagliate", "cta": "Diventa venditore" },
-    "driver": { "title": "Corriere", "description": "Guadagna consegnando nella tua zona", "f1": "Orari flessibili", "f2": "Compenso attrattivo", "f3": "GPS integrato", "f4": "Pagamenti settimanali", "cta": "Diventa corriere" }
+    "buyer": {
+      "title": "Acquirente",
+      "description": "Scopri tutto in un marketplace mondiale",
+      "f1": "Migliaia di prodotti selezionati",
+      "f2": "Consegna rapida a domicilio",
+      "f3": "Pagamenti sicuri multipli",
+      "f4": "Supporto 24/7",
+      "cta": "Inizia a comprare"
+    },
+    "seller": {
+      "title": "Venditore",
+      "description": "Fai crescere il tuo business",
+      "f1": "Crea il tuo negozio online",
+      "f2": "Gestione semplice degli ordini",
+      "f3": "Strumenti di marketing",
+      "f4": "Analytics dettagliate",
+      "cta": "Diventa venditore"
+    },
+    "driver": {
+      "title": "Corriere",
+      "description": "Guadagna consegnando nella tua zona",
+      "f1": "Orari flessibili",
+      "f2": "Compenso attrattivo",
+      "f3": "GPS integrato",
+      "f4": "Pagamenti settimanali",
+      "cta": "Diventa corriere"
+    }
   },
   "features": {
-    "badge": "Funzionalità", "title": "Tutto ciò di cui hai bisogno", "subtitle": "Una piattaforma completa con tutte le funzionalità moderne.",
-    "payments": { "title": "Pagamenti Sicuri", "description": "Accetta tutti i metodi: carte, bonifici e wallet digitali.", "badge": "Sicuro" },
-    "geo": { "title": "Geolocalizzazione", "description": "Tracciamento in tempo reale con GPS.", "badge": "GPS" },
-    "protection": { "title": "Transazioni Protette", "description": "Sistema avanzato per proteggere ogni transazione.", "badge": "Protezione" },
-    "express": { "title": "Consegna Express", "description": "Spedizione rapida nel mondo con tracking in tempo reale.", "badge": "Rapido" },
-    "chat": { "title": "Chat Integrata", "description": "Comunicazione diretta tra acquirenti, venditori e corrieri.", "badge": "Chat" },
-    "analytics": { "title": "Analytics Avanzate", "description": "Dashboard complete per vendite e performance.", "badge": "Analytics" },
-    "mobile": { "title": "App Mobile", "description": "App intuitiva su iOS e Android.", "badge": "Mobile" },
-    "multi": { "title": "Multi-lingua", "description": "Interfaccia in 9+ lingue.", "badge": "Global" }
+    "badge": "Funzionalità",
+    "title": "Tutto ciò di cui hai bisogno",
+    "subtitle": "Una piattaforma completa con tutte le funzionalità moderne.",
+    "payments": {
+      "title": "Pagamenti Sicuri",
+      "description": "Accetta tutti i metodi: carte, bonifici e wallet digitali.",
+      "badge": "Sicuro"
+    },
+    "geo": {
+      "title": "Geolocalizzazione",
+      "description": "Tracciamento in tempo reale con GPS.",
+      "badge": "GPS"
+    },
+    "protection": {
+      "title": "Transazioni Protette",
+      "description": "Sistema avanzato per proteggere ogni transazione.",
+      "badge": "Protezione"
+    },
+    "express": {
+      "title": "Consegna Express",
+      "description": "Spedizione rapida nel mondo con tracking in tempo reale.",
+      "badge": "Rapido"
+    },
+    "chat": {
+      "title": "Chat Integrata",
+      "description": "Comunicazione diretta tra acquirenti, venditori e corrieri.",
+      "badge": "Chat"
+    },
+    "analytics": {
+      "title": "Analytics Avanzate",
+      "description": "Dashboard complete per vendite e performance.",
+      "badge": "Analytics"
+    },
+    "mobile": {
+      "title": "App Mobile",
+      "description": "App intuitiva su iOS e Android.",
+      "badge": "Mobile"
+    },
+    "multi": {
+      "title": "Multi-lingua",
+      "description": "Interfaccia in 9+ lingue.",
+      "badge": "Global"
+    }
   },
   "cta": {
-    "title": "Pronto a unirti al movimento?", "description": "Scarica l'app APEXL e inizia a comprare, vendere o consegnare oggi. Il marketplace mondiale ti aspetta.",
-    "download": "Scarica l'app", "web": "Versione web",
-    "fast": "Avvio rapido", "fastDesc": "Online in meno di 5 minuti",
-    "commission": "Commissione bassa", "commissionDesc": "Tariffe preferenziali per la community",
-    "support": "Supporto dedicato", "supportDesc": "Assistenza nella tua lingua"
+    "title": "Pronto a unirti al movimento?",
+    "description": "Scarica l'app APEXL e inizia a comprare, vendere o consegnare oggi. Il marketplace mondiale ti aspetta.",
+    "download": "Scarica l'app",
+    "web": "Versione web",
+    "fast": "Avvio rapido",
+    "fastDesc": "Online in meno di 5 minuti",
+    "commission": "Commissione bassa",
+    "commissionDesc": "Tariffe preferenziali per la community",
+    "support": "Supporto dedicato",
+    "supportDesc": "Assistenza nella tua lingua"
   },
   "footer": {
-    "tagline": "Shop the world", "about": "Il marketplace globale che collega acquirenti, venditori e corrieri in tutti i paesi.",
-    "quickLinks": "Link rapidi", "aboutLink": "Chi siamo", "howItWorks": "Come funziona", "terms": "Termini d'uso", "privacy": "Privacy", "help": "Aiuto e supporto",
-    "business": "Per aziende", "becomeSeller": "Diventa venditore", "seeProducts": "Vedi prodotti", "restaurants": "Ristoranti", "solutions": "Soluzioni aziendali", "affiliate": "Programma affiliati",
-    "connected": "Resta connesso", "newsletter": "Ricevi le nostre novità", "emailPlaceholder": "La tua email",
-    "rights": "© 2026 APEXL. Tutti i diritti riservati.", "legal": "Note legali", "cookies": "Cookies", "sitemap": "Mappa del sito"
+    "tagline": "Shop the world",
+    "about": "Il marketplace globale che collega acquirenti, venditori e corrieri in tutti i paesi.",
+    "quickLinks": "Link rapidi",
+    "aboutLink": "Chi siamo",
+    "howItWorks": "Come funziona",
+    "terms": "Termini d'uso",
+    "privacy": "Privacy",
+    "help": "Aiuto e supporto",
+    "business": "Per aziende",
+    "becomeSeller": "Diventa venditore",
+    "seeProducts": "Vedi prodotti",
+    "restaurants": "Ristoranti",
+    "solutions": "Soluzioni aziendali",
+    "affiliate": "Programma affiliati",
+    "connected": "Resta connesso",
+    "newsletter": "Ricevi le nostre novità",
+    "emailPlaceholder": "La tua email",
+    "rights": "© 2026 APEXL. Tutti i diritti riservati.",
+    "legal": "Note legali",
+    "cookies": "Cookies",
+    "sitemap": "Mappa del sito"
   },
   "auth": {
-    "title": "APEXL", "subtitle": "Accedi per usare il tuo account", "signin": "Accedi", "signup": "Registrati",
-    "email": "Email", "password": "Password", "fullName": "Nome completo", "namePlaceholder": "Mario Rossi", "forgot": "Password dimenticata?",
-    "signInBtn": "Accedi", "signUpBtn": "Crea il mio account", "sellOrDeliver": "Vuoi vendere o consegnare?",
-    "seller": "Venditore", "driver": "Corriere", "createFirst": "Crea prima un account per candidarti",
-    "signInSuccess": "Accesso riuscito!", "signUpSuccess": "Account creato! Benvenuto in APEXL."
+    "title": "APEXL",
+    "subtitle": "Accedi per usare il tuo account",
+    "signin": "Accedi",
+    "signup": "Registrati",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Nome completo",
+    "namePlaceholder": "Mario Rossi",
+    "forgot": "Password dimenticata?",
+    "signInBtn": "Accedi",
+    "signUpBtn": "Crea il mio account",
+    "sellOrDeliver": "Vuoi vendere o consegnare?",
+    "seller": "Venditore",
+    "driver": "Corriere",
+    "createFirst": "Crea prima un account per candidarti",
+    "signInSuccess": "Accesso riuscito!",
+    "signUpSuccess": "Account creato! Benvenuto in APEXL."
   },
   "product": {
-    "addToCart": "Aggiungi al carrello", "inCart": "Nel carrello", "added": "Aggiunto!", "chooseVariant": "Scegli colore / taglia",
-    "outOfStock": "Esaurito", "outOfCountry": "Non disponibile nel tuo paese", "featured": "In evidenza",
-    "worldwide": "Mondiale · USD", "localOnly": "Locale",
-    "approxPrice": "≈ {{symbol}} {{amount}}", "billedIn": "Fatturato in {{currency}}"
+    "addToCart": "Aggiungi al carrello",
+    "inCart": "Nel carrello",
+    "added": "Aggiunto!",
+    "chooseVariant": "Scegli colore / taglia",
+    "outOfStock": "Esaurito",
+    "outOfCountry": "Non disponibile nel tuo paese",
+    "featured": "In evidenza",
+    "worldwide": "Mondiale · USD",
+    "localOnly": "Locale",
+    "approxPrice": "≈ {{symbol}} {{amount}}",
+    "billedIn": "Fatturato in {{currency}}"
   },
   "checkout": {
-    "title": "Completa l'ordine", "deliveryAddress": "Indirizzo di consegna", "city": "Città", "currency": "Valuta",
-    "fullAddress": "Indirizzo completo", "addressPlaceholder": "Via, numero, quartiere...",
-    "notes": "Istruzioni per la consegna (opzionale)", "notesPlaceholder": "Info extra per il corriere...",
+    "title": "Completa l'ordine",
+    "deliveryAddress": "Indirizzo di consegna",
+    "city": "Città",
+    "currency": "Valuta",
+    "fullAddress": "Indirizzo completo",
+    "addressPlaceholder": "Via, numero, quartiere...",
+    "notes": "Istruzioni per la consegna (opzionale)",
+    "notesPlaceholder": "Info extra per il corriere...",
     "internationalAddress": "Indirizzo internazionale (Printful)",
     "internationalIntro": "I tuoi prodotti Printful vengono spediti dall'estero. Inserisci un indirizzo completo.",
-    "address1": "Indirizzo riga 1", "address2": "Indirizzo riga 2 (opzionale)", "state": "Stato / Provincia", "zip": "CAP", "country": "Paese",
-    "paymentMethod": "Metodo di pagamento", "wallet": "Portafoglio APEXL", "balance": "Saldo",
-    "cash": "Pagamento in contanti", "cashDesc": "Paga il corriere in contanti alla consegna",
-    "summary": "Riepilogo ordine", "subtotal": "Subtotale", "delivery": "Consegna", "total": "Totale",
-    "confirm": "Conferma ordine", "confirmCash": "Ordina (contanti)",
-    "insufficientBalance": "Saldo insufficiente", "topUp": "Ricarica",
-    "successTitle": "Ordine confermato!", "successDesc": "Il tuo ordine è stato effettuato. Riceverai una notifica quando sarà in consegna.",
-    "backHome": "Torna alla home", "viewOrders": "Vedi i miei ordini"
+    "address1": "Indirizzo riga 1",
+    "address2": "Indirizzo riga 2 (opzionale)",
+    "state": "Stato / Provincia",
+    "zip": "CAP",
+    "country": "Paese",
+    "paymentMethod": "Metodo di pagamento",
+    "wallet": "Portafoglio APEXL",
+    "balance": "Saldo",
+    "cash": "Pagamento in contanti",
+    "cashDesc": "Paga il corriere in contanti alla consegna",
+    "summary": "Riepilogo ordine",
+    "subtotal": "Subtotale",
+    "delivery": "Consegna",
+    "total": "Totale",
+    "confirm": "Conferma ordine",
+    "confirmCash": "Ordina (contanti)",
+    "insufficientBalance": "Saldo insufficiente",
+    "topUp": "Ricarica",
+    "successTitle": "Ordine confermato!",
+    "successDesc": "Il tuo ordine è stato effettuato. Riceverai una notifica quando sarà in consegna.",
+    "backHome": "Torna alla home",
+    "viewOrders": "Vedi i miei ordini"
   },
   "sellerDash": {
-    "title": "Dashboard venditore", "subtitle": "Gestisci i tuoi prodotti e monitora le vendite", "badge": "Venditore",
-    "tabs": { "products": "Prodotti", "restaurant": "Ristorante", "orders": "Ordini", "analytics": "Statistiche" },
-    "myProducts": "I miei prodotti", "myProductsDesc": "Gestisci il tuo catalogo prodotti",
-    "myOrders": "I miei ordini", "myOrdersDesc": "Segna gli ordini come pronti — i corrieri vicini saranno notificati automaticamente",
-    "notSeller": { "title": "Diventa venditore", "desc": "Non sei ancora registrato come venditore. Contatta l'amministrazione per ottenere l'accesso.", "footer": "Una volta approvato, potrai aggiungere prodotti e gestire le vendite da questa dashboard." },
-    "analytics": { "title": "Statistiche di vendita", "desc": "Analizza le tue performance", "summary": "Riepilogo", "sold": "Prodotti venduti", "conversion": "Tasso di conversione", "avg": "Carrello medio", "chartsComing": "Grafici dettagliati in arrivo" }
+    "title": "Dashboard venditore",
+    "subtitle": "Gestisci i tuoi prodotti e monitora le vendite",
+    "badge": "Venditore",
+    "tabs": {
+      "products": "Prodotti",
+      "restaurant": "Ristorante",
+      "orders": "Ordini",
+      "analytics": "Statistiche"
+    },
+    "myProducts": "I miei prodotti",
+    "myProductsDesc": "Gestisci il tuo catalogo prodotti",
+    "myOrders": "I miei ordini",
+    "myOrdersDesc": "Segna gli ordini come pronti — i corrieri vicini saranno notificati automaticamente",
+    "notSeller": {
+      "title": "Diventa venditore",
+      "desc": "Non sei ancora registrato come venditore. Contatta l'amministrazione per ottenere l'accesso.",
+      "footer": "Una volta approvato, potrai aggiungere prodotti e gestire le vendite da questa dashboard."
+    },
+    "analytics": {
+      "title": "Statistiche di vendita",
+      "desc": "Analizza le tue performance",
+      "summary": "Riepilogo",
+      "sold": "Prodotti venduti",
+      "conversion": "Tasso di conversione",
+      "avg": "Carrello medio",
+      "chartsComing": "Grafici dettagliati in arrivo"
+    }
   },
-  "common": { "loading": "Caricamento...", "save": "Salva", "cancel": "Annulla", "close": "Chiudi", "error": "Errore" }
+  "common": {
+    "loading": "Caricamento...",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "error": "Errore"
+  }
 }
