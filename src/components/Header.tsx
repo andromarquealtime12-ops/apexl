@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,10 +37,21 @@ const Header = () => {
   const { user, isAdmin, isSeller, isDriver, isAgent, signOut, loading } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"signin" | "signup">("signin");
+  const navigate = useNavigate();
 
   const openSignIn = () => {
     setAuthTab("signin");
     setAuthModalOpen(true);
+  };
+
+  const requireAuth = (path: string) => (e: React.MouseEvent) => {
+    if (!user) {
+      e.preventDefault();
+      toast.error(t("nav.loginToApply"));
+      openSignIn();
+      return;
+    }
+    navigate(path);
   };
 
   const openSignUp = () => {
@@ -88,10 +100,10 @@ const Header = () => {
             <Link to="/restaurants" className="text-sm font-medium hover:text-primary transition-smooth">
               {t("nav.restaurants")}
             </Link>
-            <Link to="/seller" className="text-sm font-medium hover:text-primary transition-smooth">
+            <Link to="/seller" onClick={requireAuth("/seller")} className="text-sm font-medium hover:text-primary transition-smooth">
               {t("nav.sell")}
             </Link>
-            <Link to="/driver" className="text-sm font-medium hover:text-primary transition-smooth">
+            <Link to="/driver" onClick={requireAuth("/driver")} className="text-sm font-medium hover:text-primary transition-smooth">
               {t("nav.deliver")}
             </Link>
           </nav>
@@ -221,8 +233,8 @@ const Header = () => {
                   <Link to="/restaurants" className="text-lg font-medium py-2 border-b flex items-center gap-2">
                     <UtensilsCrossed className="h-4 w-4" /> {t("nav.restaurants")}
                   </Link>
-                  <Link to="/seller" className="text-lg font-medium py-2 border-b">{t("nav.sell")}</Link>
-                  <Link to="/driver" className="text-lg font-medium py-2 border-b">{t("nav.deliver")}</Link>
+                  <Link to="/seller" onClick={requireAuth("/seller")} className="text-lg font-medium py-2 border-b">{t("nav.sell")}</Link>
+                  <Link to="/driver" onClick={requireAuth("/driver")} className="text-lg font-medium py-2 border-b">{t("nav.deliver")}</Link>
                   {isAgent && (
                     <Link to="/agent" className="text-lg font-medium py-2 border-b flex items-center gap-2 text-primary">
                       <Building2 className="h-4 w-4" /> Agent
