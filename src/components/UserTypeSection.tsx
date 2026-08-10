@@ -2,13 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart, Store, Truck, CheckCircle, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const UserTypeSection = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const userTypes = [
-    { id: "buyer", icon: ShoppingCart },
-    { id: "seller", icon: Store },
-    { id: "driver", icon: Truck },
+    { id: "buyer", icon: ShoppingCart, to: "/products" },
+    { id: "seller", icon: Store, to: "/profile" },
+    { id: "driver", icon: Truck, to: "/profile" },
   ] as const;
 
   return (
@@ -24,7 +26,7 @@ const UserTypeSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {userTypes.map(({ id, icon: Icon }) => (
+          {userTypes.map(({ id, icon: Icon, to }) => (
             <Card key={id} className="group hover:shadow-elegant transition-smooth border rounded-none">
               <CardHeader className="text-center pb-4">
                 <div className="mx-auto p-4 rounded-full bg-foreground text-background w-fit mb-4">
@@ -48,7 +50,10 @@ const UserTypeSection = () => {
                   ))}
                 </ul>
 
-                <Button className="w-full rounded-none bg-foreground text-background hover:bg-foreground/90">
+                <Button
+                  onClick={() => navigate(to)}
+                  className="w-full rounded-none bg-foreground text-background hover:bg-foreground/90"
+                >
                   {t(`userTypes.${id}.cta`)}
                   <ArrowRight className="h-4 w-4 ml-2 rtl:rotate-180" />
                 </Button>
