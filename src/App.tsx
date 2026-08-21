@@ -33,6 +33,7 @@ import LegalNotice from "./pages/LegalNotice";
 import CookiesPolicy from "./pages/CookiesPolicy";
 import SupportChatWidget from "./components/support/SupportChatWidget";
 import AIAssistantWidget from "./components/ai/AIAssistantWidget";
+import NotificationGate from "./components/notifications/NotificationGate";
 import { useEffect } from "react";
 import { startBackgroundWatch, stopBackgroundWatch } from "@/utils/persistentLocation";
 
@@ -55,6 +56,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <LocationBootstrap />
+            <NotificationGate />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/products" element={<Products />} />

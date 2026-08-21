@@ -573,7 +573,15 @@ const Wallet = () => {
                           }
                         } catch (e: any) {
                           toast.dismiss();
-                          toast.error(e.message || "Erreur MonCash");
+                          // MonCash non confirmé -> annuler immédiatement tous les dépôts MonCash en attente
+                          try {
+                            await supabase.rpc("cancel_pending_moncash_deposits" as any, {
+                              p_reason: e?.message || "Transfert MonCash non confirmé",
+                            });
+                            queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+                            queryClient.invalidateQueries({ queryKey: ["wallet"] });
+                          } catch {}
+                          toast.error((e.message || "Erreur MonCash") + " — dépôts MonCash en attente annulés");
                         }
                       }}
                     >

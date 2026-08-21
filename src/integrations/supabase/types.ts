@@ -1995,6 +1995,10 @@ export type Database = {
         Args: { p_order_id: string; p_reason?: string }
         Returns: Json
       }
+      cancel_pending_moncash_deposits: {
+        Args: { p_reason?: string }
+        Returns: Json
+      }
       cleanup_old_data: { Args: never; Returns: Json }
       confirm_return_received: {
         Args: {
@@ -2330,6 +2334,16 @@ export type Database = {
       }
       robot_caller_allowed: { Args: never; Returns: boolean }
       run_admin_robot: { Args: never; Returns: Json }
+      submit_deposit_request: {
+        Args: {
+          p_amount: number
+          p_currency: string
+          p_payment_method: Database["public"]["Enums"]["payment_method_type"]
+          p_proof_path: string
+          p_transaction_reference: string
+        }
+        Returns: Json
+      }
       suspend_user: {
         Args: { p_duration_days?: number; p_reason: string; p_user_id: string }
         Returns: Json

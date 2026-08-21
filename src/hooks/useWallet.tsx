@@ -70,50 +70,31 @@ export function useDepositToWallet() {
     mutationFn: async ({ amount, currency, paymentMethod, transactionReference, proofFile }: DepositParams) => {
       if (!user) throw new Error("User not authenticated");
 
-      // Get wallet
-      const { data: wallet, error: walletError } = await supabase
-        .from("wallets")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
-
-      if (walletError) throw walletError;
-
-      // Upload proof image
+      // Upload proof image (bucket is private, we store the path)
       const fileExt = proofFile.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-      
+
       const { error: uploadError } = await supabase.storage
         .from("transaction-proofs")
         .upload(fileName, proofFile);
 
       if (uploadError) throw uploadError;
 
-      // Get the file URL
-      const { data: urlData } = supabase.storage
-        .from("transaction-proofs")
-        .getPublicUrl(fileName);
-
-      // Create transaction
-      const { data, error } = await supabase
-        .from("wallet_transactions")
-        .insert({
-          wallet_id: wallet.id,
-          type: "deposit",
-          amount,
-          currency,
-          payment_method: paymentMethod,
-          status: "pending",
-          description: `Dépôt via ${paymentMethod}`,
-          transaction_reference: transactionReference,
-          proof_image_url: fileName // Store the path, not full URL since bucket is private
-        })
-        .select()
-        .single();
+      // Create the pending transaction through the secure RPC
+      const { data, error } = await supabase.rpc("submit_deposit_request" as any, {
+        p_amount: amount,
+        p_currency: currency,
+        p_payment_method: paymentMethod,
+        p_transaction_reference: transactionReference,
+        p_proof_path: fileName,
+      });
 
       if (error) throw error;
-      return data;
+      const result = data as any;
+      if (!result?.success) throw new Error(result?.error || "Dépôt refusé");
+      return result;
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
