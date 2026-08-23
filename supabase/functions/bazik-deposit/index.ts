@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
     const { data: wallet } = await admin.from("wallets").select("id").eq("user_id", userId).single();
     if (!wallet) throw new Error("Wallet introuvable");
     const { data: profile } = await admin
-      .from("profiles").select("full_name, email").eq("user_id", userId).maybeSingle();
+      .from("profiles").select("full_name").eq("user_id", userId).maybeSingle();
 
     const referenceId = `APEXL_${userId.slice(0, 8)}_${Date.now()}`;
 
@@ -93,7 +93,7 @@ Deno.serve(async (req) => {
         referenceId,
         customerFirstName: nameParts[0] || "APEXL",
         customerLastName: nameParts.slice(1).join(" ") || "User",
-        customerEmail: profile?.email || claims.claims.email || "noreply@apexl.app",
+        customerEmail: (claims.claims.email as string) || "noreply@apexl.app",
         metadata: {
           webhookUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/bazik-webhook`,
           userId,
