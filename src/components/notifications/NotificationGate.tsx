@@ -49,8 +49,8 @@ export function NotificationGate() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md [&>button.absolute]:hidden" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) handleDismiss(); }}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BellRing className="h-5 w-5 text-primary" />
@@ -84,9 +84,12 @@ export function NotificationGate() {
           </p>
         ) : null}
 
-        <div className="pt-2">
+        <div className="pt-2 space-y-2">
           <Button onClick={handleEnable} disabled={busy} className="w-full" size="lg">
             {busy ? "Activation..." : "Activer les notifications"}
+          </Button>
+          <Button onClick={handleDismiss} variant="ghost" className="w-full">
+            Plus tard
           </Button>
         </div>
       </DialogContent>
