@@ -96,9 +96,9 @@ export function useDepositToWallet() {
 
       const { error: uploadError } = await supabase.storage
         .from("transaction-proofs")
-        .upload(fileName, proofFile);
+        .upload(fileName, proofFile, { contentType: proofFile.type || "image/jpeg" });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) throw new Error(`Envoi de la preuve échoué: ${uploadError.message}`);
 
       // Create the pending transaction through the secure RPC
       const { data, error } = await supabase.rpc("submit_deposit_request" as any, {
