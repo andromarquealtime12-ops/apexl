@@ -1995,10 +1995,12 @@ export type Database = {
         Args: { p_order_id: string; p_reason?: string }
         Returns: Json
       }
-      cancel_pending_moncash_deposits: {
-        Args: { p_reason?: string }
-        Returns: Json
-      }
+      cancel_pending_moncash_deposits:
+        | { Args: { p_reason?: string }; Returns: Json }
+        | {
+            Args: { p_older_than_minutes?: number; p_reason?: string }
+            Returns: Json
+          }
       cleanup_old_data: { Args: never; Returns: Json }
       confirm_return_received: {
         Args: {

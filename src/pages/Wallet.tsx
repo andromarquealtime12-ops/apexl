@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -82,6 +82,23 @@ const Wallet = () => {
   const [busendHolder, setBusendHolder] = useState<string | null>(null);
   const [busendChecking, setBusendChecking] = useState(false);
   const [busendError, setBusendError] = useState<string | null>(null);
+
+  // Les dépôts MonCash non confirmés par l'API après 30 min sont annulés automatiquement
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      try {
+        const { data } = await supabase.rpc("cancel_pending_moncash_deposits" as any, {
+          p_reason: "MonCash non confirmé",
+          p_older_than_minutes: 30,
+        });
+        if ((data as any)?.cancelled > 0) {
+          queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+          queryClient.invalidateQueries({ queryKey: ["wallet"] });
+        }
+      } catch { /* ignore */ }
+    })();
+  }, [user, queryClient]);
 
   const checkBusendAccount = async () => {
     const account = withdrawAccount.trim();
@@ -183,8 +200,8 @@ const Wallet = () => {
       toast.success("Demande de dépôt enregistrée ! Elle sera vérifiée et traitée sous 24h.");
       setDepositOpen(false);
       resetDepositForm();
-    } catch (error) {
-      toast.error("Erreur lors du dépôt");
+    } catch (error: any) {
+      toast.error(error?.message || "Erreur lors du dépôt");
     }
   };
 

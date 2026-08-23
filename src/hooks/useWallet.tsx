@@ -54,6 +54,26 @@ export function useWalletTransactions() {
   });
 }
 
+// Les clés configurées par l'admin (ex: "Banco qik", "Reservas") ne sont pas
+// toujours des valeurs de l'enum payment_method_type. On normalise avant l'appel RPC.
+const PAYMENT_METHOD_ENUM = [
+  "card_visa", "card_mastercard", "orange_money", "moncash", "banreservas", "bhd",
+  "bank_transfer_do", "bank_transfer_ht", "paypal", "wise", "popular", "bank_other", "cash",
+];
+
+export function normalizePaymentMethod(key: string): PaymentMethodType {
+  const raw = (key || "").trim();
+  const slug = raw.toLowerCase().replace(/\s+/g, "_");
+  if (PAYMENT_METHOD_ENUM.includes(slug)) return slug as PaymentMethodType;
+  if (slug.includes("moncash")) return "moncash" as PaymentMethodType;
+  if (slug.includes("paypal")) return "paypal" as PaymentMethodType;
+  if (slug.includes("wise")) return "wise" as PaymentMethodType;
+  if (slug.includes("reservas")) return "banreservas" as PaymentMethodType;
+  if (slug.includes("popular")) return "popular" as PaymentMethodType;
+  if (slug.includes("bhd")) return "bhd" as PaymentMethodType;
+  return "bank_other" as PaymentMethodType;
+}
+
 interface DepositParams {
   amount: number;
   currency: Currency;
@@ -76,20 +96,20 @@ export function useDepositToWallet() {
 
       const { error: uploadError } = await supabase.storage
         .from("transaction-proofs")
-        .upload(fileName, proofFile);
+        .upload(fileName, proofFile, { contentType: proofFile.type || "image/jpeg" });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) throw new Error(`Envoi de la preuve échoué: ${uploadError.message}`);
 
       // Create the pending transaction through the secure RPC
       const { data, error } = await supabase.rpc("submit_deposit_request" as any, {
         p_amount: amount,
         p_currency: currency,
-        p_payment_method: paymentMethod,
+        p_payment_method: normalizePaymentMethod(paymentMethod as unknown as string),
         p_transaction_reference: transactionReference,
         p_proof_path: fileName,
       });
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
       const result = data as any;
       if (!result?.success) throw new Error(result?.error || "Dépôt refusé");
       return result;
