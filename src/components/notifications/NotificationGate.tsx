@@ -15,14 +15,23 @@ export function NotificationGate() {
   const { permission, isSupported, requestPermission, subscribeToPush } = usePushNotifications();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [dismissed, setDismissed] = useState(
+    typeof sessionStorage !== "undefined" && sessionStorage.getItem("notif-gate-dismissed") === "1"
+  );
 
   useEffect(() => {
-    if (!user || !isSupported) {
+    if (!user || !isSupported || dismissed) {
       setOpen(false);
       return;
     }
     setOpen(permission !== "granted");
-  }, [user, isSupported, permission]);
+  }, [user, isSupported, permission, dismissed]);
+
+  const handleDismiss = () => {
+    try { sessionStorage.setItem("notif-gate-dismissed", "1"); } catch { /* ignore */ }
+    setDismissed(true);
+    setOpen(false);
+  };
 
   useEffect(() => {
     if (permission === "granted" && user) {
@@ -40,8 +49,8 @@ export function NotificationGate() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md [&>button.absolute]:hidden" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) handleDismiss(); }}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BellRing className="h-5 w-5 text-primary" />
@@ -75,9 +84,12 @@ export function NotificationGate() {
           </p>
         ) : null}
 
-        <div className="pt-2">
+        <div className="pt-2 space-y-2">
           <Button onClick={handleEnable} disabled={busy} className="w-full" size="lg">
             {busy ? "Activation..." : "Activer les notifications"}
+          </Button>
+          <Button onClick={handleDismiss} variant="ghost" className="w-full">
+            Plus tard
           </Button>
         </div>
       </DialogContent>
