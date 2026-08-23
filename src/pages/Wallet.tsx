@@ -183,8 +183,8 @@ const Wallet = () => {
       toast.success("Demande de dépôt enregistrée ! Elle sera vérifiée et traitée sous 24h.");
       setDepositOpen(false);
       resetDepositForm();
-    } catch (error) {
-      toast.error("Erreur lors du dépôt");
+    } catch (error: any) {
+      toast.error(error?.message || "Erreur lors du dépôt");
     }
   };
 
