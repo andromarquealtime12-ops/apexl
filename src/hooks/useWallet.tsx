@@ -104,12 +104,12 @@ export function useDepositToWallet() {
       const { data, error } = await supabase.rpc("submit_deposit_request" as any, {
         p_amount: amount,
         p_currency: currency,
-        p_payment_method: paymentMethod,
+        p_payment_method: normalizePaymentMethod(paymentMethod as unknown as string),
         p_transaction_reference: transactionReference,
         p_proof_path: fileName,
       });
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
       const result = data as any;
       if (!result?.success) throw new Error(result?.error || "Dépôt refusé");
       return result;
