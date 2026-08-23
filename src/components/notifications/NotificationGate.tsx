@@ -15,14 +15,23 @@ export function NotificationGate() {
   const { permission, isSupported, requestPermission, subscribeToPush } = usePushNotifications();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [dismissed, setDismissed] = useState(
+    typeof sessionStorage !== "undefined" && sessionStorage.getItem("notif-gate-dismissed") === "1"
+  );
 
   useEffect(() => {
-    if (!user || !isSupported) {
+    if (!user || !isSupported || dismissed) {
       setOpen(false);
       return;
     }
     setOpen(permission !== "granted");
-  }, [user, isSupported, permission]);
+  }, [user, isSupported, permission, dismissed]);
+
+  const handleDismiss = () => {
+    try { sessionStorage.setItem("notif-gate-dismissed", "1"); } catch { /* ignore */ }
+    setDismissed(true);
+    setOpen(false);
+  };
 
   useEffect(() => {
     if (permission === "granted" && user) {
