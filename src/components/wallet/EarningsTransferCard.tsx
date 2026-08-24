@@ -43,7 +43,7 @@ export default function EarningsTransferCard() {
 
   const available = earningsFor(currency);
   const parsed = parseFloat(amount) || 0;
-  const fee = Math.round(parsed * 1) / 100;
+  const fee = Math.round(parsed * 1) / 100; // 1% de frais, arrondi à 2 décimales
   const net = parsed - fee;
 
   const transfer = useMutation({
