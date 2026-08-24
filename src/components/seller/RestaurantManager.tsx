@@ -14,6 +14,8 @@ import { UtensilsCrossed, Plus, Trash2, Clock, Store, Edit, Image as ImageIcon, 
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import RestaurantLocationCard from "./RestaurantLocationCard";
+
 
 export default function RestaurantManager() {
   const { data: restaurants, isLoading } = useSellerRestaurants();
@@ -133,7 +135,17 @@ export default function RestaurantManager() {
                 </div>
                 <CardDescription>{r.address}, {r.city}</CardDescription>
               </CardHeader>
+              <CardContent>
+                <RestaurantLocationCard
+                  restaurantId={r.id}
+                  address={r.address}
+                  city={r.city}
+                  latitude={r.latitude}
+                  longitude={r.longitude}
+                />
+              </CardContent>
             </Card>
+
           ))}
         </div>
       )}

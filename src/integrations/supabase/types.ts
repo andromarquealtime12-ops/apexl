@@ -2355,6 +2355,16 @@ export type Database = {
         Returns: Json
       }
       unfreeze_wallet: { Args: { p_user_id: string }; Returns: Json }
+      update_pickup_location: {
+        Args: {
+          p_address?: string
+          p_city?: string
+          p_lat: number
+          p_lng: number
+          p_restaurant_id?: string
+        }
+        Returns: Json
+      }
       validate_admin_code: { Args: { code_input: string }; Returns: boolean }
       verify_delivery_code: {
         Args: { p_code: string; p_order_id: string }

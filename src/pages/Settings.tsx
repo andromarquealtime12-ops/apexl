@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -19,7 +21,9 @@ export default function Settings() {
   const { user, loading, isSeller } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
+  const queryClient = useQueryClient();
   const { permission, isSupported, requestPermission } = usePushNotifications();
+
 
   const initial = useMemo(
     () => ({
@@ -70,19 +74,26 @@ export default function Settings() {
         ...(form.date_of_birth ? { date_of_birth: form.date_of_birth } : {}),
       } as any);
 
-      // For sellers, also mirror to shop location so buyers see accurate distance
-      if (isSeller) {
-        await supabase
-          .from("profiles")
-          .update({
-            shop_address: form.address.trim() || null,
-            shop_latitude: form.lat,
-            shop_longitude: form.lng,
-          })
-          .eq("user_id", user.id);
-      }
+      // Propagate the pickup location everywhere the geolocation system uses it
+      const { data: syncData, error: syncError } = await (supabase as any).rpc("update_pickup_location", {
+        p_lat: form.lat,
+        p_lng: form.lng,
+        p_address: form.address.trim() || null,
+        p_city: null,
+        p_restaurant_id: null,
+      });
+      if (syncError) throw syncError;
+      if (syncData && syncData.success === false) throw new Error(syncData.error);
 
-      toast.success("Paramètres enregistrés ✓");
+      // Refresh every cache that depends on shop coordinates (distances / itinéraires)
+      queryClient.invalidateQueries({ queryKey: ["shop-locations"] });
+      queryClient.invalidateQueries({ queryKey: ["seller-shops"] });
+      queryClient.invalidateQueries({ queryKey: ["restaurants"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+
+      toast.success("Position mise à jour ✓ Les distances et itinéraires sont recalculés");
+
     } catch (e: any) {
       toast.error(e?.message || "Erreur lors de l'enregistrement");
     } finally {
