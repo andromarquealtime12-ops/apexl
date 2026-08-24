@@ -38,7 +38,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
+import { getDateFnsLocale } from "@/i18n/dateLocale";
 import AgentDepositSection from "@/components/wallet/AgentDepositSection";
 import CurrencyConverterCard from "@/components/wallet/CurrencyConverterCard";
 
@@ -52,6 +53,7 @@ const paymentMethodIcons: Record<string, React.ComponentType<{ className?: strin
 // All methods are now dynamic from DB
 
 const Wallet = () => {
+  const { t, i18n } = useTranslation();
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   
@@ -113,10 +115,10 @@ const Wallet = () => {
       if (error) throw error;
       const res = data as any;
       if (res?.error) throw new Error(res.error);
-      if (!res?.holder_name) throw new Error("Nom du bénéficiaire introuvable");
+      if (!res?.holder_name) throw new Error(t("walletx.toasts.beneficiaryNotFound"));
       setBusendHolder(res.holder_name);
     } catch (e: any) {
-      setBusendError(e.message || "Compte BUSEND introuvable");
+      setBusendError(e.message || t("walletx.toasts.busendAccountNotFound"));
     } finally {
       setBusendChecking(false);
     }
@@ -152,7 +154,7 @@ const Wallet = () => {
   const handleCopyAccount = async (text: string) => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
-    toast.success("Numéro copié !");
+    toast.success(t("walletx.toasts.numberCopied"));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -160,7 +162,7 @@ const Wallet = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("La taille du fichier ne doit pas dépasser 5 MB");
+        toast.error(t("walletx.toasts.fileTooLarge"));
         return;
       }
       setProofFile(file);
@@ -175,17 +177,17 @@ const Wallet = () => {
   const handleDeposit = async () => {
     const amount = parseFloat(depositAmount);
     if (isNaN(amount) || amount <= 0) {
-      toast.error("Montant invalide");
+      toast.error(t("walletx.toasts.invalidAmount"));
       return;
     }
 
     if (!transactionReference.trim()) {
-      toast.error("Veuillez entrer le numéro de transaction");
+      toast.error(t("walletx.toasts.enterTransactionNumber"));
       return;
     }
 
     if (!proofFile) {
-      toast.error("Veuillez télécharger la preuve de transaction");
+      toast.error(t("walletx.toasts.uploadProof"));
       return;
     }
 
@@ -197,28 +199,28 @@ const Wallet = () => {
         transactionReference: transactionReference.trim(),
         proofFile,
       });
-      toast.success("Demande de dépôt enregistrée ! Elle sera vérifiée et traitée sous 24h.");
+      toast.success(t("walletx.toasts.depositSuccess"));
       setDepositOpen(false);
       resetDepositForm();
     } catch (error: any) {
-      toast.error(error?.message || "Erreur lors du dépôt");
+      toast.error(error?.message || t("walletx.toasts.depositError"));
     }
   };
 
   const handleWithdraw = async () => {
     const amount = parseFloat(withdrawAmount);
     if (isNaN(amount) || amount <= 0) {
-      toast.error("Montant invalide");
+      toast.error(t("walletx.toasts.invalidAmount"));
       return;
     }
     if (!withdrawAccount.trim()) {
-      toast.error("Veuillez entrer les détails du compte");
+      toast.error(t("walletx.toasts.enterAccountDetails"));
       return;
     }
     try {
       if (withdrawMethod === "busend") {
         if (!busendHolder) {
-          toast.error("Vérifiez d'abord le numéro de compte BUSEND");
+          toast.error(t("walletx.toasts.verifyBusendFirst"));
           return;
         }
         // Automatic transfer to a BUSEND account (HTG / DOP / USD) — no admin approval
@@ -232,13 +234,13 @@ const Wallet = () => {
         });
         if (error) throw error;
         if ((data as any)?.error) throw new Error((data as any).error);
-        toast.success(`Retrait envoyé à ${busendHolder} — transfert BUSEND effectué automatiquement.`);
+        toast.success(t("walletx.toasts.busendWithdrawSuccess", { holder: busendHolder }));
         setBusendHolder(null);
 
       } else if (withdrawMethod === "moncash") {
         // Auto MonCash withdrawal via Bazik.io
         if (withdrawCurrency !== "HTG") {
-          toast.error("Les retraits MonCash automatiques sont uniquement en HTG");
+          toast.error(t("walletx.toasts.moncashHtgOnly"));
           return;
         }
         const { data, error } = await supabase.functions.invoke("bazik-withdraw", {
@@ -246,7 +248,7 @@ const Wallet = () => {
         });
         if (error) throw error;
         if ((data as any)?.error) throw new Error((data as any).error);
-        toast.success("Retrait MonCash envoyé ! Vous recevrez le montant sous quelques minutes.");
+        toast.success(t("walletx.toasts.moncashWithdrawSuccess"));
       } else {
         await withdrawalMutation.mutateAsync({
           amount,
@@ -254,7 +256,7 @@ const Wallet = () => {
           paymentMethod: withdrawMethod as PaymentMethodType,
           accountDetails: withdrawAccount.trim(),
         });
-        toast.success("Demande de retrait soumise ! Elle sera traitée sous 24-48h.");
+        toast.success(t("walletx.toasts.withdrawSuccess"));
       }
 
       setWithdrawOpen(false);
@@ -263,7 +265,7 @@ const Wallet = () => {
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
     } catch (error: any) {
-      toast.error(error.message || "Erreur lors du retrait");
+      toast.error(error.message || t("walletx.toasts.withdrawError"));
     }
   };
 
@@ -285,8 +287,8 @@ const Wallet = () => {
         <div className="flex items-center gap-3 mb-6">
           <WalletIcon className="h-8 w-8 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold">Mon Portefeuille</h1>
-            <p className="text-muted-foreground">Gérez votre solde et vos transactions</p>
+            <h1 className="text-2xl font-bold">{t("walletx.title")}</h1>
+            <p className="text-muted-foreground">{t("walletx.subtitle")}</p>
           </div>
         </div>
 
@@ -299,7 +301,7 @@ const Wallet = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
               <CardHeader className="pb-2">
-                <CardDescription className="text-blue-100">Peso Dominicain</CardDescription>
+                <CardDescription className="text-blue-100">{t("walletx.balances.dop")}</CardDescription>
                 <CardTitle className="text-3xl">
                   RD$ {wallet?.balance_dop?.toLocaleString() || "0"}
                 </CardTitle>
@@ -308,7 +310,7 @@ const Wallet = () => {
             
             <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white">
               <CardHeader className="pb-2">
-                <CardDescription className="text-red-100">Gourde Haïtienne</CardDescription>
+                <CardDescription className="text-red-100">{t("walletx.balances.htg")}</CardDescription>
                 <CardTitle className="text-3xl">
                   G {wallet?.balance_htg?.toLocaleString() || "0"}
                 </CardTitle>
@@ -317,7 +319,7 @@ const Wallet = () => {
             
             <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
               <CardHeader className="pb-2">
-                <CardDescription className="text-green-100">Dollar US</CardDescription>
+                <CardDescription className="text-green-100">{t("walletx.balances.usd")}</CardDescription>
                 <CardTitle className="text-3xl">
                   $ {wallet?.balance_usd?.toLocaleString() || "0"}
                 </CardTitle>
@@ -342,20 +344,20 @@ const Wallet = () => {
             <DialogTrigger asChild>
               <Button size="lg" variant="outline" className="flex-1">
                 <Minus className="h-5 w-5 mr-2" />
-                Retirer
+                {t("walletx.actions.withdraw")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Retirer des fonds</DialogTitle>
+                <DialogTitle>{t("walletx.withdrawDialog.title")}</DialogTitle>
                 <DialogDescription>
-                  Demandez un retrait vers votre compte bancaire ou mobile money
+                  {t("walletx.withdrawDialog.description")}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Montant</Label>
+                    <Label>{t("walletx.withdrawDialog.amount")}</Label>
                     <Input
                       type="number"
                       placeholder="0.00"
@@ -364,24 +366,24 @@ const Wallet = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Devise</Label>
+                    <Label>{t("walletx.withdrawDialog.currency")}</Label>
                     <Select value={withdrawCurrency} onValueChange={(v) => setWithdrawCurrency(v as Currency)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="DOP">RD$ (Peso)</SelectItem>
-                        <SelectItem value="HTG">G (Gourde)</SelectItem>
-                        <SelectItem value="USD">$ (Dollar)</SelectItem>
+                        <SelectItem value="DOP">{t("walletx.withdrawDialog.currencyOptions.dop")}</SelectItem>
+                        <SelectItem value="HTG">{t("walletx.withdrawDialog.currencyOptions.htg")}</SelectItem>
+                        <SelectItem value="USD">{t("walletx.withdrawDialog.currencyOptions.usd")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Méthode de retrait</Label>
+                  <Label>{t("walletx.withdrawDialog.method")}</Label>
                   <Select value={withdrawMethod} onValueChange={(v) => setWithdrawMethod(v as PaymentMethodType | "busend")}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="busend">BUSEND — transfert instantané</SelectItem>
+                      <SelectItem value="busend">{t("walletx.withdrawDialog.methodBusend")}</SelectItem>
                       {(depositMethodsData || []).map(m => (
                         <SelectItem key={m.method_key} value={m.method_key}>{m.label}</SelectItem>
                       ))}
@@ -392,24 +394,24 @@ const Wallet = () => {
 
                 <div className="space-y-2">
                   <Label>
-                    {withdrawMethod === "busend" ? "Numéro de compte BUSEND" :
-                     withdrawMethod === "paypal" ? "Adresse email PayPal" :
-                     withdrawMethod === "wise" ? "Email ou numéro Wise" :
-                     withdrawMethod === "moncash" ? "Numéro Moncash" :
-                     withdrawMethod === "orange_money" ? "Numéro Orange Money" :
-                     withdrawMethod === "banreservas" ? "Numéro de compte Banreservas" :
-                     withdrawMethod === "bhd" ? "Numéro de compte BHD León" :
-                     withdrawMethod === "popular" ? "Numéro de compte Banco Popular" :
-                     "Numéro de compte / coordonnées bancaires"}
+                    {withdrawMethod === "busend" ? t("walletx.withdrawDialog.accountLabel.busend") :
+                     withdrawMethod === "paypal" ? t("walletx.withdrawDialog.accountLabel.paypal") :
+                     withdrawMethod === "wise" ? t("walletx.withdrawDialog.accountLabel.wise") :
+                     withdrawMethod === "moncash" ? t("walletx.withdrawDialog.accountLabel.moncash") :
+                     withdrawMethod === "orange_money" ? t("walletx.withdrawDialog.accountLabel.orange_money") :
+                     withdrawMethod === "banreservas" ? t("walletx.withdrawDialog.accountLabel.banreservas") :
+                     withdrawMethod === "bhd" ? t("walletx.withdrawDialog.accountLabel.bhd") :
+                     withdrawMethod === "popular" ? t("walletx.withdrawDialog.accountLabel.popular") :
+                     t("walletx.withdrawDialog.accountLabel.default")}
                   </Label>
                   <Input
                     placeholder={
-                      withdrawMethod === "busend" ? "NB123456789" :
-                      withdrawMethod === "paypal" ? "votre@email.com" :
-                      withdrawMethod === "wise" ? "votre@email.com ou numéro" :
-                      withdrawMethod === "moncash" || withdrawMethod === "orange_money" ? "+509 XXXX XXXX" :
-                      withdrawMethod === "banreservas" || withdrawMethod === "bhd" || withdrawMethod === "popular" ? "Numéro de compte" :
-                      "Entrez vos coordonnées bancaires"
+                      withdrawMethod === "busend" ? t("walletx.withdrawDialog.accountPlaceholder.busend") :
+                      withdrawMethod === "paypal" ? t("walletx.withdrawDialog.accountPlaceholder.paypal") :
+                      withdrawMethod === "wise" ? t("walletx.withdrawDialog.accountPlaceholder.wise") :
+                      withdrawMethod === "moncash" || withdrawMethod === "orange_money" ? t("walletx.withdrawDialog.accountPlaceholder.phone") :
+                      withdrawMethod === "banreservas" || withdrawMethod === "bhd" || withdrawMethod === "popular" ? t("walletx.withdrawDialog.accountPlaceholder.accountNumber") :
+                      t("walletx.withdrawDialog.accountPlaceholder.default")
                     }
                     value={withdrawAccount}
                     onChange={(e) => {
@@ -430,11 +432,11 @@ const Wallet = () => {
                         onClick={checkBusendAccount}
                         disabled={busendChecking || !withdrawAccount.trim()}
                       >
-                        {busendChecking ? "Vérification..." : "Vérifier le compte"}
+                        {busendChecking ? t("walletx.withdrawDialog.verifying") : t("walletx.withdrawDialog.verifyAccount")}
                       </Button>
                       {busendHolder && (
                         <p className="text-sm font-medium text-green-600">
-                          Destinataire : {busendHolder}
+                          {t("walletx.withdrawDialog.recipient", { name: busendHolder })}
                         </p>
                       )}
                       {busendError && (
@@ -448,10 +450,10 @@ const Wallet = () => {
                   <Info className="h-4 w-4" />
                   <AlertDescription>
                     {withdrawMethod === "busend"
-                      ? "Retrait BUSEND 100 % automatique — aucune approbation admin. Vérifiez le numéro de compte, confirmez le nom du destinataire, puis les fonds partent immédiatement. En cas d'échec, remboursement automatique."
+                      ? t("walletx.withdrawDialog.infoBusend")
                       : isBazikWithdraw
-                      ? "Retrait MonCash automatique via Bazik.io — le montant sera envoyé directement sur votre numéro MonCash sous quelques minutes (HTG uniquement, max 75 000 HTG). En cas d'échec, remboursement automatique."
-                      : "Le montant sera déduit immédiatement et le virement traité sous 24-48h. Si la demande est refusée, le montant sera remboursé."}
+                      ? t("walletx.withdrawDialog.infoMoncash")
+                      : t("walletx.withdrawDialog.infoDefault")}
 
                   </AlertDescription>
                 </Alert>
@@ -463,11 +465,11 @@ const Wallet = () => {
                   disabled={withdrawalMutation.isPending || !withdrawAmount || !withdrawAccount || (withdrawMethod === "busend" && !busendHolder)}
                 >
                   {withdrawalMutation.isPending ? (
-                    <span>Envoi...</span>
+                    <span>{t("walletx.withdrawDialog.sending")}</span>
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Demander le retrait
+                      {t("walletx.withdrawDialog.submit")}
                     </>
                   )}
                 </Button>
@@ -483,16 +485,16 @@ const Wallet = () => {
             <DialogTrigger asChild>
               <Button size="lg" className="flex-1">
                 <Plus className="h-5 w-5 mr-2" />
-                Recharger
+                {t("walletx.actions.deposit")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Recharger mon portefeuille</DialogTitle>
+                <DialogTitle>{t("walletx.depositDialog.title")}</DialogTitle>
                 <DialogDescription>
-                  {depositStep === "method" && "Choisissez le montant et la méthode de paiement"}
-                  {depositStep === "transfer" && "Effectuez le transfert vers le compte indiqué"}
-                  {depositStep === "proof" && "Téléchargez la preuve de votre transaction"}
+                  {depositStep === "method" && t("walletx.depositDialog.stepMethod")}
+                  {depositStep === "transfer" && t("walletx.depositDialog.stepTransfer")}
+                  {depositStep === "proof" && t("walletx.depositDialog.stepProof")}
                 </DialogDescription>
               </DialogHeader>
 
@@ -501,7 +503,7 @@ const Wallet = () => {
                 <div className="space-y-4 pt-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Montant</Label>
+                      <Label>{t("walletx.depositDialog.amount")}</Label>
                       <Input
                         type="number"
                         placeholder="0.00"
@@ -510,15 +512,15 @@ const Wallet = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Devise</Label>
+                      <Label>{t("walletx.depositDialog.currency")}</Label>
                       <Select value={depositCurrency} onValueChange={(v) => setDepositCurrency(v as Currency)}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="DOP">RD$ (Peso)</SelectItem>
-                          <SelectItem value="HTG">G (Gourde)</SelectItem>
-                          <SelectItem value="USD">$ (Dollar)</SelectItem>
+                          <SelectItem value="DOP">{t("walletx.withdrawDialog.currencyOptions.dop")}</SelectItem>
+                          <SelectItem value="HTG">{t("walletx.withdrawDialog.currencyOptions.htg")}</SelectItem>
+                          <SelectItem value="USD">{t("walletx.withdrawDialog.currencyOptions.usd")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -531,11 +533,11 @@ const Wallet = () => {
                     onClick={async () => {
                       const amount = parseFloat(depositAmount);
                       if (isNaN(amount) || amount <= 0) {
-                        toast.error("Veuillez entrer un montant valide");
+                        toast.error(t("walletx.toasts.enterValidAmount"));
                         return;
                       }
                        try {
-                         toast.loading("Préparation du paiement Stripe...");
+                         toast.loading(t("walletx.toasts.preparingStripe"));
                          const { data, error } = await supabase.functions.invoke("stripe-wallet-topup", {
                            body: { amount, currency: depositCurrency, returnOrigin: window.location.origin },
                          });
@@ -546,16 +548,16 @@ const Wallet = () => {
                            setDepositOpen(false);
                            resetDepositForm();
                          } else {
-                           throw new Error("URL de paiement manquante");
+                           throw new Error(t("walletx.toasts.missingPaymentUrl"));
                          }
                       } catch (e: any) {
                         toast.dismiss();
-                        toast.error(e.message || "Erreur Stripe");
+                        toast.error(e.message || t("walletx.toasts.stripeError"));
                       }
                     }}
                   >
                     <CreditCard className="h-4 w-4 mr-2" />
-                    Payer par carte bancaire
+                    {t("walletx.depositDialog.payByCard")}
                   </Button>
 
                   {depositCurrency === "HTG" && (
@@ -565,15 +567,15 @@ const Wallet = () => {
                       onClick={async () => {
                         const amount = parseFloat(depositAmount);
                         if (isNaN(amount) || amount <= 0) {
-                          toast.error("Montant invalide");
+                          toast.error(t("walletx.toasts.invalidAmount"));
                           return;
                         }
                         if (amount > 75000) {
-                          toast.error("Maximum 75 000 HTG par transaction MonCash");
+                          toast.error(t("walletx.toasts.moncashMax"));
                           return;
                         }
                         try {
-                          toast.loading("Préparation MonCash...");
+                          toast.loading(t("walletx.toasts.preparingMoncash"));
                           const { data, error } = await supabase.functions.invoke("bazik-deposit", {
                             body: { amount, description: `Recharge portefeuille APEXL ${amount} HTG` },
                           });
@@ -586,7 +588,7 @@ const Wallet = () => {
                             setDepositOpen(false);
                             resetDepositForm();
                           } else {
-                            throw new Error("URL MonCash manquante");
+                            throw new Error(t("walletx.toasts.missingMoncashUrl"));
                           }
                         } catch (e: any) {
                           toast.dismiss();
@@ -598,12 +600,12 @@ const Wallet = () => {
                             queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
                             queryClient.invalidateQueries({ queryKey: ["wallet"] });
                           } catch {}
-                          toast.error((e.message || "Erreur MonCash") + " — dépôts MonCash en attente annulés");
+                          toast.error((e.message || t("walletx.toasts.moncashError")) + t("walletx.toasts.moncashCancelledSuffix"));
                         }
                       }}
                     >
                       <Smartphone className="h-4 w-4 mr-2" />
-                      Payer avec MonCash (auto)
+                      {t("walletx.depositDialog.payByMoncash")}
                     </Button>
                   )}
 
@@ -612,12 +614,12 @@ const Wallet = () => {
                       <span className="w-full border-t" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">Ou méthode manuelle</span>
+                      <span className="bg-background px-2 text-muted-foreground">{t("walletx.depositDialog.orManualMethod")}</span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Méthode de paiement</Label>
+                    <Label>{t("walletx.depositDialog.paymentMethod")}</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {filteredDepositMethods.map((method) => {
                         const Icon = paymentMethodIcons[method.icon || "building"] || CreditCard;
@@ -641,13 +643,13 @@ const Wallet = () => {
                     onClick={() => {
                       const amount = parseFloat(depositAmount);
                       if (isNaN(amount) || amount <= 0) {
-                        toast.error("Veuillez entrer un montant valide");
+                        toast.error(t("walletx.toasts.enterValidAmount"));
                         return;
                       }
                       setDepositStep("transfer");
                     }}
                   >
-                    Continuer
+                    {t("walletx.depositDialog.continue")}
                   </Button>
                 </div>
               )}
@@ -657,7 +659,7 @@ const Wallet = () => {
                 <div className="space-y-4 pt-4">
                   <Alert className="bg-primary/10 border-primary">
                     <Info className="h-4 w-4" />
-                    <AlertTitle>Instructions de transfert</AlertTitle>
+                    <AlertTitle>{t("walletx.depositDialog.transferInstructions")}</AlertTitle>
                     <AlertDescription className="mt-2">
                       {currentMethod.instructions}
                     </AlertDescription>
@@ -669,10 +671,10 @@ const Wallet = () => {
                         <div>
                           <p className="text-sm text-muted-foreground">
                             {currentMethod.method_type === "mobile_money" 
-                              ? "Numéro" 
-                              : "Numéro de compte / Email"}
+                              ? t("walletx.depositDialog.numberLabel") 
+                              : t("walletx.depositDialog.accountNumberOrEmail")}
                           </p>
-                          <p className="text-xl font-bold font-mono">{currentMethod.account_number || "Non configuré"}</p>
+                          <p className="text-xl font-bold font-mono">{currentMethod.account_number || t("walletx.depositDialog.notConfigured")}</p>
                         </div>
                         <Button 
                           variant="outline" 
@@ -684,12 +686,12 @@ const Wallet = () => {
                       </div>
                       
                       <div className="p-3 bg-muted rounded-lg">
-                        <p className="text-sm text-muted-foreground">Nom du bénéficiaire</p>
+                        <p className="text-sm text-muted-foreground">{t("walletx.depositDialog.beneficiaryName")}</p>
                         <p className="font-semibold">{currentMethod.account_name || "—"}</p>
                       </div>
 
                       <div className="p-3 bg-muted rounded-lg">
-                        <p className="text-sm text-muted-foreground">Montant à envoyer</p>
+                        <p className="text-sm text-muted-foreground">{t("walletx.depositDialog.amountToSend")}</p>
                         <p className="text-xl font-bold text-primary">
                           {CURRENCY_SYMBOLS[depositCurrency]} {parseFloat(depositAmount).toLocaleString()}
                         </p>
@@ -699,10 +701,10 @@ const Wallet = () => {
 
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={() => setDepositStep("method")} className="flex-1">
-                      Retour
+                      {t("walletx.depositDialog.back")}
                     </Button>
                     <Button onClick={() => setDepositStep("proof")} className="flex-1">
-                      J'ai effectué le transfert
+                      {t("walletx.depositDialog.transferDone")}
                     </Button>
                   </div>
                 </div>
@@ -712,7 +714,7 @@ const Wallet = () => {
               {depositStep === "proof" && (
                 <div className="space-y-4 pt-4">
                   <div className="space-y-2">
-                    <Label htmlFor="transactionRef">Numéro de transaction / Référence</Label>
+                    <Label htmlFor="transactionRef">{t("walletx.depositDialog.transactionRef")}</Label>
                     <Input
                       id="transactionRef"
                       placeholder="Ex: TXN123456789"
@@ -722,7 +724,7 @@ const Wallet = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Photo de la preuve de transaction</Label>
+                    <Label>{t("walletx.depositDialog.proofPhoto")}</Label>
                     <input
                       type="file"
                       ref={fileInputRef}
@@ -744,7 +746,7 @@ const Wallet = () => {
                           className="absolute bottom-2 right-2"
                           onClick={() => fileInputRef.current?.click()}
                         >
-                          Changer
+                          {t("walletx.depositDialog.changePhoto")}
                         </Button>
                       </div>
                     ) : (
@@ -754,10 +756,10 @@ const Wallet = () => {
                       >
                         <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
                         <p className="text-muted-foreground">
-                          Cliquez pour télécharger la photo du reçu
+                          {t("walletx.depositDialog.clickToUpload")}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          PNG, JPG jusqu'à 5 MB
+                          {t("walletx.depositDialog.fileFormats")}
                         </p>
                       </div>
                     )}
@@ -766,20 +768,20 @@ const Wallet = () => {
                   <Alert>
                     <Info className="h-4 w-4" />
                     <AlertDescription>
-                      Votre demande sera vérifiée par notre équipe. Le solde sera crédité sous 24h après validation.
+                      {t("walletx.depositDialog.verificationInfo")}
                     </AlertDescription>
                   </Alert>
 
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={() => setDepositStep("transfer")} className="flex-1">
-                      Retour
+                      {t("walletx.depositDialog.back")}
                     </Button>
                     <Button 
                       onClick={handleDeposit}
                       disabled={depositMutation.isPending || !transactionReference || !proofFile}
                       className="flex-1"
                     >
-                      {depositMutation.isPending ? "Envoi..." : "Soumettre"}
+                      {depositMutation.isPending ? t("walletx.depositDialog.sending") : t("walletx.depositDialog.submit")}
                     </Button>
                   </div>
                 </div>
@@ -794,7 +796,7 @@ const Wallet = () => {
         {/* Transactions */}
         <Card>
           <CardHeader>
-            <CardTitle>Historique des transactions</CardTitle>
+            <CardTitle>{t("walletx.transactions.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             {transactionsLoading ? (
@@ -804,7 +806,7 @@ const Wallet = () => {
             ) : transactions?.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Aucune transaction pour le moment</p>
+                <p>{t("walletx.transactions.empty")}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -833,15 +835,15 @@ const Wallet = () => {
                       </div>
                       <div>
                         <p className="font-medium capitalize flex items-center gap-2">
-                          {tx.type === "deposit" ? "Dépôt" : tx.type === "withdrawal" ? "Retrait" : tx.type}
+                          {tx.type === "deposit" ? t("walletx.transactions.deposit") : tx.type === "withdrawal" ? t("walletx.transactions.withdrawal") : tx.type}
                           {isPending && (
                             <Badge variant="outline" className="text-yellow-600 border-yellow-400 text-xs animate-bounce">
-                              En cours...
+                              {t("walletx.transactions.inProgress")}
                             </Badge>
                           )}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {format(new Date(tx.created_at), "d MMM yyyy, HH:mm", { locale: fr })}
+                          {format(new Date(tx.created_at), "d MMM yyyy, HH:mm", { locale: getDateFnsLocale(i18n.language) })}
                         </p>
                       </div>
                     </div>
@@ -856,8 +858,8 @@ const Wallet = () => {
                         tx.status === "completed" ? "default" : 
                         tx.status === "pending" ? "secondary" : "destructive"
                       }>
-                        {tx.status === "completed" ? "✓ Complété" : 
-                         tx.status === "pending" ? "⏳ En attente" : "✗ Échoué"}
+                        {tx.status === "completed" ? t("walletx.transactions.completed") : 
+                         tx.status === "pending" ? t("walletx.transactions.pending") : t("walletx.transactions.failed")}
                       </Badge>
                     </div>
                   </div>
