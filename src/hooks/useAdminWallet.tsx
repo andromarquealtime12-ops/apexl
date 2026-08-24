@@ -109,10 +109,15 @@ export function useApproveDeposit() {
       });
 
       if (error) throw error;
-      return data;
+      const result = data as { success?: boolean; error?: string } | null;
+      if (!result?.success) {
+        throw new Error(result?.error || "Impossible d'approuver le dépôt");
+      }
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-pending-deposits"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-transaction-history"] });
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
     },
@@ -133,13 +138,21 @@ export function useRejectDeposit() {
       });
 
       if (error) throw error;
-      return data;
+      const result = data as { success?: boolean; error?: string } | null;
+      if (!result?.success) {
+        throw new Error(result?.error || "Impossible de rejeter le dépôt");
+      }
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-pending-deposits"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-transaction-history"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
     },
   });
 }
+
 
 export function useProofImageUrl(proofPath: string | null) {
   return useQuery({
