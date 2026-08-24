@@ -70,12 +70,11 @@ async function deliver(userId: string, payloadObj: Record<string, unknown>) {
     } catch (e: any) {
       failed++
       const status = e?.statusCode
-      if (status === 403) {
-        // Subscription signed with a different VAPID key: drop it so the
-        // client re-subscribes with the current one on next visit.
-        await admin.from('push_subscriptions').delete().eq('id', sub.id)
-      }
-      if (status === 404 || status === 410) {
+      console.error('push failed', status, String(e?.body ?? e?.message ?? e).slice(0, 200))
+      // 403 = subscription signed with another VAPID key, 404/410 = gone.
+      // In all three cases the row is dead: remove it so the client
+      // re-subscribes with the current key on its next visit.
+      if (status === 403 || status === 404 || status === 410) {
         await admin.from('push_subscriptions').delete().eq('id', sub.id)
       }
     }
