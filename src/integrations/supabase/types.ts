@@ -615,6 +615,7 @@ export type Database = {
           id: string
           is_read: boolean | null
           message: string
+          push_sent: boolean
           title: string
           type: string | null
           user_id: string
@@ -625,6 +626,7 @@ export type Database = {
           id?: string
           is_read?: boolean | null
           message: string
+          push_sent?: boolean
           title: string
           type?: string | null
           user_id: string
@@ -635,6 +637,7 @@ export type Database = {
           id?: string
           is_read?: boolean | null
           message?: string
+          push_sent?: boolean
           title?: string
           type?: string | null
           user_id?: string
