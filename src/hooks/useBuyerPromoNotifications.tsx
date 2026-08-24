@@ -139,7 +139,7 @@ export function useBuyerPromoNotifications() {
             score: 70 - Math.min(nearResto.km, 60),
             title: t("buyerx.promo.nearRestoTitle", { name: nearResto.r.name }),
             message: t("buyerx.promo.nearRestoMsg", { km: nearResto.km.toFixed(1) }),
-            actionUrl: `/restaurants/${nearResto.r.id}`,
+            actionUrl: `/restaurant/${nearResto.r.id}`,
           });
         }
       }
