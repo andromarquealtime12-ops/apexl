@@ -1,1 +1,250 @@
-{}
+{
+  "sellerx": {
+    "earnings": {
+      "all": "All",
+      "amountLabel": "Amount",
+      "creditedToWallet": "Credited to wallet",
+      "currencyLabel": "Currency",
+      "description": "View and manage your earnings",
+      "negativeBalance": "Your balance is negative ({{currency}})",
+      "title": "Earnings",
+      "toasts": {
+        "errorTitle": "Error",
+        "successDescription": "Your transfer was successful",
+        "successTitle": "Transfer successful",
+        "transferFailed": "Transfer failed"
+      },
+      "transferButton": "Transfer",
+      "transferFee": "Transfer fee",
+      "transferring": "Transferring..."
+    },
+    "nearbyDrivers": {
+      "activatePosition": "Activate my location",
+      "call": "Call",
+      "choose": "Choose",
+      "chooseThisDriver": "Choose this driver",
+      "deliveredCount": "{{count}} deliveries completed",
+      "driver": "Driver",
+      "enablePosition": "Please enable your location to find nearby drivers",
+      "hideMap": "Hide map",
+      "kmFromYou": "{{distance}} km from you",
+      "noReviews": "No reviews yet",
+      "noneAvailable": "No drivers available nearby",
+      "onlineCount": "{{count}} drivers online",
+      "radius": "Search radius",
+      "refresh": "Refresh",
+      "refreshedAt": "Refreshed at {{time}}",
+      "retry": "Retry",
+      "retryLater": "Please try again later",
+      "reviewCount": "{{count}} reviews",
+      "searchError": "An error occurred while searching for drivers",
+      "selected": "Selected",
+      "showMap": "Show map",
+      "statsCompleted": "Completed",
+      "statsSuccess": "Success rate",
+      "statsTotal": "Total",
+      "title": "Nearby drivers",
+      "toasts": {
+        "assignError": "Failed to assign driver",
+        "assigned": "Driver assigned successfully",
+        "refreshed": "List refreshed",
+        "selectOrderFirst": "Please select an order first",
+        "unknownError": "An unknown error occurred"
+      },
+      "vehicle": "Vehicle",
+      "vehicleBrand": "Brand",
+      "vehicleCity": "City",
+      "vehiclePlate": "License plate",
+      "vehicleType": "Type"
+    },
+    "orderReady": {
+      "dialog": {
+        "codeLabel": "Pickup code",
+        "description": "Share this code with the driver to confirm the order pickup",
+        "expiry": "This code expires in 15 minutes",
+        "importantLabel": "Important",
+        "importantText": "Do not share this code before the driver arrives",
+        "orderLabel": "Order #{{id}}",
+        "regenerate": "Regenerate code",
+        "title": "Order ready",
+        "understood": "Understood"
+      },
+      "markReady": "Mark as ready",
+      "toasts": {
+        "allReady": "All items are ready",
+        "partialReady": "Some items are ready",
+        "updateError": "Failed to update order status"
+      },
+      "viewPin": "View PIN"
+    },
+    "orders": {
+      "cashReceive": "Receive {{amount}} in cash",
+      "chatOtherUser": "Buyer",
+      "empty": {
+        "subtitle": "You haven't received any orders yet",
+        "title": "No orders"
+      },
+      "more": "+{{count}} more",
+      "product": "Product",
+      "status": {
+        "cancelled": "Cancelled",
+        "confirmed": "Confirmed",
+        "delivered": "Delivered",
+        "in_transit": "In transit",
+        "pending": "Pending",
+        "picked_up": "Picked up",
+        "preparing": "Preparing",
+        "ready": "Ready",
+        "redelivery": "Redelivery",
+        "refunded": "Refunded",
+        "return_in_transit": "Return in transit",
+        "return_pickup_ready": "Ready for return pickup",
+        "return_requested": "Return requested",
+        "returned": "Returned"
+      },
+      "table": {
+        "actions": "Actions",
+        "date": "Date",
+        "order": "Order",
+        "products": "Products",
+        "status": "Status",
+        "total": "Total"
+      }
+    },
+    "productForm": {
+      "cancel": "Cancel",
+      "categoryLabel": "Category",
+      "categoryPlaceholder": "Select a category",
+      "colorsLabel": "Available colors",
+      "colorsPlaceholder": "e.g. Red, Blue, Black",
+      "create": "Create",
+      "customSizesPlaceholder": "e.g. Small, Medium, Large",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe your product",
+      "editDescription": "Update this product's details",
+      "editTitle": "Edit product",
+      "imagesLabel": "Images",
+      "nameLabel": "Name",
+      "namePlaceholder": "Product name",
+      "newDescription": "Add a new product to your shop",
+      "newTitle": "New product",
+      "priceLabel": "Price",
+      "saving": "Saving...",
+      "shoeSizesLabel": "Shoe sizes",
+      "shoeSizesPlaceholder": "e.g. 38, 39, 40",
+      "sizeTypeCustom": "Custom",
+      "sizeTypeLabel": "Size type",
+      "sizeTypePlaceholder": "Select a size type",
+      "sizeTypeShoe": "Shoe",
+      "sizeTypeStandard": "Standard",
+      "sizesLabel": "Sizes",
+      "standardSizesPlaceholder": "e.g. S, M, L, XL",
+      "stockLabel": "Stock",
+      "toasts": {
+        "created": "Product created successfully",
+        "required": "Please fill in all required fields",
+        "saveError": "Failed to save the product",
+        "updated": "Product updated successfully"
+      },
+      "update": "Update"
+    },
+    "products": {
+      "add": "Add a product",
+      "addFirst": "Add your first product",
+      "count": "{{count}} products",
+      "deleteDialog": {
+        "cancel": "Cancel",
+        "confirm": "Delete",
+        "description": "This action cannot be undone. This product will be permanently deleted.",
+        "title": "Delete this product?"
+      },
+      "empty": {
+        "subtitle": "Start by adding your first product",
+        "title": "No products yet"
+      },
+      "noCategory": "No category",
+      "table": {
+        "actions": "Actions",
+        "active": "Active",
+        "image": "Image",
+        "price": "Price",
+        "product": "Product",
+        "stock": "Stock"
+      },
+      "toasts": {
+        "activated": "Product activated",
+        "deactivated": "Product deactivated",
+        "deleteError": "Failed to delete the product",
+        "deleted": "Product deleted",
+        "updateError": "Failed to update the product"
+      }
+    },
+    "restaurantLocation": {
+      "addressPlaceholder": "Enter the address",
+      "cityPlaceholder": "Enter the city",
+      "confirmPositionError": "Please confirm the location on the map",
+      "noPositionWarning": "No location set yet",
+      "positionLabel": "Location on map",
+      "save": "Save",
+      "saveError": "Failed to save the location",
+      "saving": "Saving...",
+      "title": "Shop location",
+      "updated": "Location updated successfully"
+    },
+    "returns": {
+      "approve": "Approve",
+      "chat": {
+        "empty": "No messages yet",
+        "header": "Conversation",
+        "loading": "Loading messages...",
+        "photoAlt": "Sent photo",
+        "photoSent": "Photo sent",
+        "placeholder": "Type a message..."
+      },
+      "close": "Close",
+      "communication": "Communication",
+      "confirm": "Confirm",
+      "faultBuyer": "Buyer's fault",
+      "faultOther": "Other",
+      "faultTypePlaceholder": "Select a fault type",
+      "faultSeller": "Seller's fault",
+      "inspectPrompt": "Please inspect the returned item",
+      "notesPlaceholder": "Add notes about this return",
+      "reason": "Reason",
+      "receiveCode": "Return receipt code",
+      "redeliverOrder": "Redeliver the order",
+      "refundBuyer": "Refund the buyer",
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "redelivery": "Redelivery",
+        "refunded": "Refunded",
+        "rejected": "Rejected",
+        "return_in_transit": "Return in transit",
+        "return_pickup_ready": "Ready for return pickup",
+        "returned": "Returned"
+      },
+      "title": "Returns"
+    },
+    "shopLocation": {
+      "addressPlaceholder": "Enter your shop's address",
+      "description": "Set your shop's location on the map",
+      "moveWithinRange": "You have moved {{distance}} km from the original point",
+      "outOfRangeError": "The selected location is too far from your shop",
+      "outOfZone": "You are {{distance}} km away, the maximum allowed is {{max}} km",
+      "save": "Save",
+      "saved": "Location saved successfully",
+      "title": "Shop location"
+    },
+    "stats": {
+      "activeProducts": "Active products",
+      "allSales": "All sales",
+      "monthlyRevenue": "Monthly revenue",
+      "orders": "Orders",
+      "pendingCount": "{{count}} pending",
+      "thisMonth": "This month",
+      "totalOf": "Total of {{count}}",
+      "totalRevenue": "Total revenue"
+    }
+  }
+}

@@ -1,1 +1,250 @@
-{}
+{
+  "sellerx": {
+    "earnings": {
+      "all": "Tout",
+      "amountLabel": "Kantite",
+      "creditedToWallet": "Kredite nan pòtfèy la",
+      "currencyLabel": "Lajan",
+      "description": "Gade epi jere revni ou yo",
+      "negativeBalance": "Balans ou negatif ({{currency}})",
+      "title": "Revni",
+      "toasts": {
+        "errorTitle": "Erè",
+        "successDescription": "Transfè ou a reyisi",
+        "successTitle": "Transfè reyisi",
+        "transferFailed": "Transfè echwe"
+      },
+      "transferButton": "Transfere",
+      "transferFee": "Frè transfè",
+      "transferring": "Ap transfere..."
+    },
+    "nearbyDrivers": {
+      "activatePosition": "Aktive pozisyon mwen",
+      "call": "Rele",
+      "choose": "Chwazi",
+      "chooseThisDriver": "Chwazi chofè sa a",
+      "deliveredCount": "{{count}} livrezon fini",
+      "driver": "Chofè",
+      "enablePosition": "Tanpri aktive pozisyon ou pou jwenn chofè toupre",
+      "hideMap": "Kache kat la",
+      "kmFromYou": "{{distance}} km lwen ou",
+      "noReviews": "Poko gen kòmantè",
+      "noneAvailable": "Pa gen chofè disponib toupre",
+      "onlineCount": "{{count}} chofè anliy",
+      "radius": "Rayon rechèch",
+      "refresh": "Rafrechi",
+      "refreshedAt": "Rafrechi a {{time}}",
+      "retry": "Eseye ankò",
+      "retryLater": "Tanpri eseye ankò pita",
+      "reviewCount": "{{count}} kòmantè",
+      "searchError": "Yon erè rive pandan rechèch chofè yo",
+      "selected": "Seleksyone",
+      "showMap": "Montre kat la",
+      "statsCompleted": "Fini",
+      "statsSuccess": "To siksè",
+      "statsTotal": "Total",
+      "title": "Chofè toupre",
+      "toasts": {
+        "assignError": "Echèk nan bay chofè a",
+        "assigned": "Chofè asiyen avèk siksè",
+        "refreshed": "Lis la rafrechi",
+        "selectOrderFirst": "Tanpri chwazi yon kòmand anvan",
+        "unknownError": "Yon erè enkoni rive"
+      },
+      "vehicle": "Machin",
+      "vehicleBrand": "Mak",
+      "vehicleCity": "Vil",
+      "vehiclePlate": "Plak",
+      "vehicleType": "Kalite"
+    },
+    "orderReady": {
+      "dialog": {
+        "codeLabel": "Kòd retrè",
+        "description": "Pataje kòd sa a ak chofè a pou konfime retrè kòmand lan",
+        "expiry": "Kòd sa a ekspire nan 15 minit",
+        "importantLabel": "Enpòtan",
+        "importantText": "Pa pataje kòd sa a anvan chofè a rive",
+        "orderLabel": "Kòmand n° {{id}}",
+        "regenerate": "Fè nouvo kòd",
+        "title": "Kòmand pare",
+        "understood": "Konprann"
+      },
+      "markReady": "Make kòm pare",
+      "toasts": {
+        "allReady": "Tout atik yo pare",
+        "partialReady": "Kèk atik pare",
+        "updateError": "Echèk nan mizajou estati kòmand lan"
+      },
+      "viewPin": "Gade kòd la"
+    },
+    "orders": {
+      "cashReceive": "Resevwa {{amount}} kach",
+      "chatOtherUser": "Achtè",
+      "empty": {
+        "subtitle": "Ou poko resevwa okenn kòmand",
+        "title": "Pa gen kòmand"
+      },
+      "more": "+{{count}} plis",
+      "product": "Pwodwi",
+      "status": {
+        "cancelled": "Anile",
+        "confirmed": "Konfime",
+        "delivered": "Livre",
+        "in_transit": "An chemen",
+        "pending": "An atant",
+        "picked_up": "Ranmase",
+        "preparing": "Ap prepare",
+        "ready": "Pare",
+        "redelivery": "Nouvo livrezon",
+        "refunded": "Ranbouse",
+        "return_in_transit": "Retou an chemen",
+        "return_pickup_ready": "Pare pou ranmase retou a",
+        "return_requested": "Retou mande",
+        "returned": "Retounen"
+      },
+      "table": {
+        "actions": "Aksyon",
+        "date": "Dat",
+        "order": "Kòmand",
+        "products": "Pwodwi",
+        "status": "Estati",
+        "total": "Total"
+      }
+    },
+    "productForm": {
+      "cancel": "Anile",
+      "categoryLabel": "Kategori",
+      "categoryPlaceholder": "Chwazi yon kategori",
+      "colorsLabel": "Koulè disponib",
+      "colorsPlaceholder": "pa egzanp Wouj, Ble, Nwa",
+      "create": "Kreye",
+      "customSizesPlaceholder": "pa egzanp Piti, Mwayen, Gwo",
+      "descriptionLabel": "Deskripsyon",
+      "descriptionPlaceholder": "Dekri pwodwi ou a",
+      "editDescription": "Mete detay pwodwi sa a ajou",
+      "editTitle": "Modifye pwodwi",
+      "imagesLabel": "Imaj",
+      "nameLabel": "Non",
+      "namePlaceholder": "Non pwodwi a",
+      "newDescription": "Ajoute yon nouvo pwodwi nan magazen w",
+      "newTitle": "Nouvo pwodwi",
+      "priceLabel": "Pri",
+      "saving": "Ap anrejistre...",
+      "shoeSizesLabel": "Pwentiye soulye",
+      "shoeSizesPlaceholder": "pa egzanp 38, 39, 40",
+      "sizeTypeCustom": "Pèsonalize",
+      "sizeTypeLabel": "Kalite gwosè",
+      "sizeTypePlaceholder": "Chwazi yon kalite gwosè",
+      "sizeTypeShoe": "Soulye",
+      "sizeTypeStandard": "Estanda",
+      "sizesLabel": "Gwosè",
+      "standardSizesPlaceholder": "pa egzanp S, M, L, XL",
+      "stockLabel": "Estòk",
+      "toasts": {
+        "created": "Pwodwi kreye avèk siksè",
+        "required": "Tanpri ranpli tout chan obligatwa yo",
+        "saveError": "Echèk nan anrejistre pwodwi a",
+        "updated": "Pwodwi mete ajou avèk siksè"
+      },
+      "update": "Mete ajou"
+    },
+    "products": {
+      "add": "Ajoute yon pwodwi",
+      "addFirst": "Ajoute premye pwodwi ou",
+      "count": "{{count}} pwodwi",
+      "deleteDialog": {
+        "cancel": "Anile",
+        "confirm": "Efase",
+        "description": "Aksyon sa a pa ka defèt. Pwodwi sa a ap efase pou tout tan.",
+        "title": "Efase pwodwi sa a?"
+      },
+      "empty": {
+        "subtitle": "Kòmanse pa ajoute premye pwodwi ou",
+        "title": "Poko gen pwodwi"
+      },
+      "noCategory": "Pa gen kategori",
+      "table": {
+        "actions": "Aksyon",
+        "active": "Aktif",
+        "image": "Imaj",
+        "price": "Pri",
+        "product": "Pwodwi",
+        "stock": "Estòk"
+      },
+      "toasts": {
+        "activated": "Pwodwi aktive",
+        "deactivated": "Pwodwi dezaktive",
+        "deleteError": "Echèk nan efase pwodwi a",
+        "deleted": "Pwodwi efase",
+        "updateError": "Echèk nan mete pwodwi a ajou"
+      }
+    },
+    "restaurantLocation": {
+      "addressPlaceholder": "Antre adrès la",
+      "cityPlaceholder": "Antre vil la",
+      "confirmPositionError": "Tanpri konfime kote a sou kat la",
+      "noPositionWarning": "Poko gen okenn kote defini",
+      "positionLabel": "Kote sou kat la",
+      "save": "Anrejistre",
+      "saveError": "Echèk nan anrejistre kote a",
+      "saving": "Ap anrejistre...",
+      "title": "Kote magazen an",
+      "updated": "Kote a mete ajou avèk siksè"
+    },
+    "returns": {
+      "approve": "Apwouve",
+      "chat": {
+        "empty": "Poko gen mesaj",
+        "header": "Konvèsasyon",
+        "loading": "Ap chaje mesaj yo...",
+        "photoAlt": "Foto voye",
+        "photoSent": "Foto voye",
+        "placeholder": "Ekri yon mesaj..."
+      },
+      "close": "Fèmen",
+      "communication": "Kominikasyon",
+      "confirm": "Konfime",
+      "faultBuyer": "Fòt achtè a",
+      "faultOther": "Lòt",
+      "faultTypePlaceholder": "Chwazi yon kalite fòt",
+      "faultSeller": "Fòt vandè a",
+      "inspectPrompt": "Tanpri egzamine atik yo retounen an",
+      "notesPlaceholder": "Ajoute nòt sou retou sa a",
+      "reason": "Rezon",
+      "receiveCode": "Kòd resepsyon retou",
+      "redeliverOrder": "Livre kòmand lan ankò",
+      "refundBuyer": "Ranbouse achtè a",
+      "status": {
+        "approved": "Apwouve",
+        "pending": "An atant",
+        "redelivery": "Nouvo livrezon",
+        "refunded": "Ranbouse",
+        "rejected": "Rejte",
+        "return_in_transit": "Retou an chemen",
+        "return_pickup_ready": "Pare pou ranmase retou a",
+        "returned": "Retounen"
+      },
+      "title": "Retou"
+    },
+    "shopLocation": {
+      "addressPlaceholder": "Antre adrès magazen ou",
+      "description": "Defini kote magazen ou sou kat la",
+      "moveWithinRange": "Ou deplase {{distance}} km depi pwen orijinal la",
+      "outOfRangeError": "Kote ou chwazi a twò lwen magazen ou",
+      "outOfZone": "Ou {{distance}} km lwen, maksimòm ki pèmèt se {{max}} km",
+      "save": "Anrejistre",
+      "saved": "Kote a anrejistre avèk siksè",
+      "title": "Kote magazen an"
+    },
+    "stats": {
+      "activeProducts": "Pwodwi aktif",
+      "allSales": "Tout vant",
+      "monthlyRevenue": "Revni mansyèl",
+      "orders": "Kòmand",
+      "pendingCount": "{{count}} an atant",
+      "thisMonth": "Mwa sa a",
+      "totalOf": "Total {{count}}",
+      "totalRevenue": "Total revni"
+    }
+  }
+}

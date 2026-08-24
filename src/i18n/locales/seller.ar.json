@@ -1,1 +1,250 @@
-{}
+{
+  "sellerx": {
+    "earnings": {
+      "all": "الكل",
+      "amountLabel": "المبلغ",
+      "creditedToWallet": "تم الإيداع في المحفظة",
+      "currencyLabel": "العملة",
+      "description": "عرض وإدارة أرباحك",
+      "negativeBalance": "رصيدك سالب ({{currency}})",
+      "title": "الأرباح",
+      "toasts": {
+        "errorTitle": "خطأ",
+        "successDescription": "تم التحويل بنجاح",
+        "successTitle": "تم التحويل بنجاح",
+        "transferFailed": "فشل التحويل"
+      },
+      "transferButton": "تحويل",
+      "transferFee": "رسوم التحويل",
+      "transferring": "جارٍ التحويل..."
+    },
+    "nearbyDrivers": {
+      "activatePosition": "تفعيل موقعي",
+      "call": "اتصال",
+      "choose": "اختيار",
+      "chooseThisDriver": "اختيار هذا السائق",
+      "deliveredCount": "تم إنجاز {{count}} توصيلة",
+      "driver": "السائق",
+      "enablePosition": "يرجى تفعيل موقعك للعثور على السائقين القريبين",
+      "hideMap": "إخفاء الخريطة",
+      "kmFromYou": "{{distance}} كم منك",
+      "noReviews": "لا توجد تقييمات بعد",
+      "noneAvailable": "لا يوجد سائقون متاحون بالقرب منك",
+      "onlineCount": "{{count}} سائق متصل",
+      "radius": "نطاق البحث",
+      "refresh": "تحديث",
+      "refreshedAt": "تم التحديث في {{time}}",
+      "retry": "إعادة المحاولة",
+      "retryLater": "يرجى المحاولة مرة أخرى لاحقاً",
+      "reviewCount": "{{count}} تقييم",
+      "searchError": "حدث خطأ أثناء البحث عن السائقين",
+      "selected": "تم الاختيار",
+      "showMap": "إظهار الخريطة",
+      "statsCompleted": "مكتمل",
+      "statsSuccess": "معدل النجاح",
+      "statsTotal": "الإجمالي",
+      "title": "السائقون القريبون",
+      "toasts": {
+        "assignError": "فشل تعيين السائق",
+        "assigned": "تم تعيين السائق بنجاح",
+        "refreshed": "تم تحديث القائمة",
+        "selectOrderFirst": "يرجى اختيار طلب أولاً",
+        "unknownError": "حدث خطأ غير معروف"
+      },
+      "vehicle": "المركبة",
+      "vehicleBrand": "الماركة",
+      "vehicleCity": "المدينة",
+      "vehiclePlate": "رقم اللوحة",
+      "vehicleType": "النوع"
+    },
+    "orderReady": {
+      "dialog": {
+        "codeLabel": "رمز الاستلام",
+        "description": "شارك هذا الرمز مع السائق لتأكيد استلام الطلب",
+        "expiry": "تنتهي صلاحية هذا الرمز خلال 15 دقيقة",
+        "importantLabel": "مهم",
+        "importantText": "لا تشارك هذا الرمز قبل وصول السائق",
+        "orderLabel": "الطلب #{{id}}",
+        "regenerate": "إعادة إنشاء الرمز",
+        "title": "الطلب جاهز",
+        "understood": "مفهوم"
+      },
+      "markReady": "وضع علامة كجاهز",
+      "toasts": {
+        "allReady": "جميع العناصر جاهزة",
+        "partialReady": "بعض العناصر جاهزة",
+        "updateError": "فشل تحديث حالة الطلب"
+      },
+      "viewPin": "عرض الرمز السري"
+    },
+    "orders": {
+      "cashReceive": "استلام {{amount}} نقداً",
+      "chatOtherUser": "المشتري",
+      "empty": {
+        "subtitle": "لم تستلم أي طلبات بعد",
+        "title": "لا توجد طلبات"
+      },
+      "more": "+{{count}} أخرى",
+      "product": "المنتج",
+      "status": {
+        "cancelled": "ملغى",
+        "confirmed": "مؤكد",
+        "delivered": "تم التوصيل",
+        "in_transit": "قيد النقل",
+        "pending": "قيد الانتظار",
+        "picked_up": "تم الاستلام",
+        "preparing": "قيد التحضير",
+        "ready": "جاهز",
+        "redelivery": "إعادة التوصيل",
+        "refunded": "تم استرداد المبلغ",
+        "return_in_transit": "الإرجاع قيد النقل",
+        "return_pickup_ready": "جاهز لاستلام الإرجاع",
+        "return_requested": "تم طلب الإرجاع",
+        "returned": "تم الإرجاع"
+      },
+      "table": {
+        "actions": "الإجراءات",
+        "date": "التاريخ",
+        "order": "الطلب",
+        "products": "المنتجات",
+        "status": "الحالة",
+        "total": "الإجمالي"
+      }
+    },
+    "productForm": {
+      "cancel": "إلغاء",
+      "categoryLabel": "الفئة",
+      "categoryPlaceholder": "اختر فئة",
+      "colorsLabel": "الألوان المتاحة",
+      "colorsPlaceholder": "مثال: أحمر، أزرق، أسود",
+      "create": "إنشاء",
+      "customSizesPlaceholder": "مثال: صغير، متوسط، كبير",
+      "descriptionLabel": "الوصف",
+      "descriptionPlaceholder": "صف منتجك",
+      "editDescription": "تحديث تفاصيل هذا المنتج",
+      "editTitle": "تعديل المنتج",
+      "imagesLabel": "الصور",
+      "nameLabel": "الاسم",
+      "namePlaceholder": "اسم المنتج",
+      "newDescription": "أضف منتجاً جديداً إلى متجرك",
+      "newTitle": "منتج جديد",
+      "priceLabel": "السعر",
+      "saving": "جارٍ الحفظ...",
+      "shoeSizesLabel": "مقاسات الأحذية",
+      "shoeSizesPlaceholder": "مثال: 38، 39، 40",
+      "sizeTypeCustom": "مخصص",
+      "sizeTypeLabel": "نوع المقاس",
+      "sizeTypePlaceholder": "اختر نوع المقاس",
+      "sizeTypeShoe": "حذاء",
+      "sizeTypeStandard": "قياسي",
+      "sizesLabel": "المقاسات",
+      "standardSizesPlaceholder": "مثال: S، M، L، XL",
+      "stockLabel": "المخزون",
+      "toasts": {
+        "created": "تم إنشاء المنتج بنجاح",
+        "required": "يرجى ملء جميع الحقول المطلوبة",
+        "saveError": "فشل حفظ المنتج",
+        "updated": "تم تحديث المنتج بنجاح"
+      },
+      "update": "تحديث"
+    },
+    "products": {
+      "add": "إضافة منتج",
+      "addFirst": "أضف منتجك الأول",
+      "count": "{{count}} منتج",
+      "deleteDialog": {
+        "cancel": "إلغاء",
+        "confirm": "حذف",
+        "description": "لا يمكن التراجع عن هذا الإجراء. سيتم حذف هذا المنتج نهائياً.",
+        "title": "حذف هذا المنتج؟"
+      },
+      "empty": {
+        "subtitle": "ابدأ بإضافة منتجك الأول",
+        "title": "لا توجد منتجات بعد"
+      },
+      "noCategory": "بدون فئة",
+      "table": {
+        "actions": "الإجراءات",
+        "active": "نشط",
+        "image": "الصورة",
+        "price": "السعر",
+        "product": "المنتج",
+        "stock": "المخزون"
+      },
+      "toasts": {
+        "activated": "تم تفعيل المنتج",
+        "deactivated": "تم تعطيل المنتج",
+        "deleteError": "فشل حذف المنتج",
+        "deleted": "تم حذف المنتج",
+        "updateError": "فشل تحديث المنتج"
+      }
+    },
+    "restaurantLocation": {
+      "addressPlaceholder": "أدخل العنوان",
+      "cityPlaceholder": "أدخل المدينة",
+      "confirmPositionError": "يرجى تأكيد الموقع على الخريطة",
+      "noPositionWarning": "لم يتم تحديد موقع بعد",
+      "positionLabel": "الموقع على الخريطة",
+      "save": "حفظ",
+      "saveError": "فشل حفظ الموقع",
+      "saving": "جارٍ الحفظ...",
+      "title": "موقع المتجر",
+      "updated": "تم تحديث الموقع بنجاح"
+    },
+    "returns": {
+      "approve": "موافقة",
+      "chat": {
+        "empty": "لا توجد رسائل بعد",
+        "header": "المحادثة",
+        "loading": "جارٍ تحميل الرسائل...",
+        "photoAlt": "صورة مرسلة",
+        "photoSent": "تم إرسال الصورة",
+        "placeholder": "اكتب رسالة..."
+      },
+      "close": "إغلاق",
+      "communication": "التواصل",
+      "confirm": "تأكيد",
+      "faultBuyer": "خطأ المشتري",
+      "faultOther": "أخرى",
+      "faultTypePlaceholder": "اختر نوع الخطأ",
+      "faultSeller": "خطأ البائع",
+      "inspectPrompt": "يرجى فحص العنصر المرتجع",
+      "notesPlaceholder": "أضف ملاحظات حول هذا الإرجاع",
+      "reason": "السبب",
+      "receiveCode": "رمز استلام الإرجاع",
+      "redeliverOrder": "إعادة توصيل الطلب",
+      "refundBuyer": "استرداد المبلغ للمشتري",
+      "status": {
+        "approved": "تمت الموافقة",
+        "pending": "قيد الانتظار",
+        "redelivery": "إعادة التوصيل",
+        "refunded": "تم استرداد المبلغ",
+        "rejected": "مرفوض",
+        "return_in_transit": "الإرجاع قيد النقل",
+        "return_pickup_ready": "جاهز لاستلام الإرجاع",
+        "returned": "تم الإرجاع"
+      },
+      "title": "المرتجعات"
+    },
+    "shopLocation": {
+      "addressPlaceholder": "أدخل عنوان متجرك",
+      "description": "حدد موقع متجرك على الخريطة",
+      "moveWithinRange": "لقد تحركت {{distance}} كم عن النقطة الأصلية",
+      "outOfRangeError": "الموقع المحدد بعيد جداً عن متجرك",
+      "outOfZone": "أنت على بعد {{distance}} كم، والحد الأقصى المسموح به هو {{max}} كم",
+      "save": "حفظ",
+      "saved": "تم حفظ الموقع بنجاح",
+      "title": "موقع المتجر"
+    },
+    "stats": {
+      "activeProducts": "المنتجات النشطة",
+      "allSales": "كل المبيعات",
+      "monthlyRevenue": "الإيرادات الشهرية",
+      "orders": "الطلبات",
+      "pendingCount": "{{count}} قيد الانتظار",
+      "thisMonth": "هذا الشهر",
+      "totalOf": "إجمالي {{count}}",
+      "totalRevenue": "إجمالي الإيرادات"
+    }
+  }
+}
