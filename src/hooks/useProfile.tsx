@@ -26,6 +26,8 @@ interface Profile {
   city: string | null;
   email_verified: boolean;
   phone_verified: boolean;
+  date_of_birth: string | null;
+  personal_info_locked: boolean;
   latitude: number | null;
   longitude: number | null;
   created_at: string;

@@ -38,6 +38,8 @@ export default function Settings() {
     [profile]
   );
 
+  const locked = Boolean((profile as any)?.personal_info_locked);
+
   const [form, setForm] = useState(initial);
   const [saving, setSaving] = useState(false);
 
@@ -59,19 +61,20 @@ export default function Settings() {
   if (!user) return <Navigate to="/" replace />;
 
   const onSave = async () => {
-    if (!form.first_name.trim()) return toast.error("Prénom requis");
+    if (!locked && !form.first_name.trim()) return toast.error("Prénom requis");
+    if (!locked && !form.last_name.trim()) return toast.error("Nom de famille requis");
     if (form.lat == null || form.lng == null) return toast.error("Confirmez une adresse (position ou recherche)");
 
     try {
       setSaving(true);
       const full_name = `${form.first_name.trim()} ${form.last_name.trim()}`.trim();
       await updateProfile.mutateAsync({
-        full_name,
+        ...(locked ? {} : { full_name }),
         phone: form.phone.trim() || null,
         address: form.address.trim() || null,
         latitude: form.lat,
         longitude: form.lng,
-        ...(form.date_of_birth ? { date_of_birth: form.date_of_birth } : {}),
+        ...(!locked && form.date_of_birth ? { date_of_birth: form.date_of_birth } : {}),
       } as any);
 
       // Propagate the pickup location everywhere the geolocation system uses it
@@ -126,6 +129,13 @@ export default function Settings() {
               <Skeleton className="h-64 w-full" />
             ) : (
               <>
+                {locked && (
+                  <p className="rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
+                    Votre nom, prénom et date de naissance sont confirmés et ne peuvent plus être
+                    modifiés. Vous pouvez toujours changer votre email et votre téléphone.
+                  </p>
+                )}
+
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="first_name">Prénom *</Label>
@@ -134,6 +144,7 @@ export default function Settings() {
                       value={form.first_name}
                       onChange={(e) => setForm((p) => ({ ...p, first_name: e.target.value }))}
                       maxLength={50}
+                      disabled={locked}
                     />
                   </div>
                   <div className="space-y-2">
@@ -143,6 +154,7 @@ export default function Settings() {
                       value={form.last_name}
                       onChange={(e) => setForm((p) => ({ ...p, last_name: e.target.value }))}
                       maxLength={50}
+                      disabled={locked}
                     />
                   </div>
                 </div>
@@ -155,6 +167,7 @@ export default function Settings() {
                       type="date"
                       value={form.date_of_birth || ""}
                       onChange={(e) => setForm((p) => ({ ...p, date_of_birth: e.target.value }))}
+                      disabled={locked}
                     />
                   </div>
                   <div className="space-y-2">
