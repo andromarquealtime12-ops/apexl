@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Package, ShoppingCart, TrendingUp, DollarSign } from "lucide-react";
@@ -15,6 +16,7 @@ interface SellerStatsCardsProps {
 }
 
 export default function SellerStatsCards({ stats, isLoading }: SellerStatsCardsProps) {
+  const { t } = useTranslation();
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-DO", {
       style: "currency",
@@ -25,34 +27,34 @@ export default function SellerStatsCards({ stats, isLoading }: SellerStatsCardsP
 
   const statCards = [
     {
-      title: "Produits actifs",
+      title: t("sellerx.stats.activeProducts"),
       value: stats?.activeProducts ?? 0,
-      subtitle: `${stats?.totalProducts ?? 0} au total`,
+      subtitle: t("sellerx.stats.totalOf", { count: stats?.totalProducts ?? 0 }),
       icon: Package,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
     {
-      title: "Commandes",
+      title: t("sellerx.stats.orders"),
       value: stats?.totalOrders ?? 0,
-      subtitle: `${stats?.pendingOrders ?? 0} en attente`,
+      subtitle: t("sellerx.stats.pendingCount", { count: stats?.pendingOrders ?? 0 }),
       icon: ShoppingCart,
       color: "text-orange-500",
       bgColor: "bg-orange-500/10",
     },
     {
-      title: "Revenus total",
+      title: t("sellerx.stats.totalRevenue"),
       value: formatCurrency(stats?.totalRevenue ?? 0),
-      subtitle: "Toutes les ventes",
+      subtitle: t("sellerx.stats.allSales"),
       icon: TrendingUp,
       color: "text-green-500",
       bgColor: "bg-green-500/10",
       isLarge: true,
     },
     {
-      title: "Ce mois",
+      title: t("sellerx.stats.thisMonth"),
       value: formatCurrency(stats?.monthlyRevenue ?? 0),
-      subtitle: "Revenus mensuels",
+      subtitle: t("sellerx.stats.monthlyRevenue"),
       icon: DollarSign,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",

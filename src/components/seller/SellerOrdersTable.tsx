@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSellerOrders } from "@/hooks/useSellerStats";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,31 +16,37 @@ import { OrderReadyButton } from "./OrderReadyButton";
 import OrderChat from "@/components/chat/OrderChat";
 import { Package, Clock, CheckCircle, Truck, XCircle, MessageCircle, ChevronDown, ChevronUp, Banknote } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import type { Locale } from "date-fns";
+import { fr, enUS, es, pt, de, it, zhCN, ar as arLocale } from "date-fns/locale";
 
 import { RotateCcw, RefreshCw, DollarSign } from "lucide-react";
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
-  pending: { label: "En attente", variant: "secondary", icon: Clock },
-  confirmed: { label: "Confirmée", variant: "default", icon: CheckCircle },
-  preparing: { label: "En préparation", variant: "outline", icon: Package },
-  ready: { label: "Prête", variant: "outline", icon: Package },
-  ready_for_pickup: { label: "Prête", variant: "outline", icon: Package },
-  picked_up: { label: "Récupérée", variant: "default", icon: Truck },
-  in_transit: { label: "En livraison", variant: "default", icon: Truck },
-  delivered: { label: "Livrée", variant: "secondary", icon: CheckCircle },
-  cancelled: { label: "Annulée", variant: "destructive", icon: XCircle },
-  return_requested: { label: "Retour demandé", variant: "destructive", icon: RotateCcw },
-  return_pickup_ready: { label: "Retour prêt", variant: "outline", icon: RotateCcw },
-  return_in_transit: { label: "Retour en cours", variant: "default", icon: RotateCcw },
-  returned: { label: "Retourné", variant: "secondary", icon: RotateCcw },
-  refunded: { label: "Remboursé", variant: "destructive", icon: DollarSign },
-  redelivery: { label: "Re-livraison", variant: "default", icon: RefreshCw },
+const dateLocales: Record<string, Locale> = {
+  fr, en: enUS, es, pt, de, it, zh: zhCN, ar: arLocale, ht: fr,
 };
 
 export default function SellerOrdersTable() {
+  const { t, i18n } = useTranslation();
   const { data: orders, isLoading } = useSellerOrders();
   const [chatOrderId, setChatOrderId] = useState<string | null>(null);
+
+  const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
+    pending: { label: t("sellerx.orders.status.pending"), variant: "secondary", icon: Clock },
+    confirmed: { label: t("sellerx.orders.status.confirmed"), variant: "default", icon: CheckCircle },
+    preparing: { label: t("sellerx.orders.status.preparing"), variant: "outline", icon: Package },
+    ready: { label: t("sellerx.orders.status.ready"), variant: "outline", icon: Package },
+    ready_for_pickup: { label: t("sellerx.orders.status.ready"), variant: "outline", icon: Package },
+    picked_up: { label: t("sellerx.orders.status.picked_up"), variant: "default", icon: Truck },
+    in_transit: { label: t("sellerx.orders.status.in_transit"), variant: "default", icon: Truck },
+    delivered: { label: t("sellerx.orders.status.delivered"), variant: "secondary", icon: CheckCircle },
+    cancelled: { label: t("sellerx.orders.status.cancelled"), variant: "destructive", icon: XCircle },
+    return_requested: { label: t("sellerx.orders.status.return_requested"), variant: "destructive", icon: RotateCcw },
+    return_pickup_ready: { label: t("sellerx.orders.status.return_pickup_ready"), variant: "outline", icon: RotateCcw },
+    return_in_transit: { label: t("sellerx.orders.status.return_in_transit"), variant: "default", icon: RotateCcw },
+    returned: { label: t("sellerx.orders.status.returned"), variant: "secondary", icon: RotateCcw },
+    refunded: { label: t("sellerx.orders.status.refunded"), variant: "destructive", icon: DollarSign },
+    redelivery: { label: t("sellerx.orders.status.redelivery"), variant: "default", icon: RefreshCw },
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-DO", {
@@ -63,8 +70,8 @@ export default function SellerOrdersTable() {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-        <p>Aucune commande pour le moment</p>
-        <p className="text-sm">Vos commandes apparaîtront ici</p>
+        <p>{t("sellerx.orders.empty.title")}</p>
+        <p className="text-sm">{t("sellerx.orders.empty.subtitle")}</p>
       </div>
     );
   }
@@ -74,12 +81,12 @@ export default function SellerOrdersTable() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Commande</TableHead>
-            <TableHead>Produits</TableHead>
-            <TableHead>Total</TableHead>
-            <TableHead>Statut</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>{t("sellerx.orders.table.order")}</TableHead>
+            <TableHead>{t("sellerx.orders.table.products")}</TableHead>
+            <TableHead>{t("sellerx.orders.table.total")}</TableHead>
+            <TableHead>{t("sellerx.orders.table.status")}</TableHead>
+            <TableHead>{t("sellerx.orders.table.date")}</TableHead>
+            <TableHead className="text-right">{t("sellerx.orders.table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -99,7 +106,7 @@ export default function SellerOrdersTable() {
                     <div className="space-y-1">
                       {order.items.slice(0, 2).map((item: any, idx: number) => (
                         <p key={idx} className="text-sm">
-                          {item.quantity}x {item.products?.name || "Produit"}
+                          {item.quantity}x {item.products?.name || t("sellerx.orders.product")}
                           {(item.selected_color || item.selected_size) && (
                             <span className="text-muted-foreground">{" "}• {[item.selected_color, item.selected_size].filter(Boolean).join(" / ")}</span>
                           )}
@@ -107,7 +114,7 @@ export default function SellerOrdersTable() {
                       ))}
                       {order.items.length > 2 && (
                         <p className="text-xs text-muted-foreground">
-                          +{order.items.length - 2} autre(s)
+                          {t("sellerx.orders.more", { count: order.items.length - 2 })}
                         </p>
                       )}
                     </div>
@@ -118,7 +125,7 @@ export default function SellerOrdersTable() {
                       {order.payment_method === "cash" && (
                         <Badge variant="outline" className="gap-1 border-amber-500 text-amber-700 bg-amber-50 dark:bg-amber-950/30">
                           <Banknote className="h-3 w-3" />
-                          Cash — recevoir {formatCurrency(orderTotal)} du livreur
+                          {t("sellerx.orders.cashReceive", { amount: formatCurrency(orderTotal) })}
                         </Badge>
                       )}
                     </div>
@@ -132,7 +139,7 @@ export default function SellerOrdersTable() {
                   <TableCell className="text-muted-foreground text-sm">
                     {formatDistanceToNow(new Date(order.created_at), { 
                       addSuffix: true, 
-                      locale: fr 
+                      locale: dateLocales[i18n.language] || enUS 
                     })}
                   </TableCell>
                   <TableCell className="text-right">
@@ -157,7 +164,7 @@ export default function SellerOrdersTable() {
                     <TableCell colSpan={6} className="p-3 bg-muted/30">
                       <OrderChat
                         orderId={order.id}
-                        otherUserName="Acheteur / Livreur"
+                        otherUserName={t("sellerx.orders.chatOtherUser")}
                         compact
                       />
                     </TableCell>

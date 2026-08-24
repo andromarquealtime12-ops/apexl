@@ -7,10 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingBag, Package } from "lucide-react";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
+import { useTranslation } from "react-i18next";
 
 const Orders = () => {
   useRealtimeOrders();
   const { user, loading } = useAuth();
+  const { t } = useTranslation();
 
   if (loading) {
     return null;
@@ -27,8 +29,8 @@ const Orders = () => {
         <div className="flex items-center gap-3 mb-6">
           <ShoppingBag className="h-8 w-8 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold">Mes Commandes</h1>
-            <p className="text-muted-foreground">Suivez vos commandes en temps réel</p>
+            <h1 className="text-2xl font-bold">{t("buyerx.orders.title")}</h1>
+            <p className="text-muted-foreground">{t("buyerx.orders.subtitle")}</p>
           </div>
         </div>
 

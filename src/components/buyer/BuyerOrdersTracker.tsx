@@ -15,28 +15,29 @@ import { WhatsAppContact } from "@/components/contact/WhatsAppContact";
 import OrderChat from "@/components/chat/OrderChat";
 import CancelOrderButton from "@/components/orders/CancelOrderButton";
 import { Link } from "react-router-dom";
-import { fr } from "date-fns/locale";
+import { getDateFnsLocale } from "@/i18n/dateLocale";
 import { CURRENCY_SYMBOLS } from "@/types/database";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "react-i18next";
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any; description: string }> = {
-  pending: { label: "En attente", variant: "secondary", icon: Clock, description: "Votre commande est en cours de traitement" },
-  confirmed: { label: "Confirmée", variant: "default", icon: CheckCircle, description: "Le vendeur prépare votre commande" },
-  preparing: { label: "En préparation", variant: "outline", icon: Package, description: "Votre commande est en cours de préparation" },
-  ready: { label: "Prête", variant: "outline", icon: Package, description: "Commande prête, en attente du livreur" },
-  ready_for_pickup: { label: "Prête", variant: "outline", icon: Package, description: "Commande prête, en attente du livreur" },
-  picked_up: { label: "Récupérée", variant: "default", icon: Truck, description: "Le livreur a récupéré votre commande" },
-  in_transit: { label: "En route", variant: "default", icon: Truck, description: "Votre commande est en cours de livraison" },
-  delivered: { label: "Livrée", variant: "secondary", icon: CheckCircle, description: "Commande livrée avec succès !" },
-  cancelled: { label: "Annulée", variant: "destructive", icon: Package, description: "Cette commande a été annulée" },
-  refunded: { label: "Remboursée", variant: "outline", icon: RotateCcw, description: "Cette commande a été remboursée" },
-  return_requested: { label: "Retour demandé", variant: "destructive", icon: RotateCcw, description: "Votre demande de retour est en cours de traitement" },
-  return_pickup_ready: { label: "Retour prêt", variant: "outline", icon: RotateCcw, description: "Le retour est prêt à être récupéré" },
-  return_in_transit: { label: "Retour en cours", variant: "default", icon: RotateCcw, description: "Le colis retour est en route" },
-  returned: { label: "Retourné", variant: "secondary", icon: RotateCcw, description: "Le colis a été retourné au vendeur" },
-  redelivery: { label: "Re-livraison", variant: "default", icon: Truck, description: "Votre commande est en re-livraison" },
+const statusIconVariant: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
+  pending: { variant: "secondary", icon: Clock },
+  confirmed: { variant: "default", icon: CheckCircle },
+  preparing: { variant: "outline", icon: Package },
+  ready: { variant: "outline", icon: Package },
+  ready_for_pickup: { variant: "outline", icon: Package },
+  picked_up: { variant: "default", icon: Truck },
+  in_transit: { variant: "default", icon: Truck },
+  delivered: { variant: "secondary", icon: CheckCircle },
+  cancelled: { variant: "destructive", icon: Package },
+  refunded: { variant: "outline", icon: RotateCcw },
+  return_requested: { variant: "destructive", icon: RotateCcw },
+  return_pickup_ready: { variant: "outline", icon: RotateCcw },
+  return_in_transit: { variant: "default", icon: RotateCcw },
+  returned: { variant: "secondary", icon: RotateCcw },
+  redelivery: { variant: "default", icon: Truck },
 };
 
 interface OrderWithItems {
@@ -64,6 +65,7 @@ interface OrderWithItems {
 
 export default function BuyerOrdersTracker() {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [refundOrderId, setRefundOrderId] = useState<string | null>(null);
@@ -79,12 +81,12 @@ export default function BuyerOrdersTracker() {
       return result;
     },
     onSuccess: () => {
-      toast({ title: "Demande envoyée", description: "Votre demande de remboursement a été soumise." });
+      toast({ title: t("buyerx.tracker.refundSentTitle"), description: t("buyerx.tracker.refundSentDesc") });
       setRefundOrderId(null);
       setRefundReason("");
       queryClient.invalidateQueries({ queryKey: ["buyer-orders"] });
     },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: t("buyerx.common.error"), description: e.message, variant: "destructive" }),
   });
 
   const { data: orders, isLoading } = useQuery({
@@ -165,8 +167,8 @@ export default function BuyerOrdersTracker() {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-        <p>Aucune commande pour le moment</p>
-        <p className="text-sm">Vos commandes apparaîtront ici</p>
+        <p>{t("buyerx.tracker.noOrders")}</p>
+        <p className="text-sm">{t("buyerx.tracker.noOrdersHint")}</p>
       </div>
     );
   }
@@ -175,7 +177,13 @@ export default function BuyerOrdersTracker() {
     <>
     <div className="space-y-4">
       {orders.map((order) => {
-        const status = statusConfig[order.status || "pending"] || statusConfig["pending"];
+        const statusKey = order.status || "pending";
+        const statusMeta = statusIconVariant[statusKey] || statusIconVariant["pending"];
+        const status = {
+          ...statusMeta,
+          label: t(`buyerx.status.${statusKey}.label`),
+          description: t(`buyerx.status.${statusKey}.description`),
+        };
         const StatusIcon = status.icon;
         const verification = verifications?.[order.id];
         const currencySymbol = CURRENCY_SYMBOLS[order.currency as keyof typeof CURRENCY_SYMBOLS] || "$";
@@ -193,7 +201,7 @@ export default function BuyerOrdersTracker() {
                     #{order.id.slice(0, 8)}
                   </Badge>
                   <span className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: fr })}
+                    {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: getDateFnsLocale(i18n.language) })}
                   </span>
                 </div>
                 <Badge variant={status.variant} className="gap-1">
@@ -211,13 +219,13 @@ export default function BuyerOrdersTracker() {
                 <div className="bg-primary/10 rounded-xl p-4 text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Key className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">Code de livraison</span>
+                    <span className="text-sm font-medium">{t("buyerx.tracker.deliveryCode")}</span>
                   </div>
                   <p className="text-3xl font-mono font-bold tracking-[0.3em] text-primary">
                     {verification.delivery_code}
                   </p>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Donnez ce code au livreur pour confirmer la réception
+                    {t("buyerx.tracker.deliveryCodeHint")}
                   </p>
                 </div>
               )}
@@ -228,7 +236,7 @@ export default function BuyerOrdersTracker() {
                   <div key={item.id} className="flex-shrink-0">
                     <img
                       src={item.products?.images?.[0] || "/placeholder.svg"}
-                      alt={item.products?.name || "Product"}
+                      alt={item.products?.name || t("buyerx.tracker.product")}
                       className="w-12 h-12 object-cover rounded bg-muted"
                     />
                   </div>
@@ -243,14 +251,14 @@ export default function BuyerOrdersTracker() {
               <div className="space-y-1 text-sm">
                 {order.items.slice(0, 3).map((item) => (
                   <p key={item.id}>
-                    {item.quantity}x {item.products?.name || "Produit"}
+                    {item.quantity}x {item.products?.name || t("buyerx.tracker.product")}
                     {(item.selected_color || item.selected_size) && (
                       <span className="text-muted-foreground">{" "}• {[item.selected_color, item.selected_size].filter(Boolean).join(" / ")}</span>
                     )}
                   </p>
                 ))}
                 {order.items.length > 3 && (
-                  <p className="text-xs text-muted-foreground">+{order.items.length - 3} autre(s) article(s)</p>
+                  <p className="text-xs text-muted-foreground">{t("buyerx.tracker.moreItems", { count: order.items.length - 3 })}</p>
                 )}
               </div>
 
@@ -265,16 +273,16 @@ export default function BuyerOrdersTracker() {
 
               {/* Total + Track + Contact buttons */}
               <div className="flex flex-wrap justify-between items-center pt-2 border-t text-sm gap-2">
-                <span className="text-muted-foreground">Total: <strong>{currencySymbol} {order.total_amount.toLocaleString()}</strong></span>
+                <span className="text-muted-foreground">{t("buyerx.tracker.total")}: <strong>{currencySymbol} {order.total_amount.toLocaleString()}</strong></span>
                 <div className="flex gap-2 flex-wrap">
                   {(order as any).driver_id && ["picked_up", "in_transit"].includes(order.status || "") && (
-                    <WhatsAppContact userId={(order as any).driver_id} label="Livreur" message={`Bonjour, concernant ma commande #${order.id.slice(0, 8)}`} />
+                    <WhatsAppContact userId={(order as any).driver_id} label={t("buyerx.tracker.driver")} message={t("buyerx.tracker.whatsappMessage", { id: order.id.slice(0, 8) })} />
                   )}
                   {["confirmed", "preparing", "ready", "ready_for_pickup", "picked_up", "in_transit"].includes(order.status || "") && (
                     <Button size="sm" className="gap-1.5" asChild>
                       <Link to={`/track/${order.id}`}>
                         <Navigation className="h-3.5 w-3.5" />
-                        Suivre
+                        {t("buyerx.tracker.track")}
                       </Link>
                     </Button>
                   )}
@@ -293,7 +301,7 @@ export default function BuyerOrdersTracker() {
                       const sellerId = (order.items[0] as any)?.seller_id;
                       if (sellerId) setRatingOrder({ orderId: order.id, userId: sellerId, type: "buyer_to_seller" });
                     }}>
-                      <Star className="h-3.5 w-3.5" /> Noter
+                      <Star className="h-3.5 w-3.5" /> {t("buyerx.tracker.rate")}
                     </Button>
                   )}
                   <Button
@@ -304,11 +312,11 @@ export default function BuyerOrdersTracker() {
                       try {
                         await generateOrderReceipt(order.id);
                       } catch (e: any) {
-                        toast({ title: "Erreur", description: e.message || "Impossible de générer le reçu", variant: "destructive" });
+                        toast({ title: t("buyerx.common.error"), description: e.message || t("buyerx.tracker.receiptError"), variant: "destructive" });
                       }
                     }}
                   >
-                    <Download className="h-3.5 w-3.5" /> Reçu
+                    <Download className="h-3.5 w-3.5" /> {t("buyerx.tracker.receipt")}
                   </Button>
                 </div>
               </div>
@@ -322,7 +330,7 @@ export default function BuyerOrdersTracker() {
                   onClick={() => setChatOrderId(chatOrderId === order.id ? null : order.id)}
                 >
                   <MessageCircle className="h-4 w-4" />
-                  {chatOrderId === order.id ? "Fermer le chat" : "Discuter (vendeur / livreur)"}
+                  {chatOrderId === order.id ? t("buyerx.tracker.closeChat") : t("buyerx.tracker.chatWith")}
                 </Button>
               )}
 
@@ -330,7 +338,7 @@ export default function BuyerOrdersTracker() {
               {chatOrderId === order.id && (
                 <OrderChat
                   orderId={order.id}
-                  otherUserName="Vendeur / Livreur"
+                  otherUserName={t("buyerx.tracker.sellerDriver")}
                   compact
                 />
               )}

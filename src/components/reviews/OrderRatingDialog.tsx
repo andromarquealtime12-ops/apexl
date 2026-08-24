@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Star, Loader2 } from "lucide-react";
 import { useCreateReview } from "@/hooks/useReviews";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface OrderRatingDialogProps {
   open: boolean;
@@ -20,8 +21,9 @@ export default function OrderRatingDialog({ open, onClose, orderId, reviewedUser
   const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState("");
   const createReview = useCreateReview();
+  const { t } = useTranslation();
 
-  const label = reviewType === "buyer_to_seller" ? "vendeur" : "livreur";
+  const label = reviewType === "buyer_to_seller" ? t("buyerx.rating.seller") : t("buyerx.rating.driver");
 
   const handleSubmit = async () => {
     if (rating === 0) return;
@@ -33,12 +35,12 @@ export default function OrderRatingDialog({ open, onClose, orderId, reviewedUser
         comment,
         reviewType,
       });
-      toast.success("Merci pour votre évaluation !");
+      toast.success(t("buyerx.rating.thanks"));
       onClose();
       setRating(0);
       setComment("");
     } catch (e: any) {
-      toast.error(e.message || "Erreur lors de l'envoi");
+      toast.error(e.message || t("buyerx.rating.sendError"));
     }
   };
 
@@ -46,9 +48,9 @@ export default function OrderRatingDialog({ open, onClose, orderId, reviewedUser
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>⭐ Évaluer le {label}</DialogTitle>
+          <DialogTitle>⭐ {t("buyerx.rating.rateEntity", { entity: label })}</DialogTitle>
           <DialogDescription>
-            {userName ? `Comment était votre expérience avec ${userName} ?` : `Notez votre expérience avec ce ${label}`}
+            {userName ? t("buyerx.rating.experienceWithName", { name: userName }) : t("buyerx.rating.experienceWithEntity", { entity: label })}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
@@ -74,15 +76,15 @@ export default function OrderRatingDialog({ open, onClose, orderId, reviewedUser
             ))}
           </div>
           <p className="text-center text-sm text-muted-foreground">
-            {rating === 1 && "Très mauvais"}
-            {rating === 2 && "Mauvais"}
-            {rating === 3 && "Correct"}
-            {rating === 4 && "Bien"}
-            {rating === 5 && "Excellent !"}
+            {rating === 1 && t("buyerx.rating.veryBad")}
+            {rating === 2 && t("buyerx.rating.bad")}
+            {rating === 3 && t("buyerx.rating.ok")}
+            {rating === 4 && t("buyerx.rating.good")}
+            {rating === 5 && t("buyerx.rating.excellent")}
           </p>
 
           <Textarea
-            placeholder="Commentaire (optionnel)..."
+            placeholder={t("buyerx.rating.commentPlaceholder")}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={2}
@@ -94,7 +96,7 @@ export default function OrderRatingDialog({ open, onClose, orderId, reviewedUser
             onClick={handleSubmit}
           >
             {createReview.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-            Envoyer l'évaluation
+            {t("buyerx.rating.submit")}
           </Button>
         </div>
       </DialogContent>

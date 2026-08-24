@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { XCircle, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   orderId: string;
@@ -34,6 +35,7 @@ export default function CancelOrderButton({
   role,
   invalidateKeys = [["buyer-orders"], ["driver-deliveries"], ["seller-orders"], ["wallet"]],
 }: Props) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -51,23 +53,23 @@ export default function CancelOrderButton({
       });
       if (error) throw error;
       const r = data as { success: boolean; error?: string; refund?: number; penalty?: number };
-      if (!r.success) throw new Error(r.error || "Annulation impossible");
+      if (!r.success) throw new Error(r.error || t("buyerx.cancel.cancelFailed"));
       return r;
     },
     onSuccess: (r) => {
       const msg =
         role === "driver"
-          ? "Livraison libérée."
+          ? t("buyerx.cancel.deliveryReleased")
           : r.penalty && r.penalty > 0
-          ? `Commande annulée. Pénalité: ${r.penalty}. Remboursé: ${r.refund}.`
-          : "Commande annulée et remboursée.";
-      toast({ title: "✅ Annulé", description: msg });
+          ? t("buyerx.cancel.cancelledWithPenalty", { penalty: r.penalty, refund: r.refund })
+          : t("buyerx.cancel.cancelledRefunded");
+      toast({ title: t("buyerx.cancel.cancelledTitle"), description: msg });
       invalidateKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
       setOpen(false);
       setReason("");
     },
     onError: (e: any) =>
-      toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+      toast({ title: t("buyerx.common.error"), description: e.message, variant: "destructive" }),
   });
 
   if (!eligible) return null;
@@ -83,33 +85,30 @@ export default function CancelOrderButton({
         onClick={() => setOpen(true)}
       >
         <XCircle className="h-3.5 w-3.5" />
-        {role === "driver" ? "Se désister" : "Annuler"}
+        {role === "driver" ? t("buyerx.cancel.withdraw") : t("buyerx.cancel.cancel")}
       </Button>
 
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {role === "driver" ? "Annuler cette livraison ?" : "Annuler la commande ?"}
+              {role === "driver" ? t("buyerx.cancel.confirmTitleDriver") : t("buyerx.cancel.confirmTitleOrder")}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-2">
                 {role === "driver" ? (
-                  <p>
-                    La commande redeviendra disponible pour un autre livreur. Votre note de
-                    confiance sera réduite de 1 point.
-                  </p>
+                  <p>{t("buyerx.cancel.driverWarning")}</p>
                 ) : role === "seller" ? (
-                  <p>L'acheteur sera intégralement remboursé sur son portefeuille.</p>
+                  <p>{t("buyerx.cancel.sellerRefundNote")}</p>
                 ) : showPenaltyWarning ? (
                   <p className="text-amber-600">
-                    ⚠️ Un livreur a déjà accepté. Une pénalité de <b>10 % des frais de livraison</b> sera retenue.
+                    ⚠️ {t("buyerx.cancel.penaltyWarning")}
                   </p>
                 ) : (
-                  <p>Vous serez intégralement remboursé sur votre portefeuille.</p>
+                  <p>{t("buyerx.cancel.buyerRefundNote")}</p>
                 )}
                 <Textarea
-                  placeholder="Motif (optionnel)"
+                  placeholder={t("buyerx.cancel.reasonPlaceholder")}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   maxLength={200}
@@ -118,7 +117,7 @@ export default function CancelOrderButton({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={mutation.isPending}>Retour</AlertDialogCancel>
+            <AlertDialogCancel disabled={mutation.isPending}>{t("buyerx.cancel.back")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
@@ -129,10 +128,10 @@ export default function CancelOrderButton({
             >
               {mutation.isPending ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-1" /> Envoi…
+                  <Loader2 className="h-4 w-4 animate-spin mr-1" /> {t("buyerx.cancel.sending")}
                 </>
               ) : (
-                "Confirmer l'annulation"
+                t("buyerx.cancel.confirmCancel")
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

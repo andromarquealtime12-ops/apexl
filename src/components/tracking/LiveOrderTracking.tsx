@@ -12,7 +12,7 @@ import {
   Key, ChefHat, Navigation, ArrowLeft, Radio, Timer, MessageCircle
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import { getDateFnsLocale } from "@/i18n/dateLocale";
 import { CURRENCY_SYMBOLS } from "@/types/database";
 import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { useDriverLocationsRealtime } from "@/hooks/useGeolocation";
@@ -20,13 +20,14 @@ import { estimateDeliveryTime } from "@/utils/deliveryEstimation";
 import { getRoute } from "@/utils/osrmRouting";
 import { Link } from "react-router-dom";
 import OrderChat from "@/components/chat/OrderChat";
+import { useTranslation } from "react-i18next";
 
 const TRACKING_STEPS = [
-  { key: "confirmed", label: "Confirmée", icon: CheckCircle, description: "Commande acceptée" },
-  { key: "preparing", label: "Préparation", icon: ChefHat, description: "Le vendeur prépare" },
-  { key: "ready_for_pickup", label: "Prête", icon: Package, description: "En attente du livreur" },
-  { key: "picked_up", label: "Récupérée", icon: Truck, description: "Livreur en route" },
-  { key: "delivered", label: "Livrée", icon: CheckCircle, description: "Bon appétit !" },
+  { key: "confirmed", icon: CheckCircle },
+  { key: "preparing", icon: ChefHat },
+  { key: "ready_for_pickup", icon: Package },
+  { key: "picked_up", icon: Truck },
+  { key: "delivered", icon: CheckCircle },
 ];
 
 const STATUS_INDEX: Record<string, number> = {
@@ -46,6 +47,7 @@ interface LiveOrderTrackingProps {
 
 export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const [driverPosition, setDriverPosition] = useState<{ lat: number; lng: number } | null>(null);
   const [driverTrail, setDriverTrail] = useState<{ lat: number; lng: number }[]>([]);
   const [remainingRoute, setRemainingRoute] = useState<{ lat: number; lng: number }[]>([]);
@@ -195,14 +197,14 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
   // Map markers
   const mapMarkers = [];
   if (order.buyer_latitude && order.buyer_longitude) {
-    mapMarkers.push({ lat: order.buyer_latitude, lng: order.buyer_longitude, color: "green" as const, popup: "📍 Livraison ici" });
+    mapMarkers.push({ lat: order.buyer_latitude, lng: order.buyer_longitude, color: "green" as const, popup: `📍 ${t("buyerx.tracking.deliveryHere")}` });
   }
   if (driverPosition) {
     mapMarkers.push({
       lat: driverPosition.lat,
       lng: driverPosition.lng,
       color: "blue" as const,
-      popup: `🛵 Livreur${eta ? ` — ${eta.label} (${eta.distanceKm} km)` : ""}`,
+      popup: `🛵 ${t("buyerx.tracker.driver")}${eta ? ` — ${eta.label} (${eta.distanceKm} km)` : ""}`,
     });
   }
 
@@ -243,7 +245,7 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
     <div className="space-y-4">
       {/* Back button */}
       <Link to="/orders" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <ArrowLeft className="h-4 w-4" /> Retour aux commandes
+        <ArrowLeft className="h-4 w-4" /> {t("buyerx.tracking.backToOrders")}
       </Link>
 
       {/* ETA Banner */}
@@ -256,12 +258,12 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
                   <Timer className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Temps estimé d'arrivée</p>
+                  <p className="text-sm text-muted-foreground">{t("buyerx.tracking.eta")}</p>
                   <p className="text-2xl font-bold text-primary">{eta.label}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Distance</p>
+                <p className="text-sm text-muted-foreground">{t("buyerx.tracking.distance")}</p>
                 <p className="text-lg font-semibold">{eta.distanceKm} km</p>
               </div>
             </div>
@@ -286,13 +288,13 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
               {driverPosition && (
                 <div className="bg-background/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg flex items-center gap-2">
                   <Radio className="h-3 w-3 text-green-500 animate-pulse" />
-                  <span className="text-xs font-medium">En direct</span>
+                  <span className="text-xs font-medium">{t("buyerx.tracking.live")}</span>
                 </div>
               )}
               {driverTrail.length > 1 && (
                 <div className="bg-background/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg flex items-center gap-2">
                   <Navigation className="h-3 w-3 text-primary" />
-                  <span className="text-xs font-medium">{driverTrail.length} pts</span>
+                  <span className="text-xs font-medium">{t("buyerx.tracking.points", { count: driverTrail.length })}</span>
                 </div>
               )}
             </div>
@@ -300,11 +302,11 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
             <div className="absolute bottom-3 right-3 bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg text-xs space-y-1">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-0.5 bg-[#2563eb]" />
-                <span>Trajet parcouru</span>
+                <span>{t("buyerx.tracking.traveled")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-0.5 border-t-2 border-dashed border-[#16a34a]" />
-                <span>Reste à parcourir</span>
+                <span>{t("buyerx.tracking.remaining")}</span>
               </div>
             </div>
           </div>
@@ -316,11 +318,11 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
         <CardContent className="pt-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-sm text-muted-foreground">Commande</p>
+              <p className="text-sm text-muted-foreground">{t("buyerx.tracking.order")}</p>
               <p className="font-mono text-xs">#{orderId.slice(0, 8)}</p>
             </div>
             <Badge variant={isActive ? "default" : "secondary"} className={isActive ? "bg-green-500 animate-pulse" : ""}>
-              {isActive ? "En cours" : order.status === "delivered" ? "Livrée ✓" : order.status}
+              {isActive ? t("buyerx.tracking.inProgress") : order.status === "delivered" ? t("buyerx.tracking.deliveredCheck") : order.status}
             </Badge>
           </div>
 
@@ -346,16 +348,16 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
                   </div>
 
                   <div className={`pb-6 ${isCurrent ? "" : "opacity-60"}`}>
-                    <p className={`font-medium text-sm ${isCurrent ? "text-primary" : ""}`}>{step.label}</p>
-                    <p className="text-xs text-muted-foreground">{step.description}</p>
+                    <p className={`font-medium text-sm ${isCurrent ? "text-primary" : ""}`}>{t(`buyerx.tracking.steps.${step.key}.label`)}</p>
+                    <p className="text-xs text-muted-foreground">{t(`buyerx.tracking.steps.${step.key}.description`)}</p>
                     {isCurrent && eta && i >= 3 && (
                       <p className="text-xs text-primary mt-1 flex items-center gap-1">
                         <Timer className="h-3 w-3" />
-                        ~{eta.label} restantes
+                        {t("buyerx.tracking.remainingEta", { eta: eta.label })}
                       </p>
                     )}
                     {isCurrent && !eta && (
-                      <p className="text-xs text-primary mt-1 animate-pulse">En cours...</p>
+                      <p className="text-xs text-primary mt-1 animate-pulse">{t("buyerx.tracking.inProgressDots")}</p>
                     )}
                   </div>
                 </div>
@@ -370,12 +372,12 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
         <Card className="border-primary bg-primary/5">
           <CardContent className="pt-6 text-center">
             <Key className="h-8 w-8 text-primary mx-auto mb-2" />
-            <p className="text-sm font-medium mb-2">Code de livraison</p>
+            <p className="text-sm font-medium mb-2">{t("buyerx.tracker.deliveryCode")}</p>
             <p className="text-4xl font-mono font-bold tracking-[0.4em] text-primary">
               {verification!.delivery_code}
             </p>
             <p className="text-xs text-muted-foreground mt-3">
-              Donnez ce code au livreur pour confirmer la réception
+              {t("buyerx.tracker.deliveryCodeHint")}
             </p>
           </CardContent>
         </Card>
@@ -388,11 +390,11 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
             <div className="flex items-center gap-4">
               <Avatar className="h-14 w-14">
                 <AvatarFallback className="text-lg bg-primary/10 text-primary">
-                  {driverProfile.full_name?.charAt(0) || "L"}
+                  {driverProfile.full_name?.charAt(0) || t("buyerx.tracking.driverInitial")}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <p className="font-semibold">{driverProfile.full_name || "Livreur"}</p>
+                <p className="font-semibold">{driverProfile.full_name || t("buyerx.tracker.driver")}</p>
                 {driverProfile.vehicle_type && (
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
                     <Truck className="h-3 w-3" />
@@ -402,7 +404,7 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
                 {eta && (
                   <p className="text-xs text-primary flex items-center gap-1 mt-1">
                     <Timer className="h-3 w-3" />
-                    Arrivée dans ~{eta.label} ({eta.distanceKm} km)
+                    {t("buyerx.tracking.arrivingIn", { eta: eta.label, km: eta.distanceKm })}
                   </p>
                 )}
               </div>
@@ -422,14 +424,14 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
       {order.driver_id && order.status !== "delivered" && (
         <OrderChat
           orderId={orderId}
-          otherUserName={driverProfile?.full_name || "Livreur"}
+          otherUserName={driverProfile?.full_name || t("buyerx.tracker.driver")}
         />
       )}
 
       {/* Order Summary */}
       <Card>
         <CardContent className="pt-6 space-y-3">
-          <p className="font-medium text-sm">Résumé de la commande</p>
+          <p className="font-medium text-sm">{t("buyerx.tracking.orderSummary")}</p>
           {order.items?.map((item: any) => (
             <div key={item.id} className="flex items-center gap-3">
               <img
@@ -450,7 +452,7 @@ export default function LiveOrderTracking({ orderId }: LiveOrderTrackingProps) {
             <span className="text-muted-foreground">{order.delivery_address}, {order.delivery_city}</span>
           </div>
           <div className="flex justify-between font-semibold pt-2">
-            <span>Total</span>
+            <span>{t("buyerx.tracking.totalLabel")}</span>
             <span>{currencySymbol}{order.total_amount?.toLocaleString()}</span>
           </div>
         </CardContent>

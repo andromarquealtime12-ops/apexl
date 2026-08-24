@@ -6,22 +6,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { RotateCcw, Check, X, Key, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import ReturnChat from "./ReturnChat";
 import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import type { Locale } from "date-fns";
+import { fr, enUS, es, pt, de, it, zhCN, ar as arLocale } from "date-fns/locale";
 
-const statusLabels: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  pending: { label: "En attente", variant: "outline" },
-  approved: { label: "Approuvé", variant: "default" },
-  return_pickup_ready: { label: "Livreur assigné", variant: "default" },
-  return_in_transit: { label: "En transit", variant: "default" },
-  returned: { label: "Retourné - À inspecter", variant: "secondary" },
-  refunded: { label: "Remboursé", variant: "outline" },
-  rejected: { label: "Refusé", variant: "destructive" },
-  redelivery: { label: "Re-livraison", variant: "default" },
+const dateLocales: Record<string, Locale> = {
+  fr, en: enUS, es, pt, de, it, zh: zhCN, ar: arLocale, ht: fr,
 };
 
 export default function SellerReturnManager() {
+  const { t, i18n } = useTranslation();
   const { data: returns, isLoading } = useOrderReturns("seller");
   const approveReturn = useApproveReturn();
   const confirmReturn = useConfirmReturnReceived();
@@ -29,6 +25,17 @@ export default function SellerReturnManager() {
   const [confirmNotes, setConfirmNotes] = useState("");
   const [confirmAction, setConfirmAction] = useState<string>("refund");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const statusLabels: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+    pending: { label: t("sellerx.returns.status.pending"), variant: "outline" },
+    approved: { label: t("sellerx.returns.status.approved"), variant: "default" },
+    return_pickup_ready: { label: t("sellerx.returns.status.return_pickup_ready"), variant: "default" },
+    return_in_transit: { label: t("sellerx.returns.status.return_in_transit"), variant: "default" },
+    returned: { label: t("sellerx.returns.status.returned"), variant: "secondary" },
+    refunded: { label: t("sellerx.returns.status.refunded"), variant: "outline" },
+    rejected: { label: t("sellerx.returns.status.rejected"), variant: "destructive" },
+    redelivery: { label: t("sellerx.returns.status.redelivery"), variant: "default" },
+  };
 
   const activeReturns = returns?.filter(r => !["refunded", "rejected", "redelivery"].includes(r.status)) || [];
 
@@ -40,7 +47,7 @@ export default function SellerReturnManager() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <RotateCcw className="h-5 w-5" />
-          Demandes de retour
+          {t("sellerx.returns.title")}
           {activeReturns.length > 0 && (
             <Badge variant="destructive">{activeReturns.length}</Badge>
           )}
@@ -61,9 +68,9 @@ export default function SellerReturnManager() {
                   <Badge variant={status.variant}>{status.label}</Badge>
                 </div>
 
-                <p className="text-sm"><strong>Raison:</strong> {ret.reason}</p>
+                <p className="text-sm"><strong>{t("sellerx.returns.reason")}:</strong> {ret.reason}</p>
                 <p className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(ret.created_at), { addSuffix: true, locale: fr })}
+                  {formatDistanceToNow(new Date(ret.created_at), { addSuffix: true, locale: dateLocales[i18n.language] || enUS })}
                 </p>
 
                 {/* Pending: approve/reject */}
@@ -71,12 +78,12 @@ export default function SellerReturnManager() {
                   <div className="space-y-2 pt-2 border-t">
                     <Select value={faultType} onValueChange={setFaultType}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Type de faute" />
+                        <SelectValue placeholder={t("sellerx.returns.faultTypePlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="seller_fault">Faute vendeur</SelectItem>
-                        <SelectItem value="buyer_fault">Faute acheteur</SelectItem>
-                        <SelectItem value="other">Autre</SelectItem>
+                        <SelectItem value="seller_fault">{t("sellerx.returns.faultSeller")}</SelectItem>
+                        <SelectItem value="buyer_fault">{t("sellerx.returns.faultBuyer")}</SelectItem>
+                        <SelectItem value="other">{t("sellerx.returns.faultOther")}</SelectItem>
                       </SelectContent>
                     </Select>
                     <div className="flex gap-2">
@@ -87,7 +94,7 @@ export default function SellerReturnManager() {
                         onClick={() => approveReturn.mutate({ returnId: ret.id, faultType })}
                       >
                         {approveReturn.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
-                        Approuver
+                        {t("sellerx.returns.approve")}
                       </Button>
                     </div>
                   </div>
@@ -97,7 +104,7 @@ export default function SellerReturnManager() {
                 {ret.status === "return_in_transit" && ret.return_delivery_code && (
                   <div className="bg-primary/10 rounded-lg p-3 text-center">
                     <Key className="h-4 w-4 mx-auto mb-1 text-primary" />
-                    <p className="text-xs font-medium">Code de réception retour</p>
+                    <p className="text-xs font-medium">{t("sellerx.returns.receiveCode")}</p>
                     <p className="text-2xl font-mono font-bold tracking-[0.3em] text-primary">
                       {ret.return_delivery_code}
                     </p>
@@ -107,18 +114,18 @@ export default function SellerReturnManager() {
                 {/* Returned: inspect and decide */}
                 {ret.status === "returned" && (
                   <div className="space-y-2 pt-2 border-t">
-                    <p className="text-sm font-medium">Inspectez le colis et décidez:</p>
+                    <p className="text-sm font-medium">{t("sellerx.returns.inspectPrompt")}</p>
                     <Select value={confirmAction} onValueChange={setConfirmAction}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="refund">Rembourser le client</SelectItem>
-                        <SelectItem value="redeliver">Re-livrer la commande</SelectItem>
+                        <SelectItem value="refund">{t("sellerx.returns.refundBuyer")}</SelectItem>
+                        <SelectItem value="redeliver">{t("sellerx.returns.redeliverOrder")}</SelectItem>
                       </SelectContent>
                     </Select>
                     <Textarea
-                      placeholder="Notes sur l'état du colis..."
+                      placeholder={t("sellerx.returns.notesPlaceholder")}
                       value={confirmNotes}
                       onChange={(e) => setConfirmNotes(e.target.value)}
                       rows={2}
@@ -134,7 +141,7 @@ export default function SellerReturnManager() {
                       })}
                     >
                       {confirmReturn.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                      Confirmer
+                      {t("sellerx.returns.confirm")}
                     </Button>
                   </div>
                 )}
@@ -146,7 +153,7 @@ export default function SellerReturnManager() {
                   className="w-full"
                   onClick={() => setExpandedId(isExpanded ? null : ret.id)}
                 >
-                  💬 {isExpanded ? "Fermer" : "Communication"}
+                  💬 {isExpanded ? t("sellerx.returns.close") : t("sellerx.returns.communication")}
                 </Button>
                 {isExpanded && <ReturnChat returnId={ret.id} />}
               </CardContent>

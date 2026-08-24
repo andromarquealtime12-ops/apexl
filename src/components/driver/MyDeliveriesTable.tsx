@@ -12,51 +12,54 @@ import CancelOrderButton from "@/components/orders/CancelOrderButton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentPosition, calculateDistance } from "@/hooks/useGeolocation";
+import { useTranslation } from "react-i18next";
 
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; action?: "pickup" | "delivery"; actionLabel?: string }> = {
-  ready: { 
-    label: "Prête - À récupérer", 
-    variant: "outline",
-    action: "pickup",
-    actionLabel: "Entrer code récupération"
-  },
-  ready_for_pickup: { 
-    label: "À récupérer", 
-    variant: "outline",
-    action: "pickup",
-    actionLabel: "Entrer code récupération"
-  },
-  picked_up: { 
-    label: "Récupérée - En route", 
-    variant: "default",
-    action: "delivery",
-    actionLabel: "Entrer code livraison"
-  },
-  in_transit: { 
-    label: "En livraison", 
-    variant: "default",
-    action: "delivery",
-    actionLabel: "Entrer code livraison"
-  },
-  delivered: { 
-    label: "Livrée", 
-    variant: "secondary"
-  },
-  cancelled: { 
-    label: "Annulée", 
-    variant: "destructive"
-  },
-  pending: { label: "En attente", variant: "secondary" },
-  confirmed: { label: "Confirmée", variant: "default" },
-  preparing: { label: "En préparation", variant: "outline" },
-  return_requested: { label: "Retour demandé", variant: "destructive" },
-  return_pickup_ready: { label: "Retour prêt", variant: "outline" },
-  return_in_transit: { label: "Retour en cours", variant: "default" },
-  returned: { label: "Retourné", variant: "secondary" },
-  refunded: { label: "Remboursé", variant: "destructive" },
-  redelivery: { label: "Re-livraison", variant: "default" },
-};
+function getStatusConfig(t: (key: string) => string): Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; action?: "pickup" | "delivery"; actionLabel?: string }> {
+  return {
+    ready: {
+      label: t("driverx.my.status.ready"),
+      variant: "outline",
+      action: "pickup",
+      actionLabel: t("driverx.my.enterPickupCode")
+    },
+    ready_for_pickup: {
+      label: t("driverx.my.status.ready_for_pickup"),
+      variant: "outline",
+      action: "pickup",
+      actionLabel: t("driverx.my.enterPickupCode")
+    },
+    picked_up: {
+      label: t("driverx.my.status.picked_up"),
+      variant: "default",
+      action: "delivery",
+      actionLabel: t("driverx.my.enterDeliveryCode")
+    },
+    in_transit: {
+      label: t("driverx.my.status.in_transit"),
+      variant: "default",
+      action: "delivery",
+      actionLabel: t("driverx.my.enterDeliveryCode")
+    },
+    delivered: {
+      label: t("driverx.my.status.delivered"),
+      variant: "secondary"
+    },
+    cancelled: {
+      label: t("driverx.my.status.cancelled"),
+      variant: "destructive"
+    },
+    pending: { label: t("driverx.my.status.pending"), variant: "secondary" },
+    confirmed: { label: t("driverx.my.status.confirmed"), variant: "default" },
+    preparing: { label: t("driverx.my.status.preparing"), variant: "outline" },
+    return_requested: { label: t("driverx.my.status.return_requested"), variant: "destructive" },
+    return_pickup_ready: { label: t("driverx.my.status.return_pickup_ready"), variant: "outline" },
+    return_in_transit: { label: t("driverx.my.status.return_in_transit"), variant: "default" },
+    returned: { label: t("driverx.my.status.returned"), variant: "secondary" },
+    refunded: { label: t("driverx.my.status.refunded"), variant: "destructive" },
+    redelivery: { label: t("driverx.my.status.redelivery"), variant: "default" },
+  };
+}
 
 function getNavigationUrl(lat?: number | null, lng?: number | null, address?: string | null) {
   if (lat && lng) {
@@ -114,13 +117,15 @@ function PhoneCallButton({ userId, label }: { userId: string; label: string }) {
     <Button variant="outline" size="sm" className="gap-1" asChild>
       <a href={`tel:${profile.phone}`}>
         <Phone className="h-3 w-3" />
-        Appeler {label}
+        {label}
       </a>
     </Button>
   );
 }
 
 export default function MyDeliveriesTable() {
+  const { t } = useTranslation();
+  const statusConfig = getStatusConfig(t);
   const [verificationModal, setVerificationModal] = useState<{
     isOpen: boolean;
     orderId: string;
@@ -239,8 +244,8 @@ export default function MyDeliveriesTable() {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-        <p>Aucune livraison assignée</p>
-        <p className="text-sm">Acceptez des livraisons dans l'onglet "Disponibles"</p>
+        <p>{t("driverx.my.noneAssigned")}</p>
+        <p className="text-sm">{t("driverx.my.acceptHint")}</p>
       </div>
     );
   }
@@ -256,11 +261,11 @@ export default function MyDeliveriesTable() {
         {activeDeliveries.length > 0 && (
           <div className="space-y-3">
             <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-              En cours ({activeDeliveries.length})
+              {t("driverx.my.inProgress", { count: activeDeliveries.length })}
             </h3>
             <div className="grid gap-4">
               {activeDeliveries.map((delivery) => {
-                const status = statusConfig[delivery.status || "ready_for_pickup"] || { label: delivery.status || "Inconnu", variant: "outline" as const };
+                const status = statusConfig[delivery.status || "ready_for_pickup"] || { label: delivery.status || t("driverx.my.status.unknown"), variant: "outline" as const };
                 const pickupDone = isPickupDone(delivery.status);
                 const seller = sellerLocations?.[delivery.id];
                 
@@ -307,7 +312,7 @@ export default function MyDeliveriesTable() {
                           <div className="flex items-start gap-2">
                             <MapPin className="h-4 w-4 text-orange-500 mt-0.5" />
                             <div>
-                              <p className="font-medium text-orange-600">📦 Récupérer chez: {seller.shop_name}</p>
+                              <p className="font-medium text-orange-600">📦 {t("driverx.my.pickupAt")} {seller.shop_name}</p>
                               <p className="text-sm text-muted-foreground">
                                 {seller.shop_address}, {seller.shop_city}
                               </p>
@@ -317,9 +322,9 @@ export default function MyDeliveriesTable() {
                           <div className="flex items-start gap-2">
                             <MapPin className="h-4 w-4 text-primary mt-0.5" />
                             <div>
-                              <p className="font-medium">🏠 Livrer à: {delivery.delivery_city || "Ville"}</p>
+                              <p className="font-medium">🏠 {t("driverx.my.deliverAt")} {delivery.delivery_city || t("driverx.my.city")}</p>
                               <p className="text-sm text-muted-foreground">
-                                {delivery.delivery_address || "Adresse à confirmer"}
+                                {delivery.delivery_address || t("driverx.my.addressToConfirm")}
                               </p>
                             </div>
                           </div>
@@ -327,7 +332,7 @@ export default function MyDeliveriesTable() {
                           <div className="flex items-start gap-2">
                             <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                             <div>
-                              <p className="font-medium">En attente de récupération</p>
+                              <p className="font-medium">{t("driverx.my.waitingPickup")}</p>
                             </div>
                           </div>
                         )}
@@ -337,18 +342,18 @@ export default function MyDeliveriesTable() {
                           {distToSeller != null && !pickupDone && (
                             <Badge variant="outline" className="gap-1 border-orange-500 text-orange-600">
                               <Navigation className="h-3 w-3" />
-                              Vous → vendeur : {distToSeller.toFixed(1)} km
+                              {t("driverx.my.youToSeller", { km: distToSeller.toFixed(1) })}
                             </Badge>
                           )}
                           {distToBuyer != null && (
                             <Badge variant="outline" className="gap-1 border-green-600 text-green-700">
                               <MapPin className="h-3 w-3" />
-                              Vous → acheteur : {distToBuyer.toFixed(1)} km
+                              {t("driverx.my.youToBuyer", { km: distToBuyer.toFixed(1) })}
                             </Badge>
                           )}
                           {distSellerBuyer != null && !pickupDone && (
                             <Badge variant="outline" className="gap-1">
-                              Vendeur → acheteur : {distSellerBuyer.toFixed(1)} km
+                              {t("driverx.my.sellerToBuyer", { km: distSellerBuyer.toFixed(1) })}
                             </Badge>
                           )}
                           <Button
@@ -358,7 +363,7 @@ export default function MyDeliveriesTable() {
                             onClick={() => setOpenMapId(openMapId === delivery.id ? null : delivery.id)}
                           >
                             <MapIcon className="h-3 w-3" />
-                            {openMapId === delivery.id ? "Masquer la carte" : "Voir la carte"}
+                            {openMapId === delivery.id ? t("driverx.my.hideMap") : t("driverx.my.showMap")}
                           </Button>
                         </div>
 
@@ -380,7 +385,7 @@ export default function MyDeliveriesTable() {
                           <div className="bg-muted/40 rounded-lg p-3 space-y-2">
                             <p className="text-xs font-semibold flex items-center gap-1 text-muted-foreground uppercase tracking-wide">
                               <ShoppingBag className="h-3 w-3" />
-                              Contenu du colis
+                              {t("driverx.my.packageContent")}
                             </p>
                             {orderProducts[delivery.id].map((item, idx) => (
                               <div key={idx} className="flex items-center gap-2 text-sm">
@@ -390,7 +395,7 @@ export default function MyDeliveriesTable() {
                                 <div className="flex-1 min-w-0">
                                   <p className="font-medium truncate">{item.name}</p>
                                   <p className="text-xs text-muted-foreground">
-                                    Qté: {item.quantity}
+                                    {t("driverx.my.qty")}: {item.quantity}
                                     {item.color && ` • ${item.color}`}
                                     {item.size && ` • ${item.size}`}
                                   </p>
@@ -406,24 +411,24 @@ export default function MyDeliveriesTable() {
                             <div className="flex items-center gap-2">
                               <Banknote className="h-5 w-5 text-amber-600" />
                               <p className="font-bold text-amber-700 dark:text-amber-400 uppercase text-sm">
-                                Paiement en espèces
+                                {t("driverx.my.cashPayment")}
                               </p>
                             </div>
                             <div className="grid gap-1.5 text-sm">
                               <div className="flex justify-between items-center bg-background/60 rounded px-2 py-1.5">
-                                <span className="text-muted-foreground">💵 À encaisser de l'acheteur :</span>
+                                <span className="text-muted-foreground">{t("driverx.my.cashCollectFromBuyer")}</span>
                                 <span className="font-bold text-green-700">
                                   {formatCurrency(Number(delivery.total_amount || 0))}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center bg-background/60 rounded px-2 py-1.5">
-                                <span className="text-muted-foreground">📤 À remettre au vendeur (montant exact) :</span>
+                                <span className="text-muted-foreground">{t("driverx.my.cashGiveToSeller")}</span>
                                 <span className="font-bold text-orange-700">
                                   {formatCurrency(Number(delivery.total_amount || 0) - Number(delivery.delivery_fee || 0))}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center bg-background/60 rounded px-2 py-1.5">
-                                <span className="text-muted-foreground">💰 Votre commission (livraison) :</span>
+                                <span className="text-muted-foreground">{t("driverx.my.cashYourCommission")}</span>
                                 <span className="font-bold text-primary">
                                   {formatCurrency(Number(delivery.delivery_fee || 0))}
                                 </span>
@@ -431,16 +436,16 @@ export default function MyDeliveriesTable() {
                             </div>
                             <p className="text-xs text-amber-700 dark:text-amber-400 flex items-start gap-1">
                               <AlertCircle className="h-3 w-3 mt-0.5 shrink-0" />
-                              Remettez le montant exact au vendeur. 5% de commission sera automatiquement prélevé de votre wallet.
+                              {t("driverx.my.cashWarning")}
                             </p>
                           </div>
                         )}
 
                         {pickupDone && (
                           <div className="rounded-lg border border-primary/30 bg-primary/5 p-2 space-y-1 text-sm">
-                            <p className="text-xs font-bold text-primary">📍 Détails d'adresse</p>
+                            <p className="text-xs font-bold text-primary">📍 {t("driverx.my.addressDetails")}</p>
                             {(delivery as any).delivery_address2 && (
-                              <p><span className="text-muted-foreground">N° maison / édifice :</span> <span className="font-semibold">{(delivery as any).delivery_address2}</span></p>
+                              <p><span className="text-muted-foreground">{t("driverx.my.houseNumber")}</span> <span className="font-semibold">{(delivery as any).delivery_address2}</span></p>
                             )}
                             {((delivery as any).delivery_state || (delivery as any).delivery_zip) && (
                               <p className="text-xs text-muted-foreground">
@@ -459,27 +464,27 @@ export default function MyDeliveriesTable() {
                               <Button variant="outline" size="sm" className="gap-1" asChild>
                                 <a href={navUrl} target="_blank" rel="noopener noreferrer">
                                   <Navigation className="h-3 w-3" />
-                                  {pickupDone ? "Itinéraire acheteur" : "Itinéraire vendeur"}
+                                  {pickupDone ? t("driverx.my.routeToBuyer") : t("driverx.my.routeToSeller")}
                                   <ExternalLink className="h-3 w-3" />
                                 </a>
                               </Button>
                             ) : (
                               <Button variant="outline" size="sm" className="gap-1" disabled>
                                 <Navigation className="h-3 w-3" />
-                                Itinéraire
+                                {t("driverx.my.route")}
                               </Button>
                             )}
                             {/* WhatsApp + Phone contact */}
                             {!pickupDone && sellerUserId && (
                               <>
-                                <WhatsAppButton userId={sellerUserId} label="Vendeur" />
-                                <PhoneCallButton userId={sellerUserId} label="vendeur" />
+                                <WhatsAppButton userId={sellerUserId} label={t("driverx.my.seller")} />
+                                <PhoneCallButton userId={sellerUserId} label={t("driverx.my.call", { label: t("driverx.my.sellerLower") })} />
                               </>
                             )}
                             {pickupDone && delivery.buyer_id && (
                               <>
-                                <WhatsAppButton userId={delivery.buyer_id} label="Acheteur" />
-                                <PhoneCallButton userId={delivery.buyer_id} label="acheteur" />
+                                <WhatsAppButton userId={delivery.buyer_id} label={t("driverx.my.buyer")} />
+                                <PhoneCallButton userId={delivery.buyer_id} label={t("driverx.my.call", { label: t("driverx.my.buyerLower") })} />
                               </>
                             )}
                           </div>
@@ -511,7 +516,7 @@ export default function MyDeliveriesTable() {
                         {delivery.buyer_id && delivery.status !== "delivered" && (
                           <OrderChat
                             orderId={delivery.id}
-                            otherUserName="Acheteur"
+                            otherUserName={t("driverx.my.buyer")}
                             compact
                           />
                         )}
@@ -527,11 +532,11 @@ export default function MyDeliveriesTable() {
         {completedDeliveries.length > 0 && (
           <div className="space-y-3">
             <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-              Historique ({completedDeliveries.length})
+              {t("driverx.my.history", { count: completedDeliveries.length })}
             </h3>
             <div className="grid gap-2">
               {completedDeliveries.slice(0, 10).map((delivery) => {
-                const status = statusConfig[delivery.status || "delivered"] || { label: delivery.status || "Inconnu", variant: "outline" as const };
+                const status = statusConfig[delivery.status || "delivered"] || { label: delivery.status || t("driverx.my.status.unknown"), variant: "outline" as const };
                 
                 return (
                   <Card key={delivery.id} className="bg-muted/30">

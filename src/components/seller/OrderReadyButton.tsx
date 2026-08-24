@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { notifyOrderStatusChange } from "@/hooks/useOrderNotifications";
@@ -21,6 +22,7 @@ interface OrderReadyButtonProps {
 }
 
 export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonProps) {
+  const { t } = useTranslation();
   const [showCode, setShowCode] = useState(false);
   const [pickupCode, setPickupCode] = useState<string | null>(null);
   const { data: verification } = useDeliveryVerification(orderId);
@@ -71,13 +73,17 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
         }
 
         await notifyNearbyDrivers();
-        toast.success("Commande complète prête ! Les livreurs ont été notifiés.");
+        toast.success(t("sellerx.orderReady.toasts.allReady"));
       } else {
         const remaining = result.total_sellers - result.ready_sellers;
-        toast.success(`Vos articles sont prêts (${result.ready_sellers}/${result.total_sellers}). En attente de ${remaining} autre vendeur${remaining > 1 ? "s" : ""}.`);
+        toast.success(t("sellerx.orderReady.toasts.partialReady", {
+          ready: result.ready_sellers,
+          total: result.total_sellers,
+          count: remaining,
+        }));
       }
     } catch (error: any) {
-      toast.error(error?.message || "Erreur lors de la mise à jour");
+      toast.error(error?.message || t("sellerx.orderReady.toasts.updateError"));
     }
   };
 
@@ -89,39 +95,38 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
-            Commande prête !
+            {t("sellerx.orderReady.dialog.title")}
           </DialogTitle>
           <DialogDescription>
-            Donnez ce code PIN au livreur lorsqu'il viendra récupérer la commande
+            {t("sellerx.orderReady.dialog.description")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="py-6">
           <div className="text-center">
             <Badge variant="outline" className="text-xs mb-4">
-              Commande #{orderId.slice(0, 8)}
+              {t("sellerx.orderReady.dialog.orderLabel", { id: orderId.slice(0, 8) })}
             </Badge>
 
             <div className="bg-primary/10 rounded-xl p-6 mb-4">
-              <p className="text-sm text-muted-foreground mb-2">Code de récupération</p>
+              <p className="text-sm text-muted-foreground mb-2">{t("sellerx.orderReady.dialog.codeLabel")}</p>
               <p className="text-5xl font-mono font-bold tracking-[0.3em] text-primary">
                 {pickupCode}
               </p>
             </div>
 
             <p className="text-sm text-muted-foreground">
-              <strong>Important :</strong> Ne donnez ce code qu'au livreur autorisé.
-              Il doit l'entrer dans son application pour confirmer la récupération.
+              <strong>{t("sellerx.orderReady.dialog.importantLabel")}:</strong> {t("sellerx.orderReady.dialog.importantText")}
             </p>
             <p className="text-xs text-muted-foreground mt-2">
-              ⏳ Ce code expire dans 24h
+              ⏳ {t("sellerx.orderReady.dialog.expiry")}
             </p>
           </div>
         </div>
 
         <div className="flex gap-2">
           <Button onClick={() => setShowCode(false)} className="flex-1">
-            Compris
+            {t("sellerx.orderReady.dialog.understood")}
           </Button>
           <Button
             variant="outline"
@@ -133,7 +138,7 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
             className="gap-1"
           >
             {regenerateCode.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
-            Régénérer
+            {t("sellerx.orderReady.dialog.regenerate")}
           </Button>
         </div>
       </DialogContent>
@@ -153,7 +158,7 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
           className="gap-1"
         >
           <Key className="h-3 w-3" />
-          Voir code PIN
+          {t("sellerx.orderReady.viewPin")}
         </Button>
         {pinDialog}
       </>
@@ -177,10 +182,9 @@ export function OrderReadyButton({ orderId, currentStatus }: OrderReadyButtonPro
         ) : (
           <Package className="h-3 w-3" />
         )}
-        Marquer prête
+        {t("sellerx.orderReady.markReady")}
       </Button>
       {pinDialog}
     </>
   );
 }
-

@@ -10,6 +10,7 @@ import { MapPin, Package, Clock, Check, Navigation, Loader2, Map, Store, ArrowRi
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import DeliveryMapPreview from "./DeliveryMapPreview";
 import { getMultiLegRoute } from "@/utils/osrmRouting";
@@ -50,6 +51,7 @@ interface EnrichedDelivery {
 }
 
 export default function AvailableDeliveriesTable() {
+  const { t } = useTranslation();
   const { data: deliveries, isLoading } = useAvailableDeliveries();
   const { data: driverLocation } = useDriverLocation();
   const isOnline = driverLocation?.is_online ?? false;
@@ -234,9 +236,9 @@ export default function AvailableDeliveriesTable() {
   const handleAccept = async (orderId: string) => {
     try {
       await acceptDelivery.mutateAsync(orderId);
-      toast.success("Livraison acceptée !");
+      toast.success(t("driverx.available.acceptSuccess"));
     } catch (e: any) {
-      toast.error(e?.message || "Erreur lors de l'acceptation");
+      toast.error(e?.message || t("driverx.available.acceptError"));
     }
   };
 
@@ -244,9 +246,9 @@ export default function AvailableDeliveriesTable() {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-        <p className="font-medium text-foreground">Vous êtes hors ligne</p>
+        <p className="font-medium text-foreground">{t("driverx.available.offline")}</p>
         <p className="text-sm">
-          Activez « Disponible pour livrer » ci-dessus pour recevoir et voir les commandes.
+          {t("driverx.available.offlineHint")}
         </p>
       </div>
     );
@@ -265,8 +267,8 @@ export default function AvailableDeliveriesTable() {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <Loader2 className="h-10 w-10 mx-auto mb-3 animate-spin text-primary" />
-        <p className="font-medium text-foreground">Recherche de commandes…</p>
-        <p className="text-sm">Vous êtes en ligne. Les nouvelles commandes apparaîtront ici automatiquement.</p>
+        <p className="font-medium text-foreground">{t("driverx.available.searching")}</p>
+        <p className="text-sm">{t("driverx.available.searchingHint")}</p>
       </div>
     );
   }
@@ -275,7 +277,7 @@ export default function AvailableDeliveriesTable() {
     <div className="grid gap-4">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Loader2 className="h-4 w-4 animate-spin text-primary" />
-        Recherche d'autres commandes en cours…
+        {t("driverx.available.searchingMore")}
       </div>
       {enriched.map((delivery) => (
         <Card key={delivery.id} className="hover:shadow-md transition-shadow">
@@ -293,7 +295,7 @@ export default function AvailableDeliveriesTable() {
                   {delivery.itemCount !== undefined && delivery.itemCount > 0 && (
                     <Badge variant="secondary" className="text-xs">
                       <Package className="h-3 w-3 mr-1" />
-                      {delivery.itemCount} article{delivery.itemCount > 1 ? "s" : ""}
+                      {t("driverx.available.items", { count: delivery.itemCount })}
                     </Badge>
                   )}
                 </div>
@@ -304,12 +306,12 @@ export default function AvailableDeliveriesTable() {
                     <Store className="h-4 w-4 text-orange-500 mt-0.5" />
                     <div>
                       <p className="text-xs font-semibold text-orange-600">
-                        📦 Récupérer chez {delivery.sellerCount && delivery.sellerCount > 1 ? `${delivery.sellerCount} boutiques` : ""}
+                        📦 {delivery.sellerCount && delivery.sellerCount > 1 ? t("driverx.available.pickupAtMulti", { count: delivery.sellerCount }) : t("driverx.available.pickupAt")}
                       </p>
                       <p className="font-medium text-sm">
                         {delivery.seller.shop_name}
                         {delivery.sellerCount && delivery.sellerCount > 1 && (
-                          <span className="text-muted-foreground"> + {delivery.sellerCount - 1} autre{delivery.sellerCount - 1 > 1 ? "s" : ""}</span>
+                          <span className="text-muted-foreground"> {t("driverx.available.andOthers", { count: delivery.sellerCount - 1 })}</span>
                         )}
                       </p>
                       <p className="text-xs text-muted-foreground">{delivery.seller.shop_address}, {delivery.seller.shop_city}</p>
@@ -321,7 +323,7 @@ export default function AvailableDeliveriesTable() {
                 {delivery.seller && (
                   <div className="flex items-center gap-1 pl-2 text-muted-foreground">
                     <ArrowRight className="h-3 w-3" />
-                    <span className="text-xs">puis livrer à</span>
+                    <span className="text-xs">{t("driverx.available.thenDeliverTo")}</span>
                   </div>
                 )}
 
@@ -329,9 +331,9 @@ export default function AvailableDeliveriesTable() {
                 <div className="flex items-start gap-2 bg-green-50 dark:bg-green-950/20 rounded-lg p-2">
                   <MapPin className="h-4 w-4 text-green-600 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold text-green-600">🏠 Livrer à</p>
-                    <p className="font-medium text-sm">{delivery.delivery_city || "Ville non spécifiée"}</p>
-                    <p className="text-xs text-muted-foreground">{delivery.delivery_address || "Adresse à confirmer"}</p>
+                    <p className="text-xs font-semibold text-green-600">🏠 {t("driverx.available.deliverTo")}</p>
+                    <p className="font-medium text-sm">{delivery.delivery_city || t("driverx.available.cityUnspecified")}</p>
+                    <p className="text-xs text-muted-foreground">{delivery.delivery_address || t("driverx.available.addressToConfirm")}</p>
                   </div>
                 </div>
 
@@ -340,7 +342,7 @@ export default function AvailableDeliveriesTable() {
                     {delivery.total_route_km !== undefined && (
                       <span className="flex items-center gap-1">
                         <Navigation className="h-3 w-3 text-primary" />
-                        <span className="font-medium text-primary">Parcours total : {delivery.total_route_km.toFixed(1)} km</span>
+                        <span className="font-medium text-primary">{t("driverx.available.totalRoute", { km: delivery.total_route_km.toFixed(1) })}</span>
                       </span>
                     )}
                     {(delivery as any)._routeDurationMin !== undefined && (
@@ -353,12 +355,12 @@ export default function AvailableDeliveriesTable() {
                     {delivery.seller_buyer_km !== undefined && (
                       <Badge variant="outline" className="text-xs gap-1 border-green-600 text-green-700">
                         <Route className="h-3 w-3" />
-                        Vendeur → acheteur : {delivery.seller_buyer_km.toFixed(1)} km
+                        {t("driverx.available.sellerToBuyer", { km: delivery.seller_buyer_km.toFixed(1) })}
                       </Badge>
                     )}
                     {delivery.distance_km !== undefined && (
                       <span className="text-xs text-muted-foreground">
-                        (client à {delivery.distance_km.toFixed(1)} km de vous)
+                        {t("driverx.available.clientDistance", { km: delivery.distance_km.toFixed(1) })}
                       </span>
                     )}
                   </div>
@@ -368,10 +370,10 @@ export default function AvailableDeliveriesTable() {
                   <div className="flex items-start gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-950/30 p-2">
                     <Banknote className="h-4 w-4 text-amber-600 mt-0.5" />
                     <div className="text-xs">
-                      <p className="font-bold text-amber-700 dark:text-amber-400">Paiement en espèces</p>
+                      <p className="font-bold text-amber-700 dark:text-amber-400">{t("driverx.available.cashPayment")}</p>
                       <p className="text-muted-foreground">
-                        Encaisser <span className="font-semibold text-foreground">{formatCurrency(Number(delivery.total_amount || 0))}</span> de l'acheteur,
-                        remettre <span className="font-semibold text-foreground">{formatCurrency(Number(delivery.total_amount || 0) - Number(delivery.delivery_fee || 0))}</span> au vendeur (montant exact).
+                        {t("driverx.available.cashCollect")} <span className="font-semibold text-foreground">{formatCurrency(Number(delivery.total_amount || 0))}</span> {t("driverx.available.cashFromBuyer")}
+                        {t("driverx.available.cashGiveSeller")} <span className="font-semibold text-foreground">{formatCurrency(Number(delivery.total_amount || 0) - Number(delivery.delivery_fee || 0))}</span> {t("driverx.available.cashToSeller")}
                       </p>
                     </div>
                   </div>
@@ -382,7 +384,7 @@ export default function AvailableDeliveriesTable() {
                   <div className="rounded-lg border bg-muted/30 p-3 mt-2">
                     <p className="text-xs font-semibold mb-2 flex items-center gap-1">
                       <Navigation className="h-3 w-3 text-primary" />
-                      Étapes du parcours
+                      {t("driverx.available.routeSteps")}
                     </p>
                     <ol className="space-y-1.5">
                       {delivery.steps.map((step, idx) => (
@@ -408,7 +410,7 @@ export default function AvailableDeliveriesTable() {
                     </ol>
                     {delivery.total_route_km !== undefined && (
                       <div className="mt-2 pt-2 border-t flex justify-between text-xs font-semibold">
-                        <span>Total</span>
+                        <span>{t("driverx.available.total")}</span>
                         <span className="text-primary">{delivery.total_route_km.toFixed(1)} km</span>
                       </div>
                     )}
@@ -417,9 +419,9 @@ export default function AvailableDeliveriesTable() {
 
                 {(delivery.delivery_notes || (delivery as any).delivery_address2) && (
                   <div className="rounded-lg border border-primary/30 bg-primary/5 p-2 space-y-1 text-xs">
-                    <p className="font-bold text-primary">📍 Détails d'adresse</p>
+                    <p className="font-bold text-primary">📍 {t("driverx.my.addressDetails")}</p>
                     {(delivery as any).delivery_address2 && (
-                      <p><span className="text-muted-foreground">N° maison / édifice :</span> <span className="font-semibold">{(delivery as any).delivery_address2}</span></p>
+                      <p><span className="text-muted-foreground">{t("driverx.my.houseNumber")}</span> <span className="font-semibold">{(delivery as any).delivery_address2}</span></p>
                     )}
                     {delivery.delivery_notes && (
                       <p className="italic">🗒️ "{delivery.delivery_notes}"</p>
@@ -430,7 +432,7 @@ export default function AvailableDeliveriesTable() {
 
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Commission</p>
+                  <p className="text-sm text-muted-foreground">{t("driverx.available.commission")}</p>
                   <p className="text-xl font-bold text-green-600">{formatCurrency(delivery.delivery_fee || 0)}</p>
                 </div>
 
@@ -438,11 +440,11 @@ export default function AvailableDeliveriesTable() {
                   variant="outline"
                   size="sm"
                   onClick={() => setMapOrderId(mapOrderId === delivery.id ? null : delivery.id)}
-                  title="Voir le parcours"
+                  title={t("driverx.available.viewRoute")}
                   className="gap-1"
                 >
                   <Map className="h-4 w-4" />
-                  <span className="hidden sm:inline">{mapOrderId === delivery.id ? "Masquer" : "Parcours"}</span>
+                  <span className="hidden sm:inline">{mapOrderId === delivery.id ? t("driverx.available.hideRoute") : t("driverx.available.viewRoute")}</span>
                 </Button>
                 
                 <Button
@@ -451,7 +453,7 @@ export default function AvailableDeliveriesTable() {
                   className="gap-2"
                 >
                   {acceptDelivery.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                  Accepter
+                  {t("driverx.available.accept")}
                 </Button>
               </div>
             </div>

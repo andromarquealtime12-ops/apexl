@@ -99,6 +99,25 @@ export function useCreateRestaurant() {
   });
 }
 
+export function useUpdateRestaurant() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...values }: { id: string; [key: string]: any }) => {
+      const { error } = await supabase.from("restaurants").update(values).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["seller-restaurants"] });
+      queryClient.invalidateQueries({ queryKey: ["restaurants"] });
+      queryClient.invalidateQueries({ queryKey: ["restaurant"] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+}
+
+
+
 export function useSellerRestaurantItems(restaurantId: string | undefined) {
   return useQuery({
     queryKey: ["seller-restaurant-items", restaurantId],

@@ -19,6 +19,7 @@ import {
 import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { estimateDeliveryTime } from "@/utils/deliveryEstimation";
 
 interface DriverProfile {
@@ -53,6 +54,7 @@ interface NearbyDriversCardProps {
 }
 
 export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }: NearbyDriversCardProps) {
+  const { t } = useTranslation();
   const { position, error, loading: posLoading, getCurrentPosition } = useCurrentPosition();
   const { data: rawDrivers, isLoading, error: queryError, refetch } = useNearbyDrivers(position, 15);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -126,7 +128,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
     getCurrentPosition();
     refetch();
     setLastRefresh(new Date());
-    toast.success("Liste actualisée");
+    toast.success(t("sellerx.nearbyDrivers.toasts.refreshed"));
   };
 
   const handleSelectDriver = async (driverId: string) => {
@@ -143,11 +145,11 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
         });
         if (error) throw error;
         const result = data as any;
-        if (!result?.success) throw new Error(result?.error || "Erreur inconnue");
+        if (!result?.success) throw new Error(result?.error || t("sellerx.nearbyDrivers.toasts.unknownError"));
 
-        toast.success("Livreur assigné et notifié !");
+        toast.success(t("sellerx.nearbyDrivers.toasts.assigned"));
       } catch (err: any) {
-        toast.error(err.message || "Erreur lors de l'assignation du livreur");
+        toast.error(err.message || t("sellerx.nearbyDrivers.toasts.assignError"));
       } finally {
         setAssigning(null);
       }
@@ -155,7 +157,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
     }
 
     if (!onSelectDriver) {
-      toast.info("Sélectionnez une commande d'abord pour assigner un livreur");
+      toast.info(t("sellerx.nearbyDrivers.toasts.selectOrderFirst"));
     }
   };
 
@@ -169,7 +171,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Truck className="h-5 w-5" /> Livreurs à proximité</CardTitle>
+          <CardTitle className="flex items-center gap-2"><Truck className="h-5 w-5" /> {t("sellerx.nearbyDrivers.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-6">
@@ -177,7 +179,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
             <p className="text-muted-foreground mb-2">{error}</p>
             <Button onClick={getCurrentPosition} disabled={posLoading}>
               {posLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <MapPin className="h-4 w-4 mr-2" />}
-              Réessayer
+              {t("sellerx.nearbyDrivers.retry")}
             </Button>
           </div>
         </CardContent>
@@ -189,15 +191,15 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Truck className="h-5 w-5" /> Livreurs à proximité</CardTitle>
+          <CardTitle className="flex items-center gap-2"><Truck className="h-5 w-5" /> {t("sellerx.nearbyDrivers.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-6">
             <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground mb-4">Activez votre position pour voir les livreurs proches</p>
+            <p className="text-muted-foreground mb-4">{t("sellerx.nearbyDrivers.enablePosition")}</p>
             <Button onClick={getCurrentPosition} disabled={posLoading}>
               {posLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-              Activer la position
+              {t("sellerx.nearbyDrivers.activatePosition")}
             </Button>
           </div>
         </CardContent>
@@ -210,14 +212,14 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span className="flex items-center gap-2"><Truck className="h-5 w-5" /> Livreurs à proximité</span>
+            <span className="flex items-center gap-2"><Truck className="h-5 w-5" /> {t("sellerx.nearbyDrivers.title")}</span>
             <Button variant="ghost" size="icon" onClick={handleRefresh} disabled={isLoading}>
               <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
             </Button>
           </CardTitle>
           <CardDescription className="flex items-center justify-between">
-            <span>Dans un rayon de 15 km</span>
-            <span className="text-xs">Actualisé: {lastRefresh.toLocaleTimeString()}</span>
+            <span>{t("sellerx.nearbyDrivers.radius")}</span>
+            <span className="text-xs">{t("sellerx.nearbyDrivers.refreshedAt", { time: lastRefresh.toLocaleTimeString() })}</span>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -230,10 +232,10 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
               onClick={() => setShowMap(!showMap)}
             >
               <Map className="h-4 w-4" />
-              {showMap ? "Masquer la carte" : "Voir sur la carte"}
+              {showMap ? t("sellerx.nearbyDrivers.hideMap") : t("sellerx.nearbyDrivers.showMap")}
             </Button>
             <span className="text-xs text-muted-foreground">
-              {drivers.length} livreur{drivers.length !== 1 ? "s" : ""} en ligne
+              {t("sellerx.nearbyDrivers.onlineCount", { count: drivers.length })}
             </span>
           </div>
 
@@ -249,7 +251,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                   lat: d.latitude,
                   lng: d.longitude,
                   color: selectedDriverId === d.driver_id ? "green" as const : "orange" as const,
-                  popup: `🛵 ${d.profile?.full_name || "Livreur"} — ${d.distance_km.toFixed(1)} km${d.stats ? ` • ${d.stats.completedDeliveries} livrées` : ""}`,
+                  popup: `🛵 ${d.profile?.full_name || t("sellerx.nearbyDrivers.driver")} — ${d.distance_km.toFixed(1)} km${d.stats ? ` • ${t("sellerx.nearbyDrivers.deliveredCount", { count: d.stats.completedDeliveries })}` : ""}`,
                 }))}
                 className="h-[280px] w-full rounded-lg border"
               />
@@ -259,7 +261,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
           {queryError && (
             <Alert variant="destructive" className="mb-4">
               <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>Erreur lors de la recherche. Veuillez réessayer.</AlertDescription>
+              <AlertDescription>{t("sellerx.nearbyDrivers.searchError")}</AlertDescription>
             </Alert>
           )}
 
@@ -287,7 +289,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                     <AvatarFallback>{driver.profile?.full_name?.charAt(0) || "L"}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{driver.profile?.full_name || "Livreur"}</p>
+                    <p className="font-medium truncate">{driver.profile?.full_name || t("sellerx.nearbyDrivers.driver")}</p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Navigation className="h-3 w-3" />
                       <span>{driver.distance_km.toFixed(1)} km</span>
@@ -302,7 +304,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                         <>
                           <span>•</span>
                           <Package className="h-3 w-3" />
-                          <span>{driver.stats.completedDeliveries} livrées</span>
+                          <span>{t("sellerx.nearbyDrivers.deliveredCount", { count: driver.stats.completedDeliveries })}</span>
                         </>
                       )}
                     </div>
@@ -322,9 +324,9 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                     {assigning === driver.driver_id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : selectedDriverId === driver.driver_id ? (
-                      <><CheckCircle className="h-3 w-3 mr-1" /> Sélectionné</>
+                      <><CheckCircle className="h-3 w-3 mr-1" /> {t("sellerx.nearbyDrivers.selected")}</>
                     ) : (
-                      "Choisir"
+                      t("sellerx.nearbyDrivers.choose")
                     )}
                   </Button>
                 </div>
@@ -333,10 +335,10 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
           ) : (
             <div className="text-center py-8">
               <Users className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground">Aucun livreur disponible</p>
-              <p className="text-sm text-muted-foreground mt-1">Réessayez dans quelques minutes</p>
+              <p className="text-muted-foreground">{t("sellerx.nearbyDrivers.noneAvailable")}</p>
+              <p className="text-sm text-muted-foreground mt-1">{t("sellerx.nearbyDrivers.retryLater")}</p>
               <Button variant="outline" size="sm" className="mt-4" onClick={handleRefresh}>
-                <RefreshCw className="h-4 w-4 mr-2" /> Actualiser
+                <RefreshCw className="h-4 w-4 mr-2" /> {t("sellerx.nearbyDrivers.refresh")}
               </Button>
             </div>
           )}
@@ -354,9 +356,9 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                     <AvatarFallback className="text-lg">{selectedProfile.profile?.full_name?.charAt(0) || "L"}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p>{selectedProfile.profile?.full_name || "Livreur"}</p>
+                    <p>{selectedProfile.profile?.full_name || t("sellerx.nearbyDrivers.driver")}</p>
                     <p className="text-sm font-normal text-muted-foreground flex items-center gap-1">
-                      <Navigation className="h-3 w-3" /> {selectedProfile.distance_km.toFixed(1)} km de vous
+                      <Navigation className="h-3 w-3" /> {t("sellerx.nearbyDrivers.kmFromYou", { distance: selectedProfile.distance_km.toFixed(1) })}
                     </p>
                   </div>
                 </DialogTitle>
@@ -369,10 +371,10 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                     <>
                       <div className="flex">{renderStars(selectedProfile.stats.avgRating)}</div>
                       <span className="font-bold">{selectedProfile.stats.avgRating}</span>
-                      <span className="text-sm text-muted-foreground">({selectedProfile.stats.reviewCount} avis)</span>
+                      <span className="text-sm text-muted-foreground">{t("sellerx.nearbyDrivers.reviewCount", { count: selectedProfile.stats.reviewCount })}</span>
                     </>
                   ) : (
-                    <span className="text-sm text-muted-foreground">Pas encore d'avis</span>
+                    <span className="text-sm text-muted-foreground">{t("sellerx.nearbyDrivers.noReviews")}</span>
                   )}
                 </div>
 
@@ -380,15 +382,15 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div className="p-3 rounded-lg border">
                     <p className="text-2xl font-bold">{selectedProfile.stats?.totalDeliveries || 0}</p>
-                    <p className="text-xs text-muted-foreground">Total</p>
+                    <p className="text-xs text-muted-foreground">{t("sellerx.nearbyDrivers.statsTotal")}</p>
                   </div>
                   <div className="p-3 rounded-lg border">
                     <p className="text-2xl font-bold text-green-600">{selectedProfile.stats?.completedDeliveries || 0}</p>
-                    <p className="text-xs text-muted-foreground">Complétées</p>
+                    <p className="text-xs text-muted-foreground">{t("sellerx.nearbyDrivers.statsCompleted")}</p>
                   </div>
                   <div className="p-3 rounded-lg border">
                     <p className="text-2xl font-bold">{selectedProfile.stats ? Math.round((selectedProfile.stats.completedDeliveries / Math.max(selectedProfile.stats.totalDeliveries, 1)) * 100) : 0}%</p>
-                    <p className="text-xs text-muted-foreground">Succès</p>
+                    <p className="text-xs text-muted-foreground">{t("sellerx.nearbyDrivers.statsSuccess")}</p>
                   </div>
                 </div>
 
@@ -397,22 +399,22 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                 {/* Vehicle Info */}
                 {selectedProfile.vehicle && (
                   <div className="space-y-2">
-                    <h4 className="font-medium flex items-center gap-2"><Truck className="h-4 w-4" /> Véhicule</h4>
+                    <h4 className="font-medium flex items-center gap-2"><Truck className="h-4 w-4" /> {t("sellerx.nearbyDrivers.vehicle")}</h4>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="p-2 rounded border">
-                        <p className="text-muted-foreground text-xs">Type</p>
+                        <p className="text-muted-foreground text-xs">{t("sellerx.nearbyDrivers.vehicleType")}</p>
                         <p className="font-medium capitalize">{selectedProfile.vehicle.vehicle_type}</p>
                       </div>
                       <div className="p-2 rounded border">
-                        <p className="text-muted-foreground text-xs">Marque</p>
+                        <p className="text-muted-foreground text-xs">{t("sellerx.nearbyDrivers.vehicleBrand")}</p>
                         <p className="font-medium">{selectedProfile.vehicle.vehicle_brand} {selectedProfile.vehicle.vehicle_model || ""}</p>
                       </div>
                       <div className="p-2 rounded border">
-                        <p className="text-muted-foreground text-xs">Plaque</p>
+                        <p className="text-muted-foreground text-xs">{t("sellerx.nearbyDrivers.vehiclePlate")}</p>
                         <p className="font-medium">{selectedProfile.vehicle.license_plate}</p>
                       </div>
                       <div className="p-2 rounded border">
-                        <p className="text-muted-foreground text-xs">Ville</p>
+                        <p className="text-muted-foreground text-xs">{t("sellerx.nearbyDrivers.vehicleCity")}</p>
                         <p className="font-medium">{selectedProfile.vehicle.city}</p>
                       </div>
                     </div>
@@ -424,7 +426,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                   {selectedProfile.profile?.phone && (
                     <Button variant="outline" className="flex-1 gap-2" asChild>
                       <a href={`tel:${selectedProfile.profile.phone}`}>
-                        <Phone className="h-4 w-4" /> Appeler
+                        <Phone className="h-4 w-4" /> {t("sellerx.nearbyDrivers.call")}
                       </a>
                     </Button>
                   )}
@@ -439,7 +441,7 @@ export function NearbyDriversCard({ onSelectDriver, selectedDriverId, orderId }:
                     {assigning === selectedProfile.driver_id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <><CheckCircle className="h-4 w-4" /> Choisir ce livreur</>
+                      <><CheckCircle className="h-4 w-4" /> {t("sellerx.nearbyDrivers.chooseThisDriver")}</>
                     )}
                   </Button>
                 </div>

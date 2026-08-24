@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import i18n from "@/i18n";
 
 /**
  * Send in-app notification and optionally trigger push
@@ -39,8 +40,8 @@ export async function notifyNewOrder(orderId: string) {
     for (const sellerId of sellerIds) {
       await notifyUser(
         sellerId!,
-        "🛒 Nouvelle commande !",
-        `Vous avez reçu une nouvelle commande #${orderId.slice(0, 8)}. Préparez-la rapidement.`,
+        i18n.t("buyerx.orderNotif.newOrderTitle"),
+        i18n.t("buyerx.orderNotif.newOrderMsg", { id: orderId.slice(0, 8) }),
         "order",
         "/seller"
       );
@@ -70,30 +71,31 @@ export async function notifyOrderStatusChange(
   newStatus: string,
   driverId?: string | null
 ) {
+  const shortId = orderId.slice(0, 8);
   const messages: Record<string, { title: string; msg: string }> = {
     confirmed: {
-      title: "✅ Commande confirmée",
-      msg: `Votre commande #${orderId.slice(0, 8)} a été confirmée par le vendeur.`,
+      title: i18n.t("buyerx.orderNotif.confirmedTitle"),
+      msg: i18n.t("buyerx.orderNotif.confirmedMsg", { id: shortId }),
     },
     ready: {
-      title: "📦 Commande prête",
-      msg: `Votre commande #${orderId.slice(0, 8)} est prête ! Un livreur sera bientôt assigné.`,
+      title: i18n.t("buyerx.orderNotif.readyTitle"),
+      msg: i18n.t("buyerx.orderNotif.readyMsg", { id: shortId }),
     },
     ready_for_pickup: {
-      title: "📦 Commande prête au retrait",
-      msg: `Votre commande #${orderId.slice(0, 8)} est prête pour le retrait par le livreur.`,
+      title: i18n.t("buyerx.orderNotif.readyForPickupTitle"),
+      msg: i18n.t("buyerx.orderNotif.readyForPickupMsg", { id: shortId }),
     },
     picked_up: {
-      title: "🛵 Commande récupérée",
-      msg: `Le livreur a récupéré votre commande #${orderId.slice(0, 8)}. Livraison en cours !`,
+      title: i18n.t("buyerx.orderNotif.pickedUpTitle"),
+      msg: i18n.t("buyerx.orderNotif.pickedUpMsg", { id: shortId }),
     },
     in_transit: {
-      title: "🚀 En route vers vous",
-      msg: `Votre commande #${orderId.slice(0, 8)} est en cours de livraison.`,
+      title: i18n.t("buyerx.orderNotif.inTransitTitle"),
+      msg: i18n.t("buyerx.orderNotif.inTransitMsg", { id: shortId }),
     },
     delivered: {
-      title: "🎉 Commande livrée !",
-      msg: `Votre commande #${orderId.slice(0, 8)} a été livrée. N'oubliez pas de laisser un avis !`,
+      title: i18n.t("buyerx.orderNotif.deliveredTitle"),
+      msg: i18n.t("buyerx.orderNotif.deliveredMsg", { id: shortId }),
     },
   };
 
@@ -115,16 +117,16 @@ export async function notifyOrderStatusChange(
 export async function notifyDriverAssigned(orderId: string, driverId: string, buyerId: string) {
   await notifyUser(
     buyerId,
-    "🛵 Livreur assigné !",
-    `Un livreur a été assigné à votre commande #${orderId.slice(0, 8)}. Suivez-le en temps réel.`,
+    i18n.t("buyerx.orderNotif.driverAssignedTitle"),
+    i18n.t("buyerx.orderNotif.driverAssignedMsg", { id: orderId.slice(0, 8) }),
     "delivery",
     `/track/${orderId}`
   );
 
   await notifyUser(
     driverId,
-    "📦 Nouvelle livraison !",
-    `Vous avez été assigné à la commande #${orderId.slice(0, 8)}. Rendez-vous chez le vendeur.`,
+    i18n.t("buyerx.orderNotif.newDeliveryTitle"),
+    i18n.t("buyerx.orderNotif.newDeliveryMsg", { id: orderId.slice(0, 8) }),
     "delivery",
     "/driver"
   );
@@ -136,16 +138,16 @@ export async function notifyDriverAssigned(orderId: string, driverId: string, bu
 export async function notifyDeliveryComplete(orderId: string, buyerId: string, driverId: string) {
   await notifyUser(
     buyerId,
-    "⭐ Notez votre expérience",
-    `Votre commande #${orderId.slice(0, 8)} est livrée ! Comment s'est passée la livraison ?`,
+    i18n.t("buyerx.orderNotif.rateExperienceTitle"),
+    i18n.t("buyerx.orderNotif.rateExperienceMsg", { id: orderId.slice(0, 8) }),
     "review",
     `/orders`
   );
 
   await notifyUser(
     driverId,
-    "✅ Livraison terminée",
-    `Vous avez livré la commande #${orderId.slice(0, 8)} avec succès. Commission ajoutée.`,
+    i18n.t("buyerx.orderNotif.deliveryCompleteTitle"),
+    i18n.t("buyerx.orderNotif.deliveryCompleteMsg", { id: orderId.slice(0, 8) }),
     "earning",
     "/driver"
   );

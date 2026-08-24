@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { GpsAddressField } from "@/components/ui/GpsAddressField";
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export default function RestaurantLocationCard({ restaurantId, address, city, latitude, longitude }: Props) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [addr, setAddr] = useState(address || "");
   const [cityValue, setCityValue] = useState(city || "");
@@ -26,7 +28,7 @@ export default function RestaurantLocationCard({ restaurantId, address, city, la
 
   const save = async () => {
     if (lat == null || lng == null) {
-      toast.error("Confirmez la position de récupération (GPS ou recherche)");
+      toast.error(t("sellerx.restaurantLocation.confirmPositionError"));
       return;
     }
     setSaving(true);
@@ -44,9 +46,9 @@ export default function RestaurantLocationCard({ restaurantId, address, city, la
       queryClient.invalidateQueries({ queryKey: ["restaurants"] });
       queryClient.invalidateQueries({ queryKey: ["seller-restaurants"] });
       queryClient.invalidateQueries({ queryKey: ["restaurant", restaurantId] });
-      toast.success("Position mise à jour ✓ Distances et itinéraires recalculés");
+      toast.success(t("sellerx.restaurantLocation.updated"));
     } catch (e: any) {
-      toast.error(e?.message || "Erreur lors de l'enregistrement");
+      toast.error(e?.message || t("sellerx.restaurantLocation.saveError"));
     } finally {
       setSaving(false);
     }
@@ -56,7 +58,7 @@ export default function RestaurantLocationCard({ restaurantId, address, city, la
     <div className="space-y-3 pt-2" onClick={(e) => e.stopPropagation()}>
       <Label className="flex items-center gap-2">
         <MapPin className="h-4 w-4 text-primary" />
-        Adresse de récupération des colis
+        {t("sellerx.restaurantLocation.title")}
       </Label>
       <GpsAddressField
         value={addr}
@@ -71,23 +73,23 @@ export default function RestaurantLocationCard({ restaurantId, address, city, la
           setLat(s.lat);
           setLng(s.lng);
         }}
-        placeholder="Utiliser ma position ou rechercher l'adresse du restaurant…"
+        placeholder={t("sellerx.restaurantLocation.addressPlaceholder")}
       />
-      <Input value={cityValue} onChange={(e) => setCityValue(e.target.value)} placeholder="Ville" />
+      <Input value={cityValue} onChange={(e) => setCityValue(e.target.value)} placeholder={t("sellerx.restaurantLocation.cityPlaceholder")} />
       {lat != null && lng != null ? (
         <p className="text-xs text-green-600 flex items-center gap-1">
           <CheckCircle className="h-3 w-3" />
-          Position : {lat.toFixed(5)}, {lng.toFixed(5)}
+          {t("sellerx.restaurantLocation.positionLabel", { lat: lat.toFixed(5), lng: lng.toFixed(5) })}
         </p>
       ) : (
         <p className="text-xs text-amber-600 flex items-center gap-1">
           <AlertTriangle className="h-3 w-3" />
-          Sans position GPS, les acheteurs ne voient pas la distance ni les frais de livraison.
+          {t("sellerx.restaurantLocation.noPositionWarning")}
         </p>
       )}
       <Button onClick={save} disabled={saving} size="sm" className="gap-2">
         <Save className="h-4 w-4" />
-        {saving ? "Enregistrement..." : "Enregistrer la position"}
+        {saving ? t("sellerx.restaurantLocation.saving") : t("sellerx.restaurantLocation.save")}
       </Button>
     </div>
   );
