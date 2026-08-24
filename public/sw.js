@@ -1,4 +1,4 @@
-const CACHE_NAME = 'apexl-v5';
+const CACHE_NAME = 'apexl-v6';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
@@ -35,10 +35,22 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// Repeating alarm state (seller new-order alerts)
+const alarmTimers = new Map();
+
+function stopAlarm(tag) {
+  const t = alarmTimers.get(tag);
+  if (t) {
+    clearInterval(t.interval);
+    clearTimeout(t.timeout);
+    alarmTimers.delete(tag);
+  }
+}
+
 // Web Push handler - shows notification on lock screen / home screen
 self.addEventListener('push', (event) => {
   let data = { title: 'APEXL', body: '', url: '/', tag: 'ayiti-marche' };
-  
+
   try {
     if (event.data) {
       data = { ...data, ...event.data.json() };
@@ -66,19 +78,33 @@ self.addEventListener('push', (event) => {
     ],
   };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+  const show = () => self.registration.showNotification(data.title, options);
+
+  // Loud repeating alert for up to 5 minutes (sellers / restaurants)
+  if (data.repeat) {
+    stopAlarm(data.tag);
+    const interval = setInterval(() => {
+      self.registration.showNotification(data.title, {
+        ...options,
+        timestamp: Date.now(),
+      });
+    }, 20000);
+    const timeout = setTimeout(() => stopAlarm(data.tag), 5 * 60 * 1000);
+    alarmTimers.set(data.tag, { interval, timeout });
+  }
+
+  event.waitUntil(show());
 });
 
 // Push notification click handler
 self.addEventListener('notificationclick', (event) => {
+  stopAlarm(event.notification.tag);
   event.notification.close();
 
   if (event.action === 'dismiss') return;
-  
+
   const url = event.notification.data?.url || '/';
-  
+
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
       for (const client of windowClients) {
@@ -91,3 +117,16 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
+
+self.addEventListener('notificationclose', (event) => {
+  stopAlarm(event.notification.tag);
+});
+
+// Allow the app to stop the alarm (e.g. seller opened the dashboard)
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'STOP_ALARM') {
+    if (event.data.tag) stopAlarm(event.data.tag);
+    else for (const tag of Array.from(alarmTimers.keys())) stopAlarm(tag);
+  }
+});
+
