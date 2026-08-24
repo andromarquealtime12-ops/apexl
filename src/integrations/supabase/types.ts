@@ -2081,6 +2081,7 @@ export type Database = {
       driver_accept_order: { Args: { p_order_id: string }; Returns: Json }
       driver_accept_return: { Args: { p_return_id: string }; Returns: Json }
       enforce_negative_balance_suspension: { Args: never; Returns: number }
+      ensure_wallet: { Args: { p_user_id: string }; Returns: string }
       find_user_id_by_email: { Args: { p_email: string }; Returns: string }
       freeze_wallet: {
         Args: { p_reason: string; p_user_id: string }
