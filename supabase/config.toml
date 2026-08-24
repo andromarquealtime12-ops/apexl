@@ -21,3 +21,6 @@ verify_jwt = true
 [functions.bazik-webhook]
 verify_jwt = false
 
+[functions.sync-currency-rates]
+verify_jwt = false
+
