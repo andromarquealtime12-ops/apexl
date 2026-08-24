@@ -28,16 +28,39 @@ export function DriverLocationTracker() {
     }
   }, [position, isOnline]);
 
+  const getPositionOnce = () =>
+    new Promise<{ latitude: number; longitude: number } | null>((resolve) => {
+      if (!navigator.geolocation) return resolve(null);
+      navigator.geolocation.getCurrentPosition(
+        (p) => resolve({ latitude: p.coords.latitude, longitude: p.coords.longitude }),
+        () => resolve(null),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+      );
+    });
+
   const handleToggleOnline = async (checked: boolean) => {
     if (checked) {
       startWatching();
-    } else {
-      stopWatching();
+      // Ensure we have coordinates before flipping the flag: without them the
+      // very first activation could never create the driver_locations row.
+      const coords = position ?? (await getPositionOnce());
+      if (!coords) {
+        stopWatching();
+        return;
+      }
+      await setOnlineStatus.mutateAsync({
+        isOnline: true,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      });
+      return;
     }
-    await setOnlineStatus.mutateAsync({ 
-      isOnline: checked, 
+
+    stopWatching();
+    await setOnlineStatus.mutateAsync({
+      isOnline: false,
       latitude: position?.latitude,
-      longitude: position?.longitude 
+      longitude: position?.longitude,
     });
   };
 
