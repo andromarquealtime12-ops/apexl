@@ -545,11 +545,11 @@ const Checkout = () => {
                           <SelectValue placeholder={t("checkoutx.address.cityPlaceholder")} />
                         </SelectTrigger>
                         <SelectContent className="max-h-60">
-                          <SelectItem value="__do_header" disabled>🇩🇴 République Dominicaine</SelectItem>
+                          <SelectItem value="__do_header" disabled>{t("checkoutx.countries.DO")}</SelectItem>
                           {ALL_CITIES.DO.map((city) => (
                             <SelectItem key={city} value={city}>{city}</SelectItem>
                           ))}
-                          <SelectItem value="__ht_header" disabled>🇭🇹 Haïti</SelectItem>
+                          <SelectItem value="__ht_header" disabled>{t("checkoutx.countries.HT")}</SelectItem>
                           {ALL_CITIES.HT.map((city) => (
                             <SelectItem key={city} value={city}>{city}</SelectItem>
                           ))}
