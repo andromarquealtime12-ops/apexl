@@ -37,6 +37,7 @@ import { PrintfulSyncCard } from "@/components/admin/PrintfulSyncCard";
 import AdminOrdersManager from "@/components/admin/AdminOrdersManager";
 import DeliveryZonesManager from "@/components/admin/DeliveryZonesManager";
 import LiveDriversMap from "@/components/admin/LiveDriversMap";
+import AdminDriversManager from "@/components/admin/AdminDriversManager";
 
 import { usePendingIdentityVerifications, useSupportTickets, useReports } from "@/hooks/useAdminAdvanced";
 
