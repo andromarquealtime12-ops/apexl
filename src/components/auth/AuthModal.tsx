@@ -20,7 +20,8 @@ import { DriverApplicationForm } from "./DriverApplicationForm";
 import { ForgotPasswordModal } from "./ForgotPasswordModal";
 
 const signUpSchema = z.object({
-  fullName: z.string().min(2, "Le nom doit avoir au moins 2 caractères").max(100),
+  firstName: z.string().trim().min(2, "Prénom requis (2 caractères min.)").max(50),
+  lastName: z.string().trim().min(2, "Nom de famille requis (2 caractères min.)").max(50),
   email: z.string().email("Email invalide").max(255),
   password: z.string().min(6, "Le mot de passe doit avoir au moins 6 caractères").max(72),
 });
@@ -48,7 +49,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
   
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
-  const [signUpName, setSignUpName] = useState("");
+  const [signUpFirstName, setSignUpFirstName] = useState("");
+  const [signUpLastName, setSignUpLastName] = useState("");
   const [signUpEmail, setSignUpEmail] = useState("");
   const [signUpPassword, setSignUpPassword] = useState("");
 
@@ -92,7 +94,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     e.preventDefault();
     
     const validation = signUpSchema.safeParse({ 
-      fullName: signUpName,
+      firstName: signUpFirstName,
+      lastName: signUpLastName,
       email: signUpEmail, 
       password: signUpPassword 
     });
@@ -103,7 +106,11 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
     }
     
     setLoading(true);
-    const { error } = await signUp(signUpEmail, signUpPassword, signUpName);
+    const { error } = await signUp(
+      signUpEmail,
+      signUpPassword,
+      `${signUpFirstName.trim()} ${signUpLastName.trim()}`,
+    );
     setLoading(false);
     
     if (error) {
@@ -193,16 +200,31 @@ export function AuthModal({ isOpen, onClose, defaultTab = "signin" }: AuthModalP
 
             <TabsContent value="signup" className="space-y-4 mt-4">
               <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">{t("auth.fullName")}</Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    placeholder={t("auth.namePlaceholder")}
-                    value={signUpName}
-                    onChange={(e) => setSignUpName(e.target.value)}
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-firstname">Prénom *</Label>
+                    <Input
+                      id="signup-firstname"
+                      type="text"
+                      placeholder="Jean"
+                      value={signUpFirstName}
+                      onChange={(e) => setSignUpFirstName(e.target.value)}
+                      maxLength={50}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-lastname">Nom de famille *</Label>
+                    <Input
+                      id="signup-lastname"
+                      type="text"
+                      placeholder="Pierre"
+                      value={signUpLastName}
+                      onChange={(e) => setSignUpLastName(e.target.value)}
+                      maxLength={50}
+                      required
+                    />
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
