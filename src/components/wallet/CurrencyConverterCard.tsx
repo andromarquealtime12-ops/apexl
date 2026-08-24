@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export default function CurrencyConverterCard({ wallet, currencyRates, queryClient }: Props) {
+  const { t } = useTranslation();
   const [fromCurrency, setFromCurrency] = useState<Currency>("DOP");
   const [toCurrency, setToCurrency] = useState<Currency>("USD");
   const [amount, setAmount] = useState("");
@@ -39,7 +41,7 @@ export default function CurrencyConverterCard({ wallet, currencyRates, queryClie
 
   const handleConvert = async () => {
     const val = parseFloat(amount);
-    if (isNaN(val) || val <= 0) { toast.error("Montant invalide"); return; }
+    if (isNaN(val) || val <= 0) { toast.error(t("walletx.converter.invalidAmount")); return; }
 
     setConverting(true);
     try {
@@ -51,12 +53,12 @@ export default function CurrencyConverterCard({ wallet, currencyRates, queryClie
       if (error) throw error;
       const result = data as any;
       if (!result.success) throw new Error(result.error);
-      toast.success(`Converti ! ${CURRENCY_SYMBOLS[fromCurrency]}${val} → ${CURRENCY_SYMBOLS[toCurrency]}${result.converted_amount}`);
+      toast.success(t("walletx.converter.convertSuccess", { fromSymbol: CURRENCY_SYMBOLS[fromCurrency], amount: val, toSymbol: CURRENCY_SYMBOLS[toCurrency], result: result.converted_amount }));
       setAmount("");
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
     } catch (e: any) {
-      toast.error(e.message || "Erreur de conversion");
+      toast.error(e.message || t("walletx.converter.convertError"));
     } finally {
       setConverting(false);
     }
@@ -72,13 +74,13 @@ export default function CurrencyConverterCard({ wallet, currencyRates, queryClie
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <ArrowRightLeft className="h-5 w-5" />
-          Convertir des devises
+          {t("walletx.converter.title")}
         </CardTitle>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Taux en temps réel · commission {CONVERSION_COMMISSION_PERCENT}%</span>
+          <span>{t("walletx.converter.ratesInfo", { commission: CONVERSION_COMMISSION_PERCENT })}</span>
           <Button variant="ghost" size="sm" onClick={() => syncRates.mutate()} disabled={syncRates.isPending}>
             <RefreshCw className={`h-3.5 w-3.5 mr-1 ${syncRates.isPending ? "animate-spin" : ""}`} />
-            Actualiser
+            {t("walletx.converter.refresh")}
           </Button>
         </div>
       </CardHeader>
@@ -100,13 +102,13 @@ export default function CurrencyConverterCard({ wallet, currencyRates, queryClie
         {/* Conversion form */}
         <div className="flex items-end gap-2">
           <div className="flex-1 space-y-1">
-            <Label className="text-xs">De</Label>
+            <Label className="text-xs">{t("walletx.converter.from")}</Label>
             <Select value={fromCurrency} onValueChange={(v) => setFromCurrency(v as Currency)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="DOP">RD$ Peso</SelectItem>
-                <SelectItem value="HTG">G Gourde</SelectItem>
-                <SelectItem value="USD">$ Dollar</SelectItem>
+                <SelectItem value="DOP">{t("walletx.converter.currency.dop")}</SelectItem>
+                <SelectItem value="HTG">{t("walletx.converter.currency.htg")}</SelectItem>
+                <SelectItem value="USD">{t("walletx.converter.currency.usd")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -114,13 +116,13 @@ export default function CurrencyConverterCard({ wallet, currencyRates, queryClie
             <ArrowRightLeft className="h-4 w-4" />
           </Button>
           <div className="flex-1 space-y-1">
-            <Label className="text-xs">Vers</Label>
+            <Label className="text-xs">{t("walletx.converter.to")}</Label>
             <Select value={toCurrency} onValueChange={(v) => setToCurrency(v as Currency)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="DOP">RD$ Peso</SelectItem>
-                <SelectItem value="HTG">G Gourde</SelectItem>
-                <SelectItem value="USD">$ Dollar</SelectItem>
+                <SelectItem value="DOP">{t("walletx.converter.currency.dop")}</SelectItem>
+                <SelectItem value="HTG">{t("walletx.converter.currency.htg")}</SelectItem>
+                <SelectItem value="USD">{t("walletx.converter.currency.usd")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -128,7 +130,7 @@ export default function CurrencyConverterCard({ wallet, currencyRates, queryClie
 
         <div className="flex gap-2 items-end">
           <div className="flex-1 space-y-1">
-            <Label className="text-xs">Montant</Label>
+            <Label className="text-xs">{t("walletx.converter.amount")}</Label>
             <Input
               type="number"
               placeholder="0.00"
@@ -137,13 +139,13 @@ export default function CurrencyConverterCard({ wallet, currencyRates, queryClie
             />
           </div>
           <Button onClick={handleConvert} disabled={converting || !amount || fromCurrency === toCurrency}>
-            {converting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Convertir"}
+            {converting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("walletx.converter.convertButton")}
           </Button>
         </div>
 
         {preview !== null && fromCurrency !== toCurrency && (
           <div className="text-sm text-muted-foreground space-y-1">
-            <p>≈ {CURRENCY_SYMBOLS[toCurrency]} {preview.toLocaleString(undefined, { maximumFractionDigits: 2 })} <span className="text-xs">(après commission {CONVERSION_COMMISSION_PERCENT}%)</span></p>
+            <p>{t("walletx.converter.preview", { symbol: CURRENCY_SYMBOLS[toCurrency], amount: preview.toLocaleString(undefined, { maximumFractionDigits: 2 }), commission: CONVERSION_COMMISSION_PERCENT })}</p>
           </div>
         )}
       </CardContent>

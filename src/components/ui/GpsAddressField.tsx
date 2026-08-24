@@ -4,6 +4,8 @@ import { Loader2, Navigation, AlertTriangle, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { AddressAutocomplete, AddressSuggestion } from "@/components/ui/address-autocomplete";
 import { reverseGeocode } from "@/utils/reverseGeocode";
+import { useTranslation } from "react-i18next";
+import "@/i18n/checkoutx";
 
 interface Props {
   value: string;
@@ -36,13 +38,14 @@ export function GpsAddressField({
   id,
   disabled,
 }: Props) {
+  const { t } = useTranslation();
   const [gpsLoading, setGpsLoading] = useState(false);
   const [pickedFromList, setPickedFromList] = useState(false);
   const [pickedFromGps, setPickedFromGps] = useState(false);
 
   const handleGps = useCallback(() => {
     if (!navigator.geolocation) {
-      toast.error("Géolocalisation non supportée");
+      toast.error(t("checkoutx.gps.notSupported"));
       return;
     }
     setGpsLoading(true);
@@ -66,9 +69,9 @@ export function GpsAddressField({
           }
           setPickedFromGps(true);
           setPickedFromList(false);
-          toast.success("Adresse trouvée via votre position ✓");
+          toast.success(t("checkoutx.gps.addressFoundToast"));
         } else {
-          toast.warning("Position enregistrée. Précisez l'adresse manuellement.");
+          toast.warning(t("checkoutx.gps.positionSavedWarn"));
         }
         setGpsLoading(false);
       },
@@ -76,13 +79,13 @@ export function GpsAddressField({
         setGpsLoading(false);
         toast.error(
           err.code === 1
-            ? "Autorisez l'accès à votre position"
-            : "Impossible d'obtenir votre position"
+            ? t("checkoutx.gps.allowLocation")
+            : t("checkoutx.gps.cannotGetPosition")
         );
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
-  }, [onChange, onCoords, onSelect]);
+  }, [onChange, onCoords, onSelect, t]);
 
   const hasCoords = coords?.lat != null && coords?.lng != null;
   // User typed something but never picked a suggestion or GPS
@@ -121,28 +124,28 @@ export function GpsAddressField({
           onClick={handleGps}
           disabled={gpsLoading || disabled}
           className="shrink-0 mt-0.5"
-          aria-label="Utiliser ma position GPS"
+          aria-label={t("checkoutx.gps.useMyPositionAria")}
         >
           {gpsLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Navigation className="h-4 w-4" />
           )}
-          <span className="ml-1 hidden sm:inline">Ma position</span>
+          <span className="ml-1 hidden sm:inline">{t("checkoutx.gps.useMyPositionBtn")}</span>
         </Button>
       </div>
 
       {hasCoords && (pickedFromGps || pickedFromList) && (
         <p className="text-xs text-green-600 flex items-center gap-1">
           <CheckCircle className="h-3 w-3" />
-          Position GPS exacte enregistrée ({coords!.lat!.toFixed(5)}, {coords!.lng!.toFixed(5)})
+          {t("checkoutx.gps.exactGpsSaved", { lat: coords!.lat!.toFixed(5), lng: coords!.lng!.toFixed(5) })}
         </p>
       )}
 
       {typedButNoPickedCoords && (
         <p className="text-xs text-amber-600 flex items-center gap-1">
           <AlertTriangle className="h-3 w-3" />
-          Adresse manuelle : choisissez une suggestion ou cliquez « Ma position » pour un calcul de frais précis.
+          {t("checkoutx.gps.manualAddressWarning")}
         </p>
       )}
     </div>
