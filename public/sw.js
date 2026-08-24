@@ -1,4 +1,4 @@
-const CACHE_NAME = 'apexl-v5';
+const CACHE_NAME = 'apexl-v6';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
