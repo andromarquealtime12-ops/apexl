@@ -76,6 +76,10 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
       toast.error("Votre date de naissance est obligatoire");
       return;
     }
+    if (!avatarUrl) {
+      toast.error(t("photoUpload.required", "La photo de profil de la boutique est obligatoire"));
+      return;
+    }
     try {
       setUploading(true);
       const { data: { user } } = await supabase.auth.getUser();
