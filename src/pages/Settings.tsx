@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GpsAddressField } from "@/components/ui/GpsAddressField";
+import { AvatarUploadField } from "@/components/ui/AvatarUploadField";
 import { toast } from "sonner";
 import { Settings as SettingsIcon, Save, Bell, BellOff, CheckCircle, MapPin } from "lucide-react";
 
@@ -34,6 +35,7 @@ export default function Settings() {
       phone: profile?.phone ?? "",
       date_of_birth: (profile as any)?.date_of_birth ?? "",
       address: profile?.address ?? "",
+      avatar_url: (profile as any)?.avatar_url ?? null as string | null,
       lat: profile?.latitude ?? null as number | null,
       lng: profile?.longitude ?? null as number | null,
     }),
@@ -73,6 +75,7 @@ export default function Settings() {
       await updateProfile.mutateAsync({
         ...(locked ? {} : { full_name }),
         phone: form.phone.trim() || null,
+        avatar_url: form.avatar_url,
         address: form.address.trim() || null,
         latitude: form.lat,
         longitude: form.lng,
@@ -135,6 +138,14 @@ export default function Settings() {
                     {t("settingsx.lockedNote")}
                   </p>
                 )}
+
+                <AvatarUploadField
+                  userId={user.id}
+                  value={form.avatar_url}
+                  onChange={(url) => setForm((p) => ({ ...p, avatar_url: url }))}
+                  label={t("photoUpload.label", "Photo de profil")}
+                  hint={t("photoUpload.hint", "Cette photo vous représente (boutique, livreur) dans l'application.")}
+                />
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">

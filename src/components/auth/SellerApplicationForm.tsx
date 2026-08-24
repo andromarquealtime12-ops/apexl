@@ -20,6 +20,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { GpsAddressField } from "@/components/ui/GpsAddressField";
+import { AvatarUploadField } from "@/components/ui/AvatarUploadField";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadApplicationDocument } from "@/utils/applicationUploads";
 
@@ -34,6 +36,8 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
   const submitApplication = useSubmitSellerApplication();
   const { isVerified: isEmailVerified } = useIsEmailVerified();
   const sendVerification = useSendVerificationCode();
+  const { user } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const [verifyEmail, setVerifyEmail] = useState("");
   const [formData, setFormData] = useState({
@@ -72,6 +76,10 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
       toast.error("Votre date de naissance est obligatoire");
       return;
     }
+    if (!avatarUrl) {
+      toast.error(t("photoUpload.required", "La photo de profil de la boutique est obligatoire"));
+      return;
+    }
     try {
       setUploading(true);
       const { data: { user } } = await supabase.auth.getUser();
@@ -96,6 +104,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
         shop_longitude: shopLng,
         shop_address: formData.shop_address,
         date_of_birth: dateOfBirth,
+        avatar_url: avatarUrl,
       } as any).eq("user_id", user.id);
       onClose();
     } finally {
@@ -197,6 +206,16 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
               </AlertDescription>
             </Alert>
           )}
+          <AvatarUploadField
+            userId={user?.id}
+            value={avatarUrl}
+            onChange={setAvatarUrl}
+            required
+            kind="shop-avatar"
+            label={t("photoUpload.shopLabel", "Photo de profil de la boutique")}
+            hint={t("photoUpload.shopHint", "Obligatoire : cette photo représente votre boutique dans l'application.")}
+          />
+
           <div className="space-y-2">
             <Label htmlFor="seller_dob">Date de naissance *</Label>
             <Input
@@ -309,7 +328,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !docsReady || !locationReady}>
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !docsReady || !locationReady || !avatarUrl}>
             {(submitApplication.isPending || uploading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             {uploading ? t("sellerApp.submitting") : t("sellerApp.submit")}
           </Button>

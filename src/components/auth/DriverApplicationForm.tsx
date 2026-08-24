@@ -20,6 +20,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadApplicationDocument } from "@/utils/applicationUploads";
+import { AvatarUploadField } from "@/components/ui/AvatarUploadField";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DriverApplicationFormProps {
   isOpen: boolean;
@@ -32,6 +34,8 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
   const submitApplication = useSubmitDriverApplication();
   const { isVerified: isEmailVerified } = useIsEmailVerified();
   const sendVerification = useSendVerificationCode();
+  const { user: authUser } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const [verifyEmail, setVerifyEmail] = useState("");
   const [formData, setFormData] = useState({
@@ -68,6 +72,10 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
       toast.error("Votre date de naissance est obligatoire");
       return;
     }
+    if (!avatarUrl) {
+      toast.error(t("photoUpload.required", "La photo de profil est obligatoire"));
+      return;
+    }
 
     try {
       setUploading(true);
@@ -91,7 +99,7 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
       });
       await supabase
         .from("profiles")
-        .update({ date_of_birth: dateOfBirth } as any)
+        .update({ date_of_birth: dateOfBirth, avatar_url: avatarUrl } as any)
         .eq("user_id", user.id);
       onClose();
     } finally {
@@ -196,6 +204,16 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
               </AlertDescription>
             </Alert>
           )}
+          <AvatarUploadField
+            userId={authUser?.id}
+            value={avatarUrl}
+            onChange={setAvatarUrl}
+            required
+            kind="driver-avatar"
+            label={t("photoUpload.driverLabel", "Photo de profil")}
+            hint={t("photoUpload.driverHint", "Obligatoire : les vendeurs et acheteurs verront cette photo.")}
+          />
+
           <div className="space-y-2">
             <Label htmlFor="driver_dob">Date de naissance *</Label>
             <Input
@@ -304,7 +322,7 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !formData.vehicle_type || !docsReady}>
+          <Button type="submit" className="w-full" disabled={submitApplication.isPending || uploading || !formData.vehicle_type || !docsReady || !avatarUrl}>
             {(submitApplication.isPending || uploading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             {uploading ? t("driverApp.submitting") : t("driverApp.submit")}
           </Button>
