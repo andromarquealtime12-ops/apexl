@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { Currency } from "@/types/database";
-import { notifyNewOrder, notifyAvailableDrivers } from "@/hooks/useOrderNotifications";
+import { notifyNewOrder } from "@/hooks/useOrderNotifications";
 
 interface CheckoutParams {
   deliveryAddress: string;
@@ -77,7 +77,6 @@ export function useCheckout() {
 
       if (result.order_id) {
         notifyNewOrder(result.order_id);
-        notifyAvailableDrivers(result.order_id);
 
         // If order contains Shopify products, forward to Shopify for fulfillment
         const hasShopifyItem = items.some((it) => (it.product as any).is_shopify === true);
