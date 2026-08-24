@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { Navigate } from "react-router-dom";
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 import { Settings as SettingsIcon, Save, Bell, BellOff, CheckCircle, MapPin } from "lucide-react";
 
 export default function Settings() {
+  const { t } = useTranslation();
   const { user, loading, isSeller } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -61,9 +63,9 @@ export default function Settings() {
   if (!user) return <Navigate to="/" replace />;
 
   const onSave = async () => {
-    if (!locked && !form.first_name.trim()) return toast.error("Prénom requis");
-    if (!locked && !form.last_name.trim()) return toast.error("Nom de famille requis");
-    if (form.lat == null || form.lng == null) return toast.error("Confirmez une adresse (position ou recherche)");
+    if (!locked && !form.first_name.trim()) return toast.error(t("settingsx.errFirst"));
+    if (!locked && !form.last_name.trim()) return toast.error(t("settingsx.errLast"));
+    if (form.lat == null || form.lng == null) return toast.error(t("settingsx.errAddress"));
 
     try {
       setSaving(true);
@@ -95,10 +97,10 @@ export default function Settings() {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
 
-      toast.success("Position mise à jour ✓ Les distances et itinéraires sont recalculés");
+      toast.success(t("settingsx.saved"));
 
     } catch (e: any) {
-      toast.error(e?.message || "Erreur lors de l'enregistrement");
+      toast.error(e?.message || t("settingsx.errSave"));
     } finally {
       setSaving(false);
     }
@@ -111,17 +113,16 @@ export default function Settings() {
         <header className="flex items-center gap-3 mb-6">
           <SettingsIcon className="h-7 w-7 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold">Paramètres</h1>
-            <p className="text-muted-foreground">Gérez vos informations de compte</p>
+            <h1 className="text-2xl font-bold">{t("settingsx.title")}</h1>
+            <p className="text-muted-foreground">{t("settingsx.subtitle")}</p>
           </div>
         </header>
 
         <Card>
           <CardHeader>
-            <CardTitle>Informations personnelles</CardTitle>
+            <CardTitle>{t("settingsx.personal")}</CardTitle>
             <CardDescription>
-              Nom, prénom, date de naissance et adresse. L'adresse enregistrée sert au calcul de la distance
-              {isSeller ? " entre votre boutique et les acheteurs." : " avec les vendeurs et livreurs."}
+              {isSeller ? t("settingsx.personalDescSeller") : t("settingsx.personalDescBuyer")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
@@ -131,14 +132,13 @@ export default function Settings() {
               <>
                 {locked && (
                   <p className="rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
-                    Votre nom, prénom et date de naissance sont confirmés et ne peuvent plus être
-                    modifiés. Vous pouvez toujours changer votre email et votre téléphone.
+                    {t("settingsx.lockedNote")}
                   </p>
                 )}
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="first_name">Prénom *</Label>
+                    <Label htmlFor="first_name">{t("settingsx.firstName")} *</Label>
                     <Input
                       id="first_name"
                       value={form.first_name}
@@ -148,7 +148,7 @@ export default function Settings() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="last_name">Nom</Label>
+                    <Label htmlFor="last_name">{t("settingsx.lastName")}</Label>
                     <Input
                       id="last_name"
                       value={form.last_name}
@@ -161,7 +161,7 @@ export default function Settings() {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="dob">Date de naissance</Label>
+                    <Label htmlFor="dob">{t("settingsx.dob")}</Label>
                     <Input
                       id="dob"
                       type="date"
@@ -171,7 +171,7 @@ export default function Settings() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Téléphone</Label>
+                    <Label htmlFor="phone">{t("settingsx.phone")}</Label>
                     <Input
                       id="phone"
                       value={form.phone}
@@ -185,7 +185,7 @@ export default function Settings() {
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-primary" />
-                    Adresse
+                    {t("settingsx.address")}
                   </Label>
                   <GpsAddressField
                     value={form.address}
@@ -197,19 +197,19 @@ export default function Settings() {
                     onSelect={(s) =>
                       setForm((p) => ({ ...p, address: s.address, lat: s.lat, lng: s.lng }))
                     }
-                    placeholder="Utiliser ma position ou rechercher une adresse…"
+                    placeholder={t("settingsx.addressPlaceholder")}
                   />
                   {form.lat != null && form.lng != null && (
                     <p className="text-xs text-green-600 flex items-center gap-1">
                       <CheckCircle className="h-3 w-3" />
-                      Position enregistrée : {form.lat.toFixed(5)}, {form.lng.toFixed(5)}
+                      {t("settingsx.savedPosition")} : {form.lat.toFixed(5)}, {form.lng.toFixed(5)}
                     </p>
                   )}
                 </div>
 
                 <Button onClick={onSave} disabled={saving || updateProfile.isPending} className="w-full gap-2">
                   <Save className="h-4 w-4" />
-                  {saving ? "Enregistrement..." : "Enregistrer"}
+                  {saving ? t("settingsx.saving") : t("settingsx.save")}
                 </Button>
               </>
             )}
@@ -221,37 +221,37 @@ export default function Settings() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              Notifications Push
+              {t("settingsx.notifTitle")}
             </CardTitle>
             <CardDescription>
-              Recevez des alertes sur vos commandes et livraisons
+              {t("settingsx.notifDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {!isSupported ? (
               <p className="text-sm text-muted-foreground">
-                Les notifications ne sont pas supportées sur ce navigateur.
+                {t("settingsx.notSupported")}
               </p>
             ) : permission === "granted" ? (
               <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                 <CheckCircle className="h-5 w-5 text-green-600" />
                 <div>
-                  <p className="font-medium text-green-800 dark:text-green-200">Notifications activées</p>
-                  <p className="text-xs text-green-600 dark:text-green-400">Vous recevrez des alertes pour les commandes et livraisons</p>
+                  <p className="font-medium text-green-800 dark:text-green-200">{t("settingsx.enabled")}</p>
+                  <p className="text-xs text-green-600 dark:text-green-400">{t("settingsx.enabledDesc")}</p>
                 </div>
               </div>
             ) : permission === "denied" ? (
               <div className="flex items-center gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
                 <BellOff className="h-5 w-5 text-red-600" />
                 <div>
-                  <p className="font-medium text-red-800 dark:text-red-200">Notifications bloquées</p>
-                  <p className="text-xs text-red-600 dark:text-red-400">Activez-les dans les paramètres de votre navigateur</p>
+                  <p className="font-medium text-red-800 dark:text-red-200">{t("settingsx.blocked")}</p>
+                  <p className="text-xs text-red-600 dark:text-red-400">{t("settingsx.blockedDesc")}</p>
                 </div>
               </div>
             ) : (
               <Button onClick={requestPermission} className="w-full gap-2">
                 <Bell className="h-4 w-4" />
-                Activer les notifications
+                {t("settingsx.enable")}
               </Button>
             )}
           </CardContent>
@@ -260,16 +260,16 @@ export default function Settings() {
         {/* About */}
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle>À propos</CardTitle>
+            <CardTitle>{t("settingsx.about")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
-            <p><strong>APEXL</strong> — Plateforme de commerce et livraison en Haïti et République Dominicaine.</p>
-            <p>Version 1.0.0</p>
+            <p><strong>APEXL</strong> — {t("settingsx.aboutDesc")}</p>
+            <p>{t("settingsx.version")}</p>
             <div className="pt-2 border-t space-y-1">
-              <p>📧 Contact : support@apex.com</p>
-              <p>📱 WhatsApp : +509 39 29 7720</p>
+              <p>📧 {t("settingsx.contact")} : support@apex.com</p>
+              <p>📱 {t("settingsx.whatsapp")} : +509 39 29 7720</p>
             </div>
-            <p className="text-xs pt-2">© {new Date().getFullYear()} APEXL. Tous droits réservés.</p>
+            <p className="text-xs pt-2">© {new Date().getFullYear()} APEXL. {t("settingsx.rights")}</p>
           </CardContent>
         </Card>
       </div>

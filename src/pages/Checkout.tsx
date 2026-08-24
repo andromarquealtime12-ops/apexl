@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import "@/i18n/checkoutx";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -42,6 +44,7 @@ import { useUserCountry } from "@/utils/userCountry";
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { items, getSubtotal, getDeliveryFee, getTotal } = useCart();
@@ -104,7 +107,7 @@ const Checkout = () => {
   // Get current position (one-shot, high accuracy)
   const handleGetLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      toast({ title: "Erreur", description: "La géolocalisation n'est pas disponible sur cet appareil", variant: "destructive" });
+      toast({ title: t("checkoutx.toast.error"), description: t("checkoutx.toast.geoErrorDesc"), variant: "destructive" });
       return;
     }
     setGettingLocation(true);
@@ -113,13 +116,13 @@ const Checkout = () => {
         setBuyerLat(pos.coords.latitude);
         setBuyerLng(pos.coords.longitude);
         setGettingLocation(false);
-        toast({ title: "Position obtenue ✓", description: `Précision ~${Math.round(pos.coords.accuracy)} m` });
+        toast({ title: t("checkoutx.toast.positionObtainedTitle"), description: t("checkoutx.toast.positionObtainedDesc", { accuracy: Math.round(pos.coords.accuracy) }) });
       },
       (err) => {
         setGettingLocation(false);
         toast({
-          title: "Erreur de localisation",
-          description: err.code === 1 ? "Veuillez autoriser l'accès à votre position" : "Impossible d'obtenir votre position",
+          title: t("checkoutx.toast.locationErrorTitle"),
+          description: err.code === 1 ? t("checkoutx.toast.locationErrorDenied") : t("checkoutx.toast.locationErrorGeneric"),
           variant: "destructive",
         });
       },
@@ -253,28 +256,28 @@ const Checkout = () => {
     e.preventDefault();
     
     if (!user) {
-      toast({ title: "Erreur", description: "Vous devez être connecté pour passer une commande", variant: "destructive" });
+      toast({ title: t("checkoutx.toast.error"), description: t("checkoutx.toast.mustBeLoggedIn"), variant: "destructive" });
       return;
     }
 
     if (!deliveryAddress || !deliveryCity) {
-      toast({ title: "Erreur", description: "Veuillez renseigner l'adresse de livraison", variant: "destructive" });
+      toast({ title: t("checkoutx.toast.error"), description: t("checkoutx.toast.fillAddress"), variant: "destructive" });
       return;
     }
 
     if (!deliveryAddress2.trim()) {
-      toast({ title: "Numéro de maison requis", description: "Indiquez le n° de maison, d'édifice ou d'appartement pour que le livreur vous trouve.", variant: "destructive" });
+      toast({ title: t("checkoutx.toast.houseNumberRequiredTitle"), description: t("checkoutx.toast.houseNumberRequiredDesc"), variant: "destructive" });
       return;
     }
 
     if (deliveryNotes.trim().length < 10) {
-      toast({ title: "Instructions requises", description: "Décrivez comment vous trouver (point de repère, couleur, étage, résidence…) — 10 caractères minimum.", variant: "destructive" });
+      toast({ title: t("checkoutx.toast.instructionsRequiredTitle"), description: t("checkoutx.toast.instructionsRequiredDesc"), variant: "destructive" });
       return;
     }
 
     const phoneClean = buyerPhone.replace(/\s+/g, "");
     if (!phoneClean || phoneClean.length < 7) {
-      toast({ title: "Téléphone requis", description: "Un numéro de téléphone valide est obligatoire pour que le livreur puisse vous contacter.", variant: "destructive" });
+      toast({ title: t("checkoutx.toast.phoneRequiredTitle"), description: t("checkoutx.toast.phoneRequiredDesc"), variant: "destructive" });
       return;
     }
 
@@ -285,19 +288,19 @@ const Checkout = () => {
     }
 
     if (paymentMethod === "wallet" && !hasEnoughBalance) {
-      toast({ title: "Solde insuffisant", description: "Rechargez votre portefeuille ou payez en cash", variant: "destructive" });
+      toast({ title: t("checkoutx.toast.insufficientBalanceTitle"), description: t("checkoutx.toast.insufficientBalanceDesc"), variant: "destructive" });
       return;
     }
 
     if (hasPrintfulItem && (!deliveryAddress || !deliveryState || !deliveryZip || !deliveryCountry)) {
-      toast({ title: "Adresse incomplète", description: "Veuillez compléter l'adresse internationale pour Printful (ligne 1, état, code postal, pays).", variant: "destructive" });
+      toast({ title: t("checkoutx.toast.incompleteAddressTitle"), description: t("checkoutx.toast.incompleteAddressDesc"), variant: "destructive" });
       return;
     }
 
     if (!addressConfirmed) {
       toast({
-        title: "Confirmez votre adresse",
-        description: "Cochez la case pour confirmer que l'adresse de livraison est correcte.",
+        title: t("checkoutx.toast.confirmAddressTitle"),
+        description: t("checkoutx.toast.confirmAddressDesc"),
         variant: "destructive",
       });
       return;
@@ -340,9 +343,9 @@ const Checkout = () => {
       }
       
       setOrderSuccess(true);
-      toast({ title: "Commande confirmée !", description: paymentMethod === "cash" ? "Préparez le montant exact pour le livreur" : "Votre commande a été passée avec succès" });
+      toast({ title: t("checkoutx.toast.orderConfirmedTitle"), description: paymentMethod === "cash" ? t("checkoutx.toast.orderConfirmedCash") : t("checkoutx.toast.orderConfirmedSuccess") });
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message || "Une erreur est survenue", variant: "destructive" });
+      toast({ title: t("checkoutx.toast.error"), description: error.message || t("checkoutx.toast.genericError"), variant: "destructive" });
     }
   };
 
@@ -355,9 +358,9 @@ const Checkout = () => {
           <Card className="max-w-md mx-auto">
             <CardContent className="pt-6 text-center">
               <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Connexion requise</h2>
-              <p className="text-muted-foreground mb-4">Vous devez être connecté pour passer une commande</p>
-              <Button onClick={() => navigate("/")}>Retour à l'accueil</Button>
+              <h2 className="text-xl font-semibold mb-2">{t("checkoutx.loginRequired.title")}</h2>
+              <p className="text-muted-foreground mb-4">{t("checkoutx.loginRequired.description")}</p>
+              <Button onClick={() => navigate("/")}>{t("checkoutx.loginRequired.backHome")}</Button>
             </CardContent>
           </Card>
         </main>
@@ -374,9 +377,9 @@ const Checkout = () => {
           <Card className="max-w-md mx-auto">
             <CardContent className="pt-6 text-center">
               <ShoppingBag className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Panier vide</h2>
-              <p className="text-muted-foreground mb-4">Ajoutez des produits à votre panier pour continuer</p>
-              <Button onClick={() => navigate("/products")}>Voir les produits</Button>
+              <h2 className="text-xl font-semibold mb-2">{t("checkoutx.emptyCart.title")}</h2>
+              <p className="text-muted-foreground mb-4">{t("checkoutx.emptyCart.description")}</p>
+              <Button onClick={() => navigate("/products")}>{t("checkoutx.emptyCart.viewProducts")}</Button>
             </CardContent>
           </Card>
         </main>
@@ -395,13 +398,13 @@ const Checkout = () => {
               <div className="bg-green-100 dark:bg-green-900/30 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
-              <h2 className="text-xl font-semibold mb-2">Commande confirmée !</h2>
+              <h2 className="text-xl font-semibold mb-2">{t("checkoutx.success.title")}</h2>
               <p className="text-muted-foreground mb-4">
-                Votre commande a été passée avec succès. Vous recevrez une notification lorsqu'elle sera en cours de livraison.
+                {t("checkoutx.success.description")}
               </p>
               <div className="flex gap-3 justify-center">
-                <Button variant="outline" onClick={() => navigate("/")}>Retour à l'accueil</Button>
-                <Button onClick={() => navigate("/orders")}>Voir mes commandes</Button>
+                <Button variant="outline" onClick={() => navigate("/")}>{t("checkoutx.success.backHome")}</Button>
+                <Button onClick={() => navigate("/orders")}>{t("checkoutx.success.viewOrders")}</Button>
               </div>
             </CardContent>
           </Card>
@@ -417,7 +420,7 @@ const Checkout = () => {
       <main className="flex-1 container py-8">
         <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
           <ShoppingBag className="h-6 w-6" />
-          Finaliser la commande
+          {t("checkoutx.title")}
         </h1>
 
         <form onSubmit={handleSubmit}>
@@ -428,7 +431,7 @@ const Checkout = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <MapPin className="h-5 w-5" />
-                    Adresse de livraison
+                    {t("checkoutx.address.heading")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -436,17 +439,17 @@ const Checkout = () => {
                   <div className="p-3 border rounded-lg bg-muted/30">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <div>
-                        <p className="font-medium text-sm">📍 Position GPS</p>
+                        <p className="font-medium text-sm">{t("checkoutx.address.gpsLabel")}</p>
                         {buyerLat && buyerLng ? (
-                          <p className="text-xs text-green-600">Position enregistrée ✓ ({buyerLat.toFixed(4)}, {buyerLng.toFixed(4)})</p>
+                          <p className="text-xs text-green-600">{t("checkoutx.address.gpsSaved", { lat: buyerLat.toFixed(4), lng: buyerLng.toFixed(4) })}</p>
                         ) : (
-                          <p className="text-xs text-muted-foreground">Utilisez votre position pour un calcul précis des frais</p>
+                          <p className="text-xs text-muted-foreground">{t("checkoutx.address.gpsHint")}</p>
                         )}
                       </div>
                       <div className="flex gap-2 flex-wrap">
                         <Button type="button" variant="outline" size="sm" onClick={handleGetLocation} disabled={gettingLocation}>
                           {gettingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
-                          <span className="ml-1">{buyerLat ? "Actualiser" : "Ma position"}</span>
+                          <span className="ml-1">{buyerLat ? t("checkoutx.address.refresh") : t("checkoutx.address.useMyPosition")}</span>
                         </Button>
                         <Button
                           type="button"
@@ -454,14 +457,14 @@ const Checkout = () => {
                           size="sm"
                           onClick={() => {
                             if (!buyerLat || !buyerLng) {
-                              toast({ title: "Position requise", description: "Activez d'abord votre position GPS", variant: "destructive" });
+                              toast({ title: t("checkoutx.toast.positionRequiredTitle"), description: t("checkoutx.toast.positionRequiredDesc"), variant: "destructive" });
                               return;
                             }
                             navigate(`/products?near=1&lat=${buyerLat}&lng=${buyerLng}`);
                           }}
                         >
                           <MapPinned className="h-4 w-4" />
-                          <span className="ml-1">Produits locaux</span>
+                          <span className="ml-1">{t("checkoutx.address.localProducts")}</span>
                         </Button>
                       </div>
                     </div>
@@ -472,15 +475,15 @@ const Checkout = () => {
                           .map(([sid, info], idx) => (
                           <p key={sid} className="text-xs text-primary flex items-center gap-1 flex-wrap">
                             <Store className="h-3 w-3" />
-                            {info.shopName}: {info.distance.toFixed(1)} km → RD$ {info.fee.toLocaleString()}
+                            {t("checkoutx.address.shopFeeLine", { shop: info.shopName, distance: info.distance.toFixed(1), fee: info.fee.toLocaleString() })}
                             {idx > 0 && info.distance <= 10 && (
-                              <span className="text-amber-600 ml-1">(+10% multi-vendeurs)</span>
+                              <span className="text-amber-600 ml-1">{t("checkoutx.address.multiVendorSurcharge")}</span>
                             )}
                           </p>
                         ))}
                         {Object.keys(shopDistances).length > 1 && (
                           <p className="text-[11px] text-muted-foreground italic mt-1">
-                            ℹ️ La 1ère boutique (la plus proche) au tarif normal. Les boutiques additionnelles dans un rayon de 10 km : +10%.
+                            {t("checkoutx.address.multiVendorNote")}
                           </p>
                         )}
                       </div>
@@ -489,64 +492,64 @@ const Checkout = () => {
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="country">Pays</Label>
+                      <Label htmlFor="country">{t("checkoutx.address.countryLabel")}</Label>
                       <Select value={deliveryCountry} onValueChange={setDeliveryCountry}>
-                        <SelectTrigger><SelectValue placeholder="Pays" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder={t("checkoutx.address.countryPlaceholder")} /></SelectTrigger>
                         <SelectContent className="max-h-72">
-                          <SelectItem value="DO">🇩🇴 République Dominicaine</SelectItem>
-                          <SelectItem value="HT">🇭🇹 Haïti</SelectItem>
-                          <SelectItem value="US">🇺🇸 États-Unis</SelectItem>
-                          <SelectItem value="CA">🇨🇦 Canada</SelectItem>
-                          <SelectItem value="MX">🇲🇽 Mexique</SelectItem>
-                          <SelectItem value="FR">🇫🇷 France</SelectItem>
-                          <SelectItem value="ES">🇪🇸 Espagne</SelectItem>
-                          <SelectItem value="GB">🇬🇧 Royaume-Uni</SelectItem>
-                          <SelectItem value="DE">🇩🇪 Allemagne</SelectItem>
-                          <SelectItem value="IT">🇮🇹 Italie</SelectItem>
-                          <SelectItem value="PT">🇵🇹 Portugal</SelectItem>
-                          <SelectItem value="BE">🇧🇪 Belgique</SelectItem>
-                          <SelectItem value="CH">🇨🇭 Suisse</SelectItem>
-                          <SelectItem value="NL">🇳🇱 Pays-Bas</SelectItem>
-                          <SelectItem value="BR">🇧🇷 Brésil</SelectItem>
-                          <SelectItem value="AR">🇦🇷 Argentine</SelectItem>
-                          <SelectItem value="CL">🇨🇱 Chili</SelectItem>
-                          <SelectItem value="CO">🇨🇴 Colombie</SelectItem>
-                          <SelectItem value="PE">🇵🇪 Pérou</SelectItem>
-                          <SelectItem value="VE">🇻🇪 Venezuela</SelectItem>
-                          <SelectItem value="PR">🇵🇷 Porto Rico</SelectItem>
-                          <SelectItem value="CU">🇨🇺 Cuba</SelectItem>
-                          <SelectItem value="JM">🇯🇲 Jamaïque</SelectItem>
-                          <SelectItem value="BS">🇧🇸 Bahamas</SelectItem>
-                          <SelectItem value="GP">🇬🇵 Guadeloupe</SelectItem>
-                          <SelectItem value="MQ">🇲🇶 Martinique</SelectItem>
-                          <SelectItem value="GF">🇬🇫 Guyane</SelectItem>
-                          <SelectItem value="SN">🇸🇳 Sénégal</SelectItem>
-                          <SelectItem value="CI">🇨🇮 Côte d'Ivoire</SelectItem>
-                          <SelectItem value="CM">🇨🇲 Cameroun</SelectItem>
-                          <SelectItem value="MA">🇲🇦 Maroc</SelectItem>
-                          <SelectItem value="DZ">🇩🇿 Algérie</SelectItem>
-                          <SelectItem value="TN">🇹🇳 Tunisie</SelectItem>
-                          <SelectItem value="CN">🇨🇳 Chine</SelectItem>
-                          <SelectItem value="JP">🇯🇵 Japon</SelectItem>
-                          <SelectItem value="KR">🇰🇷 Corée du Sud</SelectItem>
-                          <SelectItem value="IN">🇮🇳 Inde</SelectItem>
-                          <SelectItem value="AU">🇦🇺 Australie</SelectItem>
-                          <SelectItem value="OTHER">🌍 Autre pays</SelectItem>
+                          <SelectItem value="DO">{t("checkoutx.countries.DO")}</SelectItem>
+                          <SelectItem value="HT">{t("checkoutx.countries.HT")}</SelectItem>
+                          <SelectItem value="US">{t("checkoutx.countries.US")}</SelectItem>
+                          <SelectItem value="CA">{t("checkoutx.countries.CA")}</SelectItem>
+                          <SelectItem value="MX">{t("checkoutx.countries.MX")}</SelectItem>
+                          <SelectItem value="FR">{t("checkoutx.countries.FR")}</SelectItem>
+                          <SelectItem value="ES">{t("checkoutx.countries.ES")}</SelectItem>
+                          <SelectItem value="GB">{t("checkoutx.countries.GB")}</SelectItem>
+                          <SelectItem value="DE">{t("checkoutx.countries.DE")}</SelectItem>
+                          <SelectItem value="IT">{t("checkoutx.countries.IT")}</SelectItem>
+                          <SelectItem value="PT">{t("checkoutx.countries.PT")}</SelectItem>
+                          <SelectItem value="BE">{t("checkoutx.countries.BE")}</SelectItem>
+                          <SelectItem value="CH">{t("checkoutx.countries.CH")}</SelectItem>
+                          <SelectItem value="NL">{t("checkoutx.countries.NL")}</SelectItem>
+                          <SelectItem value="BR">{t("checkoutx.countries.BR")}</SelectItem>
+                          <SelectItem value="AR">{t("checkoutx.countries.AR")}</SelectItem>
+                          <SelectItem value="CL">{t("checkoutx.countries.CL")}</SelectItem>
+                          <SelectItem value="CO">{t("checkoutx.countries.CO")}</SelectItem>
+                          <SelectItem value="PE">{t("checkoutx.countries.PE")}</SelectItem>
+                          <SelectItem value="VE">{t("checkoutx.countries.VE")}</SelectItem>
+                          <SelectItem value="PR">{t("checkoutx.countries.PR")}</SelectItem>
+                          <SelectItem value="CU">{t("checkoutx.countries.CU")}</SelectItem>
+                          <SelectItem value="JM">{t("checkoutx.countries.JM")}</SelectItem>
+                          <SelectItem value="BS">{t("checkoutx.countries.BS")}</SelectItem>
+                          <SelectItem value="GP">{t("checkoutx.countries.GP")}</SelectItem>
+                          <SelectItem value="MQ">{t("checkoutx.countries.MQ")}</SelectItem>
+                          <SelectItem value="GF">{t("checkoutx.countries.GF")}</SelectItem>
+                          <SelectItem value="SN">{t("checkoutx.countries.SN")}</SelectItem>
+                          <SelectItem value="CI">{t("checkoutx.countries.CI")}</SelectItem>
+                          <SelectItem value="CM">{t("checkoutx.countries.CM")}</SelectItem>
+                          <SelectItem value="MA">{t("checkoutx.countries.MA")}</SelectItem>
+                          <SelectItem value="DZ">{t("checkoutx.countries.DZ")}</SelectItem>
+                          <SelectItem value="TN">{t("checkoutx.countries.TN")}</SelectItem>
+                          <SelectItem value="CN">{t("checkoutx.countries.CN")}</SelectItem>
+                          <SelectItem value="JP">{t("checkoutx.countries.JP")}</SelectItem>
+                          <SelectItem value="KR">{t("checkoutx.countries.KR")}</SelectItem>
+                          <SelectItem value="IN">{t("checkoutx.countries.IN")}</SelectItem>
+                          <SelectItem value="AU">{t("checkoutx.countries.AU")}</SelectItem>
+                          <SelectItem value="OTHER">{t("checkoutx.countries.OTHER")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="city">Ville</Label>
+                      <Label htmlFor="city">{t("checkoutx.address.cityLabel")}</Label>
                       <Select value={deliveryCity} onValueChange={setDeliveryCity}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner une ville" />
+                          <SelectValue placeholder={t("checkoutx.address.cityPlaceholder")} />
                         </SelectTrigger>
                         <SelectContent className="max-h-60">
-                          <SelectItem value="__do_header" disabled>🇩🇴 République Dominicaine</SelectItem>
+                          <SelectItem value="__do_header" disabled>{t("checkoutx.countries.DO")}</SelectItem>
                           {ALL_CITIES.DO.map((city) => (
                             <SelectItem key={city} value={city}>{city}</SelectItem>
                           ))}
-                          <SelectItem value="__ht_header" disabled>🇭🇹 Haïti</SelectItem>
+                          <SelectItem value="__ht_header" disabled>{t("checkoutx.countries.HT")}</SelectItem>
                           {ALL_CITIES.HT.map((city) => (
                             <SelectItem key={city} value={city}>{city}</SelectItem>
                           ))}
@@ -555,7 +558,7 @@ const Checkout = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="address">Adresse ligne 1</Label>
+                    <Label htmlFor="address">{t("checkoutx.address.addressLine1Label")}</Label>
                     <GpsAddressField
                       id="address"
                       value={deliveryAddress}
@@ -576,18 +579,18 @@ const Checkout = () => {
                         if (s.postcode) setDeliveryZip(s.postcode);
                         setAddressConfirmed(false);
                       }}
-                      placeholder="Ex: Av. 27 de Febrero, Santo Domingo…"
+                      placeholder={t("checkoutx.address.addressPlaceholder")}
                       countryCodes={deliveryCountry === "HT" ? "ht" : deliveryCountry === "DO" ? "do" : "do,ht"}
                     />
                     {reverseLoading && (
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <Loader2 className="h-3 w-3 animate-spin" />
-                        Récupération de votre adresse depuis votre position…
+                        {t("checkoutx.address.reverseLoading")}
                       </p>
                     )}
                     {addressAutoFilled && !reverseLoading && (
                       <p className="text-xs text-emerald-600">
-                        ✓ Adresse remplie automatiquement depuis votre position GPS. Modifiez-la si nécessaire.
+                        {t("checkoutx.address.autoFilledNote")}
                       </p>
                     )}
                   </div>
@@ -602,10 +605,10 @@ const Checkout = () => {
                         className="mt-0.5"
                       />
                       <Label htmlFor="confirm-address" className="text-sm cursor-pointer leading-snug">
-                        Je confirme que <strong>{deliveryAddress}</strong>{deliveryCity ? `, ${deliveryCity}` : ""} est bien mon adresse de livraison.
+                        <span dangerouslySetInnerHTML={{ __html: t("checkoutx.address.confirmCheckbox", { address: deliveryAddress, city: deliveryCity ? t("checkoutx.address.confirmCheckboxCityPart", { city: deliveryCity }) : "" }) }} />
                         {!addressAutoFilled && buyerLat && buyerLng && (
                           <span className="block text-xs text-amber-700 dark:text-amber-400 mt-1">
-                            ⚠️ Cette adresse ne correspond pas exactement à votre position GPS — assurez-vous qu'elle est correcte.
+                            {t("checkoutx.address.gpsMismatchWarning")}
                           </span>
                         )}
                       </Label>
@@ -615,35 +618,35 @@ const Checkout = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="address2">
-                      N° de maison / édifice / appartement <span className="text-destructive">*</span>
+                      {t("checkoutx.address.houseNumberLabel")} <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="address2"
-                      placeholder="Ex: Maison #24, Édifice Las Palmas, Apt 3B, 2e étage..."
+                      placeholder={t("checkoutx.address.houseNumberPlaceholder")}
                       value={deliveryAddress2}
                       onChange={(e) => setDeliveryAddress2(e.target.value)}
                       required
                     />
                     <p className="text-xs text-muted-foreground">
-                      Obligatoire — OpenStreetMap donne la rue, mais le livreur a besoin du numéro exact.
+                      {t("checkoutx.address.houseNumberHint")}
                     </p>
                   </div>
                   <div className="grid sm:grid-cols-3 gap-4">
                     <div className="space-y-2 sm:col-span-2">
-                      <Label htmlFor="state">État / Province / Région {hasPrintfulItem && <span className="text-destructive">*</span>}</Label>
+                      <Label htmlFor="state">{t("checkoutx.address.stateLabel")} {hasPrintfulItem && <span className="text-destructive">*</span>}</Label>
                       <Input
                         id="state"
-                        placeholder="Ex: Distrito Nacional, Ouest..."
+                        placeholder={t("checkoutx.address.statePlaceholder")}
                         value={deliveryState}
                         onChange={(e) => setDeliveryState(e.target.value)}
                         required={hasPrintfulItem}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="zip">Code postal {hasPrintfulItem && <span className="text-destructive">*</span>}</Label>
+                      <Label htmlFor="zip">{t("checkoutx.address.zipLabel")} {hasPrintfulItem && <span className="text-destructive">*</span>}</Label>
                       <Input
                         id="zip"
-                        placeholder="10101"
+                        placeholder={t("checkoutx.address.zipPlaceholder")}
                         value={deliveryZip}
                         onChange={(e) => setDeliveryZip(e.target.value)}
                         required={hasPrintfulItem}
@@ -651,42 +654,42 @@ const Checkout = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="currency">Devise</Label>
+                    <Label htmlFor="currency">{t("checkoutx.address.currencyLabel")}</Label>
                     <Select value={currency} onValueChange={(v) => setCurrency(v as Currency)} disabled={hasPrintfulItem}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="DOP" disabled={hasPrintfulItem}>Peso Dominicain (RD$)</SelectItem>
-                        <SelectItem value="HTG" disabled={hasPrintfulItem}>Gourde Haïtienne (G)</SelectItem>
-                        <SelectItem value="USD">Dollar US ($)</SelectItem>
+                        <SelectItem value="DOP" disabled={hasPrintfulItem}>{t("checkoutx.address.currencyDOP")}</SelectItem>
+                        <SelectItem value="HTG" disabled={hasPrintfulItem}>{t("checkoutx.address.currencyHTG")}</SelectItem>
+                        <SelectItem value="USD">{t("checkoutx.address.currencyUSD")}</SelectItem>
                       </SelectContent>
                     </Select>
                     {hasPrintfulItem && (
-                      <p className="text-xs text-muted-foreground">Les commandes Printful sont obligatoirement réglées en USD.</p>
+                      <p className="text-xs text-muted-foreground">{t("checkoutx.address.printfulCurrencyNote")}</p>
                     )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="buyer_phone">
-                      Téléphone de contact <span className="text-destructive">*</span>
+                      {t("checkoutx.address.phoneLabel")} <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="buyer_phone"
                       type="tel"
-                      placeholder="+1 809 000 0000"
+                      placeholder={t("checkoutx.address.phonePlaceholder")}
                       value={buyerPhone}
                       onChange={(e) => setBuyerPhone(e.target.value)}
                       required
                     />
                     <p className="text-xs text-muted-foreground">
-                      Obligatoire — le livreur vous appellera à ce numéro pour la livraison.
+                      {t("checkoutx.address.phoneHint")}
                     </p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="notes">
-                      Instructions pour le livreur <span className="text-destructive">*</span>
+                      {t("checkoutx.address.notesLabel")} <span className="text-destructive">*</span>
                     </Label>
                     <Textarea
                       id="notes"
-                      placeholder="Ex: Maison bleue à droite après la pharmacie, portail noir, appeler en arrivant, résidence sécurisée demander à la réception..."
+                      placeholder={t("checkoutx.address.notesPlaceholder")}
                       value={deliveryNotes}
                       onChange={(e) => setDeliveryNotes(e.target.value)}
                       rows={3}
@@ -694,14 +697,14 @@ const Checkout = () => {
                       minLength={10}
                     />
                     <p className="text-xs text-muted-foreground">
-                      Obligatoire (10 caractères min.) — point de repère, couleur du portail, étage, résidence, code d'accès…
+                      {t("checkoutx.address.notesHint")}
                     </p>
                   </div>
                   {hasPrintfulItem && (
                     <Alert>
                       <Globe className="h-4 w-4" />
                       <AlertDescription className="text-xs">
-                        Les produits Printful sont facturés en USD et expédiés par Printful directement à cette adresse. État/province et code postal sont obligatoires.
+                        {t("checkoutx.address.printfulAlert")}
                       </AlertDescription>
                     </Alert>
                   )}
@@ -716,7 +719,7 @@ const Checkout = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <Wallet className="h-5 w-5" />
-                    Mode de paiement
+                    {t("checkoutx.payment.heading")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -730,9 +733,9 @@ const Checkout = () => {
                         <Wallet className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium">Portefeuille APEXL</p>
+                        <p className="font-medium">{t("checkoutx.payment.walletName")}</p>
                         <p className="text-sm text-muted-foreground">
-                          Solde: {CURRENCY_SYMBOLS[currency]} {currentBalance.toLocaleString()}
+                          {t("checkoutx.payment.walletBalance", { symbol: CURRENCY_SYMBOLS[currency], balance: currentBalance.toLocaleString() })}
                         </p>
                       </div>
                     </div>
@@ -742,9 +745,9 @@ const Checkout = () => {
                   {paymentMethod === "wallet" && !hasEnoughBalance && (
                     <p className="text-destructive text-sm flex items-center gap-1">
                       <AlertCircle className="h-4 w-4" />
-                      Solde insuffisant ({CURRENCY_SYMBOLS[currency]} {(total - currentBalance).toLocaleString()} manquants).
+                      {t("checkoutx.payment.insufficientBalance", { symbol: CURRENCY_SYMBOLS[currency], amount: (total - currentBalance).toLocaleString() })}
                       <Button type="button" variant="link" className="h-auto p-0 pl-1" onClick={() => navigate("/wallet")}>
-                        Recharger
+                        {t("checkoutx.payment.recharge")}
                       </Button>
                     </p>
                   )}
@@ -754,7 +757,7 @@ const Checkout = () => {
                     <Alert>
                       <Globe className="h-4 w-4" />
                       <AlertDescription>
-                        Achat international : le paiement se fait uniquement par portefeuille APEXL. Les frais de livraison sont inclus et le colis vous est livré à domicile.
+                        {t("checkoutx.payment.internationalNote")}
                       </AlertDescription>
                     </Alert>
                   ) : (
@@ -767,9 +770,9 @@ const Checkout = () => {
                           <Banknote className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <p className="font-medium">Paiement en cash</p>
+                          <p className="font-medium">{t("checkoutx.payment.cashName")}</p>
                           <p className="text-sm text-muted-foreground">
-                            Payez en espèces au livreur à la réception
+                            {t("checkoutx.payment.cashDesc")}
                           </p>
                         </div>
                       </div>
@@ -785,7 +788,7 @@ const Checkout = () => {
             <div>
               <Card className="sticky top-20">
                 <CardHeader>
-                  <CardTitle className="text-lg">Résumé de la commande</CardTitle>
+                  <CardTitle className="text-lg">{t("checkoutx.summary.heading")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3 max-h-60 overflow-y-auto">
@@ -799,7 +802,7 @@ const Checkout = () => {
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium line-clamp-1">{item.product.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {item.quantity} × {CURRENCY_SYMBOLS[item.product.currency]} {item.product.price.toLocaleString()}
+                            {t("checkoutx.summary.qtyPrice", { qty: item.quantity, symbol: CURRENCY_SYMBOLS[item.product.currency], price: item.product.price.toLocaleString() })}
                           </p>
                         </div>
                       </div>
@@ -808,7 +811,7 @@ const Checkout = () => {
 
                   <div className="border-t pt-4 space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Sous-total</span>
+                      <span className="text-muted-foreground">{t("checkoutx.summary.subtotal")}</span>
                       <span>{CURRENCY_SYMBOLS[currency]} {subtotal.toLocaleString()}</span>
                     </div>
                     {Object.entries(shopDistances).length > 0 ? (
@@ -825,14 +828,14 @@ const Checkout = () => {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground flex items-center gap-1">
                           <Truck className="h-3 w-3" />
-                          Livraison
+                          {t("checkoutx.summary.delivery")}
                         </span>
                         <span>{CURRENCY_SYMBOLS[currency]} {deliveryFee.toLocaleString()}</span>
                       </div>
                     )}
                     <div className="border-t pt-2">
                       <div className="flex justify-between font-bold text-lg">
-                        <span>Total</span>
+                        <span>{t("checkoutx.summary.total")}</span>
                         <span>{CURRENCY_SYMBOLS[currency]} {total.toLocaleString()}</span>
                       </div>
                     </div>
@@ -846,7 +849,7 @@ const Checkout = () => {
                     ) : (
                       <CheckCircle className="h-4 w-4 mr-2" />
                     )}
-                    {paymentMethod === "cash" ? "Commander (paiement cash)" : "Confirmer la commande"}
+                    {paymentMethod === "cash" ? t("checkoutx.summary.submitCash") : t("checkoutx.summary.submitDefault")}
                   </Button>
                 </CardContent>
               </Card>

@@ -40,6 +40,15 @@ import buyerDe from "./locales/buyerx.de.json";
 import buyerIt from "./locales/buyerx.it.json";
 import buyerZh from "./locales/buyerx.zh.json";
 import buyerAr from "./locales/buyerx.ar.json";
+import setFr from "./locales/settings.fr.json";
+import setHt from "./locales/settings.ht.json";
+import setEs from "./locales/settings.es.json";
+import setEn from "./locales/settings.en.json";
+import setPt from "./locales/settings.pt.json";
+import setDe from "./locales/settings.de.json";
+import setIt from "./locales/settings.it.json";
+import setZh from "./locales/settings.zh.json";
+import setAr from "./locales/settings.ar.json";
 import restoFr from "./locales/restaurant.fr.json";
 import restoHt from "./locales/restaurant.ht.json";
 import restoEs from "./locales/restaurant.es.json";
@@ -49,6 +58,15 @@ import restoDe from "./locales/restaurant.de.json";
 import restoIt from "./locales/restaurant.it.json";
 import restoZh from "./locales/restaurant.zh.json";
 import restoAr from "./locales/restaurant.ar.json";
+import walletFr from "./locales/wallet.fr.json";
+import walletHt from "./locales/wallet.ht.json";
+import walletEs from "./locales/wallet.es.json";
+import walletEn from "./locales/wallet.en.json";
+import walletPt from "./locales/wallet.pt.json";
+import walletDe from "./locales/wallet.de.json";
+import walletIt from "./locales/wallet.it.json";
+import walletZh from "./locales/wallet.zh.json";
+import walletAr from "./locales/wallet.ar.json";
 
 
 export const SUPPORTED_LANGUAGES = [
@@ -68,15 +86,15 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      fr: { translation: { ...fr, ...sellerFr, ...driverFr, ...buyerFr, ...restoFr } },
-      ht: { translation: { ...ht, ...sellerHt, ...driverHt, ...buyerHt, ...restoHt } },
-      es: { translation: { ...es, ...sellerEs, ...driverEs, ...buyerEs, ...restoEs } },
-      en: { translation: { ...en, ...sellerEn, ...driverEn, ...buyerEn, ...restoEn } },
-      pt: { translation: { ...pt, ...sellerPt, ...driverPt, ...buyerPt, ...restoPt } },
-      de: { translation: { ...de, ...sellerDe, ...driverDe, ...buyerDe, ...restoDe } },
-      it: { translation: { ...it, ...sellerIt, ...driverIt, ...buyerIt, ...restoIt } },
-      zh: { translation: { ...zh, ...sellerZh, ...driverZh, ...buyerZh, ...restoZh } },
-      ar: { translation: { ...ar, ...sellerAr, ...driverAr, ...buyerAr, ...restoAr } },
+      fr: { translation: { ...fr, ...sellerFr, ...driverFr, ...buyerFr, ...restoFr, ...setFr, ...walletFr } },
+      ht: { translation: { ...ht, ...sellerHt, ...driverHt, ...buyerHt, ...restoHt, ...setHt, ...walletHt } },
+      es: { translation: { ...es, ...sellerEs, ...driverEs, ...buyerEs, ...restoEs, ...setEs, ...walletEs } },
+      en: { translation: { ...en, ...sellerEn, ...driverEn, ...buyerEn, ...restoEn, ...setEn, ...walletEn } },
+      pt: { translation: { ...pt, ...sellerPt, ...driverPt, ...buyerPt, ...restoPt, ...setPt, ...walletPt } },
+      de: { translation: { ...de, ...sellerDe, ...driverDe, ...buyerDe, ...restoDe, ...setDe, ...walletDe } },
+      it: { translation: { ...it, ...sellerIt, ...driverIt, ...buyerIt, ...restoIt, ...setIt, ...walletIt } },
+      zh: { translation: { ...zh, ...sellerZh, ...driverZh, ...buyerZh, ...restoZh, ...setZh, ...walletZh } },
+      ar: { translation: { ...ar, ...sellerAr, ...driverAr, ...buyerAr, ...restoAr, ...setAr, ...walletAr } },
     },
 
     fallbackLng: "en",

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'apexl-v4';
+const CACHE_NAME = 'apexl-v5';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
@@ -61,8 +61,8 @@ self.addEventListener('push', (event) => {
     silent: false,
     timestamp: Date.now(),
     actions: [
-      { action: 'open', title: 'Ouvrir' },
-      { action: 'dismiss', title: 'Fermer' },
+      { action: 'open', title: data.actionOpen || 'Open' },
+      { action: 'dismiss', title: data.actionDismiss || 'Dismiss' },
     ],
   };
 

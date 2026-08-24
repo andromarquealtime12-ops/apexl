@@ -10,11 +10,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SUPPORTED_LANGUAGES } from "@/i18n";
 import { Globe, Check } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
   const active = i18n.language?.split("-")[0] ?? "en";
   const current = SUPPORTED_LANGUAGES.find((l) => l.code === active) ?? SUPPORTED_LANGUAGES[0];
+
+  const changeLanguage = async (code: string) => {
+    i18n.changeLanguage(code);
+    try {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        await supabase
+          .from("profiles")
+          .update({ language: code } as any)
+          .eq("user_id", data.user.id);
+      }
+    } catch {
+      /* language still applied locally */
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -41,7 +57,7 @@ export function LanguageSwitcher() {
           return (
             <DropdownMenuItem
               key={l.code}
-              onClick={() => i18n.changeLanguage(l.code)}
+              onClick={() => changeLanguage(l.code)}
               className={`cursor-pointer flex items-center justify-between ${
                 selected ? "bg-accent" : ""
               }`}

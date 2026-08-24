@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -31,6 +32,7 @@ function useActiveAgents() {
 }
 
 export default function AgentDepositSection() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { data: agents, isLoading } = useActiveAgents();
@@ -46,9 +48,9 @@ export default function AgentDepositSection() {
 
   const submitDeposit = useMutation({
     mutationFn: async () => {
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error(t("walletx.agentDeposit.notAuthenticated"));
       const parsedAmount = parseFloat(amount);
-      if (isNaN(parsedAmount) || parsedAmount <= 0) throw new Error("Montant invalide");
+      if (isNaN(parsedAmount) || parsedAmount <= 0) throw new Error(t("walletx.agentDeposit.invalidAmount"));
 
       let proofUrl: string | null = null;
       if (proofFile) {
@@ -75,12 +77,12 @@ export default function AgentDepositSection() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-      toast.success("Demande de dépôt via agent soumise ! Elle sera traitée par l'administrateur.");
+      toast.success(t("walletx.agentDeposit.depositSuccess"));
       resetForm();
       setOpen(false);
     },
     onError: (e: any) => {
-      toast.error(e.message || "Erreur lors de la soumission");
+      toast.error(e.message || t("walletx.agentDeposit.submitError"));
     },
   });
 
@@ -96,7 +98,7 @@ export default function AgentDepositSection() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("Max 5 MB");
+        toast.error(t("walletx.agentDeposit.maxFileSize"));
         return;
       }
       setProofFile(file);
@@ -115,10 +117,10 @@ export default function AgentDepositSection() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Building2 className="h-5 w-5" />
-          Dépôt via Agent
+          {t("walletx.agentDeposit.title")}
         </CardTitle>
         <CardDescription>
-          Déposez de l'argent chez un agent autorisé près de chez vous
+          {t("walletx.agentDeposit.description")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -132,7 +134,7 @@ export default function AgentDepositSection() {
               <p className="flex items-center gap-1 text-muted-foreground">
                 <MapPin className="h-3 w-3" /> {agent.address}, {agent.city}
               </p>
-              <Badge variant="outline" className="text-xs">Vérifié</Badge>
+              <Badge variant="outline" className="text-xs">{t("walletx.agentDeposit.verified")}</Badge>
 
             </div>
           ))}
@@ -142,21 +144,21 @@ export default function AgentDepositSection() {
           <DialogTrigger asChild>
             <Button className="w-full">
               <Building2 className="h-4 w-4 mr-2" />
-              Soumettre un dépôt via agent
+              {t("walletx.agentDeposit.submitButton")}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Dépôt via Agent</DialogTitle>
+              <DialogTitle>{t("walletx.agentDeposit.dialogTitle")}</DialogTitle>
               <DialogDescription>
-                Rendez-vous chez l'agent, déposez l'argent, puis soumettez la preuve ici.
+                {t("walletx.agentDeposit.dialogDescription")}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 pt-2">
               <div>
-                <Label>Agent</Label>
+                <Label>{t("walletx.agentDeposit.agentLabel")}</Label>
                 <Select value={selectedAgent} onValueChange={setSelectedAgent}>
-                  <SelectTrigger><SelectValue placeholder="Choisir un agent" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t("walletx.agentDeposit.choosePlaceholder")} /></SelectTrigger>
                   <SelectContent>
                     {agents.map((a: any) => (
                       <SelectItem key={a.id} value={a.id}>
@@ -180,35 +182,35 @@ export default function AgentDepositSection() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Montant</Label>
+                  <Label>{t("walletx.agentDeposit.amount")}</Label>
                   <Input type="number" placeholder="0.00" value={amount} onChange={e => setAmount(e.target.value)} />
                 </div>
                 <div>
-                  <Label>Devise</Label>
+                  <Label>{t("walletx.agentDeposit.currency")}</Label>
                   <Select value={currency} onValueChange={v => setCurrency(v as Currency)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="DOP">RD$ (Peso)</SelectItem>
-                      <SelectItem value="HTG">G (Gourde)</SelectItem>
-                      <SelectItem value="USD">$ (Dollar)</SelectItem>
+                      <SelectItem value="DOP">{t("walletx.withdrawDialog.currencyOptions.dop")}</SelectItem>
+                      <SelectItem value="HTG">{t("walletx.withdrawDialog.currencyOptions.htg")}</SelectItem>
+                      <SelectItem value="USD">{t("walletx.withdrawDialog.currencyOptions.usd")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div>
-                <Label>Référence / Numéro de reçu</Label>
-                <Input placeholder="Ex: REC-12345" value={reference} onChange={e => setReference(e.target.value)} />
+                <Label>{t("walletx.agentDeposit.reference")}</Label>
+                <Input placeholder={t("walletx.agentDeposit.referencePlaceholder")} value={reference} onChange={e => setReference(e.target.value)} />
               </div>
 
               <div>
-                <Label>Photo du reçu (optionnel)</Label>
+                <Label>{t("walletx.agentDeposit.receiptPhoto")}</Label>
                 <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept="image/*" className="hidden" />
                 {proofPreview ? (
                   <div className="relative">
-                    <img src={proofPreview} alt="Reçu" className="w-full h-36 object-cover rounded-lg border" />
+                    <img src={proofPreview} alt={t("walletx.agentDeposit.receiptAlt")} className="w-full h-36 object-cover rounded-lg border" />
                     <Button variant="secondary" size="sm" className="absolute bottom-2 right-2" onClick={() => fileInputRef.current?.click()}>
-                      Changer
+                      {t("walletx.agentDeposit.change")}
                     </Button>
                   </div>
                 ) : (
@@ -217,7 +219,7 @@ export default function AgentDepositSection() {
                     className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
                   >
                     <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground mb-1" />
-                    <p className="text-sm text-muted-foreground">Cliquez pour ajouter la photo</p>
+                    <p className="text-sm text-muted-foreground">{t("walletx.agentDeposit.clickToAddPhoto")}</p>
                   </div>
                 )}
               </div>
@@ -228,9 +230,9 @@ export default function AgentDepositSection() {
                 disabled={submitDeposit.isPending || !selectedAgent || !amount}
               >
                 {submitDeposit.isPending ? (
-                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Envoi...</>
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {t("walletx.agentDeposit.sending")}</>
                 ) : (
-                  "Soumettre le dépôt"
+                  t("walletx.agentDeposit.submit")
                 )}
               </Button>
             </div>
