@@ -51,6 +51,8 @@ interface EnrichedDelivery {
 
 export default function AvailableDeliveriesTable() {
   const { data: deliveries, isLoading } = useAvailableDeliveries();
+  const { data: driverLocation } = useDriverLocation();
+  const isOnline = driverLocation?.is_online ?? false;
   const acceptDelivery = useAcceptDelivery();
   const { position, getCurrentPosition } = useCurrentPosition();
   const [enriched, setEnriched] = useState<EnrichedDelivery[]>([]);
