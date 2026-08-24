@@ -157,21 +157,7 @@ export function useDriverOrderNotifications() {
     const channel = supabase
       .channel(`driver-new-orders-${user.id}`)
       .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "orders" },
-        (payload) => {
-          const order = payload.new as any;
-          if (["confirmed", "ready", "ready_for_pickup"].includes(order.status) && !order.driver_id) {
-            sendLocalNotification("🛵 Nouvelle commande disponible !", {
-              body: `Commande #${(order.id as string).slice(0, 8)} - ${order.total_amount} ${order.currency}\n${order.delivery_city || "Adresse non spécifiée"}`,
-              data: { url: `/driver` },
-              tag: `order-${order.id}`,
-              sound: "newOrder",
-            });
-          }
-        }
-      )
-      .on(
+
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "orders" },
         (payload) => {

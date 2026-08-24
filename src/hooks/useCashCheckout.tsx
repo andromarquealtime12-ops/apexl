@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { Currency } from "@/types/database";
-import { notifyNewOrder, notifyAvailableDrivers } from "@/hooks/useOrderNotifications";
+import { notifyNewOrder } from "@/hooks/useOrderNotifications";
 
 interface CashCheckoutParams {
   deliveryAddress: string;
@@ -75,7 +75,6 @@ export function useCashCheckout() {
 
       if (result.order_id) {
         notifyNewOrder(result.order_id);
-        notifyAvailableDrivers(result.order_id);
       }
 
       return { id: result.order_id };
