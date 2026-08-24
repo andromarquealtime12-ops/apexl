@@ -1,1 +1,167 @@
-{}
+{
+  "buyerx": {
+    "cancel": {
+      "back": "رجوع",
+      "buyerRefundNote": "ستحصل على استرداد كامل.",
+      "cancel": "إلغاء",
+      "cancelFailed": "فشل الإلغاء",
+      "cancelledRefunded": "تم إلغاء الطلب واسترداد المبلغ.",
+      "cancelledTitle": "تم إلغاء الطلب",
+      "cancelledWithPenalty": "تم إلغاء الطلب مع غرامة قدرها {{penalty}}. المبلغ المسترد: {{refund}}.",
+      "confirmCancel": "تأكيد الإلغاء",
+      "confirmTitleDriver": "الانسحاب من هذا التوصيل؟",
+      "confirmTitleOrder": "إلغاء هذا الطلب؟",
+      "deliveryReleased": "تم تعيين التوصيل لسائق آخر.",
+      "driverWarning": "قد يؤثر الانسحاب على تقييمك كسائق.",
+      "penaltyWarning": "قد يتم تطبيق غرامة إلغاء.",
+      "reasonPlaceholder": "سبب الإلغاء (اختياري)",
+      "sellerRefundNote": "سيتم إشعار البائع بالإلغاء.",
+      "sending": "جارٍ الإرسال...",
+      "withdraw": "انسحاب"
+    },
+    "chat": {
+      "chatWith": "الدردشة مع {{name}}",
+      "noMessages": "لا توجد رسائل بعد",
+      "participant": "مشارك",
+      "writeMessage": "اكتب رسالة..."
+    },
+    "common": {
+      "error": "حدث خطأ"
+    },
+    "notif": {
+      "empty": "لا توجد إشعارات",
+      "loading": "جارٍ التحميل...",
+      "markAllRead": "تحديد الكل كمقروء",
+      "title": "الإشعارات"
+    },
+    "notifGate": {
+      "activate": "تفعيل الإشعارات",
+      "activating": "جارٍ التفعيل...",
+      "blocked": "الإشعارات محظورة في إعدادات متصفحك.",
+      "bullet1": "تتبع طلبك في الوقت الفعلي",
+      "bullet2": "احصل على تنبيه عند وصول السائق",
+      "bullet3": "لا تفوت أي تحديث",
+      "description": "ابقَ على اطلاع بطلباتك من خلال الإشعارات الفورية.",
+      "later": "لاحقاً ربما",
+      "title": "تفعيل الإشعارات"
+    },
+    "orderNotif": {
+      "confirmedMsg": "تم تأكيد طلبك رقم #{{id}}.",
+      "confirmedTitle": "تم تأكيد الطلب",
+      "deliveredMsg": "تم تسليم طلبك رقم #{{id}}.",
+      "deliveredTitle": "تم تسليم الطلب",
+      "deliveryCompleteMsg": "اكتمل التوصيل #{{id}}.",
+      "deliveryCompleteTitle": "اكتمل التوصيل",
+      "driverAssignedMsg": "تم تعيين سائق للطلب #{{id}}.",
+      "driverAssignedTitle": "تم تعيين السائق",
+      "inTransitMsg": "طلبك #{{id}} في الطريق.",
+      "inTransitTitle": "الطلب قيد التوصيل",
+      "newDeliveryMsg": "توصيل جديد متاح للطلب #{{id}}.",
+      "newDeliveryTitle": "توصيل جديد",
+      "newOrderMsg": "لديك طلب جديد #{{id}}.",
+      "newOrderTitle": "طلب جديد",
+      "pickedUpMsg": "تم استلام طلبك #{{id}}.",
+      "pickedUpTitle": "تم استلام الطلب",
+      "rateExperienceMsg": "يرجى تقييم تجربتك للطلب #{{id}}.",
+      "rateExperienceTitle": "قيّم تجربتك",
+      "readyForPickupMsg": "الطلب #{{id}} جاهز للاستلام.",
+      "readyForPickupTitle": "جاهز للاستلام",
+      "readyMsg": "طلبك #{{id}} جاهز.",
+      "readyTitle": "الطلب جاهز"
+    },
+    "orders": {
+      "subtitle": "تتبع وأدر طلباتك",
+      "title": "طلباتي"
+    },
+    "push": {
+      "activated": "تم تفعيل الإشعارات",
+      "deliveryAssignedBody": "تم تعيين سائق لطلبك #{{id}}.",
+      "deliveryAssignedTitle": "تم تعيين السائق",
+      "denied": "تم رفض إذن الإشعارات",
+      "notSupported": "الإشعارات الفورية غير متاحة على هذا الجهاز",
+      "readyForPickupBody": "طلبك #{{id}} جاهز للاستلام.",
+      "readyForPickupTitle": "جاهز للاستلام",
+      "readyToPickBody": "الطلب #{{id}} في {{city}} جاهز للاستلام.",
+      "readyToPickTitle": "الطلب جاهز للاستلام"
+    },
+    "rating": {
+      "bad": "سيء",
+      "commentPlaceholder": "اترك تعليقاً (اختياري)",
+      "driver": "السائق",
+      "excellent": "ممتاز",
+      "experienceWithEntity": "كيف كانت تجربتك مع {{entity}}؟",
+      "experienceWithName": "كيف كانت تجربتك مع {{name}}؟",
+      "good": "جيد",
+      "ok": "مقبول",
+      "rateEntity": "قيّم {{entity}}",
+      "seller": "البائع",
+      "sendError": "فشل إرسال التقييم",
+      "submit": "إرسال",
+      "thanks": "شكراً على ملاحظاتك!",
+      "veryBad": "سيء جداً"
+    },
+    "returns": {
+      "cancel": "إلغاء",
+      "confirmReturn": "تأكيد الإرجاع",
+      "reasonPlaceholder": "سبب الإرجاع",
+      "requestTitle": "طلب إرجاع",
+      "returnButton": "إرجاع المنتج",
+      "status": {
+        "approved": "تمت الموافقة",
+        "pending": "قيد الانتظار",
+        "redelivery": "إعادة توصيل",
+        "refunded": "تم الاسترداد",
+        "rejected": "مرفوض",
+        "return_in_transit": "الإرجاع قيد النقل",
+        "return_pickup_ready": "جاهز لاستلام الإرجاع",
+        "returned": "تم الإرجاع"
+      },
+      "timeRemaining": "الوقت المتبقي: {{time}}"
+    },
+    "sellerAlarm": {
+      "newOrder": "تم استلام طلب جديد!",
+      "openDashboard": "فتح لوحة التحكم",
+      "stopAlarm": "إيقاف التنبيه",
+      "view": "عرض"
+    },
+    "tracker": {
+      "chatWith": "الدردشة مع {{name}}",
+      "closeChat": "إغلاق الدردشة",
+      "deliveryCode": "رمز التوصيل",
+      "deliveryCodeHint": "أعط هذا الرمز للسائق عند التوصيل",
+      "driver": "السائق",
+      "moreItems": "+{{count}} عناصر أخرى",
+      "noOrders": "لا توجد طلبات حالياً",
+      "noOrdersHint": "ستظهر طلباتك النشطة هنا",
+      "product": "المنتج",
+      "rate": "تقييم",
+      "receipt": "الإيصال",
+      "receiptError": "تعذر تحميل الإيصال",
+      "refundSentDesc": "تمت معالجة استردادك وإرساله.",
+      "refundSentTitle": "تم إرسال الاسترداد",
+      "sellerDriver": "البائع / السائق",
+      "total": "الإجمالي",
+      "track": "تتبع",
+      "whatsappMessage": "مرحباً، لدي سؤال بخصوص الطلب #{{id}}"
+    },
+    "tracking": {
+      "arrivingIn": "سيصل خلال {{eta}} ({{km}} كم)",
+      "backToOrders": "العودة إلى الطلبات",
+      "deliveredCheck": "تم التسليم",
+      "deliveryHere": "مكان التوصيل",
+      "distance": "المسافة",
+      "driverInitial": "س",
+      "eta": "الوقت المتوقع للوصول",
+      "inProgress": "قيد التنفيذ",
+      "inProgressDots": "قيد التنفيذ...",
+      "live": "مباشر",
+      "order": "الطلب",
+      "orderSummary": "ملخص الطلب",
+      "points": "{{count}} نقطة",
+      "remaining": "المتبقي",
+      "remainingEta": "{{eta}} متبقية",
+      "totalLabel": "الإجمالي",
+      "traveled": "المسافة المقطوعة"
+    }
+  }
+}

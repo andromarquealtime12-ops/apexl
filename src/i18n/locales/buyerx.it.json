@@ -1,1 +1,167 @@
-{}
+{
+  "buyerx": {
+    "cancel": {
+      "back": "Indietro",
+      "buyerRefundNote": "Riceverai un rimborso completo.",
+      "cancel": "Annulla",
+      "cancelFailed": "Annullamento non riuscito",
+      "cancelledRefunded": "Ordine annullato e rimborsato.",
+      "cancelledTitle": "Ordine annullato",
+      "cancelledWithPenalty": "Ordine annullato con una penale di {{penalty}}. Rimborso: {{refund}}.",
+      "confirmCancel": "Conferma annullamento",
+      "confirmTitleDriver": "Ritirarsi da questa consegna?",
+      "confirmTitleOrder": "Annullare questo ordine?",
+      "deliveryReleased": "La consegna è stata assegnata a un altro fattorino.",
+      "driverWarning": "Il ritiro può influire sulla tua valutazione come fattorino.",
+      "penaltyWarning": "Potrebbe essere applicata una penale di annullamento.",
+      "reasonPlaceholder": "Motivo dell'annullamento (opzionale)",
+      "sellerRefundNote": "Il venditore sarà informato dell'annullamento.",
+      "sending": "Invio in corso...",
+      "withdraw": "Ritirati"
+    },
+    "chat": {
+      "chatWith": "Chatta con {{name}}",
+      "noMessages": "Nessun messaggio ancora",
+      "participant": "Partecipante",
+      "writeMessage": "Scrivi un messaggio..."
+    },
+    "common": {
+      "error": "Si è verificato un errore"
+    },
+    "notif": {
+      "empty": "Nessuna notifica",
+      "loading": "Caricamento...",
+      "markAllRead": "Segna tutto come letto",
+      "title": "Notifiche"
+    },
+    "notifGate": {
+      "activate": "Attiva notifiche",
+      "activating": "Attivazione...",
+      "blocked": "Le notifiche sono bloccate nelle impostazioni del browser.",
+      "bullet1": "Segui il tuo ordine in tempo reale",
+      "bullet2": "Ricevi un avviso all'arrivo del fattorino",
+      "bullet3": "Non perdere nessun aggiornamento",
+      "description": "Resta informato sui tuoi ordini con le notifiche push.",
+      "later": "Più tardi",
+      "title": "Attiva le notifiche"
+    },
+    "orderNotif": {
+      "confirmedMsg": "Il tuo ordine #{{id}} è stato confermato.",
+      "confirmedTitle": "Ordine confermato",
+      "deliveredMsg": "Il tuo ordine #{{id}} è stato consegnato.",
+      "deliveredTitle": "Ordine consegnato",
+      "deliveryCompleteMsg": "La consegna #{{id}} è stata completata.",
+      "deliveryCompleteTitle": "Consegna completata",
+      "driverAssignedMsg": "Un fattorino è stato assegnato all'ordine #{{id}}.",
+      "driverAssignedTitle": "Fattorino assegnato",
+      "inTransitMsg": "Il tuo ordine #{{id}} è in viaggio.",
+      "inTransitTitle": "Ordine in transito",
+      "newDeliveryMsg": "Nuova consegna disponibile per l'ordine #{{id}}.",
+      "newDeliveryTitle": "Nuova consegna",
+      "newOrderMsg": "Hai un nuovo ordine #{{id}}.",
+      "newOrderTitle": "Nuovo ordine",
+      "pickedUpMsg": "Il tuo ordine #{{id}} è stato ritirato.",
+      "pickedUpTitle": "Ordine ritirato",
+      "rateExperienceMsg": "Valuta la tua esperienza per l'ordine #{{id}}.",
+      "rateExperienceTitle": "Valuta la tua esperienza",
+      "readyForPickupMsg": "L'ordine #{{id}} è pronto per il ritiro.",
+      "readyForPickupTitle": "Pronto per il ritiro",
+      "readyMsg": "Il tuo ordine #{{id}} è pronto.",
+      "readyTitle": "Ordine pronto"
+    },
+    "orders": {
+      "subtitle": "Segui e gestisci i tuoi ordini",
+      "title": "I miei ordini"
+    },
+    "push": {
+      "activated": "Notifiche attivate",
+      "deliveryAssignedBody": "Un fattorino è stato assegnato al tuo ordine #{{id}}.",
+      "deliveryAssignedTitle": "Fattorino assegnato",
+      "denied": "Autorizzazione alle notifiche negata",
+      "notSupported": "Le notifiche push non sono supportate su questo dispositivo",
+      "readyForPickupBody": "Il tuo ordine #{{id}} è pronto per il ritiro.",
+      "readyForPickupTitle": "Pronto per il ritiro",
+      "readyToPickBody": "L'ordine #{{id}} a {{city}} è pronto per il ritiro.",
+      "readyToPickTitle": "Ordine pronto per il ritiro"
+    },
+    "rating": {
+      "bad": "Scarso",
+      "commentPlaceholder": "Lascia un commento (opzionale)",
+      "driver": "il fattorino",
+      "excellent": "Eccellente",
+      "experienceWithEntity": "Com'è stata la tua esperienza con {{entity}}?",
+      "experienceWithName": "Com'è stata la tua esperienza con {{name}}?",
+      "good": "Buono",
+      "ok": "Discreto",
+      "rateEntity": "Valuta {{entity}}",
+      "seller": "il venditore",
+      "sendError": "Invio della valutazione non riuscito",
+      "submit": "Invia",
+      "thanks": "Grazie per il tuo feedback!",
+      "veryBad": "Pessimo"
+    },
+    "returns": {
+      "cancel": "Annulla",
+      "confirmReturn": "Conferma reso",
+      "reasonPlaceholder": "Motivo del reso",
+      "requestTitle": "Richiedi un reso",
+      "returnButton": "Restituisci articolo",
+      "status": {
+        "approved": "Approvato",
+        "pending": "In attesa",
+        "redelivery": "Nuova consegna",
+        "refunded": "Rimborsato",
+        "rejected": "Rifiutato",
+        "return_in_transit": "Reso in transito",
+        "return_pickup_ready": "Pronto per il ritiro del reso",
+        "returned": "Restituito"
+      },
+      "timeRemaining": "Tempo rimanente: {{time}}"
+    },
+    "sellerAlarm": {
+      "newOrder": "Nuovo ordine ricevuto!",
+      "openDashboard": "Apri dashboard",
+      "stopAlarm": "Ferma allarme",
+      "view": "Visualizza"
+    },
+    "tracker": {
+      "chatWith": "Chatta con {{name}}",
+      "closeChat": "Chiudi chat",
+      "deliveryCode": "Codice di consegna",
+      "deliveryCodeHint": "Fornisci questo codice al fattorino alla consegna",
+      "driver": "Fattorino",
+      "moreItems": "+{{count}} altri articoli",
+      "noOrders": "Nessun ordine in corso",
+      "noOrdersHint": "I tuoi ordini attivi appariranno qui",
+      "product": "Prodotto",
+      "rate": "Valuta",
+      "receipt": "Ricevuta",
+      "receiptError": "Impossibile caricare la ricevuta",
+      "refundSentDesc": "Il tuo rimborso è stato elaborato e inviato.",
+      "refundSentTitle": "Rimborso inviato",
+      "sellerDriver": "Venditore / Fattorino",
+      "total": "Totale",
+      "track": "Traccia",
+      "whatsappMessage": "Ciao, ho una domanda sull'ordine #{{id}}"
+    },
+    "tracking": {
+      "arrivingIn": "Arrivo tra {{eta}} ({{km}} km)",
+      "backToOrders": "Torna agli ordini",
+      "deliveredCheck": "Consegnato",
+      "deliveryHere": "Luogo di consegna",
+      "distance": "Distanza",
+      "driverInitial": "F",
+      "eta": "Arrivo stimato",
+      "inProgress": "In corso",
+      "inProgressDots": "In corso...",
+      "live": "In diretta",
+      "order": "Ordine",
+      "orderSummary": "Riepilogo ordine",
+      "points": "{{count}} punti",
+      "remaining": "Rimanente",
+      "remainingEta": "{{eta}} rimanente",
+      "totalLabel": "Totale",
+      "traveled": "Percorso"
+    }
+  }
+}
