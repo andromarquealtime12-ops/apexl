@@ -1043,6 +1043,7 @@ export type Database = {
           id_document_back: string | null
           id_document_front: string | null
           identity_status: string | null
+          language: string
           last_login_at: string | null
           last_login_device: string | null
           last_login_ip: string | null
@@ -1089,6 +1090,7 @@ export type Database = {
           id_document_back?: string | null
           id_document_front?: string | null
           identity_status?: string | null
+          language?: string
           last_login_at?: string | null
           last_login_device?: string | null
           last_login_ip?: string | null
@@ -1135,6 +1137,7 @@ export type Database = {
           id_document_back?: string | null
           id_document_front?: string | null
           identity_status?: string | null
+          language?: string
           last_login_at?: string | null
           last_login_device?: string | null
           last_login_ip?: string | null
@@ -1895,6 +1898,7 @@ export type Database = {
           id_document_back: string | null
           id_document_front: string | null
           identity_status: string | null
+          language: string
           last_login_at: string | null
           last_login_device: string | null
           last_login_ip: string | null
@@ -1950,6 +1954,7 @@ export type Database = {
           id_document_back: string | null
           id_document_front: string | null
           identity_status: string | null
+          language: string
           last_login_at: string | null
           last_login_device: string | null
           last_login_ip: string | null
@@ -2146,6 +2151,7 @@ export type Database = {
           id_document_back: string | null
           id_document_front: string | null
           identity_status: string | null
+          language: string
           last_login_at: string | null
           last_login_device: string | null
           last_login_ip: string | null
@@ -2219,6 +2225,7 @@ export type Database = {
           id_document_back: string | null
           id_document_front: string | null
           identity_status: string | null
+          language: string
           last_login_at: string | null
           last_login_device: string | null
           last_login_ip: string | null
