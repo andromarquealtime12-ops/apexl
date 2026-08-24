@@ -58,10 +58,14 @@ export function convertCurrency(
   amount: number,
   from: string,
   to: string,
-  rates: CurrencyRate[]
+  rates: CurrencyRate[],
+  applyCommission = true
 ): number {
   if (from === to) return amount;
   const rate = rates.find(r => r.from_currency === from && r.to_currency === to);
-  if (rate) return amount * rate.rate;
-  return 0;
+  if (!rate) return 0;
+  const net = applyCommission
+    ? amount * (1 - CONVERSION_COMMISSION_PERCENT / 100)
+    : amount;
+  return net * rate.rate;
 }
