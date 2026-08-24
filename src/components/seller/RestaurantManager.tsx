@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import RestaurantLocationCard from "./RestaurantLocationCard";
+import { AvatarUploadField } from "@/components/ui/AvatarUploadField";
 
 async function uploadRestaurantImage(userId: string, file: File) {
   const ext = file.name.split(".").pop();
@@ -163,6 +164,8 @@ export default function RestaurantManager() {
   const createRestaurant = useCreateRestaurant();
   const [showCreate, setShowCreate] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState<string | null>(null);
+  const { user } = useAuth();
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", description: "", address: "", city: "", phone: "", whatsapp: "", cuisine_type: "haïtien" });
 
   const handleCreate = async () => {
@@ -170,7 +173,12 @@ export default function RestaurantManager() {
       toast.error(t("restox.requiredFields"));
       return;
     }
-    await createRestaurant.mutateAsync(form);
+    if (!logoUrl) {
+      toast.error(t("photoUpload.required", "La photo de profil du restaurant est obligatoire"));
+      return;
+    }
+    await createRestaurant.mutateAsync({ ...form, logo_url: logoUrl });
+    setLogoUrl(null);
     setShowCreate(false);
     setForm({ name: "", description: "", address: "", city: "", phone: "", whatsapp: "", cuisine_type: "haïtien" });
   };
@@ -198,6 +206,15 @@ export default function RestaurantManager() {
               <DialogTitle>{t("restox.newTitle")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
+              <AvatarUploadField
+                userId={user?.id}
+                value={logoUrl}
+                onChange={setLogoUrl}
+                required
+                kind="restaurant-logo"
+                label={t("photoUpload.restaurantLabel", "Photo de profil du restaurant")}
+                hint={t("photoUpload.restaurantHint", "Obligatoire : ce logo représente votre restaurant dans l'application.")}
+              />
               <div className="space-y-2">
                 <Label>{t("restox.name")} *</Label>
                 <Input value={form.name} onChange={(e) => setForm(p => ({ ...p, name: e.target.value }))} />
@@ -238,7 +255,7 @@ export default function RestaurantManager() {
                   </Select>
                 </div>
               </div>
-              <Button onClick={handleCreate} disabled={createRestaurant.isPending} className="w-full">
+              <Button onClick={handleCreate} disabled={createRestaurant.isPending || !logoUrl} className="w-full">
                 {createRestaurant.isPending ? t("restox.creating") : t("restox.createBtn")}
               </Button>
             </div>

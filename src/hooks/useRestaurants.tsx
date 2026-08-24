@@ -82,6 +82,7 @@ export function useCreateRestaurant() {
       phone?: string;
       whatsapp?: string;
       cuisine_type?: string;
+      logo_url?: string | null;
     }) => {
       const { data, error } = await supabase
         .from("restaurants")
