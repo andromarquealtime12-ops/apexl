@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAvailableDeliveries } from "@/hooks/useDriverStats";
 import { useAcceptDelivery } from "@/hooks/useDriverActions";
-import { useCurrentPosition, calculateDistance } from "@/hooks/useGeolocation";
+import { useCurrentPosition, calculateDistance, useDriverLocation } from "@/hooks/useGeolocation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
