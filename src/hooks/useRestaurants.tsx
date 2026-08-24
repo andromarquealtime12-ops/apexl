@@ -95,7 +95,12 @@ export function useCreateRestaurant() {
       queryClient.invalidateQueries({ queryKey: ["seller-restaurants"] });
       toast.success("Restaurant créé ! En attente d'approbation.");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) =>
+      toast.error(
+        String(e?.message || "").includes("RESTAURANT_LIMIT")
+          ? "Vous ne pouvez créer qu'un seul restaurant."
+          : e.message
+      ),
   });
 }
 

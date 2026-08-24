@@ -103,7 +103,14 @@ export function useSubmitSellerApplication() {
       toast.success("Demande soumise avec succès !");
     },
     onError: (error: Error) => {
-      toast.error("Erreur: " + error.message);
+      const m = String(error?.message || "");
+      if (m.includes("ROLE_CONFLICT")) {
+        toast.error("Un vendeur et un livreur ne peuvent pas avoir le même compte.");
+      } else if (m.includes("APPLICATION_EXISTS")) {
+        toast.error("Vous avez déjà une candidature en cours.");
+      } else {
+        toast.error("Erreur: " + error.message);
+      }
     },
   });
 }
@@ -144,7 +151,14 @@ export function useSubmitDriverApplication() {
       toast.success("Demande soumise avec succès !");
     },
     onError: (error: Error) => {
-      toast.error("Erreur: " + error.message);
+      const m = String(error?.message || "");
+      if (m.includes("ROLE_CONFLICT")) {
+        toast.error("Un vendeur et un livreur ne peuvent pas avoir le même compte.");
+      } else if (m.includes("APPLICATION_EXISTS")) {
+        toast.error("Vous avez déjà une candidature en cours.");
+      } else {
+        toast.error("Erreur: " + error.message);
+      }
     },
   });
 }
@@ -219,7 +233,14 @@ export function useApproveSellerApplication() {
       toast.success("Vendeur approuvé !");
     },
     onError: (error: Error) => {
-      toast.error("Erreur: " + error.message);
+      const m = String(error?.message || "");
+      if (m.includes("ROLE_CONFLICT")) {
+        toast.error("Un vendeur et un livreur ne peuvent pas avoir le même compte.");
+      } else if (m.includes("APPLICATION_EXISTS")) {
+        toast.error("Vous avez déjà une candidature en cours.");
+      } else {
+        toast.error("Erreur: " + error.message);
+      }
     },
   });
 }
@@ -240,7 +261,14 @@ export function useApproveDriverApplication() {
       toast.success("Livreur approuvé !");
     },
     onError: (error: Error) => {
-      toast.error("Erreur: " + error.message);
+      const m = String(error?.message || "");
+      if (m.includes("ROLE_CONFLICT")) {
+        toast.error("Un vendeur et un livreur ne peuvent pas avoir le même compte.");
+      } else if (m.includes("APPLICATION_EXISTS")) {
+        toast.error("Vous avez déjà une candidature en cours.");
+      } else {
+        toast.error("Erreur: " + error.message);
+      }
     },
   });
 }
@@ -266,7 +294,14 @@ export function useRejectApplication() {
       toast.success("Demande rejetée");
     },
     onError: (error: Error) => {
-      toast.error("Erreur: " + error.message);
+      const m = String(error?.message || "");
+      if (m.includes("ROLE_CONFLICT")) {
+        toast.error("Un vendeur et un livreur ne peuvent pas avoir le même compte.");
+      } else if (m.includes("APPLICATION_EXISTS")) {
+        toast.error("Vous avez déjà une candidature en cours.");
+      } else {
+        toast.error("Erreur: " + error.message);
+      }
     },
   });
 }
