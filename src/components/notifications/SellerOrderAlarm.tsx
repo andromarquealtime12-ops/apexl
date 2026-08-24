@@ -22,14 +22,22 @@ export default function SellerOrderAlarm() {
   const [active, setActive] = useState(false);
   const stopRef = useRef<(() => void) | null>(null);
 
+  const notifySW = () => {
+    navigator.serviceWorker?.ready
+      .then((reg) => reg.active?.postMessage({ type: "STOP_ALARM" }))
+      .catch(() => {});
+  };
+
   const stopAlarm = () => {
     stopRef.current?.();
     stopRef.current = null;
     setActive(false);
+    notifySW();
   };
 
   const triggerAlarm = () => {
-    if (stopRef.current) return; // already ringing
+    // Restart the siren for every new incoming order
+    stopRef.current?.();
     stopRef.current = startLoudAlarm(ALARM_DURATION);
     setActive(true);
     window.setTimeout(() => {
@@ -43,6 +51,7 @@ export default function SellerOrderAlarm() {
     if (location.pathname.startsWith("/seller")) stopAlarm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
+
 
   useEffect(() => {
     if (!user || !isSeller) return;
