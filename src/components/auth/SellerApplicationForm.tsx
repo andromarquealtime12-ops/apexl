@@ -206,6 +206,16 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
               </AlertDescription>
             </Alert>
           )}
+          <AvatarUploadField
+            userId={user?.id}
+            value={avatarUrl}
+            onChange={setAvatarUrl}
+            required
+            kind="shop-avatar"
+            label={t("photoUpload.shopLabel", "Photo de profil de la boutique")}
+            hint={t("photoUpload.shopHint", "Obligatoire : cette photo représente votre boutique dans l'application.")}
+          />
+
           <div className="space-y-2">
             <Label htmlFor="seller_dob">Date de naissance *</Label>
             <Input
