@@ -55,3 +55,37 @@ export function alertDriver(type: keyof typeof NOTIFICATION_SOUNDS = "newOrder")
   playNotificationSound(type);
   vibrateDevice(type === "newOrder" ? [200, 100, 200, 100, 400] : [200, 100, 200]);
 }
+
+/**
+ * Loud, repeating alarm for sellers when a new order arrives.
+ * Plays a strong siren-like pattern every few seconds for up to `durationMs`
+ * (default 5 minutes) and returns a stop() function.
+ */
+export function startLoudAlarm(durationMs = 5 * 60 * 1000) {
+  let stopped = false;
+  let timer: number | undefined;
+
+  const burst = async () => {
+    if (stopped) return;
+    vibrateDevice([500, 150, 500, 150, 800]);
+    for (let i = 0; i < 3 && !stopped; i++) {
+      await playTone(1200, 220, 0.9);
+      if (stopped) return;
+      await playTone(880, 220, 0.9);
+    }
+  };
+
+  burst();
+  timer = window.setInterval(burst, 4000);
+
+  const stopTimeout = window.setTimeout(() => stop(), durationMs);
+
+  function stop() {
+    if (stopped) return;
+    stopped = true;
+    if (timer) window.clearInterval(timer);
+    window.clearTimeout(stopTimeout);
+  }
+
+  return stop;
+}
