@@ -228,6 +228,7 @@ const Admin = () => {
 
           <TabsContent value="drivers-map" className="space-y-6">
             <LiveDriversMap />
+            <AdminDriversManager />
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
