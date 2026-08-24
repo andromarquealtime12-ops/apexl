@@ -20,6 +20,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { GpsAddressField } from "@/components/ui/GpsAddressField";
+import { AvatarUploadField } from "@/components/ui/AvatarUploadField";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadApplicationDocument } from "@/utils/applicationUploads";
 
