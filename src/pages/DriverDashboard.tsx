@@ -26,6 +26,8 @@ const DriverDashboard = () => {
   const { user, isDriver, loading } = useAuth();
   const { data: stats, isLoading: statsLoading } = useDriverStats();
   const { data: availableDeliveries } = useAvailableDeliveries();
+  const { data: wallet } = useWallet();
+  const transferableDop = Number((wallet as any)?.earnings_dop ?? 0);
   useDriverOrderNotifications();
 
   if (loading) {
