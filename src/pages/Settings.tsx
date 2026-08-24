@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -19,7 +21,9 @@ export default function Settings() {
   const { user, loading, isSeller } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
+  const queryClient = useQueryClient();
   const { permission, isSupported, requestPermission } = usePushNotifications();
+
 
   const initial = useMemo(
     () => ({
