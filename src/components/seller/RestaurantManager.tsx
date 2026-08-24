@@ -187,7 +187,8 @@ export default function RestaurantManager() {
           </h2>
           <p className="text-sm text-muted-foreground">{t("restox.subtitle")}</p>
         </div>
-        <Dialog open={showCreate} onOpenChange={setShowCreate}>
+        <Dialog open={showCreate && !restaurants?.length} onOpenChange={setShowCreate}>
+          {!!restaurants?.length && <span className="hidden" />}
           <DialogTrigger asChild>
             <Button className="gap-2"><Plus className="h-4 w-4" /> {t("restox.create")}</Button>
           </DialogTrigger>
