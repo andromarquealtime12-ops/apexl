@@ -36,6 +36,8 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
   const submitApplication = useSubmitSellerApplication();
   const { isVerified: isEmailVerified } = useIsEmailVerified();
   const sendVerification = useSendVerificationCode();
+  const { user } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const [verifyEmail, setVerifyEmail] = useState("");
   const [formData, setFormData] = useState({
