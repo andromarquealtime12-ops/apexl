@@ -97,7 +97,7 @@ export function useBuyerPromoNotifications() {
 
       if (pos) {
         // 2) Boutiques proches
-        const { data: shops } = await supabase.rpc("get_public_seller_shops");
+        const { data: shops } = await supabase.rpc("get_public_seller_shops", { p_user_id: null });
         const nearShop = (shops ?? [])
           .map((s: any) => ({
             s,
