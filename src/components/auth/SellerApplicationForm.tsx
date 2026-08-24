@@ -104,6 +104,7 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
         shop_longitude: shopLng,
         shop_address: formData.shop_address,
         date_of_birth: dateOfBirth,
+        avatar_url: avatarUrl,
       } as any).eq("user_id", user.id);
       onClose();
     } finally {
