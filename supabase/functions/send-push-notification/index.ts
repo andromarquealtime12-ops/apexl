@@ -142,9 +142,12 @@ Deno.serve(async (req) => {
         body: notif.message ?? '',
         url: isSafeUrl(notif.action_url) ? notif.action_url || '/' : '/',
         tag: `notif-${notif.id}`,
+        // Sellers / restaurants: keep alerting for up to 5 minutes
+        repeat: (notif.action_url ?? '').startsWith('/seller'),
       })
       return json(result)
     }
+
 
     // === Path B: authenticated client call ===
     const authHeader = req.headers.get('Authorization')
