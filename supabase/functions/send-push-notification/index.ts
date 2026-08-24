@@ -8,14 +8,14 @@ const corsHeaders = {
 
 // Must match the key the client subscribes with (src/hooks/usePushNotifications.tsx)
 const DEFAULT_VAPID_PUBLIC_KEY =
-  'BKXcqEXdtpRiR3wqvS7JDjhkiQ-KVhbQWAfIIe4BSXFTioDK8-ZERuZ83GEhtbqGjxDCLcWQchu-CdI2ZFQI2aI'
+  'BIqvSGtAQZMBu75_cwoqFPV7ljTNG2TrC7iHaPIyM8z-LcKD2d_FhLhww0sILYbn2Sm4rdT2km4xFngyfdHzXtU'
 
 function normalizeKey(v?: string | null) {
   return (v ?? '').trim().replace(/\s+/g, '').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
-const VAPID_PUBLIC_KEY = normalizeKey(Deno.env.get('VAPID_PUBLIC_KEY')) || DEFAULT_VAPID_PUBLIC_KEY
-const VAPID_PRIVATE_KEY = normalizeKey(Deno.env.get('VAPID_PRIVATE_KEY'))
+const VAPID_PUBLIC_KEY = normalizeKey(Deno.env.get('VAPID_PUBLIC_KEY_V2') || Deno.env.get('VAPID_PUBLIC_KEY')) || DEFAULT_VAPID_PUBLIC_KEY
+const VAPID_PRIVATE_KEY = normalizeKey(Deno.env.get('VAPID_PRIVATE_KEY_V2') || Deno.env.get('VAPID_PRIVATE_KEY'))
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
@@ -70,6 +70,11 @@ async function deliver(userId: string, payloadObj: Record<string, unknown>) {
     } catch (e: any) {
       failed++
       const status = e?.statusCode
+      if (status === 403) {
+        // Subscription signed with a different VAPID key: drop it so the
+        // client re-subscribes with the current one on next visit.
+        await admin.from('push_subscriptions').delete().eq('id', sub.id)
+      }
       if (status === 404 || status === 410) {
         await admin.from('push_subscriptions').delete().eq('id', sub.id)
       }

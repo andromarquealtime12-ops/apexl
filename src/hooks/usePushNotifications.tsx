@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { alertDriver } from "@/utils/notificationSound";
 
-const VAPID_PUBLIC_KEY = "BKXcqEXdtpRiR3wqvS7JDjhkiQ-KVhbQWAfIIe4BSXFTioDK8-ZERuZ83GEhtbqGjxDCLcWQchu-CdI2ZFQI2aI";
+const VAPID_PUBLIC_KEY = "BIqvSGtAQZMBu75_cwoqFPV7ljTNG2TrC7iHaPIyM8z-LcKD2d_FhLhww0sILYbn2Sm4rdT2km4xFngyfdHzXtU";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -36,7 +36,24 @@ export function usePushNotifications() {
       
       // Check existing subscription
       let subscription = await registration.pushManager.getSubscription();
-      
+
+      // If the existing subscription was created with a different VAPID key,
+      // it can never be decrypted by the server: drop it and resubscribe.
+      if (subscription) {
+        const existingKey = subscription.options?.applicationServerKey;
+        const currentKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+        const sameKey =
+          existingKey &&
+          new Uint8Array(existingKey).length === currentKey.length &&
+          new Uint8Array(existingKey).every((b, i) => b === currentKey[i]);
+        if (!sameKey) {
+          const staleEndpoint = subscription.endpoint;
+          await subscription.unsubscribe().catch(() => {});
+          await supabase.from('push_subscriptions').delete().eq('endpoint', staleEndpoint);
+          subscription = null;
+        }
+      }
+
       if (!subscription) {
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
