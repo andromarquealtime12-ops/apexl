@@ -34,6 +34,7 @@ import CookiesPolicy from "./pages/CookiesPolicy";
 import SupportChatWidget from "./components/support/SupportChatWidget";
 import AIAssistantWidget from "./components/ai/AIAssistantWidget";
 import NotificationGate from "./components/notifications/NotificationGate";
+import SellerOrderAlarm from "./components/notifications/SellerOrderAlarm";
 import { useEffect } from "react";
 import { startBackgroundWatch, stopBackgroundWatch } from "@/utils/persistentLocation";
 
@@ -57,6 +58,7 @@ const App = () => (
           <BrowserRouter>
             <LocationBootstrap />
             <NotificationGate />
+            <SellerOrderAlarm />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/products" element={<Products />} />
