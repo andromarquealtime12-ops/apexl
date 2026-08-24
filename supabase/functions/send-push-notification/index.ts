@@ -6,12 +6,33 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const VAPID_PUBLIC_KEY = Deno.env.get('VAPID_PUBLIC_KEY')!
-const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY')!
+// Must match the key the client subscribes with (src/hooks/usePushNotifications.tsx)
+const DEFAULT_VAPID_PUBLIC_KEY =
+  'BKXcqEXdtpRiR3wqvS7JDjhkiQ-KVhbQWAfIIe4BSXFTioDK8-ZERuZ83GEhtbqGjxDCLcWQchu-CdI2ZFQI2aI'
+
+function normalizeKey(v?: string | null) {
+  return (v ?? '').trim().replace(/\s+/g, '').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+const VAPID_PUBLIC_KEY = normalizeKey(Deno.env.get('VAPID_PUBLIC_KEY')) || DEFAULT_VAPID_PUBLIC_KEY
+const VAPID_PRIVATE_KEY = normalizeKey(Deno.env.get('VAPID_PRIVATE_KEY'))
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-webpush.setVapidDetails('mailto:noreply@marketayiti.shop', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
+let vapidReady = false
+function ensureVapid() {
+  if (vapidReady) return true
+  for (const pub of [VAPID_PUBLIC_KEY, DEFAULT_VAPID_PUBLIC_KEY]) {
+    try {
+      webpush.setVapidDetails('mailto:noreply@marketayiti.shop', pub, VAPID_PRIVATE_KEY)
+      vapidReady = true
+      return true
+    } catch (e) {
+      console.error('Invalid VAPID configuration:', (e as Error).message)
+    }
+  }
+  return false
+}
 
 const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
@@ -32,6 +53,7 @@ async function deliver(userId: string, payloadObj: Record<string, unknown>) {
     .eq('user_id', userId)
 
   if (!subs || subs.length === 0) return { sent: 0, failed: 0 }
+  if (!ensureVapid()) return { sent: 0, failed: subs.length, error: 'VAPID keys misconfigured' }
 
   const payload = JSON.stringify(payloadObj)
   let sent = 0
