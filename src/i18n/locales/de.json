@@ -272,5 +272,9 @@
     "cancel": "Abbrechen",
     "close": "Schließen",
     "error": "Fehler"
+  },
+  "profile": {
+    "roleLockedSeller": "Sie sind bereits Fahrer: Bewerbung als Verkäufer nicht möglich.",
+    "roleLockedDriver": "Sie sind bereits Verkäufer: Bewerbung als Fahrer nicht möglich."
   }
 }

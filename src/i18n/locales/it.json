@@ -272,5 +272,9 @@
     "cancel": "Annulla",
     "close": "Chiudi",
     "error": "Errore"
+  },
+  "profile": {
+    "roleLockedSeller": "Sei già corriere: non puoi candidarti come venditore.",
+    "roleLockedDriver": "Sei già venditore: non puoi candidarti come corriere."
   }
 }

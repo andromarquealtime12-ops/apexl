@@ -292,7 +292,9 @@
     "resubmit": "Voye ankò",
     "adminUnlocked": "🔓 Aksè admin debloke !",
     "notAdmin": "Ou pa gen dwa administratè",
-    "clicksLeft": "{{n}} klik ki rete..."
+    "clicksLeft": "{{n}} klik ki rete...",
+    "roleLockedSeller": "Ou deja yon livrè : ou pa ka aplike kòm vandè.",
+    "roleLockedDriver": "Ou deja yon vandè : ou pa ka aplike kòm livrè."
   },
   "driverPage": {
     "title": "Dashboard livrè",

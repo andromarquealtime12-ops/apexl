@@ -272,5 +272,9 @@
     "cancel": "取消",
     "close": "关闭",
     "error": "错误"
+  },
+  "profile": {
+    "roleLockedSeller": "您已是配送员，无法申请成为卖家。",
+    "roleLockedDriver": "您已是卖家，无法申请成为配送员。"
   }
 }

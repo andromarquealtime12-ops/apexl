@@ -292,7 +292,9 @@
     "resubmit": "Volver a enviar",
     "adminUnlocked": "🔓 ¡Acceso admin desbloqueado!",
     "notAdmin": "No tienes derechos de administrador",
-    "clicksLeft": "{{n}} clics restantes..."
+    "clicksLeft": "{{n}} clics restantes...",
+    "roleLockedSeller": "Ya eres repartidor: no puedes postularte como vendedor.",
+    "roleLockedDriver": "Ya eres vendedor: no puedes postularte como repartidor."
   },
   "driverPage": {
     "title": "Panel del repartidor",

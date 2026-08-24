@@ -292,7 +292,9 @@
     "resubmit": "Submit again",
     "adminUnlocked": "🔓 Admin access unlocked!",
     "notAdmin": "You don't have admin rights",
-    "clicksLeft": "{{n}} clicks left..."
+    "clicksLeft": "{{n}} clicks left...",
+    "roleLockedSeller": "You are already a driver: you cannot apply as a seller.",
+    "roleLockedDriver": "You are already a seller: you cannot apply as a driver."
   },
   "driverPage": {
     "title": "Driver dashboard",

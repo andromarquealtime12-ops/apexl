@@ -162,6 +162,16 @@
       "remainingEta": "剩余 {{eta}}",
       "totalLabel": "总计",
       "traveled": "已行驶距离"
+    },
+    "promo": {
+      "nearShopTitle": "🛍️ {{name}} 就在附近",
+      "nearShopMsg": "距您 {{km}} 公里，立即下单！",
+      "nearRestoTitle": "🍽️ {{name}} 可送达您附近",
+      "nearRestoMsg": "餐厅距您 {{km}} 公里，立即下单！",
+      "cartTitle": "🛒 您的购物车在等您",
+      "cartMsg": "{{count}} 件商品已就绪，立即结账！",
+      "dealTitle": "🔥 您所在区域的新品",
+      "dealMsg": "您附近上新 {{count}} 件商品，立即下单！"
     }
   }
 }

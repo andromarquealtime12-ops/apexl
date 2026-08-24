@@ -162,6 +162,16 @@
       "remainingEta": "{{eta}} restante",
       "totalLabel": "Total",
       "traveled": "Recorrido"
+    },
+    "promo": {
+      "nearShopTitle": "🛍️ {{name}} está cerca",
+      "nearShopMsg": "A {{km}} km de ti. ¡Pide ahora!",
+      "nearRestoTitle": "🍽️ {{name}} entrega cerca de ti",
+      "nearRestoMsg": "Restaurante a {{km}} km. ¡Pide ahora!",
+      "cartTitle": "🛒 Tu carrito te espera",
+      "cartMsg": "{{count}} artículo(s) listos. ¡Finaliza tu pedido ahora!",
+      "dealTitle": "🔥 Novedades en tu zona",
+      "dealMsg": "{{count}} nuevos productos cerca de ti. ¡Pide ahora!"
     }
   }
 }

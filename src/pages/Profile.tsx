@@ -177,6 +177,10 @@ const Profile = () => {
                     </Button>
                   )}
                 </div>
+              ) : isDriver || (driverApplication && driverApplication.status !== "rejected") ? (
+                <p className="text-sm text-muted-foreground p-4 rounded-lg bg-muted">
+                  {t("profile.roleLockedSeller")}
+                </p>
               ) : (
                 <Button onClick={() => setShowSellerForm(true)} className="w-full">
                   <Store className="h-4 w-4 mr-2" />
@@ -229,6 +233,10 @@ const Profile = () => {
                     </Button>
                   )}
                 </div>
+              ) : isSeller || (sellerApplication && sellerApplication.status !== "rejected") ? (
+                <p className="text-sm text-muted-foreground p-4 rounded-lg bg-muted">
+                  {t("profile.roleLockedDriver")}
+                </p>
               ) : (
                 <Button onClick={() => setShowDriverForm(true)} className="w-full">
                   <Truck className="h-4 w-4 mr-2" />
