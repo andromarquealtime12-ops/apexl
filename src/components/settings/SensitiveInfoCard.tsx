@@ -25,6 +25,7 @@ export default function SensitiveInfoCard() {
   const updateProfile = useUpdateProfile();
 
   const needsVerification = isSeller || isDriver;
+  const nameLocked = Boolean((profile as any)?.personal_info_locked);
 
   const [fullName, setFullName] = useState(profile?.full_name ?? "");
   const [phone, setPhone] = useState(profile?.phone ?? "");
@@ -54,7 +55,7 @@ export default function SensitiveInfoCard() {
   const saveNameOrPhone = async () => {
     if (!user) return;
     const changed =
-      fullName.trim() !== (profile?.full_name ?? "") ||
+      (!nameLocked && fullName.trim() !== (profile?.full_name ?? "")) ||
       (phone.trim() || null) !== (profile?.phone ?? null);
     if (!changed) {
       toast.info("Aucune modification");
@@ -78,7 +79,7 @@ export default function SensitiveInfoCard() {
       }
 
       await updateProfile.mutateAsync({
-        full_name: fullName.trim() || null,
+        ...(nameLocked ? {} : { full_name: fullName.trim() || null }),
         phone: phone.trim() || null,
       } as any);
 
@@ -128,6 +129,7 @@ export default function SensitiveInfoCard() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               maxLength={100}
+              disabled={nameLocked}
             />
           </div>
           <div className="space-y-2">
@@ -185,12 +187,18 @@ export default function SensitiveInfoCard() {
           </div>
         )}
 
+        {nameLocked && (
+          <p className="text-xs text-muted-foreground">
+            Nom verrouillé après confirmation. Seuls l'email et le téléphone restent modifiables.
+          </p>
+        )}
+
         <Button
           onClick={saveNameOrPhone}
           disabled={savingProfile || updateProfile.isPending}
           className="w-full"
         >
-          {savingProfile ? "Enregistrement..." : "Enregistrer nom & téléphone"}
+          {savingProfile ? "Enregistrement..." : nameLocked ? "Enregistrer le téléphone" : "Enregistrer nom & téléphone"}
         </Button>
 
         {/* Email change */}
