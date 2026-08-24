@@ -46,7 +46,27 @@ function isSafeUrl(url: unknown) {
   )
 }
 
+const ACTION_LABELS: Record<string, { open: string; dismiss: string }> = {
+  fr: { open: 'Ouvrir', dismiss: 'Fermer' },
+  en: { open: 'Open', dismiss: 'Dismiss' },
+  es: { open: 'Abrir', dismiss: 'Cerrar' },
+  pt: { open: 'Abrir', dismiss: 'Fechar' },
+  de: { open: 'Öffnen', dismiss: 'Schließen' },
+  it: { open: 'Apri', dismiss: 'Chiudi' },
+  ht: { open: 'Louvri', dismiss: 'Fèmen' },
+  zh: { open: '打开', dismiss: '关闭' },
+  ar: { open: 'فتح', dismiss: 'إغلاق' },
+}
+
 async function deliver(userId: string, payloadObj: Record<string, unknown>) {
+  const { data: prof } = await admin
+    .from('profiles')
+    .select('language')
+    .eq('user_id', userId)
+    .maybeSingle()
+  const labels = ACTION_LABELS[(prof?.language as string) ?? 'fr'] ?? ACTION_LABELS.fr
+  payloadObj = { ...payloadObj, actionOpen: labels.open, actionDismiss: labels.dismiss }
+
   const { data: subs } = await admin
     .from('push_subscriptions')
     .select('*')
