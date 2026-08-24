@@ -1049,6 +1049,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           lost_packages_count: number | null
+          personal_info_locked: boolean
           phone: string | null
           phone_verified: boolean | null
           referral_code: string | null
@@ -1094,6 +1095,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           lost_packages_count?: number | null
+          personal_info_locked?: boolean
           phone?: string | null
           phone_verified?: boolean | null
           referral_code?: string | null
@@ -1139,6 +1141,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           lost_packages_count?: number | null
+          personal_info_locked?: boolean
           phone?: string | null
           phone_verified?: boolean | null
           referral_code?: string | null
@@ -1898,6 +1901,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           lost_packages_count: number | null
+          personal_info_locked: boolean
           phone: string | null
           phone_verified: boolean | null
           referral_code: string | null
@@ -1952,6 +1956,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           lost_packages_count: number | null
+          personal_info_locked: boolean
           phone: string | null
           phone_verified: boolean | null
           referral_code: string | null
@@ -2146,6 +2151,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           lost_packages_count: number | null
+          personal_info_locked: boolean
           phone: string | null
           phone_verified: boolean | null
           referral_code: string | null
@@ -2218,6 +2224,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           lost_packages_count: number | null
+          personal_info_locked: boolean
           phone: string | null
           phone_verified: boolean | null
           referral_code: string | null
