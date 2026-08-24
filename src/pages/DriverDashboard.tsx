@@ -18,6 +18,7 @@ import { useDriverStats, useAvailableDeliveries } from "@/hooks/useDriverStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 import { IdentityRequiredBanner } from "@/components/identity/IdentityRequiredBanner";
 import EarningsTransferCard from "@/components/wallet/EarningsTransferCard";
+import { useWallet } from "@/hooks/useWallet";
 
 
 const DriverDashboard = () => {
@@ -26,6 +27,8 @@ const DriverDashboard = () => {
   const { user, isDriver, loading } = useAuth();
   const { data: stats, isLoading: statsLoading } = useDriverStats();
   const { data: availableDeliveries } = useAvailableDeliveries();
+  const { data: wallet } = useWallet();
+  const transferableDop = Number((wallet as any)?.earnings_dop ?? 0);
   useDriverOrderNotifications();
 
   if (loading) {
@@ -185,15 +188,23 @@ const DriverDashboard = () => {
                   <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-lg p-6">
                     <div className="text-center">
                       <DollarSign className="h-12 w-12 mx-auto mb-3 text-green-600" />
-                      <p className="text-sm text-muted-foreground mb-1">{t("driverPage.availableBalance")}</p>
-                      <p className="text-3xl font-bold text-green-600">
-                        RD$ {(stats?.totalEarnings || 0).toLocaleString()}
+                      <p className="text-sm text-muted-foreground mb-1">
+                        Solde transférable (gains)
                       </p>
-                      <p className="text-xs text-muted-foreground mt-2">{t("driverPage.autoWallet")}</p>
+                      <p className="text-3xl font-bold text-green-600">
+                        RD$ {transferableDop.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Les frais de livraison sont crédités ici après confirmation du code de
+                        livraison (net de 5% de commission). Pour les livraisons payées en espèces,
+                        vous gardez le cash et la commission de 5% est prélevée automatiquement sur
+                        ce solde. Transférez ensuite vers votre portefeuille principal (frais 1%).
+                      </p>
                     </div>
                   </div>
                 </div>
               </CardContent>
+
             </Card>
           </TabsContent>
         </Tabs>
