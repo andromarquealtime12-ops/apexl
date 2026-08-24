@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ShieldAlert, ShieldCheck, Clock } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   role: "seller" | "driver";
@@ -15,9 +18,27 @@ interface Props {
  */
 export function IdentityRequiredBanner({ role }: Props) {
   const { data: profile } = useProfile();
+  const { user } = useAuth();
   const status = ((profile as any)?.identity_status || "unverified") as string;
 
-  if (status === "verified") return null;
+  // An approved seller/driver application already means documents were reviewed.
+  const { data: approvedApplication } = useQuery({
+    queryKey: ["approved-application", role, user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const table = role === "driver" ? "driver_applications" : "seller_applications";
+      const { data } = await supabase
+        .from(table)
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("status", "approved")
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!user,
+  });
+
+  if (status === "verified" || approvedApplication) return null;
 
   const isDriver = role === "driver";
   const requirements = isDriver
