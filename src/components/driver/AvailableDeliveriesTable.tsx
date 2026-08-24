@@ -235,10 +235,22 @@ export default function AvailableDeliveriesTable() {
     try {
       await acceptDelivery.mutateAsync(orderId);
       toast.success("Livraison acceptée !");
-    } catch {
-      toast.error("Erreur lors de l'acceptation");
+    } catch (e: any) {
+      toast.error(e?.message || "Erreur lors de l'acceptation");
     }
   };
+
+  if (!isOnline) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
+        <p className="font-medium text-foreground">Vous êtes hors ligne</p>
+        <p className="text-sm">
+          Activez « Disponible pour livrer » ci-dessus pour recevoir et voir les commandes.
+        </p>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -252,15 +264,19 @@ export default function AvailableDeliveriesTable() {
   if (!enriched || enriched.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
-        <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-        <p>Aucune livraison disponible</p>
-        <p className="text-sm">Les nouvelles commandes apparaîtront ici</p>
+        <Loader2 className="h-10 w-10 mx-auto mb-3 animate-spin text-primary" />
+        <p className="font-medium text-foreground">Recherche de commandes…</p>
+        <p className="text-sm">Vous êtes en ligne. Les nouvelles commandes apparaîtront ici automatiquement.</p>
       </div>
     );
   }
 
   return (
     <div className="grid gap-4">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+        Recherche d'autres commandes en cours…
+      </div>
       {enriched.map((delivery) => (
         <Card key={delivery.id} className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
