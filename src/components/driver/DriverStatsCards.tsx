@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Truck, CheckCircle, Clock, DollarSign } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface DriverStatsCardsProps {
   stats: {
@@ -15,6 +16,7 @@ interface DriverStatsCardsProps {
 }
 
 export default function DriverStatsCards({ stats, isLoading }: DriverStatsCardsProps) {
+  const { t } = useTranslation();
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-DO", {
       style: "currency",
@@ -25,33 +27,33 @@ export default function DriverStatsCards({ stats, isLoading }: DriverStatsCardsP
 
   const statCards = [
     {
-      title: "Livraisons totales",
+      title: t("driverx.stats.totalDeliveries"),
       value: stats?.totalDeliveries ?? 0,
-      subtitle: `${stats?.completedDeliveries ?? 0} terminées`,
+      subtitle: t("driverx.stats.completed", { count: stats?.completedDeliveries ?? 0 }),
       icon: Truck,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
     {
-      title: "En attente",
+      title: t("driverx.stats.pending"),
       value: stats?.pendingDeliveries ?? 0,
-      subtitle: "À récupérer",
+      subtitle: t("driverx.stats.toPickUp"),
       icon: Clock,
       color: "text-orange-500",
       bgColor: "bg-orange-500/10",
     },
     {
-      title: "En cours",
+      title: t("driverx.stats.inProgress"),
       value: stats?.inProgressDeliveries ?? 0,
-      subtitle: "En livraison",
+      subtitle: t("driverx.stats.inDelivery"),
       icon: CheckCircle,
       color: "text-green-500",
       bgColor: "bg-green-500/10",
     },
     {
-      title: "Gains totaux",
+      title: t("driverx.stats.totalEarnings"),
       value: formatCurrency(stats?.totalEarnings ?? 0),
-      subtitle: "Commission de livraison",
+      subtitle: t("driverx.stats.deliveryCommission"),
       icon: DollarSign,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",

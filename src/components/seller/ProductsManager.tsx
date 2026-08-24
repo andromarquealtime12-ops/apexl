@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSellerProducts } from "@/hooks/useSellerStats";
 import { useDeleteProduct, useToggleProductStatus } from "@/hooks/useSellerProducts";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ import { toast } from "sonner";
 import ProductFormDialog from "./ProductFormDialog";
 
 export default function ProductsManager() {
+  const { t } = useTranslation();
   const { data: products, isLoading } = useSellerProducts();
   const deleteProduct = useDeleteProduct();
   const toggleStatus = useToggleProductStatus();
@@ -47,19 +49,19 @@ export default function ProductsManager() {
     if (!productToDelete) return;
     try {
       await deleteProduct.mutateAsync(productToDelete);
-      toast.success("Produit supprimé");
+      toast.success(t("sellerx.products.toasts.deleted"));
       setProductToDelete(null);
     } catch (error) {
-      toast.error("Erreur lors de la suppression");
+      toast.error(t("sellerx.products.toasts.deleteError"));
     }
   };
 
   const handleToggleStatus = async (id: string, currentStatus: boolean) => {
     try {
       await toggleStatus.mutateAsync({ id, is_active: !currentStatus });
-      toast.success(currentStatus ? "Produit désactivé" : "Produit activé");
+      toast.success(currentStatus ? t("sellerx.products.toasts.deactivated") : t("sellerx.products.toasts.activated"));
     } catch (error) {
-      toast.error("Erreur lors de la mise à jour");
+      toast.error(t("sellerx.products.toasts.updateError"));
     }
   };
 
@@ -77,22 +79,22 @@ export default function ProductsManager() {
     <div className="space-y-4">
       <div className="flex justify-between items-center flex-wrap gap-2">
         <p className="text-sm text-muted-foreground">
-          {products?.length || 0} produit(s)
+          {t("sellerx.products.count", { count: products?.length || 0 })}
         </p>
         <Button onClick={() => setShowAddDialog(true)} size="lg" className="gap-2 shadow-md">
           <Plus className="h-5 w-5" />
-          Ajouter un produit
+          {t("sellerx.products.add")}
         </Button>
       </div>
 
       {!products || products.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
           <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-          <p className="font-medium">Aucun produit pour le moment</p>
-          <p className="text-sm mb-4">Ajoutez votre premier produit pour commencer à vendre</p>
+          <p className="font-medium">{t("sellerx.products.empty.title")}</p>
+          <p className="text-sm mb-4">{t("sellerx.products.empty.subtitle")}</p>
           <Button onClick={() => setShowAddDialog(true)} size="lg" className="gap-2">
             <Plus className="h-5 w-5" />
-            Ajouter mon premier produit
+            {t("sellerx.products.addFirst")}
           </Button>
         </div>
       ) : (
@@ -100,12 +102,12 @@ export default function ProductsManager() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-16">Image</TableHead>
-                <TableHead>Produit</TableHead>
-                <TableHead>Prix</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>Actif</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-16">{t("sellerx.products.table.image")}</TableHead>
+                <TableHead>{t("sellerx.products.table.product")}</TableHead>
+                <TableHead>{t("sellerx.products.table.price")}</TableHead>
+                <TableHead>{t("sellerx.products.table.stock")}</TableHead>
+                <TableHead>{t("sellerx.products.table.active")}</TableHead>
+                <TableHead className="text-right">{t("sellerx.products.table.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -128,7 +130,7 @@ export default function ProductsManager() {
                     <div>
                       <p className="font-medium">{product.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {(product.categories as any)?.name || "Sans catégorie"}
+                        {(product.categories as any)?.name || t("sellerx.products.noCategory")}
                       </p>
                     </div>
                   </TableCell>
@@ -187,18 +189,18 @@ export default function ProductsManager() {
       <AlertDialog open={!!productToDelete} onOpenChange={() => setProductToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer ce produit ?</AlertDialogTitle>
+            <AlertDialogTitle>{t("sellerx.products.deleteDialog.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Cette action est irréversible. Le produit sera définitivement supprimé.
+              {t("sellerx.products.deleteDialog.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel>{t("sellerx.products.deleteDialog.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Supprimer
+              {t("sellerx.products.deleteDialog.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -16,8 +16,10 @@
  } from "lucide-react";
  import { useNotifications, useUnreadNotificationsCount, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from "@/hooks/useNotifications";
  import { format } from "date-fns";
- import { fr } from "date-fns/locale";
+ import { useTranslation } from "react-i18next";
+ import { getDateFnsLocale } from "@/i18n/dateLocale";
  import { useNavigate } from "react-router-dom";
+
  
  export default function NotificationsDropdown() {
    const { data: notifications, isLoading } = useNotifications();
@@ -25,6 +27,7 @@
    const markAsRead = useMarkNotificationAsRead();
    const markAllAsRead = useMarkAllNotificationsAsRead();
    const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
  
    const getIcon = (type: string) => {
      switch (type) {
@@ -64,7 +67,7 @@
        </DropdownMenuTrigger>
        <DropdownMenuContent align="end" className="w-80">
          <DropdownMenuLabel className="flex items-center justify-between">
-           <span>Notifications</span>
+           <span>{t("buyerx.notif.title")}</span>
            {unreadCount && unreadCount > 0 && (
              <Button 
                variant="ghost" 
@@ -73,14 +76,14 @@
                onClick={() => markAllAsRead.mutate()}
              >
                <Check className="h-3 w-3 mr-1" />
-               Tout marquer lu
+               {t("buyerx.notif.markAllRead")}
              </Button>
            )}
          </DropdownMenuLabel>
          <DropdownMenuSeparator />
          <ScrollArea className="h-[300px]">
            {isLoading ? (
-             <div className="p-4 text-center text-muted-foreground">Chargement...</div>
+             <div className="p-4 text-center text-muted-foreground">{t("buyerx.notif.loading")}</div>
            ) : notifications && notifications.length > 0 ? (
              notifications.map((notification) => (
                <DropdownMenuItem
@@ -97,7 +100,7 @@
                      {notification.message}
                    </p>
                    <p className="text-xs text-muted-foreground mt-1">
-                     {format(new Date(notification.created_at), "dd MMM à HH:mm", { locale: fr })}
+                     {format(new Date(notification.created_at), "dd MMM à HH:mm", { locale: getDateFnsLocale(i18n.language) })}
                    </p>
                  </div>
                  {!notification.is_read && (
@@ -108,7 +111,7 @@
            ) : (
              <div className="p-4 text-center text-muted-foreground">
                <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-               <p>Aucune notification</p>
+               <p>{t("buyerx.notif.empty")}</p>
              </div>
            )}
          </ScrollArea>

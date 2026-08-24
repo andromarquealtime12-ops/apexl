@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Bell, X } from "lucide-react";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useTranslation } from "react-i18next";
 
 export function PushNotificationBanner() {
+  const { t } = useTranslation();
   const { permission, isSupported, requestPermission } = usePushNotifications();
   const [dismissed, setDismissed] = useState(false);
 
@@ -17,11 +19,11 @@ export function PushNotificationBanner() {
       <Bell className="h-4 w-4 text-primary" />
       <AlertDescription className="flex items-center justify-between gap-4">
         <span className="text-sm">
-          Activez les notifications pour être alerté des nouvelles commandes à proximité.
+          {t("driverx.pushBanner.message")}
         </span>
         <div className="flex gap-2 shrink-0">
           <Button size="sm" onClick={requestPermission}>
-            Activer
+            {t("driverx.pushBanner.activate")}
           </Button>
           <Button size="sm" variant="ghost" onClick={() => setDismissed(true)}>
             <X className="h-4 w-4" />

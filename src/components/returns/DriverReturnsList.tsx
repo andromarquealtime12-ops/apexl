@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { RotateCcw, Key, Loader2, CheckCircle, Truck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function DriverReturnsList() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { data: returns } = useOrderReturns("driver");
   const acceptReturn = useDriverAcceptReturn();
@@ -41,7 +43,7 @@ export default function DriverReturnsList() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <RotateCcw className="h-5 w-5" />
-            Retours
+            {t("driverx.returns.title")}
             {(availableReturns.length + myReturns.length) > 0 && (
               <Badge variant="destructive">{availableReturns.length + myReturns.length}</Badge>
             )}
@@ -53,7 +55,7 @@ export default function DriverReturnsList() {
               <CardContent className="p-3 flex items-center justify-between">
                 <div>
                   <Badge variant="outline" className="font-mono text-xs">#{ret.order_id.slice(0, 8)}</Badge>
-                  <p className="text-sm mt-1">Retour à récupérer chez l'acheteur</p>
+                  <p className="text-sm mt-1">{t("driverx.returns.toPickupFromBuyer")}</p>
                 </div>
                 <Button
                   size="sm"
@@ -61,7 +63,7 @@ export default function DriverReturnsList() {
                   onClick={() => acceptReturn.mutate(ret.id)}
                 >
                   {acceptReturn.isPending ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Truck className="h-3 w-3 mr-1" />}
-                  Accepter
+                  {t("driverx.returns.accept")}
                 </Button>
               </CardContent>
             </Card>
@@ -72,7 +74,7 @@ export default function DriverReturnsList() {
               <CardContent className="p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <Badge variant="outline" className="font-mono text-xs">#{ret.order_id.slice(0, 8)}</Badge>
-                  <Badge>{ret.status === "return_pickup_ready" ? "Récupérer chez acheteur" : ret.status === "return_in_transit" ? "Livrer chez vendeur" : ret.status}</Badge>
+                  <Badge>{ret.status === "return_pickup_ready" ? t("driverx.returns.pickupAtBuyer") : ret.status === "return_in_transit" ? t("driverx.returns.deliverAtSeller") : ret.status}</Badge>
                 </div>
 
                 {ret.status === "return_pickup_ready" && (
@@ -81,7 +83,7 @@ export default function DriverReturnsList() {
                     className="w-full gap-1"
                     onClick={() => setCodeModal({ open: true, returnId: ret.id, type: "pickup" })}
                   >
-                    <Key className="h-3 w-3" /> Entrer code récupération
+                    <Key className="h-3 w-3" /> {t("driverx.returns.enterPickupCode")}
                   </Button>
                 )}
 
@@ -91,7 +93,7 @@ export default function DriverReturnsList() {
                     className="w-full gap-1"
                     onClick={() => setCodeModal({ open: true, returnId: ret.id, type: "delivery" })}
                   >
-                    <Key className="h-3 w-3" /> Entrer code livraison vendeur
+                    <Key className="h-3 w-3" /> {t("driverx.returns.enterDeliveryCode")}
                   </Button>
                 )}
               </CardContent>
@@ -105,10 +107,10 @@ export default function DriverReturnsList() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Key className="h-5 w-5 text-primary" />
-              {codeModal.type === "pickup" ? "Code récupération retour" : "Code livraison vendeur"}
+              {codeModal.type === "pickup" ? t("driverx.returns.pickupCodeTitle") : t("driverx.returns.deliveryCodeTitle")}
             </DialogTitle>
             <DialogDescription>
-              Entrez le code PIN à 4 chiffres
+              {t("driverx.returns.codeDesc")}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center gap-4 py-4">
@@ -130,7 +132,7 @@ export default function DriverReturnsList() {
               ) : (
                 <CheckCircle className="h-4 w-4 mr-2" />
               )}
-              Confirmer
+              {t("driverx.returns.confirm")}
             </Button>
           </div>
         </DialogContent>

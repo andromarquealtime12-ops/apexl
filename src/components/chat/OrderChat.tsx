@@ -9,8 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Send, MessageCircle, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import { getDateFnsLocale } from "@/i18n/dateLocale";
 import { alertDriver } from "@/utils/notificationSound";
+import { useTranslation } from "react-i18next";
 
 interface OrderChatProps {
   orderId: string;
@@ -28,6 +29,7 @@ interface ChatMessage {
 
 export default function OrderChat({ orderId, otherUserName, compact = false }: OrderChatProps) {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -118,7 +120,7 @@ export default function OrderChat({ orderId, otherUserName, compact = false }: O
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <MessageCircle className="h-4 w-4" />
-            Chat avec {otherUserName || "le participant"}
+            {t("buyerx.chat.chatWith", { name: otherUserName || t("buyerx.chat.participant") })}
             {messages.length > 0 && (
               <Badge variant="secondary" className="text-xs">
                 {messages.length}
@@ -140,7 +142,7 @@ export default function OrderChat({ orderId, otherUserName, compact = false }: O
           ) : messages.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground text-sm">
               <MessageCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p>Aucun message. Commencez la conversation !</p>
+              <p>{t("buyerx.chat.noMessages")}</p>
             </div>
           ) : (
             messages.map((msg) => {
@@ -164,7 +166,7 @@ export default function OrderChat({ orderId, otherUserName, compact = false }: O
                   >
                     <p className="text-sm break-words">{msg.message}</p>
                     <p className={`text-[10px] mt-1 ${isMe ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                      {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true, locale: fr })}
+                      {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true, locale: getDateFnsLocale(i18n.language) })}
                     </p>
                   </div>
                 </div>
@@ -176,7 +178,7 @@ export default function OrderChat({ orderId, otherUserName, compact = false }: O
         {/* Input */}
         <div className="flex gap-2">
           <Input
-            placeholder="Écrire un message..."
+            placeholder={t("buyerx.chat.writeMessage")}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={handleKeyDown}

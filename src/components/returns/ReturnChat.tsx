@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useReturnMessages, useSendReturnMessage } from "@/hooks/useReturns";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,13 +8,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Image as ImageIcon, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import type { Locale } from "date-fns";
+import { fr, enUS, es, pt, de, it, zhCN, ar as arLocale } from "date-fns/locale";
+
+const dateLocales: Record<string, Locale> = {
+  fr, en: enUS, es, pt, de, it, zh: zhCN, ar: arLocale, ht: fr,
+};
 
 interface ReturnChatProps {
   returnId: string;
 }
 
 function SignedImage({ value }: { value: string }) {
+  const { t } = useTranslation();
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -34,10 +41,11 @@ function SignedImage({ value }: { value: string }) {
     };
   }, [value]);
   if (!url) return null;
-  return <img src={url} alt="Photo" className="rounded mb-1 max-h-32 w-auto" />;
+  return <img src={url} alt={t("sellerx.returns.chat.photoAlt")} className="rounded mb-1 max-h-32 w-auto" />;
 }
 
 export default function ReturnChat({ returnId }: ReturnChatProps) {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const { data: messages, isLoading } = useReturnMessages(returnId);
   const sendMessage = useSendReturnMessage();
@@ -70,7 +78,7 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
       if (uploadError) throw uploadError;
 
       // Store the storage path only — bucket is private, signed URLs generated at render.
-      await sendMessage.mutateAsync({ returnId, imageUrl: path, message: "📷 Photo envoyée" });
+      await sendMessage.mutateAsync({ returnId, imageUrl: path, message: t("sellerx.returns.chat.photoSent") });
     } catch (err) {
       console.error("Upload error:", err);
     } finally {
@@ -82,15 +90,15 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
   return (
     <div className="border rounded-lg overflow-hidden">
       <div className="bg-muted/50 px-3 py-2 text-sm font-medium">
-        💬 Communication retour
+        💬 {t("sellerx.returns.chat.header")}
       </div>
 
       <ScrollArea className="h-48 p-3" ref={scrollRef}>
         {isLoading ? (
-          <p className="text-xs text-muted-foreground text-center">Chargement...</p>
+          <p className="text-xs text-muted-foreground text-center">{t("sellerx.returns.chat.loading")}</p>
         ) : messages?.length === 0 ? (
           <p className="text-xs text-muted-foreground text-center py-4">
-            Aucun message. Envoyez des photos ou messages concernant le retour.
+            {t("sellerx.returns.chat.empty")}
           </p>
         ) : (
           <div className="space-y-2">
@@ -107,7 +115,7 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
                   {msg.image_url && <SignedImage value={msg.image_url} />}
                   {msg.message && <p>{msg.message}</p>}
                   <p className="text-[10px] opacity-60 mt-1">
-                    {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true, locale: fr })}
+                    {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true, locale: dateLocales[i18n.language] || enUS })}
                   </p>
                 </div>
               </div>
@@ -133,7 +141,7 @@ export default function ReturnChat({ returnId }: ReturnChatProps) {
           {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
         </Button>
         <Input
-          placeholder="Message..."
+          placeholder={t("sellerx.returns.chat.placeholder")}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}

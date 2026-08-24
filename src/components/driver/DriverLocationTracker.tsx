@@ -12,8 +12,10 @@ import {
   useSetDriverOnlineStatus 
 } from "@/hooks/useGeolocation";
 import OpenStreetMap from "@/components/map/OpenStreetMap";
+import { useTranslation } from "react-i18next";
 
 export function DriverLocationTracker() {
+  const { t } = useTranslation();
   const { position, error, isWatching, startWatching, stopWatching } = useWatchPosition();
   const updateLocation = useUpdateDriverLocation();
   const setOnlineStatus = useSetDriverOnlineStatus();
@@ -70,7 +72,7 @@ export function DriverLocationTracker() {
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <Navigation className="h-5 w-5" />
-            Suivi de position
+            {t("driverx.location.title")}
           </span>
           <Badge 
             variant={isOnline ? "default" : "secondary"}
@@ -79,18 +81,18 @@ export function DriverLocationTracker() {
             {isOnline ? (
               <>
                 <Radio className="h-3 w-3 mr-1 animate-pulse" />
-                En ligne
+                {t("driverx.location.online")}
               </>
             ) : (
               <>
                 <WifiOff className="h-3 w-3 mr-1" />
-                Hors ligne
+                {t("driverx.location.offline")}
               </>
             )}
           </Badge>
         </CardTitle>
         <CardDescription>
-          Activez le suivi continu pour recevoir des livraisons à proximité
+          {t("driverx.location.desc")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -103,10 +105,10 @@ export function DriverLocationTracker() {
             )}
             <div>
               <Label htmlFor="online-toggle" className="font-medium cursor-pointer">
-                Disponible pour livrer
+                {t("driverx.location.availableToggle")}
               </Label>
               <p className="text-xs text-muted-foreground">
-                {isOnline ? "Suivi GPS continu activé" : "Vous ne recevrez pas de demandes"}
+                {isOnline ? t("driverx.location.gpsActive") : t("driverx.location.noRequests")}
               </p>
             </div>
           </div>
@@ -132,16 +134,16 @@ export function DriverLocationTracker() {
               <div className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-green-500 mt-0.5" />
                 <div className="flex-1">
-                  <p className="font-medium text-green-700 dark:text-green-400">Position active</p>
+                  <p className="font-medium text-green-700 dark:text-green-400">{t("driverx.location.activePosition")}</p>
                   <p className="text-xs text-green-600 dark:text-green-500 font-mono">
                     {position.latitude.toFixed(6)}, {position.longitude.toFixed(6)}
                   </p>
                   {position.accuracy && (
                     <p className="text-xs text-green-600 dark:text-green-500 flex items-center gap-1 mt-1">
                       <Gauge className="h-3 w-3" />
-                      Précision: ±{Math.round(position.accuracy)}m
+                      {t("driverx.location.precision", { value: Math.round(position.accuracy) })}
                       {position.speed != null && position.speed > 0 && (
-                        <span className="ml-2">• Vitesse: {Math.round(position.speed * 3.6)} km/h</span>
+                        <span className="ml-2">{t("driverx.location.speed", { value: Math.round(position.speed * 3.6) })}</span>
                       )}
                     </p>
                   )}
@@ -149,7 +151,7 @@ export function DriverLocationTracker() {
                 {isWatching && (
                   <Badge variant="outline" className="text-green-600 border-green-600 animate-pulse">
                     <Radio className="h-3 w-3 mr-1" />
-                    Live
+                    {t("driverx.location.live")}
                   </Badge>
                 )}
               </div>

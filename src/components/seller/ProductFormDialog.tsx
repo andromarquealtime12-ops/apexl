@@ -61,13 +61,13 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
       .map((entry) => entry.trim())
       .filter(Boolean);
 
-  const sizeLabel = formData.size_type === "shoe" ? "Pointures disponibles" : "Tailles disponibles";
+  const sizeLabel = formData.size_type === "shoe" ? t("sellerx.productForm.shoeSizesLabel") : t("sellerx.productForm.sizesLabel");
   const sizePlaceholder =
     formData.size_type === "shoe"
-      ? "Ex: 38, 39, 40, 41, 42"
+      ? t("sellerx.productForm.shoeSizesPlaceholder")
       : formData.size_type === "custom"
-        ? "Ex: Unique, 2 ans, 4 ans"
-        : "Ex: XS, S, M, L, XL, XXL";
+        ? t("sellerx.productForm.customSizesPlaceholder")
+        : t("sellerx.productForm.standardSizesPlaceholder");
 
   useEffect(() => {
     if (product) {
@@ -103,7 +103,7 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
     e.preventDefault();
 
     if (!formData.name.trim() || !formData.price) {
-      toast.error("Le nom et le prix sont requis");
+      toast.error(t("sellerx.productForm.toasts.required"));
       return;
     }
 
@@ -124,14 +124,14 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
 
       if (product) {
         await updateProduct.mutateAsync({ id: product.id, ...data });
-        toast.success("Produit mis à jour");
+        toast.success(t("sellerx.productForm.toasts.updated"));
       } else {
         await createProduct.mutateAsync(data);
-        toast.success("Produit créé");
+        toast.success(t("sellerx.productForm.toasts.created"));
       }
       onOpenChange(false);
     } catch (error) {
-      toast.error("Erreur lors de l'enregistrement");
+      toast.error(t("sellerx.productForm.toasts.saveError"));
     }
   };
 
@@ -141,39 +141,39 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] max-h-[95vh] p-0 flex flex-col gap-0">
         <DialogHeader className="p-6 pb-4 border-b shrink-0">
-          <DialogTitle>{product ? "Modifier le produit" : "Nouveau produit"}</DialogTitle>
+          <DialogTitle>{product ? t("sellerx.productForm.editTitle") : t("sellerx.productForm.newTitle")}</DialogTitle>
           <DialogDescription>
-            {product ? "Modifiez les informations du produit" : "Ajoutez un nouveau produit à votre boutique"}
+            {product ? t("sellerx.productForm.editDescription") : t("sellerx.productForm.newDescription")}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
           <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nom du produit *</Label>
+            <Label htmlFor="name">{t("sellerx.productForm.nameLabel")}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Ex: T-shirt coton bio"
+              placeholder={t("sellerx.productForm.namePlaceholder")}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("sellerx.productForm.descriptionLabel")}</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Décrivez votre produit..."
+              placeholder={t("sellerx.productForm.descriptionPlaceholder")}
               rows={3}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price">Prix (RD$) *</Label>
+              <Label htmlFor="price">{t("sellerx.productForm.priceLabel")}</Label>
               <Input
                 id="price"
                 type="number"
@@ -187,7 +187,7 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="stock">Quantité en stock</Label>
+              <Label htmlFor="stock">{t("sellerx.productForm.stockLabel")}</Label>
               <Input
                 id="stock"
                 type="number"
@@ -200,13 +200,13 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Catégorie</Label>
+            <Label htmlFor="category">{t("sellerx.productForm.categoryLabel")}</Label>
             <Select
               value={formData.category_id}
               onValueChange={(value) => setFormData(prev => ({ ...prev, category_id: value }))}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Sélectionner une catégorie" />
+                <SelectValue placeholder={t("sellerx.productForm.categoryPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {categories?.map((cat) => (
@@ -220,28 +220,28 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="available_colors">Couleurs disponibles</Label>
+              <Label htmlFor="available_colors">{t("sellerx.productForm.colorsLabel")}</Label>
               <Input
                 id="available_colors"
                 value={formData.available_colors}
                 onChange={(e) => setFormData(prev => ({ ...prev, available_colors: e.target.value }))}
-                placeholder="Ex: Noir, Blanc, Rouge"
+                placeholder={t("sellerx.productForm.colorsPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="size_type">Type de tailles</Label>
+              <Label htmlFor="size_type">{t("sellerx.productForm.sizeTypeLabel")}</Label>
               <Select
                 value={formData.size_type}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, size_type: value }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Choisir un type" />
+                  <SelectValue placeholder={t("sellerx.productForm.sizeTypePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="standard">Vêtements</SelectItem>
-                  <SelectItem value="shoe">Chaussures / tennis</SelectItem>
-                  <SelectItem value="custom">Autres tailles</SelectItem>
+                  <SelectItem value="standard">{t("sellerx.productForm.sizeTypeStandard")}</SelectItem>
+                  <SelectItem value="shoe">{t("sellerx.productForm.sizeTypeShoe")}</SelectItem>
+                  <SelectItem value="custom">{t("sellerx.productForm.sizeTypeCustom")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -258,7 +258,7 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
           </div>
 
           <div className="space-y-2">
-            <Label>Images du produit</Label>
+            <Label>{t("sellerx.productForm.imagesLabel")}</Label>
             <div className="flex flex-wrap gap-2">
               {formData.images.map((url, i) => (
                 <div key={i} className="relative w-20 h-20 rounded-md overflow-hidden border">
@@ -312,18 +312,18 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
 
           <DialogFooter className="p-4 border-t bg-background shrink-0 sticky bottom-0 flex-row justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Annuler
+              {t("sellerx.productForm.cancel")}
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Enregistrement...
+                  {t("sellerx.productForm.saving")}
                 </>
               ) : product ? (
-                "Mettre à jour"
+                t("sellerx.productForm.update")
               ) : (
-                "Créer le produit"
+                t("sellerx.productForm.create")
               )}
             </Button>
           </DialogFooter>

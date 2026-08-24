@@ -15,6 +15,7 @@ import {
 import { useVerifyPickupCode, useVerifyDeliveryCode, useDeliveryVerification } from "@/hooks/useDeliveryVerification";
 import { Loader2, Package, Truck, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 
 interface DeliveryCodeVerificationProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ interface DeliveryCodeVerificationProps {
 }
 
 export function DeliveryCodeVerification({ isOpen, onClose, orderId, type }: DeliveryCodeVerificationProps) {
+  const { t } = useTranslation();
   const [code, setCode] = useState("");
   const { data: verification } = useDeliveryVerification(orderId);
   const verifyPickup = useVerifyPickupCode();
@@ -52,19 +54,19 @@ export function DeliveryCodeVerification({ isOpen, onClose, orderId, type }: Del
             {isPickup ? (
               <>
                 <Package className="h-5 w-5 text-primary" />
-                Récupérer le colis
+                {t("driverx.codeVerification.pickupTitle")}
               </>
             ) : (
               <>
                 <Truck className="h-5 w-5 text-primary" />
-                Confirmer la livraison
+                {t("driverx.codeVerification.deliveryTitle")}
               </>
             )}
           </DialogTitle>
           <DialogDescription>
             {isPickup 
-              ? "Entrez le code PIN à 4 chiffres affiché chez le vendeur"
-              : "Entrez le code PIN à 4 chiffres donné par le client"
+              ? t("driverx.codeVerification.pickupDesc")
+              : t("driverx.codeVerification.deliveryDesc")
             }
           </DialogDescription>
         </DialogHeader>
@@ -72,7 +74,7 @@ export function DeliveryCodeVerification({ isOpen, onClose, orderId, type }: Del
         <div className="space-y-6 py-4">
           <div className="flex flex-col items-center gap-4">
             <Badge variant="outline" className="text-xs">
-              Commande #{orderId.slice(0, 8)}
+              {t("driverx.codeVerification.order", { id: orderId.slice(0, 8) })}
             </Badge>
             
             <InputOTP
@@ -90,8 +92,8 @@ export function DeliveryCodeVerification({ isOpen, onClose, orderId, type }: Del
 
             <p className="text-xs text-muted-foreground text-center">
               {isPickup 
-                ? "Le vendeur doit vous donner ce code pour confirmer que vous récupérez le bon colis"
-                : "Le client doit vous donner ce code pour confirmer qu'il a bien reçu sa commande"
+                ? t("driverx.codeVerification.pickupHint")
+                : t("driverx.codeVerification.deliveryHint")
               }
             </p>
           </div>
@@ -106,7 +108,7 @@ export function DeliveryCodeVerification({ isOpen, onClose, orderId, type }: Del
             ) : (
               <CheckCircle className="h-4 w-4 mr-2" />
             )}
-            {isPickup ? "Confirmer la récupération" : "Confirmer la livraison"}
+            {isPickup ? t("driverx.codeVerification.confirmPickup") : t("driverx.codeVerification.confirmDelivery")}
           </Button>
         </div>
       </DialogContent>

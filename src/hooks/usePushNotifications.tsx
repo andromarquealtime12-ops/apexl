@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { alertDriver } from "@/utils/notificationSound";
+import i18n from "@/i18n";
 
 const VAPID_PUBLIC_KEY = "BIqvSGtAQZMBu75_cwoqFPV7ljTNG2TrC7iHaPIyM8z-LcKD2d_FhLhww0sILYbn2Sm4rdT2km4xFngyfdHzXtU";
 
@@ -86,7 +87,7 @@ export function usePushNotifications() {
 
   const requestPermission = useCallback(async () => {
     if (!isSupported) {
-      toast.error("Les notifications ne sont pas supportées par votre navigateur");
+      toast.error(i18n.t("buyerx.push.notSupported"));
       return false;
     }
 
@@ -94,11 +95,11 @@ export function usePushNotifications() {
     setPermission(result);
 
     if (result === "granted") {
-      toast.success("Notifications activées !");
+      toast.success(i18n.t("buyerx.push.activated"));
       await subscribeToPush();
       return true;
     } else {
-      toast.error("Notifications refusées. Activez-les dans les paramètres du navigateur.");
+      toast.error(i18n.t("buyerx.push.denied"));
       return false;
     }
   }, [isSupported, subscribeToPush]);
@@ -169,8 +170,8 @@ export function useDriverOrderNotifications() {
             !order.driver_id &&
             oldOrder.status !== order.status
           ) {
-            sendLocalNotification("📦 Commande prête à récupérer !", {
-              body: `La commande #${(order.id as string).slice(0, 8)} est prête. ${order.delivery_city || ""}`,
+            sendLocalNotification(i18n.t("buyerx.push.readyToPickTitle"), {
+              body: i18n.t("buyerx.push.readyToPickBody", { id: (order.id as string).slice(0, 8), city: order.delivery_city || "" }),
               data: { url: `/driver` },
               tag: `ready-${order.id}`,
               sound: "newOrder",
@@ -178,8 +179,8 @@ export function useDriverOrderNotifications() {
           }
 
           if (order.driver_id === user.id && oldOrder.driver_id !== user.id) {
-            sendLocalNotification("🎉 Livraison assignée !", {
-              body: `La commande #${(order.id as string).slice(0, 8)} vous a été assignée.`,
+            sendLocalNotification(i18n.t("buyerx.push.deliveryAssignedTitle"), {
+              body: i18n.t("buyerx.push.deliveryAssignedBody", { id: (order.id as string).slice(0, 8) }),
               data: { url: `/driver` },
               tag: `assigned-${order.id}`,
               sound: "pickup",
@@ -191,8 +192,8 @@ export function useDriverOrderNotifications() {
             order.status === "ready_for_pickup" &&
             oldOrder.status !== "ready_for_pickup"
           ) {
-            sendLocalNotification("📦 Commande prête au retrait !", {
-              body: `La commande #${(order.id as string).slice(0, 8)} est prête pour le retrait.`,
+            sendLocalNotification(i18n.t("buyerx.push.readyForPickupTitle"), {
+              body: i18n.t("buyerx.push.readyForPickupBody", { id: (order.id as string).slice(0, 8) }),
               data: { url: `/driver` },
               tag: `pickup-${order.id}`,
               sound: "pickup",

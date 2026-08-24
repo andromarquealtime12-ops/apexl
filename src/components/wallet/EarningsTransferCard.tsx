@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,6 +17,7 @@ import { CURRENCY_SYMBOLS, Currency } from "@/types/database";
 const CURRENCIES: Currency[] = ["DOP", "HTG", "USD"];
 
 export default function EarningsTransferCard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [currency, setCurrency] = useState<Currency>("DOP");
@@ -43,7 +45,7 @@ export default function EarningsTransferCard() {
 
   const available = earningsFor(currency);
   const parsed = parseFloat(amount) || 0;
-  const fee = Math.round(parsed * 1) / 100; // 1% de frais, arrondi à 2 décimales
+  const fee = Math.round(parsed * 1) / 100; // 1% fee, rounded to 2 decimals
   const net = parsed - fee;
 
   const transfer = useMutation({
@@ -54,20 +56,24 @@ export default function EarningsTransferCard() {
       });
       if (error) throw error;
       const res = data as any;
-      if (!res?.success) throw new Error(res?.error || "Transfert échoué");
+      if (!res?.success) throw new Error(res?.error || t("sellerx.earnings.toasts.transferFailed"));
       return res;
     },
     onSuccess: (res: any) => {
       toast({
-        title: "Transfert réussi",
-        description: `${CURRENCY_SYMBOLS[currency]} ${res.transferred} crédités (frais ${CURRENCY_SYMBOLS[currency]} ${res.fee}).`,
+        title: t("sellerx.earnings.toasts.successTitle"),
+        description: t("sellerx.earnings.toasts.successDescription", {
+          symbol: CURRENCY_SYMBOLS[currency],
+          transferred: res.transferred,
+          fee: res.fee,
+        }),
       });
       setAmount("");
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
     },
     onError: (e: any) =>
-      toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+      toast({ title: t("sellerx.earnings.toasts.errorTitle"), description: e.message, variant: "destructive" }),
   });
 
   return (
@@ -75,13 +81,10 @@ export default function EarningsTransferCard() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <PiggyBank className="h-5 w-5" />
-          Mes gains
+          {t("sellerx.earnings.title")}
         </CardTitle>
         <CardDescription>
-          L'argent de vos ventes/livraisons est déposé ici (net de 5% de commission plateforme).
-          Pour les commandes payées en cash, les 5% sont prélevés directement sur ce solde —
-          aussi bien sur les ventes (vendeur) que sur les frais de livraison (livreur).
-          Transférez vers votre portefeuille principal — frais de transfert 1%.
+          {t("sellerx.earnings.description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -109,15 +112,14 @@ export default function EarningsTransferCard() {
               <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  Solde de gains négatif en {currency}. Les commissions des commandes payées en
-                  cash sont prélevées automatiquement. Régularisez pour pouvoir transférer.
+                  {t("sellerx.earnings.negativeBalance", { currency })}
                 </AlertDescription>
               </Alert>
             )}
 
             <div className="grid sm:grid-cols-3 gap-3">
               <div className="space-y-2">
-                <Label>Devise</Label>
+                <Label>{t("sellerx.earnings.currencyLabel")}</Label>
                 <Select value={currency} onValueChange={(v) => setCurrency(v as Currency)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -132,7 +134,7 @@ export default function EarningsTransferCard() {
                 </Select>
               </div>
               <div className="space-y-2 sm:col-span-2">
-                <Label>Montant à transférer</Label>
+                <Label>{t("sellerx.earnings.amountLabel")}</Label>
                 <Input
                   type="number"
                   min="0"
@@ -147,13 +149,13 @@ export default function EarningsTransferCard() {
             {parsed > 0 && (
               <div className="text-sm text-muted-foreground space-y-1">
                 <div className="flex justify-between">
-                  <span>Frais de transfert (1%)</span>
+                  <span>{t("sellerx.earnings.transferFee")}</span>
                   <span>
                     -{CURRENCY_SYMBOLS[currency]} {fee.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between font-medium text-foreground">
-                  <span>Crédité au portefeuille</span>
+                  <span>{t("sellerx.earnings.creditedToWallet")}</span>
                   <span>
                     {CURRENCY_SYMBOLS[currency]} {net.toFixed(2)}
                   </span>
@@ -167,7 +169,7 @@ export default function EarningsTransferCard() {
                 onClick={() => setAmount(available > 0 ? String(available) : "")}
                 disabled={available <= 0}
               >
-                Tout
+                {t("sellerx.earnings.all")}
               </Button>
               <Button
                 className="flex-1 gap-2"
@@ -175,7 +177,7 @@ export default function EarningsTransferCard() {
                 disabled={transfer.isPending || parsed <= 0 || parsed > available}
               >
                 <ArrowRightLeft className="h-4 w-4" />
-                {transfer.isPending ? "Transfert..." : "Transférer vers le portefeuille"}
+                {transfer.isPending ? t("sellerx.earnings.transferring") : t("sellerx.earnings.transferButton")}
               </Button>
             </div>
           </>

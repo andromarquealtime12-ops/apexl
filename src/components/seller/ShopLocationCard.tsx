@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { GpsAddressField } from "@/components/ui/GpsAddressField";
@@ -11,6 +12,7 @@ import { calculateDistance } from "@/hooks/useGeolocation";
 const MAX_MOVE_KM = 5;
 
 export default function ShopLocationCard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -48,7 +50,7 @@ export default function ShopLocationCard() {
   const save = async () => {
     if (!user || lat == null || lng == null) return;
     if (outOfRange) {
-      toast.error(`Nouvelle position à ${distanceFromOrigin.toFixed(1)} km — max ${MAX_MOVE_KM} km autour du point enregistré. Contactez le support pour un déplacement plus grand.`);
+      toast.error(t("sellerx.shopLocation.outOfRangeError", { distance: distanceFromOrigin.toFixed(1), max: MAX_MOVE_KM }));
       return;
     }
     setSaving(true);
@@ -60,7 +62,7 @@ export default function ShopLocationCard() {
     if (error) return toast.error(error.message);
     setOriginalLat(lat);
     setOriginalLng(lng);
-    toast.success("Position de la boutique enregistrée ✓");
+    toast.success(t("sellerx.shopLocation.saved"));
   };
 
   return (
@@ -68,10 +70,10 @@ export default function ShopLocationCard() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MapPin className="h-5 w-5 text-primary" />
-          Emplacement de retrait des colis
+          {t("sellerx.shopLocation.title")}
         </CardTitle>
         <CardDescription>
-          Position enregistrée où les livreurs viennent chercher vos colis. Modifiable dans un rayon de {MAX_MOVE_KM} km.
+          {t("sellerx.shopLocation.description", { max: MAX_MOVE_KM })}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -85,26 +87,26 @@ export default function ShopLocationCard() {
               coords={{ lat, lng }}
               onCoords={(la, lo) => { setLat(la); setLng(lo); }}
               onSelect={(s) => setAddress(s.address)}
-              placeholder="Adresse exacte de la boutique"
+              placeholder={t("sellerx.shopLocation.addressPlaceholder")}
             />
 
             {originalLat != null && lat != null && lng != null && (
               outOfRange ? (
                 <div className="flex items-start gap-2 text-xs text-destructive bg-destructive/10 rounded p-2">
                   <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-                  <span>Position hors zone : {distanceFromOrigin.toFixed(1)} km du point d'origine (max {MAX_MOVE_KM} km).</span>
+                  <span>{t("sellerx.shopLocation.outOfZone", { distance: distanceFromOrigin.toFixed(1), max: MAX_MOVE_KM })}</span>
                 </div>
               ) : distanceFromOrigin > 0.05 ? (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <CheckCircle2 className="h-3 w-3 text-green-600" />
-                  Déplacement de {distanceFromOrigin.toFixed(2)} km — dans la limite autorisée.
+                  {t("sellerx.shopLocation.moveWithinRange", { distance: distanceFromOrigin.toFixed(2) })}
                 </div>
               ) : null
             )}
 
             <Button onClick={save} disabled={saving || lat == null || lng == null || outOfRange} className="w-full">
               {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-              Enregistrer la position
+              {t("sellerx.shopLocation.save")}
             </Button>
           </>
         )}

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Bell, BellRing, Lock, Smartphone } from "lucide-react";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 
 /**
  * Blocking gate: notifications are mandatory for connected users.
@@ -12,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
  */
 export function NotificationGate() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { permission, isSupported, requestPermission, subscribeToPush } = usePushNotifications();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -54,42 +56,40 @@ export function NotificationGate() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BellRing className="h-5 w-5 text-primary" />
-            Notifications obligatoires
+            {t("buyerx.notifGate.title")}
           </DialogTitle>
           <DialogDescription>
-            Pour utiliser APEXL, vous devez autoriser les notifications. Elles sont indispensables
-            pour les commandes, les livraisons et les paiements.
+            {t("buyerx.notifGate.description")}
           </DialogDescription>
         </DialogHeader>
 
         <ul className="space-y-3 text-sm">
           <li className="flex items-start gap-3">
             <Smartphone className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-            <span>Recevez les alertes même si vous utilisez une autre application.</span>
+            <span>{t("buyerx.notifGate.bullet1")}</span>
           </li>
           <li className="flex items-start gap-3">
             <Lock className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-            <span>Les alertes s'affichent sur l'écran verrouillé, écran éteint.</span>
+            <span>{t("buyerx.notifGate.bullet2")}</span>
           </li>
           <li className="flex items-start gap-3">
             <Bell className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-            <span>Son et vibration pour ne rater aucune commande.</span>
+            <span>{t("buyerx.notifGate.bullet3")}</span>
           </li>
         </ul>
 
         {permission === "denied" ? (
           <p className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            Les notifications sont bloquées. Ouvrez les paramètres de votre navigateur
-            (Site → Notifications → Autoriser), puis rechargez la page.
+            {t("buyerx.notifGate.blocked")}
           </p>
         ) : null}
 
         <div className="pt-2 space-y-2">
           <Button onClick={handleEnable} disabled={busy} className="w-full" size="lg">
-            {busy ? "Activation..." : "Activer les notifications"}
+            {busy ? t("buyerx.notifGate.activating") : t("buyerx.notifGate.activate")}
           </Button>
           <Button onClick={handleDismiss} variant="ghost" className="w-full">
-            Plus tard
+            {t("buyerx.notifGate.later")}
           </Button>
         </div>
       </DialogContent>

@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Bell, X } from "lucide-react";
 import { startLoudAlarm } from "@/utils/notificationSound";
+import { useTranslation } from "react-i18next";
 
 const ALARM_DURATION = 5 * 60 * 1000;
 
@@ -15,6 +16,7 @@ const ALARM_DURATION = 5 * 60 * 1000;
  */
 export default function SellerOrderAlarm() {
   const { user, isSeller } = useAuth();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [active, setActive] = useState(false);
@@ -90,9 +92,9 @@ export default function SellerOrderAlarm() {
       <div className="mx-auto flex max-w-xl items-center gap-3 rounded-xl border border-primary/40 bg-background px-4 py-3 shadow-lg">
         <Bell className="h-5 w-5 shrink-0 animate-bounce text-primary" />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">Nouvelle commande !</p>
+          <p className="text-sm font-semibold">{t("buyerx.sellerAlarm.newOrder")}</p>
           <p className="truncate text-xs text-muted-foreground">
-            Ouvrez le tableau de bord vendeur pour la traiter.
+            {t("buyerx.sellerAlarm.openDashboard")}
           </p>
         </div>
         <Button
@@ -102,9 +104,9 @@ export default function SellerOrderAlarm() {
             navigate("/seller");
           }}
         >
-          Voir
+          {t("buyerx.sellerAlarm.view")}
         </Button>
-        <Button size="sm" variant="ghost" onClick={stopAlarm} aria-label="Arrêter l'alarme">
+        <Button size="sm" variant="ghost" onClick={stopAlarm} aria-label={t("buyerx.sellerAlarm.stopAlarm")}>
           <X className="h-4 w-4" />
         </Button>
       </div>

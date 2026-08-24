@@ -8,6 +8,7 @@ import { MapPin, Store, Navigation, X, Loader2 } from "lucide-react";
 import OpenStreetMap from "@/components/map/OpenStreetMap";
 import { calculateDistance } from "@/hooks/useGeolocation";
 import { getRoute } from "@/utils/osrmRouting";
+import { useTranslation } from "react-i18next";
 
 
 interface DeliveryMapPreviewProps {
@@ -35,6 +36,7 @@ export default function DeliveryMapPreview({
   driverLng,
   onClose,
 }: DeliveryMapPreviewProps) {
+  const { t } = useTranslation();
   // Fetch ALL distinct sellers for this order
   const { data: sellers } = useQuery({
     queryKey: ["delivery-preview-sellers", orderId],
@@ -79,7 +81,7 @@ export default function DeliveryMapPreview({
   const routes: any[] = [];
 
   if (driverLat && driverLng) {
-    markers.push({ lat: driverLat, lng: driverLng, color: "blue" as const, popup: "🚗 Vous" });
+    markers.push({ lat: driverLat, lng: driverLng, color: "blue" as const, popup: t("driverx.map.you") });
   }
 
   // Sellers as numbered stops
@@ -88,12 +90,12 @@ export default function DeliveryMapPreview({
       lat: s.latitude,
       lng: s.longitude,
       color: "red" as const,
-      popup: `📦 Étape ${idx + 1} : ${s.shop_name}`,
+      popup: t("driverx.map.step", { index: idx + 1, name: s.shop_name }),
     });
   });
 
   if (buyerLat && buyerLng) {
-    markers.push({ lat: buyerLat, lng: buyerLng, color: "green" as const, popup: "🏠 Livraison" });
+    markers.push({ lat: buyerLat, lng: buyerLng, color: "green" as const, popup: t("driverx.map.delivery") });
   }
 
   // Build chained points: driver → s1 → s2 → ... → buyer
@@ -187,13 +189,13 @@ export default function DeliveryMapPreview({
             {pickupCount > 0 && (
               <Badge className="bg-orange-500/90 text-white gap-1">
                 <Store className="h-3 w-3" />
-                {pickupCount} arrêt{pickupCount > 1 ? "s" : ""}
+                {t("driverx.map.stop", { count: pickupCount })}
               </Badge>
             )}
             {totalDist > 0 && (
               <Badge className="bg-primary/90 text-primary-foreground gap-1">
                 <Navigation className="h-3 w-3" />
-                Total: {totalDist.toFixed(1)} km
+                {t("driverx.map.total", { km: totalDist.toFixed(1) })}
               </Badge>
             )}
             {totalMin > 0 && (
@@ -206,7 +208,7 @@ export default function DeliveryMapPreview({
 
         {orderedStops.length > 0 && (
           <div className="p-2 border-t space-y-1">
-            <p className="text-xs font-semibold text-muted-foreground">Parcours :</p>
+            <p className="text-xs font-semibold text-muted-foreground">{t("driverx.map.route")}</p>
             <ol className="text-xs space-y-0.5">
               {orderedStops.map((s, i) => (
                 <li key={s.user_id} className="flex items-start gap-1">
@@ -217,7 +219,7 @@ export default function DeliveryMapPreview({
               {buyerLat && buyerLng && (
                 <li className="flex items-start gap-1">
                   <span className="font-bold text-green-600">{orderedStops.length + 1}.</span>
-                  <span><MapPin className="inline h-3 w-3 mr-0.5 text-green-600" />Livraison client</span>
+                  <span><MapPin className="inline h-3 w-3 mr-0.5 text-green-600" />{t("driverx.map.customerDelivery")}</span>
                 </li>
               )}
             </ol>
