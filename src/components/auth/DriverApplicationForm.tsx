@@ -46,6 +46,8 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
     availability: "",
   });
 
+  const [dateOfBirth, setDateOfBirth] = useState("");
+
   const [licenseFront, setLicenseFront] = useState<File | null>(null);
   const [licenseBack, setLicenseBack] = useState<File | null>(null);
   const [vehicleReg, setVehicleReg] = useState<File | null>(null);
@@ -60,6 +62,10 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
     if (!formData.vehicle_type) return;
     if (!docsReady) {
       toast.error(t("driverApp.docsMissing"));
+      return;
+    }
+    if (!dateOfBirth) {
+      toast.error("Votre date de naissance est obligatoire");
       return;
     }
 
@@ -83,6 +89,10 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
         vehicle_registration_url: regUrl,
         selfie_url: selfieUrl,
       });
+      await supabase
+        .from("profiles")
+        .update({ date_of_birth: dateOfBirth } as any)
+        .eq("user_id", user.id);
       onClose();
     } finally {
       setUploading(false);
@@ -187,6 +197,18 @@ export function DriverApplicationForm({ isOpen, onClose }: DriverApplicationForm
             </Alert>
           )}
           <div className="space-y-2">
+            <Label htmlFor="driver_dob">Date de naissance *</Label>
+            <Input
+              id="driver_dob"
+              type="date"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              max={new Date().toISOString().slice(0, 10)}
+              required
+            />
+            <p className="text-xs text-muted-foreground mb-2">
+              Cette information est définitive une fois la demande envoyée.
+            </p>
             <Label htmlFor="vehicle_type">{t("driverApp.vehicleType")} *</Label>
             <Select value={formData.vehicle_type} onValueChange={(value) => handleChange("vehicle_type", value)} required>
               <SelectTrigger><SelectValue placeholder={t("driverApp.selectType")} /></SelectTrigger>

@@ -45,6 +45,8 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
     business_type: "",
   });
 
+  const [dateOfBirth, setDateOfBirth] = useState("");
+
   const [shopLat, setShopLat] = useState<number | null>(null);
   const [shopLng, setShopLng] = useState<number | null>(null);
   const [pickupConfirmed, setPickupConfirmed] = useState(false);
@@ -64,6 +66,10 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
     }
     if (!locationReady) {
       toast.error("Confirmez la position de retrait des colis");
+      return;
+    }
+    if (!dateOfBirth) {
+      toast.error("Votre date de naissance est obligatoire");
       return;
     }
     try {
@@ -89,7 +95,8 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
         shop_latitude: shopLat,
         shop_longitude: shopLng,
         shop_address: formData.shop_address,
-      }).eq("user_id", user.id);
+        date_of_birth: dateOfBirth,
+      } as any).eq("user_id", user.id);
       onClose();
     } finally {
       setUploading(false);
@@ -191,6 +198,18 @@ export function SellerApplicationForm({ isOpen, onClose }: SellerApplicationForm
             </Alert>
           )}
           <div className="space-y-2">
+            <Label htmlFor="seller_dob">Date de naissance *</Label>
+            <Input
+              id="seller_dob"
+              type="date"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              max={new Date().toISOString().slice(0, 10)}
+              required
+            />
+            <p className="text-xs text-muted-foreground mb-2">
+              Cette information est définitive une fois la demande envoyée.
+            </p>
             <Label htmlFor="shop_name">{t("sellerApp.shopName")} *</Label>
             <Input id="shop_name" placeholder={t("sellerApp.shopNamePlaceholder")} value={formData.shop_name} onChange={(e) => handleChange("shop_name", e.target.value)} required />
           </div>
