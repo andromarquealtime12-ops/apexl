@@ -40,6 +40,15 @@ import buyerDe from "./locales/buyerx.de.json";
 import buyerIt from "./locales/buyerx.it.json";
 import buyerZh from "./locales/buyerx.zh.json";
 import buyerAr from "./locales/buyerx.ar.json";
+import setFr from "./locales/settings.fr.json";
+import setHt from "./locales/settings.ht.json";
+import setEs from "./locales/settings.es.json";
+import setEn from "./locales/settings.en.json";
+import setPt from "./locales/settings.pt.json";
+import setDe from "./locales/settings.de.json";
+import setIt from "./locales/settings.it.json";
+import setZh from "./locales/settings.zh.json";
+import setAr from "./locales/settings.ar.json";
 import restoFr from "./locales/restaurant.fr.json";
 import restoHt from "./locales/restaurant.ht.json";
 import restoEs from "./locales/restaurant.es.json";
@@ -68,15 +77,15 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      fr: { translation: { ...fr, ...sellerFr, ...driverFr, ...buyerFr, ...restoFr } },
-      ht: { translation: { ...ht, ...sellerHt, ...driverHt, ...buyerHt, ...restoHt } },
-      es: { translation: { ...es, ...sellerEs, ...driverEs, ...buyerEs, ...restoEs } },
-      en: { translation: { ...en, ...sellerEn, ...driverEn, ...buyerEn, ...restoEn } },
-      pt: { translation: { ...pt, ...sellerPt, ...driverPt, ...buyerPt, ...restoPt } },
-      de: { translation: { ...de, ...sellerDe, ...driverDe, ...buyerDe, ...restoDe } },
-      it: { translation: { ...it, ...sellerIt, ...driverIt, ...buyerIt, ...restoIt } },
-      zh: { translation: { ...zh, ...sellerZh, ...driverZh, ...buyerZh, ...restoZh } },
-      ar: { translation: { ...ar, ...sellerAr, ...driverAr, ...buyerAr, ...restoAr } },
+      fr: { translation: { ...fr, ...sellerFr, ...driverFr, ...buyerFr, ...restoFr, ...setFr } },
+      ht: { translation: { ...ht, ...sellerHt, ...driverHt, ...buyerHt, ...restoHt, ...setHt } },
+      es: { translation: { ...es, ...sellerEs, ...driverEs, ...buyerEs, ...restoEs, ...setEs } },
+      en: { translation: { ...en, ...sellerEn, ...driverEn, ...buyerEn, ...restoEn, ...setEn } },
+      pt: { translation: { ...pt, ...sellerPt, ...driverPt, ...buyerPt, ...restoPt, ...setPt } },
+      de: { translation: { ...de, ...sellerDe, ...driverDe, ...buyerDe, ...restoDe, ...setDe } },
+      it: { translation: { ...it, ...sellerIt, ...driverIt, ...buyerIt, ...restoIt, ...setIt } },
+      zh: { translation: { ...zh, ...sellerZh, ...driverZh, ...buyerZh, ...restoZh, ...setZh } },
+      ar: { translation: { ...ar, ...sellerAr, ...driverAr, ...buyerAr, ...restoAr, ...setAr } },
     },
 
     fallbackLng: "en",
