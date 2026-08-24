@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ayiti-marche-v3';
+const CACHE_NAME = 'apexl-v4';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
@@ -55,8 +55,11 @@ self.addEventListener('push', (event) => {
     badge: '/icons/icon-96x96.png',
     tag: data.tag,
     data: { url: data.url },
-    vibrate: [200, 100, 200, 100, 200],
+    vibrate: [300, 120, 300, 120, 500],
     requireInteraction: true,
+    renotify: true,
+    silent: false,
+    timestamp: Date.now(),
     actions: [
       { action: 'open', title: 'Ouvrir' },
       { action: 'dismiss', title: 'Fermer' },
