@@ -1,1 +1,250 @@
-{}
+{
+  "sellerx": {
+    "earnings": {
+      "all": "Alle",
+      "amountLabel": "Betrag",
+      "creditedToWallet": "Auf Wallet gutgeschrieben",
+      "currencyLabel": "Währung",
+      "description": "Sehen und verwalten Sie Ihre Einnahmen",
+      "negativeBalance": "Ihr Guthaben ist negativ ({{currency}})",
+      "title": "Einnahmen",
+      "toasts": {
+        "errorTitle": "Fehler",
+        "successDescription": "Ihre Überweisung war erfolgreich",
+        "successTitle": "Überweisung erfolgreich",
+        "transferFailed": "Überweisung fehlgeschlagen"
+      },
+      "transferButton": "Überweisen",
+      "transferFee": "Überweisungsgebühr",
+      "transferring": "Überweisung läuft..."
+    },
+    "nearbyDrivers": {
+      "activatePosition": "Meinen Standort aktivieren",
+      "call": "Anrufen",
+      "choose": "Auswählen",
+      "chooseThisDriver": "Diesen Fahrer auswählen",
+      "deliveredCount": "{{count}} Lieferungen abgeschlossen",
+      "driver": "Fahrer",
+      "enablePosition": "Bitte aktivieren Sie Ihren Standort, um Fahrer in der Nähe zu finden",
+      "hideMap": "Karte ausblenden",
+      "kmFromYou": "{{distance}} km von Ihnen entfernt",
+      "noReviews": "Noch keine Bewertungen",
+      "noneAvailable": "Keine Fahrer in der Nähe verfügbar",
+      "onlineCount": "{{count}} Fahrer online",
+      "radius": "Suchradius",
+      "refresh": "Aktualisieren",
+      "refreshedAt": "Aktualisiert um {{time}}",
+      "retry": "Erneut versuchen",
+      "retryLater": "Bitte versuchen Sie es später erneut",
+      "reviewCount": "{{count}} Bewertungen",
+      "searchError": "Bei der Suche nach Fahrern ist ein Fehler aufgetreten",
+      "selected": "Ausgewählt",
+      "showMap": "Karte anzeigen",
+      "statsCompleted": "Abgeschlossen",
+      "statsSuccess": "Erfolgsquote",
+      "statsTotal": "Gesamt",
+      "title": "Fahrer in der Nähe",
+      "toasts": {
+        "assignError": "Zuweisung des Fahrers fehlgeschlagen",
+        "assigned": "Fahrer erfolgreich zugewiesen",
+        "refreshed": "Liste aktualisiert",
+        "selectOrderFirst": "Bitte wählen Sie zuerst eine Bestellung aus",
+        "unknownError": "Ein unbekannter Fehler ist aufgetreten"
+      },
+      "vehicle": "Fahrzeug",
+      "vehicleBrand": "Marke",
+      "vehicleCity": "Stadt",
+      "vehiclePlate": "Kennzeichen",
+      "vehicleType": "Typ"
+    },
+    "orderReady": {
+      "dialog": {
+        "codeLabel": "Abholcode",
+        "description": "Teilen Sie diesen Code mit dem Fahrer, um die Abholung der Bestellung zu bestätigen",
+        "expiry": "Dieser Code läuft in 15 Minuten ab",
+        "importantLabel": "Wichtig",
+        "importantText": "Geben Sie diesen Code nicht weiter, bevor der Fahrer eintrifft",
+        "orderLabel": "Bestellung Nr. {{id}}",
+        "regenerate": "Code neu generieren",
+        "title": "Bestellung bereit",
+        "understood": "Verstanden"
+      },
+      "markReady": "Als bereit markieren",
+      "toasts": {
+        "allReady": "Alle Artikel sind bereit",
+        "partialReady": "Einige Artikel sind bereit",
+        "updateError": "Aktualisierung des Bestellstatus fehlgeschlagen"
+      },
+      "viewPin": "Code anzeigen"
+    },
+    "orders": {
+      "cashReceive": "{{amount}} in bar erhalten",
+      "chatOtherUser": "Käufer",
+      "empty": {
+        "subtitle": "Sie haben noch keine Bestellungen erhalten",
+        "title": "Keine Bestellungen"
+      },
+      "more": "+{{count}} weitere",
+      "product": "Produkt",
+      "status": {
+        "cancelled": "Storniert",
+        "confirmed": "Bestätigt",
+        "delivered": "Geliefert",
+        "in_transit": "Unterwegs",
+        "pending": "Ausstehend",
+        "picked_up": "Abgeholt",
+        "preparing": "Wird vorbereitet",
+        "ready": "Bereit",
+        "redelivery": "Neuzustellung",
+        "refunded": "Erstattet",
+        "return_in_transit": "Rücksendung unterwegs",
+        "return_pickup_ready": "Bereit zur Abholung der Rücksendung",
+        "return_requested": "Rücksendung angefordert",
+        "returned": "Zurückgesendet"
+      },
+      "table": {
+        "actions": "Aktionen",
+        "date": "Datum",
+        "order": "Bestellung",
+        "products": "Produkte",
+        "status": "Status",
+        "total": "Gesamt"
+      }
+    },
+    "productForm": {
+      "cancel": "Abbrechen",
+      "categoryLabel": "Kategorie",
+      "categoryPlaceholder": "Kategorie auswählen",
+      "colorsLabel": "Verfügbare Farben",
+      "colorsPlaceholder": "z. B. Rot, Blau, Schwarz",
+      "create": "Erstellen",
+      "customSizesPlaceholder": "z. B. Klein, Mittel, Groß",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Beschreiben Sie Ihr Produkt",
+      "editDescription": "Aktualisieren Sie die Details dieses Produkts",
+      "editTitle": "Produkt bearbeiten",
+      "imagesLabel": "Bilder",
+      "nameLabel": "Name",
+      "namePlaceholder": "Produktname",
+      "newDescription": "Fügen Sie ein neues Produkt zu Ihrem Shop hinzu",
+      "newTitle": "Neues Produkt",
+      "priceLabel": "Preis",
+      "saving": "Wird gespeichert...",
+      "shoeSizesLabel": "Schuhgrößen",
+      "shoeSizesPlaceholder": "z. B. 38, 39, 40",
+      "sizeTypeCustom": "Benutzerdefiniert",
+      "sizeTypeLabel": "Größentyp",
+      "sizeTypePlaceholder": "Größentyp auswählen",
+      "sizeTypeShoe": "Schuh",
+      "sizeTypeStandard": "Standard",
+      "sizesLabel": "Größen",
+      "standardSizesPlaceholder": "z. B. S, M, L, XL",
+      "stockLabel": "Lagerbestand",
+      "toasts": {
+        "created": "Produkt erfolgreich erstellt",
+        "required": "Bitte füllen Sie alle Pflichtfelder aus",
+        "saveError": "Speichern des Produkts fehlgeschlagen",
+        "updated": "Produkt erfolgreich aktualisiert"
+      },
+      "update": "Aktualisieren"
+    },
+    "products": {
+      "add": "Produkt hinzufügen",
+      "addFirst": "Fügen Sie Ihr erstes Produkt hinzu",
+      "count": "{{count}} Produkte",
+      "deleteDialog": {
+        "cancel": "Abbrechen",
+        "confirm": "Löschen",
+        "description": "Diese Aktion kann nicht rückgängig gemacht werden. Dieses Produkt wird dauerhaft gelöscht.",
+        "title": "Dieses Produkt löschen?"
+      },
+      "empty": {
+        "subtitle": "Beginnen Sie mit dem Hinzufügen Ihres ersten Produkts",
+        "title": "Noch keine Produkte"
+      },
+      "noCategory": "Keine Kategorie",
+      "table": {
+        "actions": "Aktionen",
+        "active": "Aktiv",
+        "image": "Bild",
+        "price": "Preis",
+        "product": "Produkt",
+        "stock": "Lagerbestand"
+      },
+      "toasts": {
+        "activated": "Produkt aktiviert",
+        "deactivated": "Produkt deaktiviert",
+        "deleteError": "Löschen des Produkts fehlgeschlagen",
+        "deleted": "Produkt gelöscht",
+        "updateError": "Aktualisierung des Produkts fehlgeschlagen"
+      }
+    },
+    "restaurantLocation": {
+      "addressPlaceholder": "Adresse eingeben",
+      "cityPlaceholder": "Stadt eingeben",
+      "confirmPositionError": "Bitte bestätigen Sie den Standort auf der Karte",
+      "noPositionWarning": "Noch kein Standort festgelegt",
+      "positionLabel": "Standort auf der Karte",
+      "save": "Speichern",
+      "saveError": "Speichern des Standorts fehlgeschlagen",
+      "saving": "Wird gespeichert...",
+      "title": "Standort des Geschäfts",
+      "updated": "Standort erfolgreich aktualisiert"
+    },
+    "returns": {
+      "approve": "Genehmigen",
+      "chat": {
+        "empty": "Noch keine Nachrichten",
+        "header": "Unterhaltung",
+        "loading": "Nachrichten werden geladen...",
+        "photoAlt": "Gesendetes Foto",
+        "photoSent": "Foto gesendet",
+        "placeholder": "Nachricht eingeben..."
+      },
+      "close": "Schließen",
+      "communication": "Kommunikation",
+      "confirm": "Bestätigen",
+      "faultBuyer": "Verschulden des Käufers",
+      "faultOther": "Sonstiges",
+      "faultTypePlaceholder": "Fehlerart auswählen",
+      "faultSeller": "Verschulden des Verkäufers",
+      "inspectPrompt": "Bitte prüfen Sie den zurückgesendeten Artikel",
+      "notesPlaceholder": "Notizen zu dieser Rücksendung hinzufügen",
+      "reason": "Grund",
+      "receiveCode": "Empfangscode für Rücksendung",
+      "redeliverOrder": "Bestellung erneut zustellen",
+      "refundBuyer": "Käufer erstatten",
+      "status": {
+        "approved": "Genehmigt",
+        "pending": "Ausstehend",
+        "redelivery": "Neuzustellung",
+        "refunded": "Erstattet",
+        "rejected": "Abgelehnt",
+        "return_in_transit": "Rücksendung unterwegs",
+        "return_pickup_ready": "Bereit zur Abholung der Rücksendung",
+        "returned": "Zurückgesendet"
+      },
+      "title": "Rücksendungen"
+    },
+    "shopLocation": {
+      "addressPlaceholder": "Adresse Ihres Geschäfts eingeben",
+      "description": "Legen Sie den Standort Ihres Geschäfts auf der Karte fest",
+      "moveWithinRange": "Sie haben sich {{distance}} km vom Ausgangspunkt entfernt",
+      "outOfRangeError": "Der ausgewählte Standort ist zu weit von Ihrem Geschäft entfernt",
+      "outOfZone": "Sie sind {{distance}} km entfernt, das Maximum sind {{max}} km",
+      "save": "Speichern",
+      "saved": "Standort erfolgreich gespeichert",
+      "title": "Standort des Geschäfts"
+    },
+    "stats": {
+      "activeProducts": "Aktive Produkte",
+      "allSales": "Alle Verkäufe",
+      "monthlyRevenue": "Monatlicher Umsatz",
+      "orders": "Bestellungen",
+      "pendingCount": "{{count}} ausstehend",
+      "thisMonth": "Diesen Monat",
+      "totalOf": "Gesamt von {{count}}",
+      "totalRevenue": "Gesamtumsatz"
+    }
+  }
+}

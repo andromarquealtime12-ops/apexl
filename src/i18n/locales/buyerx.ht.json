@@ -1,1 +1,167 @@
-{}
+{
+  "buyerx": {
+    "cancel": {
+      "back": "Retounen",
+      "buyerRefundNote": "Ou pral resevwa yon ranbousman konplè.",
+      "cancel": "Anile",
+      "cancelFailed": "Anilasyon echwe",
+      "cancelledRefunded": "Kòmand anile epi ranbouse.",
+      "cancelledTitle": "Kòmand anile",
+      "cancelledWithPenalty": "Kòmand anile ak yon penalite {{penalty}}. Ranbousman: {{refund}}.",
+      "confirmCancel": "Konfime anilasyon",
+      "confirmTitleDriver": "Retire tèt ou nan livrezon sa a?",
+      "confirmTitleOrder": "Anile kòmand sa a?",
+      "deliveryReleased": "Livrezon an bay yon lòt chofè.",
+      "driverWarning": "Retire tèt ou ka afekte nòt ou kòm chofè.",
+      "penaltyWarning": "Yon penalite anilasyon ka aplike.",
+      "reasonPlaceholder": "Rezon anilasyon an (opsyonèl)",
+      "sellerRefundNote": "Vandè a ap resevwa notifikasyon anilasyon an.",
+      "sending": "Ap voye...",
+      "withdraw": "Retire tèt ou"
+    },
+    "chat": {
+      "chatWith": "Chat ak {{name}}",
+      "noMessages": "Poko gen mesaj",
+      "participant": "Patisipan",
+      "writeMessage": "Ekri yon mesaj..."
+    },
+    "common": {
+      "error": "Yon erè fèt"
+    },
+    "notif": {
+      "empty": "Pa gen notifikasyon",
+      "loading": "Ap chaje...",
+      "markAllRead": "Make tout kòm li",
+      "title": "Notifikasyon"
+    },
+    "notifGate": {
+      "activate": "Aktive notifikasyon",
+      "activating": "Ap aktive...",
+      "blocked": "Notifikasyon yo bloke nan paramèt navigatè ou.",
+      "bullet1": "Swiv kòmand ou an tan reyèl",
+      "bullet2": "Resevwa yon alèt lè chofè ou rive",
+      "bullet3": "Pa manke okenn mizajou",
+      "description": "Rete enfòme sou kòmand ou yo ak notifikasyon push.",
+      "later": "Petèt pita",
+      "title": "Aktive notifikasyon"
+    },
+    "orderNotif": {
+      "confirmedMsg": "Kòmand ou #{{id}} konfime.",
+      "confirmedTitle": "Kòmand konfime",
+      "deliveredMsg": "Kòmand ou #{{id}} livre.",
+      "deliveredTitle": "Kòmand livre",
+      "deliveryCompleteMsg": "Livrezon #{{id}} fini.",
+      "deliveryCompleteTitle": "Livrezon fini",
+      "driverAssignedMsg": "Yo asiyen yon chofè pou kòmand #{{id}}.",
+      "driverAssignedTitle": "Chofè asiyen",
+      "inTransitMsg": "Kòmand ou #{{id}} sou wout.",
+      "inTransitTitle": "Kòmand ap vwayaje",
+      "newDeliveryMsg": "Nouvo livrezon disponib pou kòmand #{{id}}.",
+      "newDeliveryTitle": "Nouvo livrezon",
+      "newOrderMsg": "Ou gen yon nouvo kòmand #{{id}}.",
+      "newOrderTitle": "Nouvo kòmand",
+      "pickedUpMsg": "Yo ranmase kòmand ou #{{id}}.",
+      "pickedUpTitle": "Kòmand ranmase",
+      "rateExperienceMsg": "Tanpri evalye eksperyans ou pou kòmand #{{id}}.",
+      "rateExperienceTitle": "Evalye eksperyans ou",
+      "readyForPickupMsg": "Kòmand #{{id}} pare pou ranmase.",
+      "readyForPickupTitle": "Pare pou ranmase",
+      "readyMsg": "Kòmand ou #{{id}} pare.",
+      "readyTitle": "Kòmand pare"
+    },
+    "orders": {
+      "subtitle": "Swiv epi jere kòmand ou yo",
+      "title": "Kòmand mwen yo"
+    },
+    "push": {
+      "activated": "Notifikasyon aktive",
+      "deliveryAssignedBody": "Yo asiyen yon chofè pou kòmand ou #{{id}}.",
+      "deliveryAssignedTitle": "Chofè asiyen",
+      "denied": "Pèmisyon notifikasyon refize",
+      "notSupported": "Notifikasyon push pa disponib sou aparèy sa a",
+      "readyForPickupBody": "Kòmand ou #{{id}} pare pou ranmase.",
+      "readyForPickupTitle": "Pare pou ranmase",
+      "readyToPickBody": "Kòmand #{{id}} nan {{city}} pare pou ranmase.",
+      "readyToPickTitle": "Kòmand pare pou ranmase"
+    },
+    "rating": {
+      "bad": "Pa bon",
+      "commentPlaceholder": "Kite yon kòmantè (opsyonèl)",
+      "driver": "chofè a",
+      "excellent": "Ekselan",
+      "experienceWithEntity": "Kijan eksperyans ou te ye ak {{entity}}?",
+      "experienceWithName": "Kijan eksperyans ou te ye ak {{name}}?",
+      "good": "Bon",
+      "ok": "Pa mal",
+      "rateEntity": "Evalye {{entity}}",
+      "seller": "vandè a",
+      "sendError": "Echèk pou voye evalyasyon an",
+      "submit": "Voye",
+      "thanks": "Mèsi pou opinyon ou!",
+      "veryBad": "Trè move"
+    },
+    "returns": {
+      "cancel": "Anile",
+      "confirmReturn": "Konfime remèt",
+      "reasonPlaceholder": "Rezon pou remèt la",
+      "requestTitle": "Mande yon remèt",
+      "returnButton": "Remèt atik",
+      "status": {
+        "approved": "Apwouve",
+        "pending": "An atant",
+        "redelivery": "Nouvo livrezon",
+        "refunded": "Ranbouse",
+        "rejected": "Rejte",
+        "return_in_transit": "Remèt ap vwayaje",
+        "return_pickup_ready": "Pare pou ranmase remèt",
+        "returned": "Remèt fèt"
+      },
+      "timeRemaining": "Tan ki rete: {{time}}"
+    },
+    "sellerAlarm": {
+      "newOrder": "Nouvo kòmand resevwa!",
+      "openDashboard": "Ouvri tablo bò",
+      "stopAlarm": "Sispann alam",
+      "view": "Gade"
+    },
+    "tracker": {
+      "chatWith": "Chat ak {{name}}",
+      "closeChat": "Fèmen chat",
+      "deliveryCode": "Kòd livrezon",
+      "deliveryCodeHint": "Bay chofè a kòd sa a lè livrezon an",
+      "driver": "Chofè",
+      "moreItems": "+{{count}} lòt atik",
+      "noOrders": "Pa gen kòmand ankou",
+      "noOrdersHint": "Kòmand aktif ou yo ap parèt isit la",
+      "product": "Pwodwi",
+      "rate": "Evalye",
+      "receipt": "Resi",
+      "receiptError": "Enposib pou chaje resi a",
+      "refundSentDesc": "Ranbousman ou trete epi voye.",
+      "refundSentTitle": "Ranbousman voye",
+      "sellerDriver": "Vandè / Chofè",
+      "total": "Total",
+      "track": "Swiv",
+      "whatsappMessage": "Bonjou, mwen gen yon kesyon sou kòmand #{{id}}"
+    },
+    "tracking": {
+      "arrivingIn": "Ap rive nan {{eta}} ({{km}} km)",
+      "backToOrders": "Retounen nan kòmand yo",
+      "deliveredCheck": "Livre",
+      "deliveryHere": "Kote pou livrezon",
+      "distance": "Distans",
+      "driverInitial": "C",
+      "eta": "Lè estime",
+      "inProgress": "An kou",
+      "inProgressDots": "An kou...",
+      "live": "An dirèk",
+      "order": "Kòmand",
+      "orderSummary": "Rezime kòmand",
+      "points": "{{count}} pwen",
+      "remaining": "Ki rete",
+      "remainingEta": "{{eta}} ki rete",
+      "totalLabel": "Total",
+      "traveled": "Distans pakouri"
+    }
+  }
+}

@@ -1,1 +1,167 @@
-{}
+{
+  "buyerx": {
+    "cancel": {
+      "back": "Zurück",
+      "buyerRefundNote": "Sie erhalten eine vollständige Rückerstattung.",
+      "cancel": "Stornieren",
+      "cancelFailed": "Stornierung fehlgeschlagen",
+      "cancelledRefunded": "Bestellung storniert und erstattet.",
+      "cancelledTitle": "Bestellung storniert",
+      "cancelledWithPenalty": "Bestellung mit einer Strafgebühr von {{penalty}} storniert. Erstattung: {{refund}}.",
+      "confirmCancel": "Stornierung bestätigen",
+      "confirmTitleDriver": "Diese Lieferung zurückziehen?",
+      "confirmTitleOrder": "Diese Bestellung stornieren?",
+      "deliveryReleased": "Die Lieferung wurde an einen anderen Fahrer freigegeben.",
+      "driverWarning": "Ein Rückzug kann Ihre Fahrerbewertung beeinträchtigen.",
+      "penaltyWarning": "Es kann eine Stornogebühr anfallen.",
+      "reasonPlaceholder": "Grund der Stornierung (optional)",
+      "sellerRefundNote": "Der Verkäufer wird über die Stornierung informiert.",
+      "sending": "Wird gesendet...",
+      "withdraw": "Zurückziehen"
+    },
+    "chat": {
+      "chatWith": "Chat mit {{name}}",
+      "noMessages": "Noch keine Nachrichten",
+      "participant": "Teilnehmer",
+      "writeMessage": "Nachricht schreiben..."
+    },
+    "common": {
+      "error": "Ein Fehler ist aufgetreten"
+    },
+    "notif": {
+      "empty": "Keine Benachrichtigungen",
+      "loading": "Wird geladen...",
+      "markAllRead": "Alle als gelesen markieren",
+      "title": "Benachrichtigungen"
+    },
+    "notifGate": {
+      "activate": "Benachrichtigungen aktivieren",
+      "activating": "Wird aktiviert...",
+      "blocked": "Benachrichtigungen sind in Ihren Browsereinstellungen blockiert.",
+      "bullet1": "Verfolgen Sie Ihre Bestellung in Echtzeit",
+      "bullet2": "Erhalten Sie eine Benachrichtigung, wenn Ihr Fahrer eintrifft",
+      "bullet3": "Verpassen Sie kein Update mehr",
+      "description": "Bleiben Sie mit Push-Benachrichtigungen über Ihre Bestellungen informiert.",
+      "later": "Später",
+      "title": "Benachrichtigungen aktivieren"
+    },
+    "orderNotif": {
+      "confirmedMsg": "Ihre Bestellung #{{id}} wurde bestätigt.",
+      "confirmedTitle": "Bestellung bestätigt",
+      "deliveredMsg": "Ihre Bestellung #{{id}} wurde geliefert.",
+      "deliveredTitle": "Bestellung geliefert",
+      "deliveryCompleteMsg": "Die Lieferung #{{id}} ist abgeschlossen.",
+      "deliveryCompleteTitle": "Lieferung abgeschlossen",
+      "driverAssignedMsg": "Ein Fahrer wurde der Bestellung #{{id}} zugewiesen.",
+      "driverAssignedTitle": "Fahrer zugewiesen",
+      "inTransitMsg": "Ihre Bestellung #{{id}} ist unterwegs.",
+      "inTransitTitle": "Bestellung unterwegs",
+      "newDeliveryMsg": "Neue Lieferung für Bestellung #{{id}} verfügbar.",
+      "newDeliveryTitle": "Neue Lieferung",
+      "newOrderMsg": "Sie haben eine neue Bestellung #{{id}}.",
+      "newOrderTitle": "Neue Bestellung",
+      "pickedUpMsg": "Ihre Bestellung #{{id}} wurde abgeholt.",
+      "pickedUpTitle": "Bestellung abgeholt",
+      "rateExperienceMsg": "Bitte bewerten Sie Ihre Erfahrung mit Bestellung #{{id}}.",
+      "rateExperienceTitle": "Bewerten Sie Ihre Erfahrung",
+      "readyForPickupMsg": "Bestellung #{{id}} ist zur Abholung bereit.",
+      "readyForPickupTitle": "Abholbereit",
+      "readyMsg": "Ihre Bestellung #{{id}} ist fertig.",
+      "readyTitle": "Bestellung fertig"
+    },
+    "orders": {
+      "subtitle": "Verfolgen und verwalten Sie Ihre Bestellungen",
+      "title": "Meine Bestellungen"
+    },
+    "push": {
+      "activated": "Benachrichtigungen aktiviert",
+      "deliveryAssignedBody": "Ihrer Bestellung #{{id}} wurde ein Fahrer zugewiesen.",
+      "deliveryAssignedTitle": "Fahrer zugewiesen",
+      "denied": "Benachrichtigungsberechtigung verweigert",
+      "notSupported": "Push-Benachrichtigungen werden auf diesem Gerät nicht unterstützt",
+      "readyForPickupBody": "Ihre Bestellung #{{id}} ist zur Abholung bereit.",
+      "readyForPickupTitle": "Abholbereit",
+      "readyToPickBody": "Bestellung #{{id}} in {{city}} ist abholbereit.",
+      "readyToPickTitle": "Bestellung abholbereit"
+    },
+    "rating": {
+      "bad": "Schlecht",
+      "commentPlaceholder": "Kommentar hinterlassen (optional)",
+      "driver": "den Fahrer",
+      "excellent": "Ausgezeichnet",
+      "experienceWithEntity": "Wie war Ihre Erfahrung mit {{entity}}?",
+      "experienceWithName": "Wie war Ihre Erfahrung mit {{name}}?",
+      "good": "Gut",
+      "ok": "In Ordnung",
+      "rateEntity": "{{entity}} bewerten",
+      "seller": "den Verkäufer",
+      "sendError": "Bewertung konnte nicht gesendet werden",
+      "submit": "Absenden",
+      "thanks": "Danke für Ihr Feedback!",
+      "veryBad": "Sehr schlecht"
+    },
+    "returns": {
+      "cancel": "Abbrechen",
+      "confirmReturn": "Rücksendung bestätigen",
+      "reasonPlaceholder": "Grund der Rücksendung",
+      "requestTitle": "Rücksendung anfordern",
+      "returnButton": "Artikel zurücksenden",
+      "status": {
+        "approved": "Genehmigt",
+        "pending": "Ausstehend",
+        "redelivery": "Neuzustellung",
+        "refunded": "Erstattet",
+        "rejected": "Abgelehnt",
+        "return_in_transit": "Rücksendung unterwegs",
+        "return_pickup_ready": "Abholbereit zur Rücksendung",
+        "returned": "Zurückgesendet"
+      },
+      "timeRemaining": "Verbleibende Zeit: {{time}}"
+    },
+    "sellerAlarm": {
+      "newOrder": "Neue Bestellung erhalten!",
+      "openDashboard": "Dashboard öffnen",
+      "stopAlarm": "Alarm stoppen",
+      "view": "Ansehen"
+    },
+    "tracker": {
+      "chatWith": "Chat mit {{name}}",
+      "closeChat": "Chat schließen",
+      "deliveryCode": "Liefercode",
+      "deliveryCodeHint": "Geben Sie diesen Code dem Fahrer bei der Lieferung",
+      "driver": "Fahrer",
+      "moreItems": "+{{count}} weitere Artikel",
+      "noOrders": "Keine laufenden Bestellungen",
+      "noOrdersHint": "Ihre aktiven Bestellungen erscheinen hier",
+      "product": "Produkt",
+      "rate": "Bewerten",
+      "receipt": "Beleg",
+      "receiptError": "Beleg konnte nicht geladen werden",
+      "refundSentDesc": "Ihre Rückerstattung wurde verarbeitet und gesendet.",
+      "refundSentTitle": "Rückerstattung gesendet",
+      "sellerDriver": "Verkäufer / Fahrer",
+      "total": "Gesamt",
+      "track": "Verfolgen",
+      "whatsappMessage": "Hallo, ich habe eine Frage zur Bestellung #{{id}}"
+    },
+    "tracking": {
+      "arrivingIn": "Ankunft in {{eta}} ({{km}} km)",
+      "backToOrders": "Zurück zu Bestellungen",
+      "deliveredCheck": "Geliefert",
+      "deliveryHere": "Lieferort",
+      "distance": "Entfernung",
+      "driverInitial": "F",
+      "eta": "Ankunftszeit",
+      "inProgress": "In Bearbeitung",
+      "inProgressDots": "In Bearbeitung...",
+      "live": "Live",
+      "order": "Bestellung",
+      "orderSummary": "Bestellübersicht",
+      "points": "{{count}} Punkte",
+      "remaining": "Verbleibend",
+      "remainingEta": "{{eta}} verbleibend",
+      "totalLabel": "Gesamt",
+      "traveled": "Zurückgelegt"
+    }
+  }
+}

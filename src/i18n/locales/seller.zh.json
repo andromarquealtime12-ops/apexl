@@ -1,1 +1,250 @@
-{}
+{
+  "sellerx": {
+    "earnings": {
+      "all": "全部",
+      "amountLabel": "金额",
+      "creditedToWallet": "已存入钱包",
+      "currencyLabel": "货币",
+      "description": "查看和管理您的收益",
+      "negativeBalance": "您的余额为负数（{{currency}}）",
+      "title": "收益",
+      "toasts": {
+        "errorTitle": "错误",
+        "successDescription": "您的转账已成功",
+        "successTitle": "转账成功",
+        "transferFailed": "转账失败"
+      },
+      "transferButton": "转账",
+      "transferFee": "转账费用",
+      "transferring": "转账中..."
+    },
+    "nearbyDrivers": {
+      "activatePosition": "启用我的位置",
+      "call": "呼叫",
+      "choose": "选择",
+      "chooseThisDriver": "选择此司机",
+      "deliveredCount": "已完成 {{count}} 次配送",
+      "driver": "司机",
+      "enablePosition": "请启用您的位置以查找附近的司机",
+      "hideMap": "隐藏地图",
+      "kmFromYou": "距您 {{distance}} 公里",
+      "noReviews": "暂无评价",
+      "noneAvailable": "附近没有可用的司机",
+      "onlineCount": "{{count}} 名司机在线",
+      "radius": "搜索半径",
+      "refresh": "刷新",
+      "refreshedAt": "刷新时间 {{time}}",
+      "retry": "重试",
+      "retryLater": "请稍后再试",
+      "reviewCount": "{{count}} 条评价",
+      "searchError": "搜索司机时发生错误",
+      "selected": "已选择",
+      "showMap": "显示地图",
+      "statsCompleted": "已完成",
+      "statsSuccess": "成功率",
+      "statsTotal": "总计",
+      "title": "附近的司机",
+      "toasts": {
+        "assignError": "分配司机失败",
+        "assigned": "司机分配成功",
+        "refreshed": "列表已刷新",
+        "selectOrderFirst": "请先选择一个订单",
+        "unknownError": "发生未知错误"
+      },
+      "vehicle": "车辆",
+      "vehicleBrand": "品牌",
+      "vehicleCity": "城市",
+      "vehiclePlate": "车牌号",
+      "vehicleType": "类型"
+    },
+    "orderReady": {
+      "dialog": {
+        "codeLabel": "取货码",
+        "description": "与司机分享此代码以确认订单取货",
+        "expiry": "此代码将在15分钟后过期",
+        "importantLabel": "重要提示",
+        "importantText": "请勿在司机到达前分享此代码",
+        "orderLabel": "订单 #{{id}}",
+        "regenerate": "重新生成代码",
+        "title": "订单已就绪",
+        "understood": "明白了"
+      },
+      "markReady": "标记为已就绪",
+      "toasts": {
+        "allReady": "所有商品已就绪",
+        "partialReady": "部分商品已就绪",
+        "updateError": "更新订单状态失败"
+      },
+      "viewPin": "查看PIN码"
+    },
+    "orders": {
+      "cashReceive": "收取现金 {{amount}}",
+      "chatOtherUser": "买家",
+      "empty": {
+        "subtitle": "您还没有收到任何订单",
+        "title": "没有订单"
+      },
+      "more": "还有 {{count}} 个",
+      "product": "产品",
+      "status": {
+        "cancelled": "已取消",
+        "confirmed": "已确认",
+        "delivered": "已送达",
+        "in_transit": "运输中",
+        "pending": "待处理",
+        "picked_up": "已取货",
+        "preparing": "准备中",
+        "ready": "已就绪",
+        "redelivery": "重新配送",
+        "refunded": "已退款",
+        "return_in_transit": "退货运输中",
+        "return_pickup_ready": "可退货取件",
+        "return_requested": "已申请退货",
+        "returned": "已退货"
+      },
+      "table": {
+        "actions": "操作",
+        "date": "日期",
+        "order": "订单",
+        "products": "产品",
+        "status": "状态",
+        "total": "总计"
+      }
+    },
+    "productForm": {
+      "cancel": "取消",
+      "categoryLabel": "分类",
+      "categoryPlaceholder": "选择一个分类",
+      "colorsLabel": "可选颜色",
+      "colorsPlaceholder": "例如：红色、蓝色、黑色",
+      "create": "创建",
+      "customSizesPlaceholder": "例如：小号、中号、大号",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "描述您的产品",
+      "editDescription": "更新此产品的详细信息",
+      "editTitle": "编辑产品",
+      "imagesLabel": "图片",
+      "nameLabel": "名称",
+      "namePlaceholder": "产品名称",
+      "newDescription": "向您的商店添加新产品",
+      "newTitle": "新产品",
+      "priceLabel": "价格",
+      "saving": "保存中...",
+      "shoeSizesLabel": "鞋码",
+      "shoeSizesPlaceholder": "例如：38、39、40",
+      "sizeTypeCustom": "自定义",
+      "sizeTypeLabel": "尺码类型",
+      "sizeTypePlaceholder": "选择一个尺码类型",
+      "sizeTypeShoe": "鞋码",
+      "sizeTypeStandard": "标准",
+      "sizesLabel": "尺码",
+      "standardSizesPlaceholder": "例如：S、M、L、XL",
+      "stockLabel": "库存",
+      "toasts": {
+        "created": "产品创建成功",
+        "required": "请填写所有必填字段",
+        "saveError": "保存产品失败",
+        "updated": "产品更新成功"
+      },
+      "update": "更新"
+    },
+    "products": {
+      "add": "添加产品",
+      "addFirst": "添加您的第一个产品",
+      "count": "{{count}} 个产品",
+      "deleteDialog": {
+        "cancel": "取消",
+        "confirm": "删除",
+        "description": "此操作无法撤销。此产品将被永久删除。",
+        "title": "删除此产品？"
+      },
+      "empty": {
+        "subtitle": "从添加您的第一个产品开始",
+        "title": "暂无产品"
+      },
+      "noCategory": "无分类",
+      "table": {
+        "actions": "操作",
+        "active": "已启用",
+        "image": "图片",
+        "price": "价格",
+        "product": "产品",
+        "stock": "库存"
+      },
+      "toasts": {
+        "activated": "产品已启用",
+        "deactivated": "产品已停用",
+        "deleteError": "删除产品失败",
+        "deleted": "产品已删除",
+        "updateError": "更新产品失败"
+      }
+    },
+    "restaurantLocation": {
+      "addressPlaceholder": "输入地址",
+      "cityPlaceholder": "输入城市",
+      "confirmPositionError": "请在地图上确认位置",
+      "noPositionWarning": "尚未设置位置",
+      "positionLabel": "地图上的位置",
+      "save": "保存",
+      "saveError": "保存位置失败",
+      "saving": "保存中...",
+      "title": "店铺位置",
+      "updated": "位置更新成功"
+    },
+    "returns": {
+      "approve": "批准",
+      "chat": {
+        "empty": "暂无消息",
+        "header": "对话",
+        "loading": "正在加载消息...",
+        "photoAlt": "已发送的照片",
+        "photoSent": "照片已发送",
+        "placeholder": "输入消息..."
+      },
+      "close": "关闭",
+      "communication": "沟通",
+      "confirm": "确认",
+      "faultBuyer": "买家责任",
+      "faultOther": "其他",
+      "faultTypePlaceholder": "选择责任类型",
+      "faultSeller": "卖家责任",
+      "inspectPrompt": "请检查退回的商品",
+      "notesPlaceholder": "添加关于此退货的备注",
+      "reason": "原因",
+      "receiveCode": "退货收货码",
+      "redeliverOrder": "重新配送订单",
+      "refundBuyer": "退款给买家",
+      "status": {
+        "approved": "已批准",
+        "pending": "待处理",
+        "redelivery": "重新配送",
+        "refunded": "已退款",
+        "rejected": "已拒绝",
+        "return_in_transit": "退货运输中",
+        "return_pickup_ready": "可退货取件",
+        "returned": "已退货"
+      },
+      "title": "退货"
+    },
+    "shopLocation": {
+      "addressPlaceholder": "输入您店铺的地址",
+      "description": "在地图上设置您店铺的位置",
+      "moveWithinRange": "您已移动了 {{distance}} 公里，偏离了原始位置",
+      "outOfRangeError": "所选位置离您的店铺太远",
+      "outOfZone": "您距离 {{distance}} 公里，最大允许距离为 {{max}} 公里",
+      "save": "保存",
+      "saved": "位置保存成功",
+      "title": "店铺位置"
+    },
+    "stats": {
+      "activeProducts": "在售产品",
+      "allSales": "所有销售额",
+      "monthlyRevenue": "月收入",
+      "orders": "订单",
+      "pendingCount": "{{count}} 待处理",
+      "thisMonth": "本月",
+      "totalOf": "共 {{count}} 项",
+      "totalRevenue": "总收入"
+    }
+  }
+}

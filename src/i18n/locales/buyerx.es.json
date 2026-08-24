@@ -1,1 +1,167 @@
-{}
+{
+  "buyerx": {
+    "cancel": {
+      "back": "Volver",
+      "buyerRefundNote": "Recibirás un reembolso completo.",
+      "cancel": "Cancelar",
+      "cancelFailed": "Error al cancelar",
+      "cancelledRefunded": "Pedido cancelado y reembolsado.",
+      "cancelledTitle": "Pedido cancelado",
+      "cancelledWithPenalty": "Pedido cancelado con una penalización de {{penalty}}. Reembolso: {{refund}}.",
+      "confirmCancel": "Confirmar cancelación",
+      "confirmTitleDriver": "¿Retirarse de esta entrega?",
+      "confirmTitleOrder": "¿Cancelar este pedido?",
+      "deliveryReleased": "La entrega ha sido asignada a otro repartidor.",
+      "driverWarning": "Retirarte puede afectar tu calificación de repartidor.",
+      "penaltyWarning": "Puede aplicarse una penalización por cancelación.",
+      "reasonPlaceholder": "Motivo de la cancelación (opcional)",
+      "sellerRefundNote": "Se notificará al vendedor de la cancelación.",
+      "sending": "Enviando...",
+      "withdraw": "Retirarse"
+    },
+    "chat": {
+      "chatWith": "Chatear con {{name}}",
+      "noMessages": "Aún no hay mensajes",
+      "participant": "Participante",
+      "writeMessage": "Escribe un mensaje..."
+    },
+    "common": {
+      "error": "Ocurrió un error"
+    },
+    "notif": {
+      "empty": "Sin notificaciones",
+      "loading": "Cargando...",
+      "markAllRead": "Marcar todo como leído",
+      "title": "Notificaciones"
+    },
+    "notifGate": {
+      "activate": "Activar notificaciones",
+      "activating": "Activando...",
+      "blocked": "Las notificaciones están bloqueadas en la configuración de tu navegador.",
+      "bullet1": "Sigue tu pedido en tiempo real",
+      "bullet2": "Recibe una alerta cuando llegue tu repartidor",
+      "bullet3": "No te pierdas ninguna actualización",
+      "description": "Mantente informado de tus pedidos con notificaciones push.",
+      "later": "Más tarde",
+      "title": "Activar notificaciones"
+    },
+    "orderNotif": {
+      "confirmedMsg": "Tu pedido #{{id}} ha sido confirmado.",
+      "confirmedTitle": "Pedido confirmado",
+      "deliveredMsg": "Tu pedido #{{id}} ha sido entregado.",
+      "deliveredTitle": "Pedido entregado",
+      "deliveryCompleteMsg": "La entrega #{{id}} se ha completado.",
+      "deliveryCompleteTitle": "Entrega completada",
+      "driverAssignedMsg": "Se asignó un repartidor al pedido #{{id}}.",
+      "driverAssignedTitle": "Repartidor asignado",
+      "inTransitMsg": "Tu pedido #{{id}} está en camino.",
+      "inTransitTitle": "Pedido en camino",
+      "newDeliveryMsg": "Nueva entrega disponible para el pedido #{{id}}.",
+      "newDeliveryTitle": "Nueva entrega",
+      "newOrderMsg": "Tienes un nuevo pedido #{{id}}.",
+      "newOrderTitle": "Nuevo pedido",
+      "pickedUpMsg": "Tu pedido #{{id}} ha sido recogido.",
+      "pickedUpTitle": "Pedido recogido",
+      "rateExperienceMsg": "Por favor califica tu experiencia para el pedido #{{id}}.",
+      "rateExperienceTitle": "Califica tu experiencia",
+      "readyForPickupMsg": "El pedido #{{id}} está listo para recoger.",
+      "readyForPickupTitle": "Listo para recoger",
+      "readyMsg": "Tu pedido #{{id}} está listo.",
+      "readyTitle": "Pedido listo"
+    },
+    "orders": {
+      "subtitle": "Sigue y gestiona tus pedidos",
+      "title": "Mis pedidos"
+    },
+    "push": {
+      "activated": "Notificaciones activadas",
+      "deliveryAssignedBody": "Se asignó un repartidor a tu pedido #{{id}}.",
+      "deliveryAssignedTitle": "Repartidor asignado",
+      "denied": "Permiso de notificaciones denegado",
+      "notSupported": "Las notificaciones push no son compatibles con este dispositivo",
+      "readyForPickupBody": "Tu pedido #{{id}} está listo para recoger.",
+      "readyForPickupTitle": "Listo para recoger",
+      "readyToPickBody": "El pedido #{{id}} en {{city}} está listo para recoger.",
+      "readyToPickTitle": "Pedido listo para recoger"
+    },
+    "rating": {
+      "bad": "Malo",
+      "commentPlaceholder": "Deja un comentario (opcional)",
+      "driver": "el repartidor",
+      "excellent": "Excelente",
+      "experienceWithEntity": "¿Cómo fue tu experiencia con {{entity}}?",
+      "experienceWithName": "¿Cómo fue tu experiencia con {{name}}?",
+      "good": "Bueno",
+      "ok": "Regular",
+      "rateEntity": "Calificar a {{entity}}",
+      "seller": "el vendedor",
+      "sendError": "Error al enviar la calificación",
+      "submit": "Enviar",
+      "thanks": "¡Gracias por tu opinión!",
+      "veryBad": "Muy malo"
+    },
+    "returns": {
+      "cancel": "Cancelar",
+      "confirmReturn": "Confirmar devolución",
+      "reasonPlaceholder": "Motivo de la devolución",
+      "requestTitle": "Solicitar una devolución",
+      "returnButton": "Devolver artículo",
+      "status": {
+        "approved": "Aprobada",
+        "pending": "Pendiente",
+        "redelivery": "Reenvío",
+        "refunded": "Reembolsada",
+        "rejected": "Rechazada",
+        "return_in_transit": "Devolución en tránsito",
+        "return_pickup_ready": "Lista para recoger",
+        "returned": "Devuelta"
+      },
+      "timeRemaining": "Tiempo restante: {{time}}"
+    },
+    "sellerAlarm": {
+      "newOrder": "¡Nuevo pedido recibido!",
+      "openDashboard": "Abrir panel",
+      "stopAlarm": "Detener alarma",
+      "view": "Ver"
+    },
+    "tracker": {
+      "chatWith": "Chatear con {{name}}",
+      "closeChat": "Cerrar chat",
+      "deliveryCode": "Código de entrega",
+      "deliveryCodeHint": "Entrega este código al repartidor al recibir el pedido",
+      "driver": "Repartidor",
+      "moreItems": "+{{count}} artículos más",
+      "noOrders": "No hay pedidos en curso",
+      "noOrdersHint": "Tus pedidos activos aparecerán aquí",
+      "product": "Producto",
+      "rate": "Calificar",
+      "receipt": "Recibo",
+      "receiptError": "No se pudo cargar el recibo",
+      "refundSentDesc": "Tu reembolso ha sido procesado y enviado.",
+      "refundSentTitle": "Reembolso enviado",
+      "sellerDriver": "Vendedor / Repartidor",
+      "total": "Total",
+      "track": "Rastrear",
+      "whatsappMessage": "Hola, tengo una pregunta sobre el pedido #{{id}}"
+    },
+    "tracking": {
+      "arrivingIn": "Llega en {{eta}} ({{km}} km)",
+      "backToOrders": "Volver a pedidos",
+      "deliveredCheck": "Entregado",
+      "deliveryHere": "Ubicación de entrega",
+      "distance": "Distancia",
+      "driverInitial": "R",
+      "eta": "Tiempo estimado",
+      "inProgress": "En progreso",
+      "inProgressDots": "En progreso...",
+      "live": "En vivo",
+      "order": "Pedido",
+      "orderSummary": "Resumen del pedido",
+      "points": "{{count}} puntos",
+      "remaining": "Restante",
+      "remainingEta": "{{eta}} restante",
+      "totalLabel": "Total",
+      "traveled": "Recorrido"
+    }
+  }
+}

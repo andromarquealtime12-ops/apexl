@@ -1,1 +1,167 @@
-{}
+{
+  "buyerx": {
+    "cancel": {
+      "back": "Back",
+      "buyerRefundNote": "You will receive a full refund.",
+      "cancel": "Cancel",
+      "cancelFailed": "Cancel failed",
+      "cancelledRefunded": "Order cancelled and refunded.",
+      "cancelledTitle": "Order cancelled",
+      "cancelledWithPenalty": "Order cancelled with a penalty of {{penalty}}. Refund: {{refund}}.",
+      "confirmCancel": "Confirm cancellation",
+      "confirmTitleDriver": "Withdraw from this delivery?",
+      "confirmTitleOrder": "Cancel this order?",
+      "deliveryReleased": "The delivery has been released to another driver.",
+      "driverWarning": "Withdrawing may affect your driver rating.",
+      "penaltyWarning": "A cancellation penalty may apply.",
+      "reasonPlaceholder": "Reason for cancellation (optional)",
+      "sellerRefundNote": "The seller will be notified of the cancellation.",
+      "sending": "Sending...",
+      "withdraw": "Withdraw"
+    },
+    "chat": {
+      "chatWith": "Chat with {{name}}",
+      "noMessages": "No messages yet",
+      "participant": "Participant",
+      "writeMessage": "Write a message..."
+    },
+    "common": {
+      "error": "An error occurred"
+    },
+    "notif": {
+      "empty": "No notifications",
+      "loading": "Loading...",
+      "markAllRead": "Mark all as read",
+      "title": "Notifications"
+    },
+    "notifGate": {
+      "activate": "Activate notifications",
+      "activating": "Activating...",
+      "blocked": "Notifications are blocked in your browser settings.",
+      "bullet1": "Track your order in real time",
+      "bullet2": "Get alerted when your driver arrives",
+      "bullet3": "Never miss an update",
+      "description": "Stay informed about your orders with push notifications.",
+      "later": "Maybe later",
+      "title": "Enable notifications"
+    },
+    "orderNotif": {
+      "confirmedMsg": "Your order #{{id}} has been confirmed.",
+      "confirmedTitle": "Order confirmed",
+      "deliveredMsg": "Your order #{{id}} has been delivered.",
+      "deliveredTitle": "Order delivered",
+      "deliveryCompleteMsg": "Delivery #{{id}} is complete.",
+      "deliveryCompleteTitle": "Delivery complete",
+      "driverAssignedMsg": "A driver has been assigned to order #{{id}}.",
+      "driverAssignedTitle": "Driver assigned",
+      "inTransitMsg": "Your order #{{id}} is on its way.",
+      "inTransitTitle": "Order in transit",
+      "newDeliveryMsg": "New delivery available for order #{{id}}.",
+      "newDeliveryTitle": "New delivery",
+      "newOrderMsg": "You have a new order #{{id}}.",
+      "newOrderTitle": "New order",
+      "pickedUpMsg": "Your order #{{id}} has been picked up.",
+      "pickedUpTitle": "Order picked up",
+      "rateExperienceMsg": "Please rate your experience for order #{{id}}.",
+      "rateExperienceTitle": "Rate your experience",
+      "readyForPickupMsg": "Order #{{id}} is ready for pickup.",
+      "readyForPickupTitle": "Ready for pickup",
+      "readyMsg": "Your order #{{id}} is ready.",
+      "readyTitle": "Order ready"
+    },
+    "orders": {
+      "subtitle": "Track and manage your orders",
+      "title": "My orders"
+    },
+    "push": {
+      "activated": "Notifications activated",
+      "deliveryAssignedBody": "A driver has been assigned to your order #{{id}}.",
+      "deliveryAssignedTitle": "Driver assigned",
+      "denied": "Notification permission denied",
+      "notSupported": "Push notifications are not supported on this device",
+      "readyForPickupBody": "Your order #{{id}} is ready for pickup.",
+      "readyForPickupTitle": "Ready for pickup",
+      "readyToPickBody": "Order #{{id}} in {{city}} is ready to pick up.",
+      "readyToPickTitle": "Order ready to pick up"
+    },
+    "rating": {
+      "bad": "Bad",
+      "commentPlaceholder": "Leave a comment (optional)",
+      "driver": "the driver",
+      "excellent": "Excellent",
+      "experienceWithEntity": "How was your experience with {{entity}}?",
+      "experienceWithName": "How was your experience with {{name}}?",
+      "good": "Good",
+      "ok": "Okay",
+      "rateEntity": "Rate {{entity}}",
+      "seller": "the seller",
+      "sendError": "Failed to send rating",
+      "submit": "Submit",
+      "thanks": "Thank you for your feedback!",
+      "veryBad": "Very bad"
+    },
+    "returns": {
+      "cancel": "Cancel",
+      "confirmReturn": "Confirm return",
+      "reasonPlaceholder": "Reason for the return",
+      "requestTitle": "Request a return",
+      "returnButton": "Return item",
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "redelivery": "Redelivery",
+        "refunded": "Refunded",
+        "rejected": "Rejected",
+        "return_in_transit": "Return in transit",
+        "return_pickup_ready": "Ready for return pickup",
+        "returned": "Returned"
+      },
+      "timeRemaining": "Time remaining: {{time}}"
+    },
+    "sellerAlarm": {
+      "newOrder": "New order received!",
+      "openDashboard": "Open dashboard",
+      "stopAlarm": "Stop alarm",
+      "view": "View"
+    },
+    "tracker": {
+      "chatWith": "Chat with {{name}}",
+      "closeChat": "Close chat",
+      "deliveryCode": "Delivery code",
+      "deliveryCodeHint": "Give this code to the driver upon delivery",
+      "driver": "Driver",
+      "moreItems": "+{{count}} more items",
+      "noOrders": "No orders in progress",
+      "noOrdersHint": "Your active orders will appear here",
+      "product": "Product",
+      "rate": "Rate",
+      "receipt": "Receipt",
+      "receiptError": "Unable to load receipt",
+      "refundSentDesc": "Your refund has been processed and sent.",
+      "refundSentTitle": "Refund sent",
+      "sellerDriver": "Seller / Driver",
+      "total": "Total",
+      "track": "Track",
+      "whatsappMessage": "Hello, I have a question about order #{{id}}"
+    },
+    "tracking": {
+      "arrivingIn": "Arriving in {{eta}} ({{km}} km)",
+      "backToOrders": "Back to orders",
+      "deliveredCheck": "Delivered",
+      "deliveryHere": "Delivery location",
+      "distance": "Distance",
+      "driverInitial": "D",
+      "eta": "ETA",
+      "inProgress": "In progress",
+      "inProgressDots": "In progress...",
+      "live": "Live",
+      "order": "Order",
+      "orderSummary": "Order summary",
+      "points": "{{count}} points",
+      "remaining": "Remaining",
+      "remainingEta": "{{eta}} remaining",
+      "totalLabel": "Total",
+      "traveled": "Traveled"
+    }
+  }
+}

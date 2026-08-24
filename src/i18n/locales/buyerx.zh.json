@@ -1,1 +1,167 @@
-{}
+{
+  "buyerx": {
+    "cancel": {
+      "back": "返回",
+      "buyerRefundNote": "您将获得全额退款。",
+      "cancel": "取消",
+      "cancelFailed": "取消失败",
+      "cancelledRefunded": "订单已取消并退款。",
+      "cancelledTitle": "订单已取消",
+      "cancelledWithPenalty": "订单已取消，需支付罚金 {{penalty}}。退款：{{refund}}。",
+      "confirmCancel": "确认取消",
+      "confirmTitleDriver": "退出此次配送？",
+      "confirmTitleOrder": "取消此订单？",
+      "deliveryReleased": "配送任务已分配给其他司机。",
+      "driverWarning": "退出可能会影响您的司机评分。",
+      "penaltyWarning": "可能会收取取消罚金。",
+      "reasonPlaceholder": "取消原因（可选）",
+      "sellerRefundNote": "卖家将收到取消通知。",
+      "sending": "发送中...",
+      "withdraw": "退出"
+    },
+    "chat": {
+      "chatWith": "与 {{name}} 聊天",
+      "noMessages": "暂无消息",
+      "participant": "参与者",
+      "writeMessage": "输入消息..."
+    },
+    "common": {
+      "error": "发生错误"
+    },
+    "notif": {
+      "empty": "没有通知",
+      "loading": "加载中...",
+      "markAllRead": "全部标记为已读",
+      "title": "通知"
+    },
+    "notifGate": {
+      "activate": "启用通知",
+      "activating": "正在启用...",
+      "blocked": "通知已在浏览器设置中被屏蔽。",
+      "bullet1": "实时跟踪您的订单",
+      "bullet2": "司机到达时收到提醒",
+      "bullet3": "不错过任何更新",
+      "description": "通过推送通知随时了解您的订单动态。",
+      "later": "以后再说",
+      "title": "启用通知"
+    },
+    "orderNotif": {
+      "confirmedMsg": "您的订单 #{{id}} 已确认。",
+      "confirmedTitle": "订单已确认",
+      "deliveredMsg": "您的订单 #{{id}} 已送达。",
+      "deliveredTitle": "订单已送达",
+      "deliveryCompleteMsg": "配送 #{{id}} 已完成。",
+      "deliveryCompleteTitle": "配送完成",
+      "driverAssignedMsg": "已为订单 #{{id}} 分配司机。",
+      "driverAssignedTitle": "司机已分配",
+      "inTransitMsg": "您的订单 #{{id}} 正在配送中。",
+      "inTransitTitle": "订单配送中",
+      "newDeliveryMsg": "订单 #{{id}} 有新的配送任务。",
+      "newDeliveryTitle": "新配送任务",
+      "newOrderMsg": "您有一个新订单 #{{id}}。",
+      "newOrderTitle": "新订单",
+      "pickedUpMsg": "您的订单 #{{id}} 已取件。",
+      "pickedUpTitle": "订单已取件",
+      "rateExperienceMsg": "请为订单 #{{id}} 的体验评分。",
+      "rateExperienceTitle": "评价您的体验",
+      "readyForPickupMsg": "订单 #{{id}} 已准备好取件。",
+      "readyForPickupTitle": "待取件",
+      "readyMsg": "您的订单 #{{id}} 已准备就绪。",
+      "readyTitle": "订单已就绪"
+    },
+    "orders": {
+      "subtitle": "跟踪并管理您的订单",
+      "title": "我的订单"
+    },
+    "push": {
+      "activated": "通知已启用",
+      "deliveryAssignedBody": "已为您的订单 #{{id}} 分配司机。",
+      "deliveryAssignedTitle": "司机已分配",
+      "denied": "通知权限被拒绝",
+      "notSupported": "此设备不支持推送通知",
+      "readyForPickupBody": "您的订单 #{{id}} 已准备好取件。",
+      "readyForPickupTitle": "待取件",
+      "readyToPickBody": "{{city}} 的订单 #{{id}} 已准备好取件。",
+      "readyToPickTitle": "订单已备好取件"
+    },
+    "rating": {
+      "bad": "差",
+      "commentPlaceholder": "留下评论（可选）",
+      "driver": "司机",
+      "excellent": "极好",
+      "experienceWithEntity": "您与 {{entity}} 的体验如何？",
+      "experienceWithName": "您与 {{name}} 的体验如何？",
+      "good": "好",
+      "ok": "一般",
+      "rateEntity": "评价 {{entity}}",
+      "seller": "卖家",
+      "sendError": "评价发送失败",
+      "submit": "提交",
+      "thanks": "感谢您的反馈！",
+      "veryBad": "非常差"
+    },
+    "returns": {
+      "cancel": "取消",
+      "confirmReturn": "确认退货",
+      "reasonPlaceholder": "退货原因",
+      "requestTitle": "申请退货",
+      "returnButton": "退货",
+      "status": {
+        "approved": "已批准",
+        "pending": "待处理",
+        "redelivery": "重新配送",
+        "refunded": "已退款",
+        "rejected": "已拒绝",
+        "return_in_transit": "退货运输中",
+        "return_pickup_ready": "待取退货",
+        "returned": "已退货"
+      },
+      "timeRemaining": "剩余时间：{{time}}"
+    },
+    "sellerAlarm": {
+      "newOrder": "收到新订单！",
+      "openDashboard": "打开仪表板",
+      "stopAlarm": "停止警报",
+      "view": "查看"
+    },
+    "tracker": {
+      "chatWith": "与 {{name}} 聊天",
+      "closeChat": "关闭聊天",
+      "deliveryCode": "配送代码",
+      "deliveryCodeHint": "配送时将此代码提供给司机",
+      "driver": "司机",
+      "moreItems": "另外 {{count}} 件商品",
+      "noOrders": "暂无订单",
+      "noOrdersHint": "您的活跃订单将显示在此处",
+      "product": "商品",
+      "rate": "评价",
+      "receipt": "收据",
+      "receiptError": "无法加载收据",
+      "refundSentDesc": "您的退款已处理并发送。",
+      "refundSentTitle": "退款已发送",
+      "sellerDriver": "卖家 / 司机",
+      "total": "总计",
+      "track": "跟踪",
+      "whatsappMessage": "您好，我对订单 #{{id}} 有个问题"
+    },
+    "tracking": {
+      "arrivingIn": "将在 {{eta}} 后到达（{{km}} 公里）",
+      "backToOrders": "返回订单",
+      "deliveredCheck": "已送达",
+      "deliveryHere": "配送地点",
+      "distance": "距离",
+      "driverInitial": "司",
+      "eta": "预计到达时间",
+      "inProgress": "进行中",
+      "inProgressDots": "进行中...",
+      "live": "实时",
+      "order": "订单",
+      "orderSummary": "订单摘要",
+      "points": "{{count}} 个点",
+      "remaining": "剩余",
+      "remainingEta": "剩余 {{eta}}",
+      "totalLabel": "总计",
+      "traveled": "已行驶距离"
+    }
+  }
+}
