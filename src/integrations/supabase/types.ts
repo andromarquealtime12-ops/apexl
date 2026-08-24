@@ -1835,9 +1835,40 @@ export type Database = {
     }
     Functions: {
       activate_user: { Args: { p_user_id: string }; Returns: Json }
+      admin_cancel_delivery: {
+        Args: {
+          p_credit_amount?: number
+          p_credit_driver?: boolean
+          p_order_id: string
+          p_reason?: string
+        }
+        Returns: Json
+      }
       admin_clear_negative_balance: {
         Args: { p_currency?: string; p_user_id: string }
         Returns: Json
+      }
+      admin_driver_overview: {
+        Args: never
+        Returns: {
+          account_status: string
+          cancelled_count: number
+          city: string
+          delivered_count: number
+          driver_id: string
+          earnings_dop: number
+          earnings_htg: number
+          earnings_usd: number
+          full_name: string
+          identity_status: string
+          in_progress_count: number
+          is_online: boolean
+          last_location_update: string
+          latitude: number
+          longitude: number
+          phone: string
+          total_orders: number
+        }[]
       }
       admin_get_profile: {
         Args: { _user_id: string }
