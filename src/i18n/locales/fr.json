@@ -292,7 +292,9 @@
     "resubmit": "Soumettre à nouveau",
     "adminUnlocked": "🔓 Accès admin déverrouillé !",
     "notAdmin": "Vous n'avez pas les droits administrateur",
-    "clicksLeft": "{{n}} clics restants..."
+    "clicksLeft": "{{n}} clics restants...",
+    "roleLockedSeller": "Vous êtes déjà livreur : impossible de postuler comme vendeur.",
+    "roleLockedDriver": "Vous êtes déjà vendeur : impossible de postuler comme livreur."
   },
   "driverPage": {
     "title": "Tableau de bord livreur",

@@ -162,6 +162,16 @@
       "remainingEta": "{{eta}} ki rete",
       "totalLabel": "Total",
       "traveled": "Distans pakouri"
+    },
+    "promo": {
+      "nearShopTitle": "🛍️ {{name}} toupre w",
+      "nearShopMsg": "{{km}} km de ou. Kòmande kounye a !",
+      "nearRestoTitle": "🍽️ {{name}} livre toupre w",
+      "nearRestoMsg": "Restoran a {{km}} km. Kòmande kounye a !",
+      "cartTitle": "🛒 Panyen w ap tann ou",
+      "cartMsg": "{{count}} atik pare. Fini kòmand ou kounye a !",
+      "dealTitle": "🔥 Nouvo bagay nan zòn ou",
+      "dealMsg": "{{count}} nouvo pwodwi toupre w. Kòmande kounye a !"
     }
   }
 }

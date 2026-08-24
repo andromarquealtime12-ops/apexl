@@ -162,6 +162,16 @@
       "remainingEta": "{{eta}} verbleibend",
       "totalLabel": "Gesamt",
       "traveled": "Zurückgelegt"
+    },
+    "promo": {
+      "nearShopTitle": "🛍️ {{name}} ist ganz in der Nähe",
+      "nearShopMsg": "{{km}} km von Ihnen entfernt. Jetzt bestellen!",
+      "nearRestoTitle": "🍽️ {{name}} liefert in Ihrer Nähe",
+      "nearRestoMsg": "Restaurant {{km}} km entfernt. Jetzt bestellen!",
+      "cartTitle": "🛒 Ihr Warenkorb wartet",
+      "cartMsg": "{{count}} Artikel bereit. Jetzt bestellen!",
+      "dealTitle": "🔥 Neu in Ihrer Umgebung",
+      "dealMsg": "{{count}} neue Produkte in Ihrer Nähe. Jetzt bestellen!"
     }
   }
 }

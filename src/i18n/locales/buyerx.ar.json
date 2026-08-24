@@ -162,6 +162,16 @@
       "remainingEta": "{{eta}} متبقية",
       "totalLabel": "الإجمالي",
       "traveled": "المسافة المقطوعة"
+    },
+    "promo": {
+      "nearShopTitle": "🛍️ {{name}} قريب منك",
+      "nearShopMsg": "على بعد {{km}} كم منك. اطلب الآن!",
+      "nearRestoTitle": "🍽️ {{name}} يوصل بالقرب منك",
+      "nearRestoMsg": "مطعم على بعد {{km}} كم. اطلب الآن!",
+      "cartTitle": "🛒 سلتك بانتظارك",
+      "cartMsg": "{{count}} منتج جاهز. أكمل طلبك الآن!",
+      "dealTitle": "🔥 جديد في منطقتك",
+      "dealMsg": "{{count}} منتجات جديدة بالقرب منك. اطلب الآن!"
     }
   }
 }

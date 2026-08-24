@@ -272,5 +272,9 @@
     "cancel": "Cancelar",
     "close": "Fechar",
     "error": "Erro"
+  },
+  "profile": {
+    "roleLockedSeller": "Você já é entregador: não pode se candidatar como vendedor.",
+    "roleLockedDriver": "Você já é vendedor: não pode se candidatar como entregador."
   }
 }
