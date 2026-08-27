@@ -59,7 +59,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const userCurrency = userCountry === "HT" ? "HTG" : userCountry === "DO" ? "DOP" : "USD";
   const convertedPrice = useMemo(() => {
     if (!isPrintful || !rates || userCurrency === product.currency) return null;
-    const v = convertCurrency(product.price, product.currency, userCurrency, rates);
+    // Display-only conversion: no wallet exchange commission applies to a purchase
+    const v = convertCurrency(product.price, product.currency, userCurrency, rates, false);
     return v > 0 ? v : null;
   }, [isPrintful, rates, userCurrency, product.currency, product.price]);
 
