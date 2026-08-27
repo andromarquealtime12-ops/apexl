@@ -1,6 +1,28 @@
 import { supabase } from "@/integrations/supabase/client";
 import i18n from "@/i18n";
 
+const langCache = new Map<string, string>();
+
+/** Resolve the recipient's configured language (falls back to app default). */
+export async function recipientLang(userId: string): Promise<string> {
+  const cached = langCache.get(userId);
+  if (cached) return cached;
+  try {
+    const { data } = await supabase.rpc("get_user_language", { _user_id: userId });
+    const lng = (data as string) || "fr";
+    langCache.set(userId, lng);
+    return lng;
+  } catch {
+    return "fr";
+  }
+}
+
+/** Translate a key in the recipient's language. */
+async function tFor(userId: string, key: string, opts?: Record<string, unknown>) {
+  const lng = await recipientLang(userId);
+  return i18n.t(key, { ...(opts ?? {}), lng }) as string;
+}
+
 /**
  * Send in-app notification and optionally trigger push
  */
@@ -40,8 +62,8 @@ export async function notifyNewOrder(orderId: string) {
     for (const sellerId of sellerIds) {
       await notifyUser(
         sellerId!,
-        i18n.t("buyerx.orderNotif.newOrderTitle"),
-        i18n.t("buyerx.orderNotif.newOrderMsg", { id: orderId.slice(0, 8) }),
+        await tFor(sellerId!, "buyerx.orderNotif.newOrderTitle"),
+        await tFor(sellerId!, "buyerx.orderNotif.newOrderMsg", { id: orderId.slice(0, 8) }),
         "order",
         "/seller"
       );
@@ -72,30 +94,33 @@ export async function notifyOrderStatusChange(
   driverId?: string | null
 ) {
   const shortId = orderId.slice(0, 8);
+  const lng = await recipientLang(buyerId);
+  const tr = (k: string, o?: Record<string, unknown>) =>
+    i18n.t(k, { ...(o ?? {}), lng }) as string;
   const messages: Record<string, { title: string; msg: string }> = {
     confirmed: {
-      title: i18n.t("buyerx.orderNotif.confirmedTitle"),
-      msg: i18n.t("buyerx.orderNotif.confirmedMsg", { id: shortId }),
+      title: tr("buyerx.orderNotif.confirmedTitle"),
+      msg: tr("buyerx.orderNotif.confirmedMsg", { id: shortId }),
     },
     ready: {
-      title: i18n.t("buyerx.orderNotif.readyTitle"),
-      msg: i18n.t("buyerx.orderNotif.readyMsg", { id: shortId }),
+      title: tr("buyerx.orderNotif.readyTitle"),
+      msg: tr("buyerx.orderNotif.readyMsg", { id: shortId }),
     },
     ready_for_pickup: {
-      title: i18n.t("buyerx.orderNotif.readyForPickupTitle"),
-      msg: i18n.t("buyerx.orderNotif.readyForPickupMsg", { id: shortId }),
+      title: tr("buyerx.orderNotif.readyForPickupTitle"),
+      msg: tr("buyerx.orderNotif.readyForPickupMsg", { id: shortId }),
     },
     picked_up: {
-      title: i18n.t("buyerx.orderNotif.pickedUpTitle"),
-      msg: i18n.t("buyerx.orderNotif.pickedUpMsg", { id: shortId }),
+      title: tr("buyerx.orderNotif.pickedUpTitle"),
+      msg: tr("buyerx.orderNotif.pickedUpMsg", { id: shortId }),
     },
     in_transit: {
-      title: i18n.t("buyerx.orderNotif.inTransitTitle"),
-      msg: i18n.t("buyerx.orderNotif.inTransitMsg", { id: shortId }),
+      title: tr("buyerx.orderNotif.inTransitTitle"),
+      msg: tr("buyerx.orderNotif.inTransitMsg", { id: shortId }),
     },
     delivered: {
-      title: i18n.t("buyerx.orderNotif.deliveredTitle"),
-      msg: i18n.t("buyerx.orderNotif.deliveredMsg", { id: shortId }),
+      title: tr("buyerx.orderNotif.deliveredTitle"),
+      msg: tr("buyerx.orderNotif.deliveredMsg", { id: shortId }),
     },
   };
 
@@ -117,16 +142,16 @@ export async function notifyOrderStatusChange(
 export async function notifyDriverAssigned(orderId: string, driverId: string, buyerId: string) {
   await notifyUser(
     buyerId,
-    i18n.t("buyerx.orderNotif.driverAssignedTitle"),
-    i18n.t("buyerx.orderNotif.driverAssignedMsg", { id: orderId.slice(0, 8) }),
+    await tFor(buyerId, "buyerx.orderNotif.driverAssignedTitle"),
+    await tFor(buyerId, "buyerx.orderNotif.driverAssignedMsg", { id: orderId.slice(0, 8) }),
     "delivery",
     `/track/${orderId}`
   );
 
   await notifyUser(
     driverId,
-    i18n.t("buyerx.orderNotif.newDeliveryTitle"),
-    i18n.t("buyerx.orderNotif.newDeliveryMsg", { id: orderId.slice(0, 8) }),
+    await tFor(driverId, "buyerx.orderNotif.newDeliveryTitle"),
+    await tFor(driverId, "buyerx.orderNotif.newDeliveryMsg", { id: orderId.slice(0, 8) }),
     "delivery",
     "/driver"
   );
@@ -138,16 +163,16 @@ export async function notifyDriverAssigned(orderId: string, driverId: string, bu
 export async function notifyDeliveryComplete(orderId: string, buyerId: string, driverId: string) {
   await notifyUser(
     buyerId,
-    i18n.t("buyerx.orderNotif.rateExperienceTitle"),
-    i18n.t("buyerx.orderNotif.rateExperienceMsg", { id: orderId.slice(0, 8) }),
+    await tFor(buyerId, "buyerx.orderNotif.rateExperienceTitle"),
+    await tFor(buyerId, "buyerx.orderNotif.rateExperienceMsg", { id: orderId.slice(0, 8) }),
     "review",
     `/orders`
   );
 
   await notifyUser(
     driverId,
-    i18n.t("buyerx.orderNotif.deliveryCompleteTitle"),
-    i18n.t("buyerx.orderNotif.deliveryCompleteMsg", { id: orderId.slice(0, 8) }),
+    await tFor(driverId, "buyerx.orderNotif.deliveryCompleteTitle"),
+    await tFor(driverId, "buyerx.orderNotif.deliveryCompleteMsg", { id: orderId.slice(0, 8) }),
     "earning",
     "/driver"
   );
