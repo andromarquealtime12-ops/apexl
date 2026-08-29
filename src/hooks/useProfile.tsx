@@ -60,15 +60,16 @@ export function useUpdateProfile() {
     mutationFn: async (updates: Partial<Profile>) => {
       if (!user) throw new Error("Not authenticated");
 
-      const { data, error } = await supabase
+      // NOTE: no .select() — SELECT on profiles is restricted by RLS, so asking
+      // for the updated row back returns 0 rows and breaks with
+      // "Cannot coerce the result to a single JSON object".
+      const { error } = await supabase
         .from("profiles")
         .update(updates)
-        .eq("user_id", user.id)
-        .select()
-        .single();
+        .eq("user_id", user.id);
 
       if (error) throw error;
-      return data;
+      return true;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
