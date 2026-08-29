@@ -65,7 +65,7 @@
          .from("profiles")
          .select("referral_code")
          .eq("user_id", user!.id)
-         .single();
+         .maybeSingle();
        
        if (error) throw error;
        return data?.referral_code;
