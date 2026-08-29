@@ -2297,10 +2297,25 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_order_participant: {
+        Args: { _order_id: string; _user_id: string }
+        Returns: boolean
+      }
       mark_seller_items_ready: { Args: { p_order_id: string }; Returns: Json }
       notify_available_drivers_for_order: {
         Args: { p_order_id: string }
         Returns: Json
+      }
+      notify_order_participant: {
+        Args: {
+          _action_url?: string
+          _message: string
+          _order_id: string
+          _title: string
+          _type?: string
+          _user_id: string
+        }
+        Returns: string
       }
       process_cash_checkout: {
         Args: {
