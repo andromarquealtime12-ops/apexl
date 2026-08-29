@@ -24,7 +24,7 @@ async function tFor(userId: string, key: string, opts?: Record<string, unknown>)
 }
 
 /**
- * Send in-app notification and optionally trigger push
+ * Send in-app notification (self-addressed rows only).
  */
 export async function notifyUser(
   userId: string,
@@ -47,6 +47,31 @@ export async function notifyUser(
 }
 
 /**
+ * Send an in-app notification to another participant of an order.
+ * Goes through a security-definer RPC because RLS forbids creating
+ * notification rows addressed to other users.
+ */
+export async function notifyOrderUser(
+  orderId: string,
+  userId: string,
+  title: string,
+  message: string,
+  type: string = "info",
+  actionUrl?: string
+) {
+  const { error } = await supabase.rpc("notify_order_participant", {
+    _order_id: orderId,
+    _user_id: userId,
+    _title: title,
+    _message: message,
+    _type: type,
+    _action_url: actionUrl ?? null,
+  });
+  if (error) console.error("Notification error:", error);
+}
+
+
+/**
  * Notify seller when new order is placed
  */
 export async function notifyNewOrder(orderId: string) {
@@ -60,7 +85,8 @@ export async function notifyNewOrder(orderId: string) {
 
     const sellerIds = [...new Set(items.map(i => i.seller_id).filter(Boolean))];
     for (const sellerId of sellerIds) {
-      await notifyUser(
+      await notifyOrderUser(
+        orderId,
         sellerId!,
         await tFor(sellerId!, "buyerx.orderNotif.newOrderTitle"),
         await tFor(sellerId!, "buyerx.orderNotif.newOrderMsg", { id: orderId.slice(0, 8) }),
@@ -128,7 +154,7 @@ export async function notifyOrderStatusChange(
   if (!info) return;
 
   // Notify buyer
-  await notifyUser(buyerId, info.title, info.msg, "order", `/track/${orderId}`);
+  await notifyOrderUser(orderId, buyerId, info.title, info.msg, "order", `/track/${orderId}`);
 
   // Notify driver on assignment
   if (newStatus === "ready" || newStatus === "ready_for_pickup") {
@@ -140,7 +166,8 @@ export async function notifyOrderStatusChange(
  * Notify when driver is assigned
  */
 export async function notifyDriverAssigned(orderId: string, driverId: string, buyerId: string) {
-  await notifyUser(
+  await notifyOrderUser(
+    orderId,
     buyerId,
     await tFor(buyerId, "buyerx.orderNotif.driverAssignedTitle"),
     await tFor(buyerId, "buyerx.orderNotif.driverAssignedMsg", { id: orderId.slice(0, 8) }),
@@ -148,7 +175,8 @@ export async function notifyDriverAssigned(orderId: string, driverId: string, bu
     `/track/${orderId}`
   );
 
-  await notifyUser(
+  await notifyOrderUser(
+    orderId,
     driverId,
     await tFor(driverId, "buyerx.orderNotif.newDeliveryTitle"),
     await tFor(driverId, "buyerx.orderNotif.newDeliveryMsg", { id: orderId.slice(0, 8) }),
@@ -161,7 +189,8 @@ export async function notifyDriverAssigned(orderId: string, driverId: string, bu
  * Notify when delivery is completed - ask for review
  */
 export async function notifyDeliveryComplete(orderId: string, buyerId: string, driverId: string) {
-  await notifyUser(
+  await notifyOrderUser(
+    orderId,
     buyerId,
     await tFor(buyerId, "buyerx.orderNotif.rateExperienceTitle"),
     await tFor(buyerId, "buyerx.orderNotif.rateExperienceMsg", { id: orderId.slice(0, 8) }),
@@ -169,7 +198,8 @@ export async function notifyDeliveryComplete(orderId: string, buyerId: string, d
     `/orders`
   );
 
-  await notifyUser(
+  await notifyOrderUser(
+    orderId,
     driverId,
     await tFor(driverId, "buyerx.orderNotif.deliveryCompleteTitle"),
     await tFor(driverId, "buyerx.orderNotif.deliveryCompleteMsg", { id: orderId.slice(0, 8) }),
