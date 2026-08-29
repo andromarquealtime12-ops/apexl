@@ -24,7 +24,7 @@ async function tFor(userId: string, key: string, opts?: Record<string, unknown>)
 }
 
 /**
- * Send in-app notification and optionally trigger push
+ * Send in-app notification (self-addressed rows only).
  */
 export async function notifyUser(
   userId: string,
@@ -45,6 +45,31 @@ export async function notifyUser(
     console.error("Notification error:", e);
   }
 }
+
+/**
+ * Send an in-app notification to another participant of an order.
+ * Goes through a security-definer RPC because RLS forbids creating
+ * notification rows addressed to other users.
+ */
+export async function notifyOrderUser(
+  orderId: string,
+  userId: string,
+  title: string,
+  message: string,
+  type: string = "info",
+  actionUrl?: string
+) {
+  const { error } = await supabase.rpc("notify_order_participant", {
+    _order_id: orderId,
+    _user_id: userId,
+    _title: title,
+    _message: message,
+    _type: type,
+    _action_url: actionUrl ?? null,
+  });
+  if (error) console.error("Notification error:", error);
+}
+
 
 /**
  * Notify seller when new order is placed
