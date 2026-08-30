@@ -32,13 +32,11 @@ export default function IdentityVerificationForm() {
           .from("identity-documents")
           .upload(fileName, file);
         if (error) throw error;
-        
-        const { data: urlData } = supabase.storage
-          .from("identity-documents")
-          .getPublicUrl(fileName);
-        
-        return urlData.publicUrl;
+
+        // Bucket is private: store the object path, signed URLs are made on display.
+        return fileName;
       };
+
 
       const [frontUrl, backUrl, selfieUrl] = await Promise.all([
         uploadFile(idFront, "id-front"),

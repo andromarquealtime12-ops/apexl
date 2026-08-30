@@ -32,18 +32,28 @@ import { Store, Truck, CheckCircle, XCircle, Loader2, Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useIdentityDocUrl } from "@/hooks/useIdentityDocUrl";
+
 
 function DocPhoto({ url, label }: { url?: string | null; label: string }) {
+  const { data: signedUrl, isLoading } = useIdentityDocUrl(url);
   if (!url) return <div className="text-xs text-muted-foreground">{label}: manquant</div>;
   return (
     <div className="space-y-1">
       <p className="text-xs font-medium">{label}</p>
-      <a href={url} target="_blank" rel="noreferrer">
-        <img src={url} alt={label} className="h-40 w-full object-cover rounded border hover:opacity-80 transition" />
-      </a>
+      {isLoading || !signedUrl ? (
+        <div className="h-40 w-full rounded border bg-muted flex items-center justify-center text-xs text-muted-foreground">
+          {isLoading ? "Chargement..." : "Image indisponible"}
+        </div>
+      ) : (
+        <a href={signedUrl} target="_blank" rel="noreferrer">
+          <img src={signedUrl} alt={label} className="h-40 w-full object-cover rounded border hover:opacity-80 transition" />
+        </a>
+      )}
     </div>
   );
 }
+
 
 const VEHICLE_TYPES: Record<string, string> = {
   motorcycle: "Moto",

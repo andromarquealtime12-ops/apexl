@@ -2,7 +2,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Upload an application document (identity, license, registration) to the
- * `identity-documents` bucket, scoped to the user id, and return the public URL.
+ * private `identity-documents` bucket, scoped to the user id, and return the
+ * storage object path (signed URLs are resolved at display time).
  * File names are randomised so re-uploads never collide.
  */
 export async function uploadApplicationDocument(
@@ -16,6 +17,6 @@ export async function uploadApplicationDocument(
     .from("identity-documents")
     .upload(path, file, { upsert: true });
   if (error) throw error;
-  const { data } = supabase.storage.from("identity-documents").getPublicUrl(path);
-  return data.publicUrl;
+  return path;
 }
+

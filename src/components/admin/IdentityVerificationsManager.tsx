@@ -15,8 +15,23 @@
    useRejectIdentityVerification 
  } from "@/hooks/useAdminAdvanced";
  import { useToast } from "@/hooks/use-toast";
- import { format } from "date-fns";
- import { fr } from "date-fns/locale";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { useIdentityDocUrl } from "@/hooks/useIdentityDocUrl";
+
+function IdDocImage({ value, alt }: { value?: string | null; alt: string }) {
+  const { data: url, isLoading } = useIdentityDocUrl(value);
+  if (!value || (!isLoading && !url)) {
+    return <p className="text-muted-foreground text-sm">Image non disponible</p>;
+  }
+  if (isLoading) return <p className="text-muted-foreground text-sm">Chargement...</p>;
+  return (
+    <a href={url!} target="_blank" rel="noreferrer" className="w-full h-full">
+      <img src={url!} alt={alt} className="w-full h-full object-cover" />
+    </a>
+  );
+}
+
  
  export default function IdentityVerificationsManager() {
    const { data: verifications, isLoading } = usePendingIdentityVerifications();
@@ -145,49 +160,26 @@
                Vérifiez que les documents sont valides et correspondent à l'utilisateur
              </DialogDescription>
            </DialogHeader>
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
-             <div>
-               <p className="text-sm font-medium mb-2">Pièce d'identité (Recto)</p>
-               <div className="border rounded-lg overflow-hidden aspect-video bg-muted flex items-center justify-center">
-                 {viewDialog.verification?.id_document_front ? (
-                   <img 
-                     src={viewDialog.verification.id_document_front} 
-                     alt="ID Recto" 
-                     className="w-full h-full object-cover"
-                   />
-                 ) : (
-                   <p className="text-muted-foreground text-sm">Image non disponible</p>
-                 )}
-               </div>
-             </div>
-             <div>
-               <p className="text-sm font-medium mb-2">Pièce d'identité (Verso)</p>
-               <div className="border rounded-lg overflow-hidden aspect-video bg-muted flex items-center justify-center">
-                 {viewDialog.verification?.id_document_back ? (
-                   <img 
-                     src={viewDialog.verification.id_document_back} 
-                     alt="ID Verso" 
-                     className="w-full h-full object-cover"
-                   />
-                 ) : (
-                   <p className="text-muted-foreground text-sm">Image non disponible</p>
-                 )}
-               </div>
-             </div>
-             <div>
-               <p className="text-sm font-medium mb-2">Selfie avec pièce</p>
-               <div className="border rounded-lg overflow-hidden aspect-video bg-muted flex items-center justify-center">
-                 {viewDialog.verification?.selfie_photo ? (
-                   <img 
-                     src={viewDialog.verification.selfie_photo} 
-                     alt="Selfie" 
-                     className="w-full h-full object-cover"
-                   />
-                 ) : (
-                   <p className="text-muted-foreground text-sm">Image non disponible</p>
-                 )}
-               </div>
-             </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
+              <div>
+                <p className="text-sm font-medium mb-2">Pièce d'identité (Recto)</p>
+                <div className="border rounded-lg overflow-hidden aspect-video bg-muted flex items-center justify-center">
+                  <IdDocImage value={viewDialog.verification?.id_document_front} alt="ID Recto" />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2">Pièce d'identité (Verso)</p>
+                <div className="border rounded-lg overflow-hidden aspect-video bg-muted flex items-center justify-center">
+                  <IdDocImage value={viewDialog.verification?.id_document_back} alt="ID Verso" />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2">Selfie avec pièce</p>
+                <div className="border rounded-lg overflow-hidden aspect-video bg-muted flex items-center justify-center">
+                  <IdDocImage value={viewDialog.verification?.selfie_photo} alt="Selfie" />
+                </div>
+              </div>
+
            </div>
            <DialogFooter>
              <Button variant="outline" onClick={() => setViewDialog({ open: false, verification: null })}>
