@@ -341,10 +341,12 @@ const Wallet = () => {
 
         {/* Actions */}
         <div className="flex gap-4 mb-8">
-          {/* Withdraw Dialog */}
+          {/* Withdraw Dialog — sellers & drivers only */}
+          {canWithdraw && (
           <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
             <DialogTrigger asChild>
               <Button size="lg" variant="outline" className="flex-1">
+
                 <Minus className="h-5 w-5 mr-2" />
                 {t("walletx.actions.withdraw")}
               </Button>
