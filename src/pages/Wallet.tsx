@@ -54,7 +54,9 @@ const paymentMethodIcons: Record<string, React.ComponentType<{ className?: strin
 
 const Wallet = () => {
   const { t, i18n } = useTranslation();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, isSeller, isDriver, isAdmin } = useAuth();
+  const canWithdraw = isSeller || isDriver || isAdmin;
+
   const queryClient = useQueryClient();
   
   const { data: wallet, isLoading: walletLoading } = useWallet();
@@ -339,10 +341,12 @@ const Wallet = () => {
 
         {/* Actions */}
         <div className="flex gap-4 mb-8">
-          {/* Withdraw Dialog */}
+          {/* Withdraw Dialog — sellers & drivers only */}
+          {canWithdraw && (
           <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
             <DialogTrigger asChild>
               <Button size="lg" variant="outline" className="flex-1">
+
                 <Minus className="h-5 w-5 mr-2" />
                 {t("walletx.actions.withdraw")}
               </Button>
@@ -476,6 +480,8 @@ const Wallet = () => {
               </div>
             </DialogContent>
           </Dialog>
+          )}
+
 
           {/* Deposit Dialog */}
           <Dialog open={depositOpen} onOpenChange={(open) => {

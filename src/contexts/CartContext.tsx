@@ -92,7 +92,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
         });
         return;
       }
+
+      // Block mixing products from two different shops / restaurants
+      const incomingSeller = (product as any).seller_id;
+      const differentSeller = items.find(
+        (it) => (it.product as any).seller_id && (it.product as any).seller_id !== incomingSeller
+      );
+      if (incomingSeller && differentSeller) {
+        toast({
+          title: "Une seule boutique par commande",
+          description:
+            "Vous ne pouvez pas commander dans deux boutiques ou deux restaurants différents en même temps. Finalisez votre commande ou videz le panier.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
+
 
     setItems((currentItems) => {
       const existingItem = currentItems.find((item) => item.id === itemId);

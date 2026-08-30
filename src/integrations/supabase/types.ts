@@ -2035,6 +2035,7 @@ export type Database = {
         Args: { lat1: number; lat2: number; lon1: number; lon2: number }
         Returns: number
       }
+      can_withdraw: { Args: { _user_id: string }; Returns: boolean }
       cancel_order: {
         Args: { p_order_id: string; p_reason?: string }
         Returns: Json
