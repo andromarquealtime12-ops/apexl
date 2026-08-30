@@ -54,7 +54,9 @@ const paymentMethodIcons: Record<string, React.ComponentType<{ className?: strin
 
 const Wallet = () => {
   const { t, i18n } = useTranslation();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, isSeller, isDriver, isAdmin } = useAuth();
+  const canWithdraw = isSeller || isDriver || isAdmin;
+
   const queryClient = useQueryClient();
   
   const { data: wallet, isLoading: walletLoading } = useWallet();
