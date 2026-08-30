@@ -32,6 +32,8 @@ import { Store, Truck, CheckCircle, XCircle, Loader2, Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useIdentityDocUrl } from "@/hooks/useIdentityDocUrl";
+
 
 function DocPhoto({ url, label }: { url?: string | null; label: string }) {
   const { data: signedUrl, isLoading } = useIdentityDocUrl(url);
