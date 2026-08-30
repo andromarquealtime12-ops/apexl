@@ -15,8 +15,23 @@
    useRejectIdentityVerification 
  } from "@/hooks/useAdminAdvanced";
  import { useToast } from "@/hooks/use-toast";
- import { format } from "date-fns";
- import { fr } from "date-fns/locale";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { useIdentityDocUrl } from "@/hooks/useIdentityDocUrl";
+
+function IdDocImage({ value, alt }: { value?: string | null; alt: string }) {
+  const { data: url, isLoading } = useIdentityDocUrl(value);
+  if (!value || (!isLoading && !url)) {
+    return <p className="text-muted-foreground text-sm">Image non disponible</p>;
+  }
+  if (isLoading) return <p className="text-muted-foreground text-sm">Chargement...</p>;
+  return (
+    <a href={url!} target="_blank" rel="noreferrer" className="w-full h-full">
+      <img src={url!} alt={alt} className="w-full h-full object-cover" />
+    </a>
+  );
+}
+
  
  export default function IdentityVerificationsManager() {
    const { data: verifications, isLoading } = usePendingIdentityVerifications();
