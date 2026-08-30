@@ -480,6 +480,8 @@ const Wallet = () => {
               </div>
             </DialogContent>
           </Dialog>
+          )}
+
 
           {/* Deposit Dialog */}
           <Dialog open={depositOpen} onOpenChange={(open) => {
