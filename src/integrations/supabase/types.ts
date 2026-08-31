@@ -1857,6 +1857,10 @@ export type Database = {
         Args: { p_currency?: string; p_user_id: string }
         Returns: Json
       }
+      admin_delete_shop: {
+        Args: { p_force?: boolean; p_user_id: string }
+        Returns: Json
+      }
       admin_driver_overview: {
         Args: never
         Returns: {
