@@ -2079,6 +2079,8 @@ export type Database = {
         }
         Returns: Json
       }
+      delete_my_restaurant: { Args: never; Returns: Json }
+      delete_my_shop: { Args: never; Returns: Json }
       delete_user_account: { Args: { p_user_id: string }; Returns: Json }
       demo_wallet_topup: {
         Args: { p_amount: number; p_currency: string }
