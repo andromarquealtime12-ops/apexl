@@ -315,6 +315,9 @@ export default function RestaurantManager() {
       )}
 
       {selectedRestaurant && <MenuManager restaurantId={selectedRestaurant} />}
+
+      {!!restaurants?.length && <DangerZoneCard kind="restaurant" />}
+
     </div>
   );
 }
