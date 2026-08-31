@@ -123,7 +123,9 @@ const SellerDashboard = () => {
                 <ProductsManager />
               </CardContent>
             </Card>
+            <DangerZoneCard kind="shop" />
           </TabsContent>
+
 
           <TabsContent value="restaurant">
             <RestaurantManager />
