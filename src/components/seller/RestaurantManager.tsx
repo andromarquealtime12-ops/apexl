@@ -25,6 +25,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import RestaurantLocationCard from "./RestaurantLocationCard";
 import { AvatarUploadField } from "@/components/ui/AvatarUploadField";
+import DangerZoneCard from "./DangerZoneCard";
+
 
 async function uploadRestaurantImage(userId: string, file: File) {
   const ext = file.name.split(".").pop();
@@ -315,6 +317,9 @@ export default function RestaurantManager() {
       )}
 
       {selectedRestaurant && <MenuManager restaurantId={selectedRestaurant} />}
+
+      {!!restaurants?.length && <DangerZoneCard kind="restaurant" />}
+
     </div>
   );
 }
