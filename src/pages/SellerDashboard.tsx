@@ -15,6 +15,8 @@ import { useSellerStats } from "@/hooks/useSellerStats";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 import { IdentityRequiredBanner } from "@/components/identity/IdentityRequiredBanner";
 import EarningsTransferCard from "@/components/wallet/EarningsTransferCard";
+import DangerZoneCard from "@/components/seller/DangerZoneCard";
+
 
 
 import { useTranslation } from "react-i18next";
