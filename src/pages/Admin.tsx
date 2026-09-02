@@ -9,7 +9,7 @@ import {
   ShieldCheck, Users, Package, ShoppingCart, 
   Wallet, Settings, UserCog, Shield, 
   MessageSquare, Flag, History, Sliders,
-  UtensilsCrossed, Building2, MapPin
+  UtensilsCrossed, Building2, MapPin, Store
 } from "lucide-react";
 import PendingDepositsTable from "@/components/admin/PendingDepositsTable";
 import PendingWithdrawalsTable from "@/components/admin/PendingWithdrawalsTable";
@@ -28,6 +28,7 @@ import PlatformSettingsManager from "@/components/admin/PlatformSettingsManager"
 import RefundRequestsManager from "@/components/admin/RefundRequestsManager";
 import ReturnsManager from "@/components/admin/ReturnsManager";
 import AdminRestaurantsManager from "@/components/admin/AdminRestaurantsManager";
+import AdminShopsManager from "@/components/admin/AdminShopsManager";
 import AdminAgentsManager from "@/components/admin/AdminAgentsManager";
 import NegativeBalanceManager from "@/components/admin/NegativeBalanceManager";
 import DepositMethodsManager from "@/components/admin/DepositMethodsManager";
@@ -114,6 +115,10 @@ const Admin = () => {
               <UtensilsCrossed className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Restaurants</span>
             </TabsTrigger>
+            <TabsTrigger value="shops">
+              <Store className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Boutiques</span>
+            </TabsTrigger>
             <TabsTrigger value="support" className="relative">
               <MessageSquare className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Support</span>
@@ -172,6 +177,10 @@ const Admin = () => {
 
           <TabsContent value="restaurants" className="space-y-6">
             <AdminRestaurantsManager />
+          </TabsContent>
+
+          <TabsContent value="shops" className="space-y-6">
+            <AdminShopsManager />
           </TabsContent>
 
           <TabsContent value="support" className="space-y-6">
