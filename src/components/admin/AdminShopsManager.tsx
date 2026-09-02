@@ -225,6 +225,126 @@ export default function AdminShopsManager() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Store className="h-5 w-5" />
+              {detail?.shop_name}
+            </DialogTitle>
+          </DialogHeader>
+
+          {overviewLoading || !overview ? (
+            <div className="space-y-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full" />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { label: "Produits", value: overview.products_total, icon: Package },
+                  { label: "Actifs", value: overview.products_active, icon: Package },
+                  { label: "Commandes", value: overview.orders_total, icon: TrendingUp },
+                  { label: "Livrées", value: overview.orders_delivered, icon: TrendingUp },
+                  { label: "En cours", value: overview.orders_active, icon: TrendingUp },
+                  { label: "Annulées", value: overview.orders_cancelled, icon: TrendingUp },
+                  { label: "Articles vendus", value: overview.items_sold, icon: Package },
+                  { label: "Stock total", value: overview.stock_total, icon: Package },
+                ].map((k) => (
+                  <Card key={k.label}>
+                    <CardContent className="p-3 text-center">
+                      <k.icon className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
+                      <p className="text-xl font-bold">{fmt(k.value)}</p>
+                      <p className="text-[11px] text-muted-foreground">{k.label}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div>
+                <h4 className="font-semibold mb-2 flex items-center gap-2 text-sm">
+                  <TrendingUp className="h-4 w-4" /> Chiffre d'affaires (livré)
+                </h4>
+                {(overview.revenue || []).length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Aucune vente</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {overview.revenue.map((r: any) => (
+                      <Badge key={r.currency} variant="secondary" className="text-sm">
+                        {fmt(r.amount)} {r.currency}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-1">
+                  <h4 className="font-semibold">Vendeur</h4>
+                  <p>Nom : {overview.profile?.full_name || "—"}</p>
+                  <p>Téléphone : {overview.profile?.phone || "—"}</p>
+                  <p>WhatsApp : {overview.profile?.whatsapp || "—"}</p>
+                  <p>Pays / ville : {overview.profile?.country || "—"} / {overview.profile?.city || "—"}</p>
+                  <p>Identité : {overview.profile?.identity_status || "—"}</p>
+                  <p>Statut compte : {overview.profile?.account_status || "—"}</p>
+                  <p>Score de confiance : {overview.profile?.trust_score ?? "—"}</p>
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-semibold">Boutique</h4>
+                  <p>Type : {overview.application?.business_type || "—"}</p>
+                  <p>Adresse : {overview.application?.shop_address || overview.profile?.shop_address || "—"}</p>
+                  <p>Ville : {overview.application?.shop_city || "—"}</p>
+                  <p>Téléphone : {overview.application?.shop_phone || "—"}</p>
+                  <p className="flex items-center gap-1">
+                    <Star className="h-3 w-3" /> Note : {overview.rating?.avg ?? "—"} ({overview.rating?.count || 0} avis)
+                  </p>
+                  <p className="flex items-center gap-1">
+                    <Wallet className="h-3 w-3" /> Solde : {fmt(overview.wallet?.balance_dop)} DOP ·{" "}
+                    {fmt(overview.wallet?.balance_htg)} HTG · {fmt(overview.wallet?.balance_usd)} USD
+                  </p>
+                  <p>
+                    Gains en attente : {fmt(overview.wallet?.earnings_dop)} DOP ·{" "}
+                    {fmt(overview.wallet?.earnings_htg)} HTG · {fmt(overview.wallet?.earnings_usd)} USD
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-semibold mb-2 text-sm">Produits les plus vendus</h4>
+                {(overview.top_products || []).length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Aucun produit</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Produit</TableHead>
+                        <TableHead>Prix</TableHead>
+                        <TableHead>Stock</TableHead>
+                        <TableHead>Vendus</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {overview.top_products.map((p: any, i: number) => (
+                        <TableRow key={i}>
+                          <TableCell className="font-medium">
+                            {p.name} {!p.is_active && <Badge variant="outline" className="ml-1">inactif</Badge>}
+                          </TableCell>
+                          <TableCell>{fmt(p.price)} {p.currency}</TableCell>
+                          <TableCell>{p.stock_quantity}</TableCell>
+                          <TableCell>{p.sold}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
