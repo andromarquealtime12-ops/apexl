@@ -46,12 +46,29 @@ function useAdminShops() {
   });
 }
 
+function useShopOverview(userId: string | null) {
+  return useQuery({
+    queryKey: ["admin-shop-overview", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).rpc("admin_shop_overview", { p_user_id: userId });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Erreur");
+      return data;
+    },
+  });
+}
+
+const fmt = (n: any) => Number(n || 0).toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+
 export default function AdminShopsManager() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [target, setTarget] = useState<any>(null);
   const [confirmText, setConfirmText] = useState("");
+  const [detail, setDetail] = useState<any>(null);
+  const { data: overview, isLoading: overviewLoading } = useShopOverview(detail?.user_id ?? null);
 
   const { data: shops, isLoading } = useAdminShops();
 
