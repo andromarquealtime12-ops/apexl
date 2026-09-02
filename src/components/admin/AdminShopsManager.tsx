@@ -18,7 +18,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Store, Search, MapPin, Package, Trash2, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Store, Search, MapPin, Package, Trash2, Loader2, Eye, Star, Wallet, TrendingUp } from "lucide-react";
 
 function useAdminShops() {
   return useQuery({
