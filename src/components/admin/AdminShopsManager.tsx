@@ -172,7 +172,11 @@ export default function AdminShopsManager() {
                   <TableCell>
                     <Badge variant="secondary">{s.product_count}</Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right space-x-2 whitespace-nowrap">
+                    <Button variant="outline" size="sm" className="gap-1" onClick={() => setDetail(s)}>
+                      <Eye className="h-4 w-4" />
+                      Voir
+                    </Button>
                     <Button
                       variant="destructive"
                       size="sm"
