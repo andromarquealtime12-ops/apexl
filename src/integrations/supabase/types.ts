@@ -1995,6 +1995,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      admin_shop_overview: { Args: { p_user_id: string }; Returns: Json }
       agent_deposit_to_wallet: {
         Args: {
           p_amount: number
