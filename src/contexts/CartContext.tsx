@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { Product } from "@/types/database";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface CartItemSelection {
   selectedColor?: string;
@@ -59,7 +60,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const storedCart = localStorage.getItem(CART_STORAGE_KEY);
     if (storedCart) {
       try {
-        setItems(normalizeStoredItems(JSON.parse(storedCart)));
+        const storedItems = normalizeStoredItems(JSON.parse(storedCart));
+        const productIds = [...new Set(storedItems.map((item) => item.product.id))];
+
+        if (productIds.length === 0) {
+          setItems([]);
+          return;
+        }
+
+        supabase
+          .from("products")
+          .select("id")
+          .in("id", productIds)
+          .then(({ data, error }) => {
+            if (error) {
+              setItems(storedItems);
+              return;
+            }
+
+            const availableIds = new Set((data || []).map((product) => product.id));
+            setItems(storedItems.filter((item) => availableIds.has(item.product.id)));
+          });
       } catch {}
     }
   }, []);

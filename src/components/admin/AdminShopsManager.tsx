@@ -85,6 +85,9 @@ export default function AdminShopsManager() {
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["admin-shops"] });
       queryClient.invalidateQueries({ queryKey: ["all-shops"] });
+      queryClient.removeQueries({ queryKey: ["products"] });
+      queryClient.removeQueries({ queryKey: ["product"] });
+      queryClient.removeQueries({ queryKey: ["seller-products"] });
       toast({ title: "Boutique supprimée", description: `${data.deleted_products} produit(s) supprimé(s)` });
       setTarget(null);
       setConfirmText("");
